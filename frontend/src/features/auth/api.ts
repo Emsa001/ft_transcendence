@@ -32,6 +32,10 @@ class AuthApi extends APIService {
         }
     }
 
+    /*
+        * Logout user
+        * @returns void
+    */
     async logout(): Promise<void> {
         try {
             await this.api.post("/auth/logout");
