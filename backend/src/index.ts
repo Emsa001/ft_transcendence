@@ -3,6 +3,7 @@ import cors from "@fastify/cors";
 import authRoutes from "./routes/auth";
 import cookie from "@fastify/cookie";
 import dotenv from "dotenv";
+import { initDb } from "./db/client";
 
 dotenv.config();
 
@@ -14,15 +15,21 @@ fastify.register(cors, {
 });
 
 fastify.register(cookie, {
-  secret: process.env.COOKIE_SECRET || "your-secret",
+    secret: process.env.COOKIE_SECRET || "your-secret",
 });
 
 fastify.register(authRoutes);
 
-fastify.listen({ port: Number(process.env.PORT) || 8000, host: "0.0.0.0" }, (err, address) => {
-    if (err) {
-        fastify.log.error(err);
-        process.exit(1);
+fastify.listen(
+    { port: Number(process.env.PORT) || 8000, host: "0.0.0.0" },
+    async (err, address) => {
+        if (err) {
+            fastify.log.error(err);
+            process.exit(1);
+        }
+
+        await initDb();
+
+        console.log(`Server running at ${address}`);
     }
-    console.log(`Server running at ${address}`);
-});
+);

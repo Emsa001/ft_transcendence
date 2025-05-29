@@ -1,8 +1,9 @@
 import React, { useStatic } from "react";
-import { LogoutButton, GoogleAuthButton } from "@features/auth/ui";
+import { LogoutButton, GoogleAuthButton, Disable2FAElement, Enable2FAElement } from "@features/auth/ui";
+import { User } from "@features/auth/types";
 
-export const User = () => {
-    const [user, setUser] = useStatic<google.User | null>("user");
+export const UserProfile = () => {
+    const [user, setUser] = useStatic<User | null>("user");
 
     if (!user) {
         return (
@@ -32,6 +33,8 @@ export const User = () => {
 
             <hr />
 
+            {user.is2FAEnabled ? <Disable2FAElement email={user.email} /> : <Enable2FAElement email={user.email} />}
+            
             <LogoutButton onLogout={() => setUser(null)} />
         </div>
     );

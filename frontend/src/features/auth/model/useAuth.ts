@@ -1,21 +1,22 @@
-import { useEffect, useRef, useStatic } from "react";
+import { useRef, useStatic } from "react";
 import AuthApi from "../api";
+import { User } from "../types";
 
 export const useAuth = () => {
     const ref = useRef<HTMLDivElement | null>(null);
-    const [user, setUser] = useStatic<google.User | null>("user", null);
+    const [user, setUser] = useStatic<User | null>("user", null);
 
     const handleCredentialResponse = async (response: google.CredentialResponse) => {
         try {
             const token = response.credential;
 
-            const data = await AuthApi.GoogleAuth(token);
+            const data = await AuthApi.googleAuth(token);
             if (!data || !data.user) {
                 console.error("Failed to authenticate user with Google.");
                 return;
             }
 
-            setUser(data.user as unknown as google.User);
+            setUser(data.user as unknown as User);
         } catch (error) {
             console.error("Error during Google authentication:", error);
         }
@@ -46,33 +47,21 @@ export const useAuth = () => {
 
     const fetchUser = async () => {
         try {
-            const data = await AuthApi.GoogleUser();
+            const data = await AuthApi.getUser();
             if (!data || !data.user) {
                 console.error("Failed to fetch user data from Google.");
                 return;
             }
 
-            setUser(data.user as unknown as google.User);
+            setUser(data.user as unknown as User);
         } catch (error) {
             console.error("Error fetching user data:", error);
         }
     };
 
-    useEffect(() => {
-        fetchUser();
-
-        // Wait until the script is loaded
-        const interval = setInterval(() => {
-            if (window.google && window.google.accounts) {
-                clearInterval(interval);
-                initializeGoogleSignIn();
-            }
-        }, 100);
-
-        return () => clearInterval(interval);
-    }, []);
-
     return {
+        fetchUser,
+        initializeGoogleSignIn,
         ref,
     };
 };

@@ -1,14 +1,24 @@
-# Remote Authentication Module
+# Security and Authentication Enhancement Module
 
-This module implements a secure and user-friendly remote authentication system using **Google Sign-In**.
+The goal of this major module is to enhance security and user authentication by introducing Two-Factor Authentication (2FA) and utilizing JSON Web Tokens (JWT).
 
 ## Key Features and Objectives
 
-- **Secure Sign-In Integration**: Allow users to securely sign in using Google credentials.
-- **Credential and Permission Management**: Obtain necessary credentials and permissions from Google to enable secure login.
-- **User-Friendly Login Flow**: Implement intuitive login and authorization flows adhering to best practices and security standards.
-- **Secure Token Exchange**: Ensure the secure exchange of authentication tokens and user information between the web application and Google.
+- **Implement Two-Factor Authentication (2FA)**  
+  Add an additional layer of security for user accounts by requiring users to provide a secondary verification method, such as a one-time code, in addition to their password.
 
-## Overview
+- **Utilize JSON Web Tokens (JWT)**  
+  Use JWT as a secure method for authentication and authorization, ensuring that user sessions and access to resources are managed securely.
 
-This module provides a robust remote user authentication system, offering users a secure and convenient way to access the web application while maintaining high security standards.
+- **User-Friendly 2FA Setup**  
+  Provide an intuitive setup process for enabling 2FA, offering users one or more options:
+  - SMS codes
+  - Authenticator apps
+  - Email-based verification
+
+- **Secure JWT Issuance and Validation**  
+  Ensure that JWT tokens are generated and validated using secure practices to prevent unauthorized access to user accounts and sensitive data.
+
+---
+
+This major module aims to strengthen user account security by offering Two-Factor Authentication (2FA) and enhancing authentication and authorization through the use of JSON Web Tokens (JWT).
