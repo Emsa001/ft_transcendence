@@ -1,28 +1,8 @@
-import axios, { AxiosInstance, AxiosResponse } from "axios";
-import type { AuthResponse } from "../types/api.ts"; // Assuming you defined types
+import { AxiosResponse } from "axios";
+import type { AuthResponse } from "./types";
+import { APIService } from "@shared/lib/api";
 
-class ApiService {
-    private api: AxiosInstance;
-
-    constructor(baseUrl: string) {
-        this.api = axios.create({
-            baseURL: baseUrl,
-            headers: {
-                "Content-Type": "application/json",
-                Accept: "application/json",
-            },
-            withCredentials: true,
-        });
-
-        this.api.interceptors.response.use(
-            response => response,
-            error => {
-                console.error("API Error:", error.response?.data || error.message);
-                return Promise.reject(error);
-            }
-        );
-    }
-
+class AuthApi extends APIService {
     /*
         * Authenticate user with Google
         * @param token - Google ID token
@@ -62,5 +42,5 @@ class ApiService {
     }
 }
 
-const service = new ApiService(process.env.FT_REACT_PUBLIC_API_HOST || "http://localhost:3000/api");
+const service = new AuthApi(process.env.FT_REACT_PUBLIC_API_HOST || "http://localhost:3000");
 export default service;

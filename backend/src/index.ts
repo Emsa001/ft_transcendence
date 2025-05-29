@@ -9,17 +9,17 @@ dotenv.config();
 const fastify = Fastify({ logger: true });
 
 fastify.register(cors, {
-    origin: ["http://localhost:3000"], // frontend origin
+    origin: ["http://localhost:3000"],
     credentials: true,
 });
 
 fastify.register(cookie, {
-  secret: process.env.COOKIE_SECRET || "your-secret", // optional for signed cookies
+  secret: process.env.COOKIE_SECRET || "your-secret",
 });
 
 fastify.register(authRoutes);
 
-fastify.listen({ port: Number(process.env.PORT) || 8000 }, (err, address) => {
+fastify.listen({ port: Number(process.env.PORT) || 8000, host: "0.0.0.0" }, (err, address) => {
     if (err) {
         fastify.log.error(err);
         process.exit(1);

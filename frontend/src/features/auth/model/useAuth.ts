@@ -1,7 +1,7 @@
-import React, { useEffect, useLocalStorage, useRef, useStatic } from "react";
-import ApiService from "../service/api";
+import { useEffect, useRef, useStatic } from "react";
+import AuthApi from "../api";
 
-export const GoogleAuth = () => {
+export const useAuth = () => {
     const ref = useRef<HTMLDivElement | null>(null);
     const [user, setUser] = useStatic<google.User | null>("user", null);
 
@@ -9,7 +9,7 @@ export const GoogleAuth = () => {
         try {
             const token = response.credential;
 
-            const data = await ApiService.GoogleAuth(token);
+            const data = await AuthApi.GoogleAuth(token);
             if (!data || !data.user) {
                 console.error("Failed to authenticate user with Google.");
                 return;
@@ -46,7 +46,7 @@ export const GoogleAuth = () => {
 
     const fetchUser = async () => {
         try {
-            const data = await ApiService.GoogleUser();
+            const data = await AuthApi.GoogleUser();
             if (!data || !data.user) {
                 console.error("Failed to fetch user data from Google.");
                 return;
@@ -72,5 +72,7 @@ export const GoogleAuth = () => {
         return () => clearInterval(interval);
     }, []);
 
-    return <div ref={ref} />;
+    return {
+        ref,
+    };
 };

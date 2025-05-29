@@ -13,12 +13,12 @@
         "typeRoots": ["./react/types", "./node_modules/@types"],
         "types": ["node", "webpack-env"],
         "baseUrl": "./",
-        "paths": { }
+        "paths": {
+            "@shared/*": ["src/shared/*"],
+            "@components/*": ["src/shared/components/*"],
+            "@features/*": ["src/features/*"],
+        }
     },
-    "include": [
-        "src/**/*",
-        "react/**/*", 
-        "react/types/global.d.ts"
-    ],
+    "include": ["src/**/*", "react/**/*", "react/types/global.d.ts"],
     "exclude": ["node_modules", "dist"]
 }
