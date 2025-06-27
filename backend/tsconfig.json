@@ -1,0 +1,26 @@
+{
+    "compilerOptions": {
+        "target": "ESNext",
+        "module": "ESNext",
+        "moduleResolution": "Node",
+        "baseUrl": "./",
+        "paths": {
+            "@/*": ["src/*"],
+            "@config/*": ["src/config/*"],
+            "@database/*": ["src/database/*"],
+            "@modules/*": ["src/modules/*"],
+            "@plugins/*": ["src/plugins/*"],
+            "@type/*": ["src/types/*"],
+            "@utils/*": ["src/utils/*"]
+        },
+        "esModuleInterop": true,
+        "skipLibCheck": true,
+        "forceConsistentCasingInFileNames": true,
+        "experimentalDecorators": true,
+        "emitDecoratorMetadata": true,
+        "resolveJsonModule": true,
+        "strict": true,
+        "noEmit": true
+    },
+    "include": ["src"]
+}

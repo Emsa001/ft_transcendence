@@ -1,5 +1,5 @@
-import speakeasy from 'speakeasy';
-import qrcode from 'qrcode';
+import speakeasy from "speakeasy";
+import qrcode from "qrcode";
 
 /**
  * Generates a 2FA secret and QR code for a user.
@@ -13,7 +13,7 @@ interface TwoFASecret {
     qrImageUrl: string; // The QR code image URL
 }
 
-export const generate2FASecret = (userEmail: string): Promise<TwoFASecret> => {
+export const generate2FASecret = (userEmail: string):Promise<TwoFASecret> => {
     const secret = speakeasy.generateSecret({
         name: `MyApp (${userEmail})`,
     });
@@ -40,7 +40,7 @@ export const generate2FASecret = (userEmail: string): Promise<TwoFASecret> => {
 export function verify2FACode(secret: string, token: string): boolean {
     return speakeasy.totp.verify({
         secret,
-        encoding: 'base32',
+        encoding: "base32",
         token,
         window: 1, // accept ±30s
     });
