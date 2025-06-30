@@ -4,6 +4,8 @@ run: frontend backend
 	npm run start --prefix ./frontend &
 	npm run start --prefix ./backend
 
+dev: run
+
 build:
 	npm run build --prefix ./frontend
 
@@ -22,8 +24,10 @@ frontend:
 backend:
 	npm install --prefix ./backend
 
+install: frontend backend
+
 docker:
 	docker-compose down
 	docker-compose up --build
 
-.PHONY: all run build clean frontend backend docker
+.PHONY: all run dev build clean frontend backend docker install

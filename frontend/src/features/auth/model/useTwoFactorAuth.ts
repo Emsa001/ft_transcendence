@@ -11,7 +11,7 @@ export const useTwoFactorAuth = () => {
         try {
             setError(null);
 
-            const data = await AuthApi.initiate2FASetup(email);
+            const data = await AuthApi.initiate2FASetup();
             setQrImageUrl(data.qrImageUrl);
         } catch (err) {
             setError("Failed to initiate 2FA setup");
@@ -23,7 +23,7 @@ export const useTwoFactorAuth = () => {
         try {
             setError(null);
             
-            const data = await AuthApi.verify2FACode(email, code);
+            const data = await AuthApi.verify2FACode(code, 'login');
 
             if (!data.success) {
                 setError("Invalid code");
@@ -41,7 +41,7 @@ export const useTwoFactorAuth = () => {
         try {
             setError(null);
 
-            const data = await AuthApi.enable2FA(email, code);
+            const data = await AuthApi.verify2FACode(code, 'enable');
 
             if (!data.success) {
                 setError("Failed to enable 2FA");
@@ -58,7 +58,7 @@ export const useTwoFactorAuth = () => {
     const disable2FA = async (email: string, code: string) => {
         try {
             setError(null);
-            const data = await AuthApi.disable2FA(email, code);
+            const data = await AuthApi.verify2FACode(code, 'disable');
             if (!data.success) {
                 setError("Failed to disable 2FA");
                 return false;

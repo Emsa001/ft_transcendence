@@ -1,6 +1,6 @@
 import { User } from '@/database/models/User';
 
-export class UserService {
+class UserService {
     async getAll() {
         return await User.findAll();
     }
@@ -8,8 +8,7 @@ export class UserService {
     async getById(id: number) {
         return await User.findByPk(id);
     }
-
-    async create(userData: User) {
-        return await User.create(userData);
-    }
 }
+
+const userService = new UserService();
+export default userService;

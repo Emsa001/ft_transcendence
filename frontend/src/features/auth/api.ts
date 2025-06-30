@@ -1,16 +1,17 @@
 import { AxiosResponse } from "axios";
-import type { AuthResponse } from "./types";
 import { APIService } from "@shared/lib/api";
 
 class AuthApi extends APIService {
     /**
-      * Authenticate user with Google
-      * @param token - Google ID token
-      * @returns AuthResponse containing user data and access token
-    */
+     * Authenticate user with Google
+     * @param token - Google ID token
+     * @returns AuthResponse containing user data and access token
+     */
     async googleAuth(token: string): Promise<AuthResponse> {
         try {
-            const response: AxiosResponse<AuthResponse> = await this.api.post("/auth/google", { token });
+            const response: AxiosResponse<AuthResponse> = await this.api.post("/auth/google", {
+                token,
+            });
             return response.data;
         } catch (error) {
             console.error("Error during Google authentication:", error);
@@ -19,13 +20,15 @@ class AuthApi extends APIService {
     }
 
     /**
-      * Fetch user data
-      * @returns AuthResponse containing user data
-    */
-    async getUser(): Promise<AuthResponse> {
+     * Fetch user data
+     * @returns AuthResponse containing user data
+     */
+    async getUser(): Promise<User> {
         try {
-            const response: AxiosResponse<AuthResponse> = await this.api.get("/auth/user", { withCredentials: true });
-            return response.data;
+            const response: AxiosResponse<AuthResponse> = await this.api.get("/auth", {
+                withCredentials: true,
+            });
+            return response.data as unknown as User;
         } catch (error) {
             console.error("Error during Google token verification:", error);
             return Promise.reject(error);
@@ -33,9 +36,9 @@ class AuthApi extends APIService {
     }
 
     /**
-      * Logout user
-      * @returns void
-    */
+     * Logout user
+     * @returns void
+     */
     async logout(): Promise<void> {
         try {
             await this.api.post("/auth/logout");
@@ -46,12 +49,12 @@ class AuthApi extends APIService {
     }
 
     /**
-      * Initialize 2FA setup
-      * @returns AxiosResponse containing QR code and secret key
-    */
-    async initiate2FASetup(email: string): Promise<{ qrImageUrl: string; secret: string }> {
+     * Initialize 2FA setup
+     * @returns AxiosResponse containing QR code and secret key
+     */
+    async initiate2FASetup(): Promise<{ qrImageUrl: string; secret: string }> {
         try {
-            const response = await this.api.post("/auth/2fa/setup", { email });
+            const response = await this.api.post("/auth/2fa/setup");
             return response.data;
         } catch (error) {
             console.error("Error during 2FA initialization:", error);
@@ -60,46 +63,17 @@ class AuthApi extends APIService {
     }
 
     /**
-      * Verify 2FA code
-      * @param code - 2FA verification code
-      * @returns AxiosResponse containing verification result
-    */
-    async verify2FACode(email:string, code: string): Promise<{ success: boolean }> {
+     * Verify 2FA code
+     * @param code - 2FA verification code
+     * @param action - Action to perform (login, enable, disable)
+     * @returns AxiosResponse containing verification result
+     */
+    async verify2FACode(code: string, action: Auth2Action): Promise<{ success: boolean }> {
         try {
-            const response = await this.api.post("/auth/2fa/verify", { email, code });
+            const response = await this.api.post("/auth/2fa/verify", { code, action });
             return response.data;
         } catch (error) {
             console.error("Error during 2FA verification:", error);
-            return Promise.reject(error);
-        }
-    }
-
-    /**
-     * Enable 2FA for the user
-     * @param email - User's email
-     * @param code - 2FA verification code
-     * @returns AxiosResponse containing success status
-     */
-    async enable2FA(email: string, code: string): Promise<{ success: boolean }> {
-        try {
-            const response = await this.api.post("/auth/2fa/enable", { email, code });
-            return response.data;
-        } catch (error) {
-            console.error("Error enabling 2FA:", error);
-            return Promise.reject(error);
-        }
-    }
-
-    /**
-     * Disable 2FA for the user
-     * @returns AxiosResponse containing success status
-     */
-    async disable2FA(email: string, code: string): Promise<{ success: boolean }> {
-        try {
-            const response = await this.api.post("/auth/2fa/disable", { email, code });
-            return response.data;
-        } catch (error) {
-            console.error("Error disabling 2FA:", error);
             return Promise.reject(error);
         }
     }

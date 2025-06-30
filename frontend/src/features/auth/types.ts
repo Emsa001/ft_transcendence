@@ -1,4 +1,4 @@
-export interface User {
+interface User {
     id: string;
     name: string;
     email: string;
@@ -7,7 +7,9 @@ export interface User {
     is2FAEnabled: boolean;
 }
 
-export interface AuthResponse {
+interface AuthResponse {
     user: User;
     token?: string;
 }
+
+type Auth2Action = 'login' | 'enable' | 'disable';

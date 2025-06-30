@@ -8,7 +8,8 @@ import cors from '@fastify/cors';
 import cookie from '@fastify/cookie';
 
 import { registerDB } from './database/client';
-import { UserController } from './modules/user/controller';
+import { UserController } from './modules/user/user.controller';
+import { AuthController } from './modules/auth/auth.controller';
 
 export default async function App() {
     const app = Fastify({ logger: true });
@@ -24,7 +25,7 @@ export default async function App() {
 
     // Register decorators
     app.register(bootstrap, {
-        controllers: [UserController],
+        controllers: [UserController, AuthController],
     });
 
     return app;

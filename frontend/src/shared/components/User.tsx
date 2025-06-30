@@ -1,6 +1,5 @@
 import React, { useStatic } from "react";
 import { LogoutButton, GoogleAuthButton, Disable2FAElement, Enable2FAElement } from "@features/auth/ui";
-import { User } from "@features/auth/types";
 
 export const UserProfile = () => {
     const [user, setUser] = useStatic<User | null>("user");

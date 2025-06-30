@@ -1,6 +1,5 @@
 import { useRef, useStatic } from "react";
 import AuthApi from "../api";
-import { User } from "../types";
 
 export const useAuth = () => {
     const ref = useRef<HTMLDivElement | null>(null);
@@ -48,12 +47,12 @@ export const useAuth = () => {
     const fetchUser = async () => {
         try {
             const data = await AuthApi.getUser();
-            if (!data || !data.user) {
+            if (!data) {
                 console.error("Failed to fetch user data from Google.");
                 return;
             }
 
-            setUser(data.user as unknown as User);
+            setUser(data);
         } catch (error) {
             console.error("Error fetching user data:", error);
         }
