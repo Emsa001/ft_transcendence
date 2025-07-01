@@ -1,15 +1,9 @@
 import { User } from '@/database/models/User';
 import { HttpException } from '@/utils/exceptions';
-import { OAuth2Client, TokenPayload } from 'google-auth-library';
-import { Token } from '../auth.types';
+import { OAuth2Client } from 'google-auth-library';
+import { JWTPayload, Token } from '../auth.types';
 
-import jwt from 'jsonwebtoken';
-
-interface AuthorizationResponse {
-    user: User | null; // The authenticated user object or null if not authenticated
-    publicUser: User | null; // The public user object or null if not authenticated
-    payload: TokenPayload; // The token payload containing user information
-}
+import TwoFAService from './twoFa.service';
 
 class AuthService {
     oauth2: OAuth2Client;
@@ -19,18 +13,16 @@ class AuthService {
     }
 
     /*
-     * Returns user information if authenticated
-     * Expects a secure HTTP-only cookie with the session token
+     * Google OAuth2 login endpoint
+     * Expects a token from the client-side Google Sign-In
+     * Returns the user object if successful
      */
-    async verify(token: Token): Promise<AuthorizationResponse> {
-        if (!token) {
-            throw new HttpException(
-                401,
-                'Unauthorized: No session token provided'
-            );
-        }
+    async googleLogin(
+        token: Token
+    ): Promise<{ user: User; payload: JWTPayload }> {
+        if (!token)
+            throw new HttpException(400, 'Bad Request: Token is required');
 
-        // Verify the token with Google OAuth2
         const ticket = await this.oauth2
             .verifyIdToken({
                 idToken: token,
@@ -39,31 +31,13 @@ class AuthService {
             .catch(() => {
                 throw new HttpException(401, `Unauthorized: Invalid token`);
             });
-        
+
         const payload = ticket.getPayload();
+        if (!payload || !payload.email)
+            throw new HttpException(401, 'Unauthorized: Invalid token payload');
 
-        if (!payload)
-            throw new HttpException(401, 'Unauthorized: Invalid token');
-        if (!payload.email)
-            throw new HttpException(
-                401,
-                'Unauthorized: Invalid email for the token'
-            );
-
-        const user = await User.getByEmail(payload.email);
-        const publicUser = await User.getPublicByEmail(payload.email);
-        return { user, publicUser, payload };
-    }
-
-    /*
-     * Google OAuth2 login endpoint
-     * Expects a token from the client-side Google Sign-In
-     * Returns the user object if successful
-     */
-    async googleLogin(token: Token): Promise<User> {
-        let { user, payload } = await this.verify(token);
-
-        // Check if user exists in your database
+        let user = await User.getByEmail(payload.email);
+        // Register user if not exists
         if (!user) {
             user = await User.create({
                 email: payload.email!,
@@ -71,10 +45,17 @@ class AuthService {
                 picture: payload.picture || null,
                 is2FAEnabled: false,
                 twoFASecret: null,
+                provider: 'google',
             });
+
+            return {
+                user,
+                payload: { email: user.email, provider: user.provider },
+            };
         }
 
-        return user;
+        // User exists, process authorization for 2fa
+        return { user, payload: await TwoFAService.authorize(user) };
     }
 }
 

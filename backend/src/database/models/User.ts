@@ -37,6 +37,11 @@ export class User extends Model<
     @AllowNull(true)
     @Default(null)
     @Column(DataType.STRING)
+    declare password: string | null;
+
+    @AllowNull(true)
+    @Default(null)
+    @Column(DataType.STRING)
     declare picture: string | null;
 
     @AllowNull(true)
@@ -48,6 +53,10 @@ export class User extends Model<
     @AllowNull(true)
     @Column(DataType.BOOLEAN)
     declare is2FAEnabled: boolean;
+
+    @Default("local")
+    @Column(DataType.STRING)
+    declare provider: "google" | "email";
 
     static async getByEmail(email: string): Promise<User | null> {
         return User.findOne({

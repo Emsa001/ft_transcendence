@@ -6,6 +6,8 @@ import { BaseController } from '../base';
 import AuthService from './services/auth.service';
 import TwoFAService from './services/twoFa.service';
 import { Auth2Action } from './auth.types';
+import JwtService from './services/jwt.service';
+import { User } from '@/database/models/User';
 
 @Controller('/auth')
 export class AuthController extends BaseController {
@@ -15,7 +17,13 @@ export class AuthController extends BaseController {
     async verifyUser(request: FastifyRequest, reply: FastifyReply) {
         try {
             const token = request.cookies.session;
-            const { publicUser } = await AuthService.verify(token);
+            const { email, twoFA } = JwtService.verify(token);
+
+            if(twoFA){
+                return reply.send({ twoFa: true });
+            }
+
+            const publicUser = await User.getPublicByEmail(email);
             if (!publicUser)
                 throw new HttpException(
                     401,
@@ -41,17 +49,21 @@ export class AuthController extends BaseController {
     async googleLogin(request: FastifyRequest, reply: FastifyReply) {
         try {
             const { token } = request.body as { token: string };
-            const user = await AuthService.googleLogin(token);
+            const { user, payload } = await AuthService.googleLogin(token);
+
+            const session = JwtService.sign(payload, '1d');
 
             reply
-                .setCookie('session', token, {
+                .setCookie('session', session, {
                     path: '/',
                     httpOnly: true,
                     secure: process.env.NODE_ENV === 'production',
                     sameSite: 'lax',
                     maxAge: this.maxCookieAge,
                 })
-                .send({ user });
+                .send({
+                    user: payload.twoFA ? { twoFa: true } : user,
+                });
         } catch (error: unknown) {
             this.respondWithError(reply, error);
         }

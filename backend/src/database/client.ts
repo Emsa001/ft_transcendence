@@ -5,7 +5,7 @@ import { User } from './models/User';
 export const registerDB = async (app: FastifyInstance) => {
     const sequelize = new Sequelize({
         dialect: 'sqlite',
-        storage: './dev.sqlite',
+        storage: './db.sqlite',
         models: [User],
     });
 
