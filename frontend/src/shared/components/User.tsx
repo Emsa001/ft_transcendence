@@ -32,7 +32,7 @@ export const UserProfile = () => {
 
             <hr />
 
-            {user.is2FAEnabled ? <Disable2FAElement email={user.email} /> : <Enable2FAElement email={user.email} />}
+            {user.is2FAEnabled ? <Disable2FAElement /> : <Enable2FAElement />}
             
             <LogoutButton onLogout={() => setUser(null)} />
         </div>

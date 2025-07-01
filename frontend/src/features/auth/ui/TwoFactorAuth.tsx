@@ -3,40 +3,14 @@ import { useTwoFactorAuth } from "../model/useTwoFactorAuth";
 import { Button } from "@shared/components/Button";
 import { Input } from "@shared/components/Input";
 
-export const Enter2FACodeElement = ({ email }: { email: string }) => {
-    const { qrImageUrl, error, initiateSetup, verifyCode } = useTwoFactorAuth();
-    const [code, setCode] = useState("");
-
-    return (
-        <div>
-            <Button onClick={() => initiateSetup(email)}>Start 2FA Setup</Button>
-
-            {qrImageUrl && (
-                <div>
-                    <img src={qrImageUrl} alt="Scan QR code" />
-                    <input
-                        type="text"
-                        value={code}
-                        onChange={(e: any) => setCode(e.target.value)}
-                        placeholder="Enter 6-digit code"
-                    />
-                    <Button onClick={() => verifyCode(email, code)}>Verify</Button>
-                </div>
-            )}
-
-            {error && <p style={{ color: "red" }}>{error}</p>}
-        </div>
-    );
-};
-
-export const Enable2FAElement = ({ email }: { email: string }) => {
+export const Enable2FAElement = () => {
     const { initiateSetup, enable2FA, qrImageUrl, error } = useTwoFactorAuth();
 
     const [success, setSuccess] = useState<boolean>(false);
     const [code, setCode] = useState("");
 
     const handleEnable2FA = async () => {
-        const result = await enable2FA(email, code);
+        const result = await enable2FA(code);
         if (result) {
             setSuccess(true);
             setCode("");
@@ -50,7 +24,7 @@ export const Enable2FAElement = ({ email }: { email: string }) => {
     return (
         <div className="border border-1 p-4">
             <h2>Enable Two-Factor Authentication</h2>
-            <Button onClick={() => initiateSetup(email)}>Enable 2FA</Button>
+            <Button onClick={initiateSetup}>Enable 2FA</Button>
 
             <div>
                 {qrImageUrl && (
@@ -72,14 +46,14 @@ export const Enable2FAElement = ({ email }: { email: string }) => {
     );
 };
 
-export const Disable2FAElement = ({ email }: { email: string }) => {
+export const Disable2FAElement = () => {
     const { disable2FA, error } = useTwoFactorAuth();
 
     const [code, setCode] = useState("");
     const [success, setSuccess] = useState<boolean>(false);
 
     const handleDisable2FA = async () => {
-        const result = await disable2FA(email, code);
+        const result = await disable2FA(code);
         if (result) {
             setSuccess(true);
             setCode("");

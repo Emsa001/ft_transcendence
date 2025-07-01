@@ -7,7 +7,7 @@ export const useTwoFactorAuth = () => {
     const [error, setError] = useState<string | null>(null);
 
     // Start the 2FA setup process (fetch QR code)
-    const initiateSetup = async (email: string) => {
+    const initiateSetup = async () => {
         try {
             setError(null);
 
@@ -19,7 +19,7 @@ export const useTwoFactorAuth = () => {
     };
 
     // Verify a user-entered 2FA code
-    const verifyCode = async (email: string, code: string) => {
+    const verifyCode = async (code: string) => {
         try {
             setError(null);
             
@@ -37,7 +37,7 @@ export const useTwoFactorAuth = () => {
         }
     };
 
-    const enable2FA = async (email: string, code: string) => {
+    const enable2FA = async (code: string) => {
         try {
             setError(null);
 
@@ -55,7 +55,7 @@ export const useTwoFactorAuth = () => {
         }
     };
 
-    const disable2FA = async (email: string, code: string) => {
+    const disable2FA = async (code: string) => {
         try {
             setError(null);
             const data = await AuthApi.verify2FACode(code, 'disable');
