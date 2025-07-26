@@ -54,9 +54,9 @@ export class User extends Model<
     @Column(DataType.BOOLEAN)
     declare is2FAEnabled: boolean;
 
-    @Default('local')
+    @Default("local")
     @Column(DataType.STRING)
-    declare provider: 'google' | 'email';
+    declare provider: "google" | "email";
 
     static async getByEmail(email: string): Promise<User | null> {
         return User.findOne({

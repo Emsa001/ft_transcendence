@@ -12,7 +12,7 @@ import { UserController } from './modules/user/user.controller';
 import { AuthController } from './modules/auth/auth.controller';
 
 export default async function App() {
-    const app = Fastify({ logger: false });
+    const app = Fastify({ logger: true });
 
     // Fastify Modules
     await app.register(cors, { origin: process.env.ORIGIN, credentials: true });
