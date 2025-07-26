@@ -2,7 +2,7 @@ import { User } from '@/database/models/User';
 import { HttpException } from '@/utils/exceptions';
 import { OAuth2Client } from 'google-auth-library';
 import { JWTPayload, Token } from '../auth.types';
-
+import bcrypt from 'bcrypt';
 import TwoFAService from './twoFa.service';
 
 class AuthService {
@@ -58,7 +58,7 @@ class AuthService {
         return { user, payload: await TwoFAService.authorize(user) };
     }
 
-    async register(
+        async register(
         email: string,
         name: string,
         password: string
@@ -73,10 +73,12 @@ class AuthService {
         if (existingUser)
             throw new HttpException(409, 'Conflict: User already exists');
 
+        const hashedPassword = await bcrypt.hash(password, 10);
+
         const user = await User.create({
             email,
             name,
-            password,
+            password: hashedPassword,
             is2FAEnabled: false,
             twoFASecret: null,
             provider: 'email',
@@ -99,12 +101,16 @@ class AuthService {
         if (!user || !user.password)
             throw new HttpException(401, 'Unauthorized: Invalid credentials');
 
-        // TODO: Implement password hashing and verification
-        if (user.password !== password)
+        const isPasswordValid = await bcrypt.compare(
+            password,
+            user.password
+        );
+        if (!isPasswordValid)
             throw new HttpException(401, 'Unauthorized: Invalid credentials');
 
         return { user, payload: await TwoFAService.authorize(user) };
     }
+
 }
 
 const authService = new AuthService();
