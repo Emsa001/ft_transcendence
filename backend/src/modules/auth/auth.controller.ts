@@ -18,6 +18,7 @@ export class AuthController extends BaseController {
         try {
             const token = request.cookies.session;
             const { email, twoFA } = JwtService.verify(token);
+
             if (twoFA) {
                 return reply.send({ twoFa: true });
             }
