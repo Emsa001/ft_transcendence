@@ -6,7 +6,6 @@ export const GoogleAuthButton = () => {
 
     useEffect(() => {
         fetchUser();
-
         // Wait until the script is loaded
         const interval = setInterval(() => {
             if (window.google && window.google.accounts) {
