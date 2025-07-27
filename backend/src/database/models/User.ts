@@ -32,7 +32,7 @@ export class User extends Model<
         type: DataType.STRING,
         validate: { len: [3, 30] },
     })
-    declare username: string | null;
+    declare name: string | null;
 
     @AllowNull(true)
     @Default(null)
@@ -63,8 +63,9 @@ export class User extends Model<
             where: { email },
             attributes: [
                 'id',
-                'username',
+                'name',
                 'email',
+                'password',
                 'picture',
                 'twoFASecret',
                 'is2FAEnabled',
@@ -75,7 +76,7 @@ export class User extends Model<
     static async getPublicByEmail(email: string): Promise<User | null> {
         return User.findOne({
             where: { email },
-            attributes: ['id', 'username', 'email', 'picture', 'is2FAEnabled'],
+            attributes: ['id', 'name', 'email', 'picture', 'is2FAEnabled'],
         });
     }
 }

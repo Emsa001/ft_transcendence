@@ -77,6 +77,27 @@ class AuthApi extends APIService {
             return Promise.reject(error);
         }
     }
+
+    async register(email: string, username: string, password: string, confirmPassword: string): Promise<void> {
+        if (password !== confirmPassword) {
+            console.error("Passwords do not match");
+            return Promise.reject(new Error("Passwords do not match"));
+        }
+        try {
+            await this.api.post("/auth/register", { email, name: username, password });
+        } catch (error) {
+            console.error("Error during registration:", error);
+            return Promise.reject(error);
+        }
+    }
+    async login(email: string, password: string): Promise<void> {
+        try {
+            await this.api.post("/auth/login", { email, password });
+        } catch (error) {
+            console.error("Error during login:", error);
+            return Promise.reject(error);
+        }
+    }
 }
 
 const service = new AuthApi(process.env.FT_REACT_PUBLIC_API_HOST || "http://localhost:3000");

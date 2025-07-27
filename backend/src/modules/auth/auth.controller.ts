@@ -19,7 +19,7 @@ export class AuthController extends BaseController {
             const token = request.cookies.session;
             const { email, twoFA } = JwtService.verify(token);
 
-            if(twoFA){
+            if (twoFA) {
                 return reply.send({ twoFa: true });
             }
 
@@ -112,6 +112,47 @@ export class AuthController extends BaseController {
                 qrImageUrl,
                 otpauth_url,
             });
+        } catch (error: unknown) {
+            this.respondWithError(reply, error);
+        }
+    }
+
+    @POST('/register')
+    async registerUser(request: FastifyRequest, reply: FastifyReply) {
+        try {
+            const { email, name, password } = request.body as {
+                email: string;
+                name: string;
+                password: string;
+            };
+            const user = await AuthService.register(email, name, password);
+            reply.send(user);
+        } catch (error: unknown) {
+            this.respondWithError(reply, error);
+        }
+    }
+    @POST('/login')
+    async loginUser(request: FastifyRequest, reply: FastifyReply) {
+        try {
+            const { email, password } = request.body as {
+                email: string;
+                password: string;
+            };
+            const { user, payload } = await AuthService.login(email, password);
+
+            const session = JwtService.sign(payload, '1d');
+
+            reply
+                .setCookie('session', session, {
+                    path: '/',
+                    httpOnly: true,
+                    secure: process.env.NODE_ENV === 'production',
+                    sameSite: 'lax',
+                    maxAge: this.maxCookieAge,
+                })
+                .send({
+                    user: payload.twoFA ? { twoFa: true } : user,
+                });
         } catch (error: unknown) {
             this.respondWithError(reply, error);
         }

@@ -2,7 +2,7 @@ import { User } from '@/database/models/User';
 import { HttpException } from '@/utils/exceptions';
 import { OAuth2Client } from 'google-auth-library';
 import { JWTPayload, Token } from '../auth.types';
-
+import bcrypt from 'bcrypt';
 import TwoFAService from './twoFa.service';
 
 class AuthService {
@@ -41,7 +41,7 @@ class AuthService {
         if (!user) {
             user = await User.create({
                 email: payload.email!,
-                username: payload.name || payload.email?.split('@')[0] || null,
+                name: payload.name || payload.email?.split('@')[0] || null,
                 picture: payload.picture || null,
                 is2FAEnabled: false,
                 twoFASecret: null,
@@ -57,6 +57,60 @@ class AuthService {
         // User exists, process authorization for 2fa
         return { user, payload: await TwoFAService.authorize(user) };
     }
+
+        async register(
+        email: string,
+        name: string,
+        password: string
+    ): Promise<User> {
+        if (!email || !name || !password)
+            throw new HttpException(
+                400,
+                'Bad Request: Missing required fields'
+            );
+
+        const existingUser = await User.getByEmail(email);
+        if (existingUser)
+            throw new HttpException(409, 'Conflict: User already exists');
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const user = await User.create({
+            email,
+            name,
+            password: hashedPassword,
+            is2FAEnabled: false,
+            twoFASecret: null,
+            provider: 'email',
+        });
+
+        return user;
+    }
+
+    async login(
+        email: string,
+        password: string
+    ): Promise<{ user: User; payload: JWTPayload }> {
+        if (!email || !password)
+            throw new HttpException(
+                400,
+                'Bad Request: Missing required fields'
+            );
+
+        const user = await User.getByEmail(email);
+        if (!user || !user.password)
+            throw new HttpException(401, 'Unauthorized: Invalid credentials');
+
+        const isPasswordValid = await bcrypt.compare(
+            password,
+            user.password
+        );
+        if (!isPasswordValid)
+            throw new HttpException(401, 'Unauthorized: Invalid credentials');
+
+        return { user, payload: await TwoFAService.authorize(user) };
+    }
+
 }
 
 const authService = new AuthService();
