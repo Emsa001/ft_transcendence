@@ -58,7 +58,7 @@ class AuthService {
         return { user, payload: await TwoFAService.authorize(user) };
     }
 
-        async register(
+    async register(
         email: string,
         name: string,
         password: string
@@ -101,16 +101,12 @@ class AuthService {
         if (!user || !user.password)
             throw new HttpException(401, 'Unauthorized: Invalid credentials');
 
-        const isPasswordValid = await bcrypt.compare(
-            password,
-            user.password
-        );
+        const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid)
             throw new HttpException(401, 'Unauthorized: Invalid credentials');
 
         return { user, payload: await TwoFAService.authorize(user) };
     }
-
 }
 
 const authService = new AuthService();

@@ -28,13 +28,14 @@ class TwoFAService {
     /*
      * TwoFa verify endpoint
      * Returns the user object, session, and response configuration
+     * TODO: Cleanup (function too long)
      */
     async verify(
         token: Token,
         code: string,
         action: Auth2Action = 'login'
     ): Promise<{ user: User; session: string; shouldSetCookie: boolean }> {
-        const { email, provider, twoFA } = JwtService.verify(token);
+        const { email, twoFA } = JwtService.verify(token);
 
         const user = await User.getByEmail(email);
         if (!user) throw new HttpException(401, 'Unauthorized: User not found');

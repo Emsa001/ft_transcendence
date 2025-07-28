@@ -22,3 +22,19 @@ export interface AuthorizationResponse {
     publicUser: User | null; // The public user object or null if not authenticated
     payload: TokenPayload | JWTPayload; // The token payload containing user information
 }
+
+export interface OAuth2Payload {
+    code: string;
+    action: Auth2Action | undefined;
+}
+
+// User Auth
+
+export interface UserLogin {
+    email: string;
+    password: string;
+}
+
+export interface UserRegister extends UserLogin {
+    name: string;
+}

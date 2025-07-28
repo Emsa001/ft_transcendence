@@ -5,13 +5,13 @@ import { HttpException } from '@/utils/exceptions';
 import { BaseController } from '../base';
 import AuthService from './services/auth.service';
 import TwoFAService from './services/twoFa.service';
-import { Auth2Action } from './auth.types';
+import { OAuth2Payload, UserLogin, UserRegister } from './auth.types';
 import JwtService from './services/jwt.service';
 import { User } from '@/database/models/User';
+import cookieService from './services/cookie.severice';
 
 @Controller('/auth')
 export class AuthController extends BaseController {
-    maxCookieAge = Number(process.env.COOKIE_MAX_AGE) || 60 * 60 * 24; // Default to 1 day
 
     @GET('/')
     async verifyUser(request: FastifyRequest, reply: FastifyReply) {
@@ -19,9 +19,8 @@ export class AuthController extends BaseController {
             const token = request.cookies.session;
             const { email, twoFA } = JwtService.verify(token);
 
-            if (twoFA) {
+            if (twoFA)
                 return reply.send({ twoFa: true });
-            }
 
             const publicUser = await User.getPublicByEmail(email);
             if (!publicUser)
@@ -36,6 +35,7 @@ export class AuthController extends BaseController {
         }
     }
 
+    // TODO: Do we need?
     @POST('/logout')
     async logoutUser(request: FastifyRequest, reply: FastifyReply) {
         return reply
@@ -54,13 +54,7 @@ export class AuthController extends BaseController {
             const session = JwtService.sign(payload, '1d');
 
             reply
-                .setCookie('session', session, {
-                    path: '/',
-                    httpOnly: true,
-                    secure: process.env.NODE_ENV === 'production',
-                    sameSite: 'lax',
-                    maxAge: this.maxCookieAge,
-                })
+                .setCookie('session', session, cookieService.getAuthSession())
                 .send({
                     user: payload.twoFA ? { twoFa: true } : user,
                 });
@@ -73,10 +67,7 @@ export class AuthController extends BaseController {
     async oauth2Verify(request: FastifyRequest, reply: FastifyReply) {
         try {
             const token = request.cookies.session;
-            const { code, action = 'login' } = request.body as {
-                code: string;
-                action: Auth2Action | undefined;
-            };
+            const { code, action = 'login' } = request.body as OAuth2Payload;
 
             const { session, shouldSetCookie } = await TwoFAService.verify(
                 token,
@@ -86,13 +77,7 @@ export class AuthController extends BaseController {
 
             if (shouldSetCookie) {
                 return reply
-                    .setCookie('session', session, {
-                        path: '/',
-                        httpOnly: true,
-                        secure: process.env.NODE_ENV === 'production',
-                        sameSite: 'lax',
-                        maxAge: this.maxCookieAge,
-                    })
+                    .setCookie('session', session, cookieService.getAuthSession())
                     .send({ success: true });
             }
 
@@ -120,36 +105,24 @@ export class AuthController extends BaseController {
     @POST('/register')
     async registerUser(request: FastifyRequest, reply: FastifyReply) {
         try {
-            const { email, name, password } = request.body as {
-                email: string;
-                name: string;
-                password: string;
-            };
+            const { email, name, password } = request.body as UserRegister;
             const user = await AuthService.register(email, name, password);
             reply.send(user);
         } catch (error: unknown) {
             this.respondWithError(reply, error);
         }
     }
+
     @POST('/login')
     async loginUser(request: FastifyRequest, reply: FastifyReply) {
         try {
-            const { email, password } = request.body as {
-                email: string;
-                password: string;
-            };
+            const { email, password } = request.body as UserLogin;
             const { user, payload } = await AuthService.login(email, password);
 
             const session = JwtService.sign(payload, '1d');
 
             reply
-                .setCookie('session', session, {
-                    path: '/',
-                    httpOnly: true,
-                    secure: process.env.NODE_ENV === 'production',
-                    sameSite: 'lax',
-                    maxAge: this.maxCookieAge,
-                })
+                .setCookie('session', session, cookieService.getAuthSession())
                 .send({
                     user: payload.twoFA ? { twoFa: true } : user,
                 });
