@@ -1,7 +1,8 @@
-import { useRef, useStatic } from "react";
-import AuthApi from "../api";
+import { useNavigate, useRef, useStatic } from "react";
+import { twoFactorAuthAlert, AuthApi } from "../";
 
 export const useAuth = () => {
+    // const navigate = useNavigate();
     const ref = useRef<HTMLDivElement | null>(null);
     const [user, setUser] = useStatic<User | null>("user", null);
 
@@ -10,14 +11,42 @@ export const useAuth = () => {
             const token = response.credential;
 
             const data = await AuthApi.googleAuth(token);
-            if (!data || !data.user) {
+            if (!data) {
                 console.error("Failed to authenticate user with Google.");
                 return;
             }
 
-            setUser(data.user as unknown as User);
+            setUser(data.user);
+
+            if (data.twoFA){
+                // navigate("/auth/2fa/verify"); // Uncomment if use a component for 2FA verification
+                twoFactorAuthAlert();
+            }
+
         } catch (error) {
             console.error("Error during Google authentication:", error);
+        }
+    };
+
+    const fetchUser = async () => {
+        try {
+            const data = await AuthApi.getUser();
+            if (!data) {
+                console.error("Failed to fetch user data from Google.");
+                return;
+            }
+
+            setUser(data.user);
+
+            if (data.twoFA){
+                // navigate("/auth/2fa/verify");  // Uncomment if use a component for 2FA verification
+                twoFactorAuthAlert();
+            }
+
+        } catch (error: unknown) {
+            if (error instanceof Error && error.message === "2FA_REQUIRED") {
+                alert("Two-factor authentication is required. Please complete the setup.");
+            }
         }
     };
 
@@ -42,20 +71,6 @@ export const useAuth = () => {
             theme: "outline",
             size: "large",
         });
-    };
-
-    const fetchUser = async () => {
-        try {
-            const data = await AuthApi.getUser();
-            if (!data) {
-                console.error("Failed to fetch user data from Google.");
-                return;
-            }
-
-            setUser(data);
-        } catch (error) {
-            console.error("Error fetching user data:", error);
-        }
     };
 
     return {

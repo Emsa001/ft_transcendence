@@ -9,7 +9,7 @@ interface User {
 
 interface AuthResponse {
     user: User;
-    token?: string;
+    twoFA: boolean;
 }
 
-type Auth2Action = 'login' | 'enable' | 'disable';
+type Auth2Action = "login" | "enable" | "disable";

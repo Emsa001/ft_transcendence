@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import AuthApi from "../../features/auth/api";
+import AuthApi from "../../features/auth/service/api";
 import { useAuth } from "@features/auth/model/useAuth";
 
 export default function AuthForm() {
@@ -16,7 +16,7 @@ export default function AuthForm() {
     };
 
     const handleRegister = async () => {
-        await AuthApi.register(email, username, password, confirmPassword);
+        await AuthApi.register(email, username, password);
         isLogin ? handleLogin() : setIsLogin(true);
     };
 

@@ -12,15 +12,11 @@ import cookieService from './services/cookie.severice';
 
 @Controller('/auth')
 export class AuthController extends BaseController {
-
     @GET('/')
     async verifyUser(request: FastifyRequest, reply: FastifyReply) {
         try {
             const token = request.cookies.session;
             const { email, twoFA } = JwtService.verify(token);
-
-            if (twoFA)
-                return reply.send({ twoFa: true });
 
             const publicUser = await User.getPublicByEmail(email);
             if (!publicUser)
@@ -29,7 +25,7 @@ export class AuthController extends BaseController {
                     'Unauthorized: Invalid session token'
                 );
 
-            return reply.send(publicUser);
+            return reply.status(200).send({ user: publicUser, twoFA });
         } catch (error: unknown) {
             this.respondWithError(reply, error);
         }
@@ -55,9 +51,7 @@ export class AuthController extends BaseController {
 
             reply
                 .setCookie('session', session, cookieService.getAuthSession())
-                .send({
-                    user: payload.twoFA ? { twoFa: true } : user,
-                });
+                .send({ user: payload, twoFA: payload.twoFA });
         } catch (error: unknown) {
             this.respondWithError(reply, error);
         }
@@ -77,7 +71,11 @@ export class AuthController extends BaseController {
 
             if (shouldSetCookie) {
                 return reply
-                    .setCookie('session', session, cookieService.getAuthSession())
+                    .setCookie(
+                        'session',
+                        session,
+                        cookieService.getAuthSession()
+                    )
                     .send({ success: true });
             }
 

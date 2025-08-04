@@ -1,5 +1,5 @@
 import { useStatic } from "react";
-import AuthApi from "../api";
+import { AuthApi } from "../";
 
 export const useLogout = ({ onLogout }: { onLogout: () => void }) => {
     const [user, setUser] = useStatic<google.User | null>("user", null);

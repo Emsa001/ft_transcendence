@@ -8,6 +8,13 @@ import qrcode from 'qrcode';
 import JwtService from './jwt.service';
 
 class TwoFAService {
+
+    /*
+        * Authorizes the user for 2FA
+        * If 2FA is enabled, returns a temporary token for verification
+        * If not, returns a JWT token
+        EVERY LOGIN SHOULD CALL THIS
+    */
     async authorize(user: User): Promise<JWTPayload> {
         if (!user) {
             throw new HttpException(401, 'Unauthorized: User not found');
@@ -60,7 +67,7 @@ class TwoFAService {
                 if (!user.is2FAEnabled || !twoFA) {
                     throw new HttpException(
                         400,
-                        'Bad Request: User does not have 2FA enabled'
+                        'Bad Request: Two-Factor Authentication is not enabled or already verified for this user'
                     );
                 }
 
