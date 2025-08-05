@@ -1,4 +1,4 @@
-import { useNavigate, useRef, useStatic } from "react";
+import { useRef, useStatic } from "react";
 import { twoFactorAuthAlert, AuthApi } from "../";
 
 export const useAuth = () => {
@@ -6,51 +6,7 @@ export const useAuth = () => {
     const ref = useRef<HTMLDivElement | null>(null);
     const [user, setUser] = useStatic<User | null>("user", null);
 
-    const handleCredentialResponse = async (response: google.CredentialResponse) => {
-        try {
-            const token = response.credential;
-
-            const data = await AuthApi.googleAuth(token);
-            if (!data) {
-                console.error("Failed to authenticate user with Google.");
-                return;
-            }
-
-            setUser(data.user);
-
-            if (data.twoFA){
-                // navigate("/auth/2fa/verify"); // Uncomment if use a component for 2FA verification
-                twoFactorAuthAlert();
-            }
-
-        } catch (error) {
-            console.error("Error during Google authentication:", error);
-        }
-    };
-
-    const fetchUser = async () => {
-        try {
-            const data = await AuthApi.getUser();
-            if (!data) {
-                console.error("Failed to fetch user data from Google.");
-                return;
-            }
-
-            setUser(data.user);
-
-            if (data.twoFA){
-                // navigate("/auth/2fa/verify");  // Uncomment if use a component for 2FA verification
-                twoFactorAuthAlert();
-            }
-
-        } catch (error: unknown) {
-            if (error instanceof Error && error.message === "2FA_REQUIRED") {
-                alert("Two-factor authentication is required. Please complete the setup.");
-            }
-        }
-    };
-
-    const initializeGoogleSignIn = () => {
+    const googleSignIn = () => {
         if (!ref.current) {
             console.error("Google Sign-In button reference is null.");
             return;
@@ -64,7 +20,7 @@ export const useAuth = () => {
 
         google.initialize({
             client_id: process.env.FT_REACT_PUBLIC_GOOGLE_CLIENT_ID || "",
-            callback: handleCredentialResponse,
+            callback: googleSignInCallback,
         });
 
         google.renderButton(ref.current, {
@@ -73,9 +29,43 @@ export const useAuth = () => {
         });
     };
 
+    const googleSignInCallback = async (response: google.CredentialResponse) => {
+        const token = response.credential;
+
+        const data = await AuthApi.googleAuth(token);
+        if (!data) {
+            console.error("Failed to authenticate user with Google.");
+            return;
+        }
+
+        const { user, twoFA } = data;
+
+        setUser(user);
+
+        if(twoFA) twoFactorAuthAlert();
+    };
+
+    const fetchUser = async () => {
+        try {
+            const data = await AuthApi.getUser();
+            if (!data) {
+                console.error("Failed to fetch user data from Google.");
+                return;
+            }
+
+            setUser(data.user);
+
+            if (data.twoFA) twoFactorAuthAlert();
+        } catch (error: unknown) {
+            if (error instanceof Error && error.message === "2FA_REQUIRED") {
+                alert("Two-factor authentication is required. Please complete the setup.");
+            }
+        }
+    };
+
     return {
+        googleSignIn,
         fetchUser,
-        initializeGoogleSignIn,
         ref,
     };
 };

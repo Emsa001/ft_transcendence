@@ -7,12 +7,17 @@ class AuthApi extends APIService {
      * @param token - Google ID token
      * @returns AuthResponse containing user data and access token
      */
-    async googleAuth(token: string): Promise<AuthResponse> {
-        const response: AxiosResponse<AuthResponse> = await this.api.post("/auth/google", {
-            token,
-        });
+    async googleAuth(token: string): Promise<AuthResponse | null> {
+        try {
+            const response: AxiosResponse<AuthResponse> = await this.api.post("/auth/google", {
+                token,
+            });
 
-        return response.data;
+            return response.data
+        } catch (error) {
+            console.error("Error during Google authentication:", error);
+            return null;
+        }
     }
 
     /**

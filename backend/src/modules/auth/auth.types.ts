@@ -1,4 +1,4 @@
-import { User } from '@/database/models/User';
+import { User } from '@/database/models/User/User';
 import { TokenPayload } from 'google-auth-library';
 
 export type Token = string | undefined;
@@ -14,7 +14,7 @@ export interface TwoFASecret {
 export interface JWTPayload {
     email: string; // The user's email
     provider: Provider; // The authentication provider (e.g., 'google')
-    twoFA?: boolean; // Optional flag indicating if 2FA is in progress
+    twoFA: boolean; // Flag indicating if 2FA is in progress
 }
 
 export interface AuthorizationResponse {

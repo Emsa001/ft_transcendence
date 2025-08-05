@@ -7,25 +7,25 @@ import AuthService from './services/auth.service';
 import TwoFAService from './services/twoFa.service';
 import { OAuth2Payload, UserLogin, UserRegister } from './auth.types';
 import JwtService from './services/jwt.service';
-import { User } from '@/database/models/User';
 import cookieService from './services/cookie.severice';
+import { UserFinder } from '@/database/models/User/UserFinder';
 
 @Controller('/auth')
 export class AuthController extends BaseController {
     @GET('/')
-    async verifyUser(request: FastifyRequest, reply: FastifyReply) {
+    async getAuthUser(request: FastifyRequest, reply: FastifyReply) {
         try {
             const token = request.cookies.session;
             const { email, twoFA } = JwtService.verify(token);
 
-            const publicUser = await User.getPublicByEmail(email);
-            if (!publicUser)
+            const user = await UserFinder.getByEmail(email);
+            if (!user)
                 throw new HttpException(
                     401,
                     'Unauthorized: Invalid session token'
                 );
 
-            return reply.status(200).send({ user: publicUser, twoFA });
+            return reply.status(200).send({ user: user.toDTO(), twoFA });
         } catch (error: unknown) {
             this.respondWithError(reply, error);
         }
@@ -45,13 +45,12 @@ export class AuthController extends BaseController {
     async googleLogin(request: FastifyRequest, reply: FastifyReply) {
         try {
             const { token } = request.body as { token: string };
-            const { user, payload } = await AuthService.googleLogin(token);
-
-            const session = JwtService.sign(payload, '1d');
+            const { user, token: session } =
+                await AuthService.googleLogin(token);
 
             reply
                 .setCookie('session', session, cookieService.getAuthSession())
-                .send({ user: payload, twoFA: payload.twoFA });
+                .send({ user: user.toDTO(), twoFA: user.is2FAEnabled });
         } catch (error: unknown) {
             this.respondWithError(reply, error);
         }
@@ -115,14 +114,12 @@ export class AuthController extends BaseController {
     async loginUser(request: FastifyRequest, reply: FastifyReply) {
         try {
             const { email, password } = request.body as UserLogin;
-            const { user, payload } = await AuthService.login(email, password);
-
-            const session = JwtService.sign(payload, '1d');
+            const { user, token } = await AuthService.login(email, password);
 
             reply
-                .setCookie('session', session, cookieService.getAuthSession())
+                .setCookie('session', token, cookieService.getAuthSession())
                 .send({
-                    user: payload.twoFA ? { twoFa: true } : user,
+                    user: user.is2FAEnabled ? { twoFa: true } : user,
                 });
         } catch (error: unknown) {
             this.respondWithError(reply, error);

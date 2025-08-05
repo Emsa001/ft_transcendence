@@ -23,7 +23,7 @@ export const UserProfile = () => {
         <div>
             <h2>User Information</h2>
             <img
-                src={user.picture}
+                src={user.avatar}
                 alt="User Avatar"
                 style={{ width: "100px", height: "100px", borderRadius: "50%" }}
             />

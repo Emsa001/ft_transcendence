@@ -2,7 +2,7 @@ import React, { useEffect } from "react";
 import { useAuth } from "../model/useAuth";
 
 export const GoogleAuthButton = () => {
-    const { fetchUser, initializeGoogleSignIn, ref } = useAuth();
+    const { fetchUser, googleSignIn, ref } = useAuth();
 
     useEffect(() => {
         fetchUser();
@@ -10,7 +10,7 @@ export const GoogleAuthButton = () => {
         const interval = setInterval(() => {
             if (window.google && window.google.accounts) {
                 clearInterval(interval);
-                initializeGoogleSignIn();
+                googleSignIn();
             }
         }, 100);
 
