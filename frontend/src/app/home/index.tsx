@@ -9,7 +9,6 @@ export default function Home() {
     const containerRef = useRef(null);
     const titleRef = useRef(null);
     const subtitleRef = useRef(null);
-    const buttonRef = useRef(null);
     const layer1Ref = useRef(null);
 
     useEffect(() => {
@@ -75,21 +74,10 @@ export default function Home() {
                         Journey through layers of code and consciousness to discover your true
                         potential.
                     </p>
-
-                    <button
-                        ref={buttonRef}
-                        className="group relative px-12 py-6 text-xl font-bold text-white bg-gradient-to-r from-orange-600 via-red-600 to-pink-600 rounded-full shadow-2xl hover:shadow-orange-500/50 transform hover:scale-110 transition-all duration-300 border-4 border-yellow-400"
-                        style={{
-                            boxShadow:
-                                "0 0 40px rgba(255, 165, 0, 0.4), inset 0 0 20px rgba(255, 255, 255, 0.1)",
-                        }}
-                    >
-                        <span className="relative z-10">BEGIN THE DESCENT</span>
-                        <div className="absolute inset-0 rounded-full bg-gradient-to-r from-yellow-400 to-orange-500 opacity-0 group-hover:opacity-20 transition-opacity duration-300"></div>
-                        <div className="absolute -inset-2 rounded-full border-2 border-yellow-400 opacity-0 group-hover:opacity-50 group-hover:animate-pulse"></div>
-                    </button>
                 </div>
             </div>
+
+            <div className="h-[100vh]"/>
         </div>
     );
 }
