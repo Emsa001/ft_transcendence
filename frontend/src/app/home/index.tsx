@@ -1,83 +1,36 @@
-import React, { useEffect, useRef } from "react";
+import React, { useRef, useState } from "react";
 import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import Shiny from "@shared/components/Shiny";
+import { MotionPathPlugin } from "gsap/MotionPathPlugin";
+import { ShinyText } from "@shared/components/Shiny";
+import { Ball } from "@features/landing/ui/Ball";
+import BallField from "@features/landing/ui/BallField";
 
-gsap.registerPlugin(ScrollTrigger);
+gsap.registerPlugin(MotionPathPlugin);
 
 export default function Home() {
-    const containerRef = useRef(null);
-    const titleRef = useRef(null);
-    const subtitleRef = useRef(null);
-    const layer1Ref = useRef(null);
+    const titleRef = useRef<HTMLHeadingElement>(null);
 
-    useEffect(() => {
-        // Initial animations
-        const tl = gsap.timeline();
-        tl.from(titleRef.current, { y: -100, opacity: 0, duration: 1.5, ease: "power3.out" }).from(
-            subtitleRef.current,
-            { y: 50, opacity: 0, duration: 1.2, ease: "power3.out" },
-            "-=0.8"
-        );
-
-        // Parallax scrolling effects
-        ScrollTrigger.create({
-            trigger: containerRef.current,
-            start: "top top",
-            end: "bottom top",
-            scrub: 1,
-            onUpdate: (self) => {
-                const progress = self.progress;
-                gsap.to(layer1Ref.current, { scale: Math.max(1, 1 + progress * 5), duration: 0.3 });
-            },
-        });
-
-        return () => {
-            ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
-        };
-    }, []);
+    const [showField, setShowField] = useState(false);
 
     return (
-        <div ref={containerRef} className="relative overflow-hidden">
-            {/* Sky Layer */}
-            <div
-                ref={layer1Ref}
-                className="fixed inset-0 bg-gradient-to-b from-purple-900 via-blue-900 to-indigo-800 z-10"
-            >
-                <div className="absolute inset-0 opacity-30">
-                    {[...Array(50)].map((_, i) => (
-                        <div
-                            key={i}
-                            className="absolute w-1 h-1 bg-white rounded-full animate-pulse"
-                            style={{
-                                left: `${Math.random() * 100}%`,
-                                top: `${Math.random() * 100}%`,
-                                animationDelay: `${Math.random() * 3}s`,
-                            }}
-                        />
-                    ))}
-                </div>
+        <div className="w-screen h-screen bg-black relative">
+            <div className="flex flex-col items-center justify-center h-full">
+                <h1
+                    ref={titleRef}
+                    className="z-10 text-[clamp(3rem,6vw,10rem)] font-bold select-none pointer-events-none text-white"
+                >
+                    <ShinyText
+                        text="ft_transcendence"
+                        gradient="bg-gradient-to-r from-indigo-500 to-purple-600"
+                    />
+                </h1>
+
+                <button className="z-10 mt-8 py-3 px-8 text-white font-semibold bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg shadow-lg hover:scale-105 active:scale-95 transition-all duration-200" onClick={() => setShowField(!showField)}>
+                    Play
+                </button>
             </div>
 
-            {/* Main Content */}
-            <div className="relative z-40 min-h-screen flex flex-col items-center justify-center px-4">
-                <div className="text-center">
-                    <h1 ref={titleRef} className="text-[clamp(3rem,5vw,9rem)]  font-black py-8">
-                        <Shiny text="ft_transcendence" />
-                    </h1>
-
-                    <p
-                        ref={subtitleRef}
-                        className="text-xl md:text-2xl text-gray-300 mb-12 max-w-2xl mx-auto"
-                    >
-                        Deep beneath the digital realm lies an ancient power waiting to be awakened.
-                        Journey through layers of code and consciousness to discover your true
-                        potential.
-                    </p>
-                </div>
-            </div>
-
-            <div className="h-[100vh]"/>
+            {showField && <BallField />}
         </div>
     );
 }

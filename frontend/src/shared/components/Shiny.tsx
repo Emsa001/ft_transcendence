@@ -6,7 +6,7 @@ interface ShinyProps {
     gradient?: string;
 }
 
-const Shiny = ({
+export const ShinyText = ({
     text,
     gradient = "from-red-500 via-blue-500 to-green-500",
     opacity = 100,
@@ -28,5 +28,3 @@ const Shiny = ({
         </span>
     );
 };
-
-export default Shiny;

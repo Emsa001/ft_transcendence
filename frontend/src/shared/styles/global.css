@@ -20,3 +20,7 @@ body {
     -moz-osx-font-smoothing: grayscale;
     @apply bg-gray-900 text-white font-sans min-h-screen;
 }
+
+button{
+    cursor: pointer;
+}
