@@ -1,12 +1,12 @@
-import { User } from '@/database/models/User/User';
-import { HttpException } from '@/utils/exceptions';
-import { Token, Auth2Action, TwoFASecret, JWTPayload } from '../auth.types';
-
 import speakeasy from 'speakeasy';
 import qrcode from 'qrcode';
 
-import JwtService from './jwt.service';
+import { User } from '@/database/models/User/User';
 import { UserFinder } from '@/database/models/User/UserFinder';
+import { HttpException } from '@/utils/exceptions';
+
+import JwtService from './jwt.service';
+import { Token, TwoFaAction, TwoFASecret } from '../auth.types';
 
 class TwoFAService {
     /*
@@ -17,7 +17,7 @@ class TwoFAService {
     async verify(
         token: Token,
         code: string,
-        action: Auth2Action = 'login'
+        action: TwoFaAction = 'login'
     ): Promise<{ user: User; session: string; shouldSetCookie: boolean }> {
         const { email, twoFA } = JwtService.verify(token);
 
@@ -48,12 +48,10 @@ class TwoFAService {
                     );
                 }
 
-                // TODO: why twoFA false?
                 const newToken = JwtService.sign(
                     {
                         email: user.email,
-                        provider: user.provider,
-                        twoFA: false,
+                        twoFA: "disabled", // TODO: disabled / in_progress ?
                     },
                     '1d'
                 );
@@ -65,27 +63,27 @@ class TwoFAService {
                 };
 
             case 'enable':
-                if (user.is2FAEnabled) {
+                if (user.is2FAEnabled)
                     throw new HttpException(
                         400,
                         'Bad Request: User already has 2FA enabled'
                     );
-                }
+
                 await User.update(
                     { is2FAEnabled: true },
                     { where: { id: user.id } }
                 );
                 return { user, session: '', shouldSetCookie: false };
             case 'disable':
-                if (!user.is2FAEnabled) {
+                if (!user.is2FAEnabled)
                     throw new HttpException(
                         400,
                         'Bad Request: User does not have 2FA enabled'
                     );
-                }
 
                 user.is2FAEnabled = false;
                 user.twoFASecret = null;
+
                 await user.save();
 
                 return { user, session: '', shouldSetCookie: false };

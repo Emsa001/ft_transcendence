@@ -24,6 +24,23 @@ class AuthService {
         this.oauth2 = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
     }
 
+    /**
+     * Checks if the user is authorized based on the provided token.
+     * Will return true if the user is fully authorized, false if in case of ongoing 2FA or not found.
+     * @throws HttpException if the token is invalid or user not found.
+     * @param token - The JWT token to verify.
+     * @returns True if the user is authorized, false otherwise.
+     */
+    async isAuthorized(token: Token): Promise<boolean> {
+        const { email, twoFA } = jwtService.verify(token);
+
+        const user = await UserFinder.getByEmail(email);
+        if (!user)
+            return false;
+
+        return twoFA == "disabled" || twoFA == "completed";
+    }
+
     /*
      * Google OAuth2 login endpoint
      * Expects a token from the client-side Google Sign-In

@@ -7,9 +7,9 @@ class AuthApi extends APIService {
      * @param token - Google ID token
      * @returns AuthResponse containing user data and access token
      */
-    async googleAuth(token: string): Promise<AuthResponse | null> {
+    async googleAuth(token: string): Promise<User | null> {
         try {
-            const response: AxiosResponse<AuthResponse> = await this.api.post("/auth/google", {
+            const response: AxiosResponse<User> = await this.api.post("/auth/google", {
                 token,
             });
 
@@ -24,7 +24,7 @@ class AuthApi extends APIService {
      * Fetch user data
      * @returns User object if fully authenticated, or throws '2FA_REQUIRED' if 2FA needed
      */
-    async getUser(): Promise<AuthResponse> {
+    async getAuthSession(): Promise<AuthResponse> {
         const response: AxiosResponse<AuthResponse> = await this.api.get("/auth", {
             withCredentials: true,
         });

@@ -1,8 +1,4 @@
-import { User } from '@/database/models/User/User';
-import { TokenPayload } from 'google-auth-library';
-
 export type Token = string | undefined;
-export type Auth2Action = 'login' | 'enable' | 'disable';
 export type Provider = 'google' | 'email';
 
 export interface TwoFASecret {
@@ -11,21 +7,16 @@ export interface TwoFASecret {
     qrImageUrl: string; // The QR code image URL
 }
 
+// This is session token saved in cookies
 export interface JWTPayload {
-    email: string; // The user's email
-    provider: Provider; // The authentication provider (e.g., 'google')
-    twoFA: boolean; // Flag indicating if 2FA is in progress
+    email: string;
+    twoFA: "disabled" | "started" | "completed";
 }
 
-export interface AuthorizationResponse {
-    user: User | null; // The authenticated user object or null if not authenticated
-    publicUser: User | null; // The public user object or null if not authenticated
-    payload: TokenPayload | JWTPayload; // The token payload containing user information
-}
-
+export type TwoFaAction = 'login' | 'enable' | 'disable';
 export interface OAuth2Payload {
     code: string;
-    action: Auth2Action | undefined;
+    action: TwoFaAction;
 }
 
 // User Auth

@@ -31,7 +31,7 @@ export class User extends Model<
     @Default(null)
     @Column({
         type: DataType.STRING,
-        validate: { len: [3, 30] },
+        validate: { len: [3, 100] },
     })
     declare name: string | null;
 
@@ -55,7 +55,7 @@ export class User extends Model<
     @Column(DataType.BOOLEAN)
     declare is2FAEnabled: boolean;
 
-    @Default("local")
+    @Default("email")
     @Column(DataType.STRING)
     declare provider: "google" | "email";
 

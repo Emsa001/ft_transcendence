@@ -3,7 +3,7 @@ import "@shared/styles/global.css";
 import { UserProfile } from "@shared/components/User";
 import Home from "./home";
 
-export default function Root() {
+export default function Root() {    
     return (
         <div>
             <h1>Hello World</h1>

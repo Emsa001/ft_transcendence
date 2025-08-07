@@ -3,7 +3,7 @@ import { CookieSerializeOptions } from "@fastify/cookie";
 class CookieService {
     maxCookieAge = Number(process.env.COOKIE_MAX_AGE) || 60 * 60 * 24; // Default to 1 day
 
-    getAuthSession(): CookieSerializeOptions {
+    createSession(): CookieSerializeOptions {
         return {
             path: '/',
             httpOnly: true,

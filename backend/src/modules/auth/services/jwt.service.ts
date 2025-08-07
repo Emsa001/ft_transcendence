@@ -1,7 +1,8 @@
 import jwt from 'jsonwebtoken';
-import { JWTPayload, Token } from '../auth.types';
 import { HttpException } from '@/utils/exceptions';
 import { User } from '@/database/models/User/User';
+
+import { JWTPayload, Token } from '../auth.types';
 
 class JWTService {
     private secret: string;
@@ -17,8 +18,7 @@ class JWTService {
         
         const payload: JWTPayload = {
             email: user.email,
-            provider: user.provider,
-            twoFA: user.is2FAEnabled,
+            twoFA: user.is2FAEnabled ? "started" : "disabled",
         };
 
         return this.sign(payload, '1d');
