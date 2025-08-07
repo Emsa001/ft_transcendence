@@ -6,7 +6,6 @@ import Home from "./home";
 export default function Root() {    
     return (
         <div>
-            <h1>Hello World</h1>
             <main>
                 <BrowserRouter>
                     <Router src="/" component={<Home />} />
