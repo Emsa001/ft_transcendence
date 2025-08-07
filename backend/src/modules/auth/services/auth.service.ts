@@ -13,8 +13,6 @@ import jwtService from './jwt.service';
     user - full user data
     payload - JWT payload shared with client
 
-    TODO: cleanup this shit
-
 */
 
 class AuthService {

@@ -33,10 +33,8 @@ export class AuthController extends BaseController {
         }
     }
 
-    // TODO: Do we need?
     @POST('/logout')
     async logoutUserController(request: FastifyRequest, reply: FastifyReply) {
-        // TODO: end sessions
 
         return reply
             .clearCookie('session', {

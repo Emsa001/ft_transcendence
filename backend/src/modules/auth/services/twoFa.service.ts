@@ -51,7 +51,7 @@ class TwoFAService {
                 const newToken = JwtService.sign(
                     {
                         email: user.email,
-                        twoFA: "disabled", // TODO: disabled / in_progress ?
+                        twoFA: "disabled",
                     },
                     '1d'
                 );
