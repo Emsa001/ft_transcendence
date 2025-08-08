@@ -1,8 +1,8 @@
 all: run
 
 run: frontend backend
-	npm run start --prefix ./frontend &
-	npm run start --prefix ./backend
+	gnome-terminal -- bash -c "npm run start --prefix ./frontend; exec bash" &
+	gnome-terminal -- bash -c "npm run start --prefix ./backend; exec bash"
 
 dev: run
 

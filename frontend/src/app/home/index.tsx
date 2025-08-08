@@ -1,36 +1,23 @@
-import React, { useRef, useState } from "react";
-import gsap from "gsap";
-import { MotionPathPlugin } from "gsap/MotionPathPlugin";
-import { ShinyText } from "@shared/components/Shiny";
-import { Ball } from "@features/landing/ui/Ball";
-import BallField from "@features/landing/ui/BallField";
-
-gsap.registerPlugin(MotionPathPlugin);
+import LandingSection from "@features/landing/ui";
+import React from "react";
 
 export default function Home() {
-    const titleRef = useRef<HTMLHeadingElement>(null);
-
-    const [showField, setShowField] = useState(false);
-
     return (
-        <div className="w-screen h-screen bg-black relative">
-            <div className="flex flex-col items-center justify-center h-full">
-                <h1
-                    ref={titleRef}
-                    className="z-10 text-[clamp(3rem,6vw,10rem)] font-bold select-none pointer-events-none text-white"
-                >
-                    <ShinyText
-                        text="ft_transcendence"
-                        gradient="bg-gradient-to-r from-indigo-500 to-purple-600"
-                    />
-                </h1>
+        <div className="w-screen min-h-screen bg-black relative text-white">
+            <div className="z-100 absolute top-[75%] left-1/2 -translate-x-1/2 w-[600px] h-[200px] bg-indigo-500/20 rounded-full blur-[80px]" />
 
-                <button className="z-10 mt-8 py-3 px-8 text-white font-semibold bg-gradient-to-r from-indigo-500 to-purple-600 rounded-lg shadow-lg hover:scale-105 active:scale-95 transition-all duration-200" onClick={() => setShowField(!showField)}>
-                    Play
-                </button>
-            </div>
+            {/* Hero */}
+            <LandingSection />
 
-            {showField && <BallField />}
+            {/* About / Intro Section */}
+            <section className="relative py-20">
+                <div className="max-w-5xl mx-auto text-center">
+                    <h2 className="text-4xl font-bold mb-6">What is ft_transcendence?</h2>
+                    <p className="text-zinc-400 text-lg max-w-3xl mx-auto leading-relaxed">
+                        Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries.
+                    </p>
+                </div>
+            </section>
         </div>
     );
 }
