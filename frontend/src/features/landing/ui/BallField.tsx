@@ -1,27 +1,44 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Ball } from "./Ball";
 
 const gradients = [
-    "from-red-400 to-pink-500",
-    "from-blue-400 to-purple-500",
-    "from-green-400 to-teal-500",
-    "from-yellow-400 to-orange-500",
+    "bg-gradient-to-br from-gray-900 via-blue-900 to-indigo-900",
+    "bg-gradient-to-r from-indigo-900 via-purple-900 to-blue-900",
+    "bg-gradient-to-tl from-pink-900 via-purple-900 to-indigo-900",
+    "bg-gradient-to-b from-purple-900 via-indigo-900 to-blue-900",
+    "bg-gradient-to-tr from-indigo-900 via-pink-900 to-purple-900",
+    "bg-gradient-to-l from-blue-900 via-indigo-900 to-purple-900",
+    "bg-gradient-to-t from-purple-900 via-indigo-900 to-pink-900",
+    "bg-gradient-to-bl from-pink-900 via-purple-900 to-blue-900",
 ];
 
 export default function BallField() {
-    const bound = useRef<HTMLDivElement>(null);
+    const bound = useRef<HTMLDivElement | null>(null);
+
+    const [maxX, setMaxX] = useState(window.innerWidth);
+    const [maxY, setMaxY] = useState(window.innerHeight);
+
+    useEffect(() => {
+        const resizeHandler = () => {
+            if (!bound?.current) return;
+
+            setMaxX(window.innerWidth);
+            setMaxY(window.innerHeight);
+        };
+
+        window.addEventListener("resize", resizeHandler);
+        return () => {
+            window.removeEventListener("resize", resizeHandler);
+        };
+    }, []);
 
     return (
-        <div className="w-screen h-screen absolute top-0 overflow-hidden" ref={bound}>
-            {Array.from({ length: 20 }).map((_, index) => {
+        <div className="w-full h-full absolute top-0 overflow-hidden z-20" ref={bound}>
+            {Array.from({ length: 10 }).map((_, index) => {
                 const gradient = gradients[Math.floor(Math.random() * gradients.length)];
 
                 return (
-                    <Ball
-                        key={index}
-                        bound={bound}
-                        className={`bg-gradient-to-br ${gradient}`}
-                    />
+                    <Ball key={index} bound={bound} className={`${gradient}`} maxX={maxX} maxY={maxY} />
                 );
             })}
         </div>

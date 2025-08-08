@@ -8,23 +8,20 @@ gsap.registerPlugin(Draggable, InertiaPlugin);
 interface BallProps {
     className?: string;
     bound?: { current: HTMLDivElement | null };
+    maxX?: number;
+    maxY?: number;
 }
+
+const minOpacity = 0.3;
+const maxOpacity = 0.9;
 
 export const Ball = ({
     className = "bg-gradient-to-br from-red-400 to-pink-500",
     bound,
+    maxX = window.innerWidth,
+    maxY = window.innerHeight,
 }: BallProps) => {
-    const ballRef = useRef<HTMLDivElement>(null);
-
-    let maxX = bound?.current?.offsetWidth || window.innerWidth;
-    let maxY = bound?.current?.offsetHeight || window.innerHeight;
-
-    useEffect(() => {
-        if (bound?.current) {
-            maxX = bound.current.offsetWidth;
-            maxY = bound.current.offsetHeight;
-        }
-    }, [bound?.current?.offsetWidth, bound?.current?.offsetHeight]);
+    const ballRef = useRef<HTMLDivElement | null>(null);
 
     const throwBall = () => {
         if (!ballRef.current) return;
@@ -41,7 +38,7 @@ export const Ball = ({
             onComplete: () => {
                 gsap.to(ballRef.current, {
                     duration: 1,
-                    opacity: 0.2,
+                    opacity: minOpacity,
                     ease: "power2.out",
                 });
             },
@@ -49,14 +46,10 @@ export const Ball = ({
     };
 
     useEffect(() => {
-        if (!ballRef.current) return;
-
-        const friction = -0.5;
-
         const ball = ballRef.current;
-        const ballProps = gsap.getProperty(ball);
-        const radius = ball.offsetWidth / 2;
+        if (!ball) return;
 
+        ball.style.opacity = `${maxOpacity}`;
 
         gsap.defaults({
             overwrite: "auto",
@@ -70,6 +63,15 @@ export const Ball = ({
         });
 
         throwBall();
+    }, []);
+
+    useEffect(() => {
+        const ball = ballRef.current;
+        if (!ball) return;
+
+        const friction = -0.5;
+        const ballProps = gsap.getProperty(ball);
+        const radius = ball.offsetWidth / 2;
 
         const draggable = new Draggable(ball, {
             bounds: bound ? bound.current : window,
@@ -78,7 +80,7 @@ export const Ball = ({
                 this.update();
                 gsap.to(ball, {
                     duration: 0.1,
-                    opacity: 1,
+                    opacity: maxOpacity,
                     ease: "power2.in",
                 });
             },
@@ -104,7 +106,7 @@ export const Ball = ({
                     onComplete: () => {
                         gsap.to(ball, {
                             duration: 0.5,
-                            opacity: 0.2,
+                            opacity: minOpacity,
                             ease: "power2.in",
                         });
                     },
@@ -116,8 +118,8 @@ export const Ball = ({
             let r = radius;
             let x = ballProps("x") as number;
             let y = ballProps("y") as number;
-            let vx = InertiaPlugin.getVelocity(ball, "x");
-            let vy = InertiaPlugin.getVelocity(ball, "y");
+            let vx = InertiaPlugin.getVelocity(ball!, "x");
+            let vy = InertiaPlugin.getVelocity(ball!, "y");
 
             let xPos = x;
             let yPos = y;
@@ -149,25 +151,16 @@ export const Ball = ({
             }
         }
 
-        const resizeHandler = () => {
-            if(!bound?.current) return;
-    
-            maxX = window.innerWidth;
-            maxY = window.innerHeight;
-        };
-
-        window.addEventListener("resize", resizeHandler);
-
         return () => {
+            gsap.killTweensOf(ball);
             draggable.kill();
-            window.removeEventListener("resize", resizeHandler);
         };
-    }, []);
+    }, [maxX, maxY, bound]);
 
     return (
         <div
             ref={ballRef}
-            className={`w-24 h-24 rounded-full absolute will-change-transform touch-none ${className}`}
+            className={`opacity-0 w-24 h-24 rounded-full absolute will-change-transform touch-none ${className}`}
         />
     );
 };

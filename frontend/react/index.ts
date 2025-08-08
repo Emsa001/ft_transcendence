@@ -63,7 +63,7 @@ class FtReact {
     useState = <T>(initialState: T) => useStateHook(initialState);
     useStatic = <T>(name: string, initialState?: T) => useStaticHook(name, initialState);
     useEffect = (callback: () => void, deps?: any[]) => useEffectHook(callback, deps);
-    useRef = <T>(initialValue: T | any) => useRefHook(initialValue);
+    useRef = <T>(initialValue: T) => useRefHook(initialValue);
     useContext = (context: any) => useContextHook(context);
     useNavigate = () => useNavigateHook();
     useSyncExternalStore = <T>(
@@ -116,5 +116,5 @@ export const setTitle = React.setTitle;
 /* ========================================================== */
 
 export * from "./types";
-export const IS_DEVELOPMENT = false;
+export const IS_DEVELOPMENT = true;
 export default React;
