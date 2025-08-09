@@ -1,5 +1,3 @@
-version: '3'
-
 services:
   frontend:
     build:
@@ -24,25 +22,3 @@ services:
       - ./backend/.env
     volumes:
       - ./backend:/app
-  
-
-  prometheus: ### backend:8000/metrics
-    image: prom/prometheus:v2.37.0
-    volumes:
-      - ./prometheus.yml:/etc/prometheus/prometheus.yml
-    ports:
-      - "9090:9090"
-    networks:
-      - monitoring
-  
-  grafana:
-    image:  grafana/grafana:9.0.0
-    environment:
-      - GF_SECURITY_ADMIN_PASSWORD=admin
-    ports:
-      - "7000:7000"
-    networks:
-      - monitoring
-
-networks:
-  monitoring

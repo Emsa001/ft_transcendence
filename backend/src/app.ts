@@ -28,5 +28,10 @@ export default async function App() {
         controllers: [UserController, AuthController],
     });
 
+
+    // app.get("/", () => {
+    //     return { hello: "world" };
+    // });
+
     return app;
 }
