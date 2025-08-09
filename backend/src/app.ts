@@ -11,6 +11,8 @@ import { registerDB } from './database/client';
 import { UserController } from './modules/user/user.controller';
 import { AuthController } from './modules/auth/auth.controller';
 
+import metricsPlugin from 'fastify-metrics';
+
 export default async function App() {
     const app = Fastify({ logger: true });
 
@@ -26,6 +28,13 @@ export default async function App() {
     // Register decorators
     app.register(bootstrap, {
         controllers: [UserController, AuthController],
+    });
+
+    // fastify-metrics for Prometheus Database
+    await app.register(metricsPlugin, { 
+        endpoint: '/metrics',
+        defaultMetrics: { enabled: true },
+        routeMetrics: { enabled: true},
     });
 
     return app;
