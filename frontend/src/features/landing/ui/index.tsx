@@ -50,7 +50,7 @@ export default function LandingSection() {
             {showField && <BallField />}
 
             {/* Content */}
-            <div className="relative z-10 flex flex-col items-center justify-center h-full px-4 text-center">
+            <div className="relative flex flex-col items-center justify-center h-full px-4 text-center">
                 <h1
                     ref={titleRef}
                     className="text-[clamp(3rem,6vw,10rem)] font-extrabold select-none text-white drop-shadow-xl"
@@ -72,7 +72,7 @@ export default function LandingSection() {
                 <button
                     ref={buttonRef}
                     onClick={() => setShowField(!showField)}
-                    className="opacity-0 mt-10 py-4 px-10 text-lg font-semibold rounded-xl shadow-xl transition-all duration-300
+                    className="relative z-50 opacity-0 mt-10 py-4 px-10 text-lg font-semibold rounded-xl shadow-xl transition-all duration-300
                         bg-gradient-to-r from-indigo-500 via-purple-600 to-pink-500
                         bg-[length:200%_200%] hover:bg-[position:100%_0%]
                         hover:scale-105 active:scale-95 text-white"
