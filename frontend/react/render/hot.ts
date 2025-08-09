@@ -24,9 +24,8 @@ if (import.meta.webpackHot) {
 
 // TODO: Handle popstate event properly, by re-rendering the current route
 window.addEventListener("popstate", async () => {
-    console.log("[HMR] Reloading App module...");
+    console.log("[HMR] Popstate detected...");
     await renderApp(false);
-
 });
 
 renderApp();

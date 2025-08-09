@@ -1,21 +1,22 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useAuth } from "../model/useAuth";
+import { FcGoogle } from "react-icons/fc";
+import { Icon } from "@shared/components/Icon";
 
 export const GoogleAuthButton = () => {
-    const { fetchUser, googleSignIn, ref } = useAuth();
+    const { triggerGoogleSignIn } = useAuth();
 
-    useEffect(() => {
-        fetchUser();
-        // Wait until the script is loaded
-        const interval = setInterval(() => {
-            if (window.google && window.google.accounts) {
-                clearInterval(interval);
-                googleSignIn();
-            }
-        }, 100);
-
-        return () => clearInterval(interval);
-    }, []);
-
-    return <div ref={ref} />;
+    return (
+        <div>
+            <button
+                onClick={triggerGoogleSignIn}
+                className="w-full flex items-center justify-center gap-3 py-3 rounded-lg border border-pink-500
+            text-white font-semibold hover:bg-pink-600 transition duration-300"
+                type="button"
+            >
+                <Icon icon={FcGoogle} size={24} />
+                Continue with Google
+            </button>
+        </div>
+    );
 };

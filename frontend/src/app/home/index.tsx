@@ -3,7 +3,7 @@ import React from "react";
 
 export default function Home() {
     return (
-        <div className="w-screen min-h-screen bg-black relative text-white">
+        <div className="w-screen min-h-screen relative text-white">
             <div className="z-100 absolute top-[75%] left-1/2 -translate-x-1/2 w-[600px] h-[200px] bg-indigo-500/20 rounded-full blur-[80px]" />
 
             {/* Hero */}

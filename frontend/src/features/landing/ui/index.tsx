@@ -42,18 +42,14 @@ export default function LandingSection() {
     }, []);
 
     return (
-        <section className="relative w-full h-screen overflow-x-hidden bg-gradient-to-b from-black via-zinc-900 to-black">
-            {/* Decorative blurred blobs */}
-            <div className="absolute -top-32 -left-32 w-[500px] h-[500px] bg-purple-500/30 rounded-full blur-[120px]" />
-            <div className="absolute top-40 -right-40 w-[400px] h-[400px] bg-pink-500/20 rounded-full blur-[100px]" />
-
+        <section className="relative w-full h-screen overflow-x-hidden">
             {showField && <BallField />}
 
             {/* Content */}
             <div className="relative flex flex-col items-center justify-center h-full px-4 text-center">
                 <h1
                     ref={titleRef}
-                    className="text-[clamp(3rem,6vw,10rem)] font-extrabold select-none text-white drop-shadow-xl"
+                    className="opacity-0 text-[clamp(3rem,6vw,10rem)] font-extrabold select-none text-white drop-shadow-xl"
                 >
                     <ShinyText
                         text="ft_transcendence"
@@ -63,7 +59,7 @@ export default function LandingSection() {
 
                 <p
                     ref={subtitleRef}
-                    className="mt-6 text-lg md:text-xl text-zinc-300 max-w-2xl leading-relaxed"
+                    className="opacity-0 mt-6 text-lg md:text-xl text-zinc-300 max-w-2xl leading-relaxed"
                 >
                     Experience a new dimension of interaction — fast, modern, and beautifully
                     minimal.
@@ -72,7 +68,7 @@ export default function LandingSection() {
                 <button
                     ref={buttonRef}
                     onClick={() => setShowField(!showField)}
-                    className="relative z-50 opacity-0 mt-10 py-4 px-10 text-lg font-semibold rounded-xl shadow-xl transition-all duration-300
+                    className="opacity-0 relative z-50 mt-10 py-4 px-10 text-lg font-semibold rounded-xl shadow-xl transition-all duration-300
                         bg-gradient-to-r from-indigo-500 via-purple-600 to-pink-500
                         bg-[length:200%_200%] hover:bg-[position:100%_0%]
                         hover:scale-105 active:scale-95 text-white"
@@ -83,7 +79,7 @@ export default function LandingSection() {
                 {/* Scroll down indicator */}
                 <div
                     ref={scrollRef}
-                    className="absolute bottom-6 flex flex-col items-center text-zinc-400 animate-bounce"
+                    className="opacity-0 absolute bottom-6 flex flex-col items-center text-zinc-400 animate-bounce"
                 >
                     <span className="text-sm">Scroll Down</span>
                     <Icon icon={IoIosArrowDown} />
