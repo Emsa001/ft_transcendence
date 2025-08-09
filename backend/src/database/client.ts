@@ -1,6 +1,6 @@
 import { FastifyInstance } from 'fastify';
 import { Sequelize } from 'sequelize-typescript';
-import { User } from './models/User';
+import { User } from './models/User/User';
 
 export const registerDB = async (app: FastifyInstance) => {
     const sequelize = new Sequelize({
@@ -9,6 +9,6 @@ export const registerDB = async (app: FastifyInstance) => {
         models: [User],
     });
 
-    await sequelize.sync();
+    await sequelize.sync({ force: true});
     app.decorate('sequelize', sequelize);
 };

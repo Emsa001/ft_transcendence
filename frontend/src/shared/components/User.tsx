@@ -1,5 +1,10 @@
-import React, { useStatic } from "react";
-import { LogoutButton, GoogleAuthButton, Disable2FAElement, Enable2FAElement } from "@features/auth/ui";
+import React, {useStatic } from "react";
+import {
+    LogoutButton,
+    GoogleAuthButton,
+    TwoFactorAuthDisable,
+    TwoFactorAuthEnable,
+} from "@features/auth";
 import Login from "./Login";
 
 export const UserProfile = () => {
@@ -18,7 +23,7 @@ export const UserProfile = () => {
         <div>
             <h2>User Information</h2>
             <img
-                src={user.picture}
+                src={user.avatar}
                 alt="User Avatar"
                 style={{ width: "100px", height: "100px", borderRadius: "50%" }}
             />
@@ -34,7 +39,7 @@ export const UserProfile = () => {
 
             <hr />
 
-            {user.is2FAEnabled ? <Disable2FAElement /> : <Enable2FAElement />}
+            {user.is2FAEnabled ? <TwoFactorAuthDisable /> : <TwoFactorAuthEnable />}
 
             <LogoutButton onLogout={() => setUser(null)} />
         </div>

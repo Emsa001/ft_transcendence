@@ -1,0 +1,30 @@
+@startuml 2FA Setup Flow
+!theme plain
+title Two-Factor Authentication Setup
+
+actor User
+participant "Frontend" as FE
+participant "AuthController" as AC
+participant "TwoFAService" as TFA
+participant "JWTService" as JWT
+participant "Database" as DB
+
+== 2FA Setup ==
+User -> FE: Enable 2FA
+FE -> AC: POST /auth/2fa/setup
+AC -> JWT: verify(token from cookie)
+JWT --> AC: {email, provider, twoFA}
+AC -> TFA: setup(token)
+TFA -> JWT: verify(token)
+JWT --> TFA: {email}
+TFA -> TFA: generate(email) - speakeasy.generateSecret()
+TFA -> TFA: qrcode.toDataURL()
+TFA -> DB: User.update({twoFASecret})
+DB --> TFA: success
+TFA --> AC: {qrImageUrl, otpauth_url}
+AC --> FE: QR code and setup URL
+FE --> User: Display QR code for authenticator app
+
+note right of TFA: Generates secret with speakeasy\nCreates QR code for auth app\nStores secret in database
+
+@enduml

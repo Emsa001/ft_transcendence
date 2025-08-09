@@ -1,4 +1,4 @@
-import { User } from '@/database/models/User';
+import { User } from '@/database/models/User/User';
 
 class UserService {
     async getAll() {

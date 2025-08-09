@@ -1,15 +1,14 @@
 interface User {
-    id: string;
+    id: number;
     name: string;
     email: string;
-    picture?: string;
-
+    avatar: string | null;
     is2FAEnabled: boolean;
 }
 
 interface AuthResponse {
     user: User;
-    token?: string;
+    twoFA: "disabled" | "started" | "completed";
 }
 
-type Auth2Action = 'login' | 'enable' | 'disable';
+type Auth2Action = "login" | "enable" | "disable";

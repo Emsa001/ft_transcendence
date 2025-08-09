@@ -1,30 +1,14 @@
-import { User } from '@/database/models/User';
-import { HttpException } from '@/utils/exceptions';
-import { Token, Auth2Action, TwoFASecret, JWTPayload } from '../auth.types';
-
 import speakeasy from 'speakeasy';
 import qrcode from 'qrcode';
 
+import { User } from '@/database/models/User/User';
+import { UserFinder } from '@/database/models/User/UserFinder';
+import { HttpException } from '@/utils/exceptions';
+
 import JwtService from './jwt.service';
+import { Token, TwoFaAction, TwoFASecret } from '../auth.types';
 
 class TwoFAService {
-    async authorize(user: User): Promise<JWTPayload> {
-        if (!user) {
-            throw new HttpException(401, 'Unauthorized: User not found');
-        }
-
-        // If 2FA is enabled, return a temporary token for 2FA verification
-        if (user.is2FAEnabled) {
-            console.log(
-                'User has 2FA enabled, generating token for verification....................'
-            );
-            return { email: user.email, provider: user.provider, twoFA: true };
-        }
-
-        // If 2FA is not enabled, return a JWT token
-        return { email: user.email, provider: user.provider };
-    }
-
     /*
      * TwoFa verify endpoint
      * Returns the user object, session, and response configuration
@@ -33,11 +17,11 @@ class TwoFAService {
     async verify(
         token: Token,
         code: string,
-        action: Auth2Action = 'login'
+        action: TwoFaAction = 'login'
     ): Promise<{ user: User; session: string; shouldSetCookie: boolean }> {
         const { email, twoFA } = JwtService.verify(token);
 
-        const user = await User.getByEmail(email);
+        const user = await UserFinder.getByEmail(email);
         if (!user) throw new HttpException(401, 'Unauthorized: User not found');
         if (!user.twoFASecret)
             throw new HttpException(
@@ -60,12 +44,15 @@ class TwoFAService {
                 if (!user.is2FAEnabled || !twoFA) {
                     throw new HttpException(
                         400,
-                        'Bad Request: User does not have 2FA enabled'
+                        'Bad Request: Two-Factor Authentication is not enabled or already verified for this user'
                     );
                 }
 
                 const newToken = JwtService.sign(
-                    { email: user.email, provider: user.provider },
+                    {
+                        email: user.email,
+                        twoFA: "disabled",
+                    },
                     '1d'
                 );
 
@@ -76,27 +63,29 @@ class TwoFAService {
                 };
 
             case 'enable':
-                if (user.is2FAEnabled) {
+                if (user.is2FAEnabled)
                     throw new HttpException(
                         400,
                         'Bad Request: User already has 2FA enabled'
                     );
-                }
+
                 await User.update(
                     { is2FAEnabled: true },
                     { where: { id: user.id } }
                 );
                 return { user, session: '', shouldSetCookie: false };
             case 'disable':
-                if (!user.is2FAEnabled) {
+                if (!user.is2FAEnabled)
                     throw new HttpException(
                         400,
                         'Bad Request: User does not have 2FA enabled'
                     );
-                }
+
                 user.is2FAEnabled = false;
                 user.twoFASecret = null;
+
                 await user.save();
+
                 return { user, session: '', shouldSetCookie: false };
             default:
                 throw new HttpException(400, 'Bad Request: Invalid action');
@@ -120,8 +109,6 @@ class TwoFAService {
         return twoFASecret;
     }
 
-    // Helper functions
-
     /*
      * Generates a new 2FA secret for the user
      * Returns the secret in base32 format, the otpauth URL, and the QR
@@ -132,18 +119,19 @@ class TwoFAService {
         });
 
         return new Promise((resolve, reject) => {
-            if (!secret.otpauth_url) {
+            if (!secret.otpauth_url)
                 return reject(new Error('OTPAuth URL is undefined'));
-            }
+
             qrcode.toDataURL(secret.otpauth_url, (err, qrImageUrl) => {
                 if (err) return reject(err);
 
                 resolve({
-                    base32: secret.base32, // Store this securely (encrypted!)
+                    base32: secret.base32,
                     otpauth_url: secret.otpauth_url as string,
                     qrImageUrl,
                 });
             });
+            
         });
     }
 }

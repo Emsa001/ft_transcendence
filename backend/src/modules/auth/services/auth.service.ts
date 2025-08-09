@@ -1,15 +1,42 @@
-import { User } from '@/database/models/User';
-import { HttpException } from '@/utils/exceptions';
 import { OAuth2Client } from 'google-auth-library';
-import { JWTPayload, Token } from '../auth.types';
 import bcrypt from 'bcrypt';
-import TwoFAService from './twoFa.service';
+
+import { User } from '@/database/models/User/User';
+import { UserFinder } from '@/database/models/User/UserFinder';
+import { HttpException } from '@/utils/exceptions';
+
+import { Token } from '../auth.types';
+import jwtService from './jwt.service';
+
+/*
+
+    user - full user data
+    payload - JWT payload shared with client
+
+*/
 
 class AuthService {
     oauth2: OAuth2Client;
 
     constructor() {
         this.oauth2 = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+    }
+
+    /**
+     * Checks if the user is authorized based on the provided token.
+     * Will return true if the user is fully authorized, false if in case of ongoing 2FA or not found.
+     * @throws HttpException if the token is invalid or user not found.
+     * @param token - The JWT token to verify.
+     * @returns True if the user is authorized, false otherwise.
+     */
+    async isAuthorized(token: Token): Promise<boolean> {
+        const { email, twoFA } = jwtService.verify(token);
+
+        const user = await UserFinder.getByEmail(email);
+        if (!user)
+            return false;
+
+        return twoFA == "disabled" || twoFA == "completed";
     }
 
     /*
@@ -19,7 +46,7 @@ class AuthService {
      */
     async googleLogin(
         token: Token
-    ): Promise<{ user: User; payload: JWTPayload }> {
+    ): Promise<{ user: User; token: string }> {
         if (!token)
             throw new HttpException(400, 'Bad Request: Token is required');
 
@@ -36,28 +63,30 @@ class AuthService {
         if (!payload || !payload.email)
             throw new HttpException(401, 'Unauthorized: Invalid token payload');
 
-        let user = await User.getByEmail(payload.email);
+        let user = await UserFinder.getByEmail(payload.email);
+        
         // Register user if not exists
         if (!user) {
             user = await User.create({
                 email: payload.email!,
                 name: payload.name || payload.email?.split('@')[0] || null,
-                picture: payload.picture || null,
+                avatar: payload.picture || null,
                 is2FAEnabled: false,
                 twoFASecret: null,
                 provider: 'google',
             });
 
             return {
-                user,
-                payload: { email: user.email, provider: user.provider },
+                user: user,
+                token: jwtService.getToken(user),
             };
         }
 
-        // User exists, process authorization for 2fa
-        return { user, payload: await TwoFAService.authorize(user) };
+        return { user, token: jwtService.getToken(user) };
     }
 
+
+    
     async register(
         email: string,
         name: string,
@@ -69,7 +98,7 @@ class AuthService {
                 'Bad Request: Missing required fields'
             );
 
-        const existingUser = await User.getByEmail(email);
+        const existingUser = await UserFinder.getByEmail(email);
         if (existingUser)
             throw new HttpException(409, 'Conflict: User already exists');
 
@@ -90,14 +119,14 @@ class AuthService {
     async login(
         email: string,
         password: string
-    ): Promise<{ user: User; payload: JWTPayload }> {
+    ): Promise<{ user: User; token: string }> {
         if (!email || !password)
             throw new HttpException(
                 400,
                 'Bad Request: Missing required fields'
             );
 
-        const user = await User.getByEmail(email);
+        const user = await UserFinder.getByEmail(email);
         if (!user || !user.password)
             throw new HttpException(401, 'Unauthorized: Invalid credentials');
 
@@ -105,7 +134,7 @@ class AuthService {
         if (!isPasswordValid)
             throw new HttpException(401, 'Unauthorized: Invalid credentials');
 
-        return { user, payload: await TwoFAService.authorize(user) };
+        return { user, token: jwtService.getToken(user) };
     }
 }
 

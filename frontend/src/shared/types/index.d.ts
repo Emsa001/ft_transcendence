@@ -12,7 +12,7 @@ declare global {
             id: string;
             name: string;
             email: string;
-            picture: string;
+            picture: string; // google uses picture
         }
 
         interface PromptMomentNotification {

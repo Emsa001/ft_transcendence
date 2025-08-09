@@ -1,7 +1,6 @@
 import path from "path";
 import HtmlWebpackPlugin from "html-webpack-plugin";
 import CopyWebpackPlugin from "copy-webpack-plugin";
-import TsconfigPathsPlugin from 'tsconfig-paths-webpack-plugin';
 import dotenv from "dotenv";
 import webpack from "webpack";
 
@@ -27,15 +26,13 @@ export default {
     },
     resolve: {
         extensions: [".ts", ".tsx", ".js"],
-        plugins: [
-            new TsconfigPathsPlugin({
-                configFile: path.resolve(__dirname, "tsconfig.json"),
-            }),
-        ],
-        modules: [
-            path.resolve(__dirname, "react/types"),
-            "node_modules",
-        ],
+        alias: {
+            "@shared": path.resolve(__dirname, "src/shared"),
+            "@components": path.resolve(__dirname, "src/shared/components/*"),
+            "@features": path.resolve(__dirname, "src/features"),
+            react: path.resolve(__dirname, "react"),
+        },
+        modules: [path.resolve(__dirname, "react/types"), "node_modules"],
     },
     module: {
         rules: [

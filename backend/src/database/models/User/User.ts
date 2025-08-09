@@ -10,6 +10,7 @@ import {
     PrimaryKey,
     AutoIncrement,
 } from 'sequelize-typescript';
+import { UserDTO } from './UserDTO';
 
 @Table
 export class User extends Model<
@@ -30,7 +31,7 @@ export class User extends Model<
     @Default(null)
     @Column({
         type: DataType.STRING,
-        validate: { len: [3, 30] },
+        validate: { len: [3, 100] },
     })
     declare name: string | null;
 
@@ -42,7 +43,7 @@ export class User extends Model<
     @AllowNull(true)
     @Default(null)
     @Column(DataType.STRING)
-    declare picture: string | null;
+    declare avatar: string | null;
 
     @AllowNull(true)
     @Default(null)
@@ -54,29 +55,11 @@ export class User extends Model<
     @Column(DataType.BOOLEAN)
     declare is2FAEnabled: boolean;
 
-    @Default("local")
+    @Default("email")
     @Column(DataType.STRING)
     declare provider: "google" | "email";
 
-    static async getByEmail(email: string): Promise<User | null> {
-        return User.findOne({
-            where: { email },
-            attributes: [
-                'id',
-                'name',
-                'email',
-                'password',
-                'picture',
-                'twoFASecret',
-                'is2FAEnabled',
-            ],
-        });
-    }
-
-    static async getPublicByEmail(email: string): Promise<User | null> {
-        return User.findOne({
-            where: { email },
-            attributes: ['id', 'name', 'email', 'picture', 'is2FAEnabled'],
-        });
+    toDTO(): UserDTO {
+        return new UserDTO(this);
     }
 }
