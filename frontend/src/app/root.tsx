@@ -1,5 +1,7 @@
-import React, { BrowserRouter, Router } from "react";
 import "@shared/styles/global.css";
+import "@shared/styles/animations.css"
+
+import React, { BrowserRouter, Router } from "react";
 import { UserProfile } from "@shared/components/User";
 import Home from "./home";
 
