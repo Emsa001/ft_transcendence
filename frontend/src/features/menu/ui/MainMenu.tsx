@@ -1,12 +1,16 @@
-import React, { useRef, useEffect } from "react";
+import React, { useRef, useEffect, useNavigate } from "react";
 import gsap from "gsap";
 import { Icon } from "@shared/components/Icon";
-import { FaHome, FaGamepad, FaUser, FaCog } from "react-icons/fa";
+import { FaHome, FaGamepad, FaUser } from "react-icons/fa";
+
+let loaded = false;
 
 export default function MainMenu() {
     const menuRef = useRef<HTMLDivElement | null>(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
+        if(loaded) return ;
         if (menuRef.current) {
             gsap.fromTo(
                 menuRef.current.children,
@@ -19,14 +23,14 @@ export default function MainMenu() {
                     duration: 0.6,
                 }
             );
+            loaded = true;
         }
     }, []);
 
     const menuItems = [
-        { label: "Home", icon: FaHome },
-        { label: "Play", icon: FaGamepad },
-        { label: "Profile", icon: FaUser },
-        { label: "Settings", icon: FaCog },
+        { label: "Home", icon: FaHome, link: "/" },
+        { label: "Auth", icon: FaGamepad, link: "/auth" },
+        { label: "Profile", icon: FaUser, link: "/profile" },
     ];
 
     return (
@@ -35,6 +39,7 @@ export default function MainMenu() {
                 {menuItems.map((item, idx) => (
                     <button
                         key={idx}
+                        onClick={() => navigate(item.link)}
                         className="flex items-center gap-2 text-lg font-medium hover:text-pink-400 transition-colors duration-200"
                     >
                         <Icon icon={item.icon} className="text-xl" />
