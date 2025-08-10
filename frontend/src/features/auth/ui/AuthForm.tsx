@@ -4,6 +4,7 @@ interface AuthFormProps {
     isRegister: boolean;
 }
 
+// TODO: Simplify and make pretty
 export default function AuthForm({ isRegister }: AuthFormProps) {
     return (
         <form className="space-y-6">
