@@ -1,6 +1,6 @@
 @startuml Google OAuth Login Flow
 !theme plain
-title Google OAuth Authentication
+title Google OAuth Authentication (outdated)
 
 actor User
 participant "Frontend" as FE
