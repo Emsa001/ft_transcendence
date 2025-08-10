@@ -44,23 +44,52 @@ export class AuthController extends BaseController {
     }
 
     /**
-     * Login with google
-     * 
+     * Initiate Google OAuth2 redirect flow
+     * Returns the Google authorization URL
      */
-    @POST('/google')
+    @GET('/google')
     async googleAuthController(request: FastifyRequest, reply: FastifyReply) {
         try {
-            const { token } = request.body as { token: string };
-            const { user, token: session } = await AuthService.googleLogin(token);
-
-            /**
-             * Cookie not available in javascript, so have twoFA sent in response
-             */
-            reply
-                .setCookie('session', session, cookieService.createSession())
-                .send(user.toDTO()); // userDTO has is2FAEnabled enabled flag - used to check in frontend if should run dialog
+            const authUrl = AuthService.getGoogleAuthUrl();
+            
+            return reply.status(200).send({ authUrl });
         } catch (error: unknown) {
             this.respondWithError(reply, error);
+        }
+    }
+
+    /**
+     * Handle Google OAuth2 callback
+     * Processes the authorization code and authenticates the user
+     */
+    @GET('/google/callback')
+    async googleCallbackController(request: FastifyRequest, reply: FastifyReply) {
+        try {
+            const { code, error } = request.query as { code?: string; error?: string };
+
+            if (error) {
+                // Redirect to frontend with error
+                return reply.redirect(`${process.env.FRONTEND_URL || 'http://localhost:3000'}/auth?error=${encodeURIComponent(error)}`);
+            }
+
+            if (!code) {
+                return reply.redirect(`${process.env.FRONTEND_URL || 'http://localhost:3000'}/auth?error=no_code`);
+            }
+
+            const { user, token: session } = await AuthService.handleGoogleCallback(code);
+
+            // Set the session cookie
+            reply.setCookie('session', session, cookieService.createSession());
+
+            // Redirect to frontend with success indicator
+            const redirectUrl = user.is2FAEnabled 
+                ? `${process.env.FRONTEND_URL || 'http://localhost:3000'}/auth?success=true&require2fa=true`
+                : `${process.env.FRONTEND_URL || 'http://localhost:3000'}/auth?success=true`;
+
+            return reply.redirect(redirectUrl);
+        } catch (error: unknown) {
+            console.error('Google callback error:', error);
+            return reply.redirect(`${process.env.FRONTEND_URL || 'http://localhost:3000'}/auth?error=auth_failed`);
         }
     }
 
