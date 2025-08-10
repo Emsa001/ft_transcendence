@@ -43,7 +43,7 @@ export default function LandingSection() {
 
     return (
         <section className="relative w-full h-full">
-            <div className="z-100 absolute top-[75%] left-1/2 -translate-x-1/2 w-[600px] h-[200px] bg-indigo-500/20 rounded-full blur-[80px]" />
+            <div className="absolute top-[75%] left-1/2 -translate-x-1/2 w-[600px] h-[200px] bg-indigo-500/20 rounded-full blur-[80px]" />
         
             {showField && <BallField />}
 
