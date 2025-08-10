@@ -6,6 +6,7 @@ import Fastify from 'fastify';
 import { bootstrap } from 'fastify-decorators';
 import cors from '@fastify/cors';
 import cookie from '@fastify/cookie';
+import middie from "@fastify/middie"
 
 import { registerDB } from './database/client';
 import { UserController } from './modules/user/user.controller';
@@ -13,8 +14,11 @@ import { AuthController } from './modules/auth/auth.controller';
 
 import metricsPlugin from 'fastify-metrics';
 
+
 export default async function App() {
     const app = Fastify({ logger: true });
+
+    await app.register(middie);
 
     // Fastify Modules
     await app.register(cors, { origin: process.env.ORIGIN, credentials: true });

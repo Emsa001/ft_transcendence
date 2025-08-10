@@ -1,5 +1,6 @@
 import { FastifyReply, FastifyRequest } from 'fastify';
-import { Controller, GET, POST } from 'fastify-decorators';
+import { Controller, GET } from 'fastify-decorators';
+import { AUTHORIZED } from '../auth/auth.middleware';
 
 import { BaseController } from '../base';
 import UserService from './user.service';
@@ -17,5 +18,11 @@ export class UserController extends BaseController {
         const userId = Number((request.params as { id: string }).id);
         const user = await UserService.getById(userId);
         reply.send(user);
+    }
+
+    @GET("/history")
+    @AUTHORIZED
+    async protectedRoute(request: FastifyRequest, reply: FastifyReply) {
+        reply.send("history of the games")
     }
 }
