@@ -1,6 +1,8 @@
 all: run
 
 run: frontend backend
+	# TODO: changes this for general compatibility
+	# -> use docker compose --watch ?
 	gnome-terminal -- bash -c "npm run start --prefix ./frontend; exec bash" &
 	gnome-terminal -- bash -c "npm run start --prefix ./backend; exec bash"
 
