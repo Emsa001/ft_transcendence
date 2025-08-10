@@ -1,4 +1,17 @@
 services:
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    volumes:
+      - ./backend/db.sqlite:/app/db.sqlite
+    ports:
+      - "8000:8000"
+    env_file:
+      - ./backend/.env
+    networks:
+      - monitoring
+
   frontend:
     build:
       context: ./frontend
@@ -10,11 +23,32 @@ services:
     env_file:
       - ./frontend/.env
 
-  backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
+  prometheus:
+    image: prom/prometheus:v2.37.0
+    container_name: prometheus
+    volumes:
+      - ./backend/prometheus.yml:/etc/prometheus/prometheus.yml:ro
     ports:
-      - "8000:8000"
-    env_file:
-      - ./backend/.env
+      - "9090:9090"
+    depends_on:
+      - backend
+    networks:
+      - monitoring
+  
+  grafana:
+    image: grafana/grafana:9.0.0
+    container_name: grafana
+    ports:
+      - "3001:3000"
+    volumes:
+      - grafana-data:/var/lib/grafana
+    depends_on:
+      - prometheus
+    networks:
+      - monitoring
+
+networks:
+  monitoring:
+
+volumes:
+  grafana-data:
