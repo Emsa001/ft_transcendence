@@ -9,6 +9,8 @@ services:
       - "8000:8000"
     env_file:
       - ./backend/.env
+    volumes:
+      - ./backend:/app
     networks:
       - monitoring
 
@@ -22,6 +24,9 @@ services:
       - backend
     env_file:
       - ./frontend/.env
+    volumes:
+       - ./frontend:/app
+    
 
   prometheus:
     image: prom/prometheus:v2.37.0
@@ -52,3 +57,4 @@ networks:
 
 volumes:
   grafana-data:
+
