@@ -1,66 +1,93 @@
-import { useEffect, useStatic } from "react";
+import { useNavigate } from "react";
 import { twoFactorAuthAlert, AuthApi } from "../";
+import { useUser } from "./useUser";
 
 export const useAuth = () => {
-    const [user, setUser] = useStatic<User | null>("user", null);
+    const { setUser, fetchUser } = useUser();
+    const navigate = useNavigate();
 
-    useEffect(() => {
-        const google = window.google?.accounts?.id;
-        if (!google) {
-            console.error("Google Identity Services not available.");
-            return;
+    const handleLogout = async () => {
+        try {
+            await AuthApi.logout();
+            navigate("/");
+
+            /* 
+                Don't ask question, useStatic is just stupid and does rerenders differently, that's why we need to timeout it to avoid conflicts between rerenders (I'll try to fix it)
+                TODO: Fix If not too lazy
+            */
+            setTimeout(() => {
+                setUser(null);
+            }, 0);
+
+            
+        } catch (error) {
+            console.error("Logout failed:", error);
         }
-        google.initialize({
-            client_id: process.env.FT_REACT_PUBLIC_GOOGLE_CLIENT_ID || "",
-            callback: googleSignInCallback,
-        });
-    }, []);
-
-    const googleSignInCallback = async (response: google.CredentialResponse) => {
-        const token = response.credential;
-
-        const user = await AuthApi.googleAuth(token);
-        if (!user) {
-            console.error("Failed to authenticate user with Google.");
-            return;
-        }
-        setUser(user);
-        if(user.is2FAEnabled) twoFactorAuthAlert();
-    };
-
-    const triggerGoogleSignIn = () => {
-        const google = window.google?.accounts?.id;
-        if (!google) {
-            console.error("Google Identity Services not available.");
-            return;
-        }
-        google.prompt();
     };
 
     /**
-     * Is based on a session cookie, returns {user, twoFA}
-     * twoFA is true if is required
+     * Redirect to Google OAuth2 authorization URL
      */
-    const fetchUser = async () => {
+    const redirectToGoogleAuth = async () => {
         try {
-            const data = await AuthApi.getAuthSession();
-            if (!data) {
-                console.error("Failed to fetch user data from Google.");
-                return;
+            const response = await AuthApi.getGoogleAuthUrl();
+            if (response?.authUrl) {
+                window.location.href = response.authUrl;
+            } else {
+                console.error("Failed to get Google auth URL");
             }
-
-            setUser(data.user);
-
-            if (data.twoFA == "started") twoFactorAuthAlert();
-        } catch (error: unknown) {
-            if (error instanceof Error && error.message === "2FA_REQUIRED") {
-                alert("Two-factor authentication is required. Please complete the setup.");
-            }
+        } catch (error) {
+            console.error("Error redirecting to Google auth:", error);
         }
     };
 
+    /**
+     * Handle OAuth2 callback parameters from URL
+     * Should be called on auth page load to check for callback parameters
+     */
+    const handleOAuthCallback = async () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const success = urlParams.get("success");
+        const error = urlParams.get("error");
+        const require2fa = urlParams.get("require2fa");
+
+        if (error) {
+            console.error("OAuth error:", error);
+            // Handle different error types
+            switch (error) {
+                case "access_denied":
+                    alert("Access denied. Please try again.");
+                    break;
+                case "auth_failed":
+                    alert("Authentication failed. Please try again.");
+                    break;
+                case "no_code":
+                    alert("No authorization code received.");
+                    break;
+                default:
+                    alert(`Authentication error: ${error}`);
+            }
+            // Clean up URL
+            window.history.replaceState({}, document.title, window.location.pathname);
+            return;
+        }
+
+        if (success === "true") {
+            await fetchUser();
+
+            if (require2fa === "true")
+                twoFactorAuthAlert();
+
+            // Clean up URL
+            window.history.replaceState({}, document.title, window.location.pathname);
+            return;
+        }
+    };
+
+
     return {
-        fetchUser,
-        triggerGoogleSignIn,
+        handleLogout,
+        redirectToGoogleAuth,
+        handleOAuthCallback,
     };
 };

@@ -2,12 +2,11 @@ import React from "react";
 
 interface AuthFormProps {
     isRegister: boolean;
-    onSubmit: (e: any) => void;
 }
 
-export default function AuthForm({ isRegister, onSubmit }: AuthFormProps) {
+export default function AuthForm({ isRegister }: AuthFormProps) {
     return (
-        <form onSubmit={onSubmit} className="space-y-6">
+        <form className="space-y-6">
             <label className="block text-sm font-semibold text-purple-300">Email</label>
             <input
                 type="email"

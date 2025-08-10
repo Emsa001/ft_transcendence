@@ -19,7 +19,15 @@ class AuthService {
     oauth2: OAuth2Client;
 
     constructor() {
-        this.oauth2 = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+        const redirectUri = process.env.GOOGLE_REDIRECT_URI || 'http://localhost:8000/auth/google/callback';
+        
+        this.oauth2 = new OAuth2Client(
+            process.env.GOOGLE_CLIENT_ID,
+            process.env.GOOGLE_CLIENT_SECRET,
+            redirectUri
+        );
+        
+        console.log('Google OAuth2 Client initialized with redirect URI:', redirectUri);
     }
 
     /**
@@ -83,6 +91,75 @@ class AuthService {
         }
 
         return { user, token: jwtService.getToken(user) };
+    }
+
+    /**
+     * Generate Google OAuth2 authorization URL
+     * Returns the URL for redirecting users to Google OAuth2 consent screen
+     */
+    getGoogleAuthUrl(): string {
+        const scopes = [
+            'https://www.googleapis.com/auth/userinfo.email',
+            'https://www.googleapis.com/auth/userinfo.profile',
+        ];
+
+        const authUrl = this.oauth2.generateAuthUrl({
+            scope: scopes,
+            include_granted_scopes: true,
+        });
+
+        return authUrl;
+    }
+
+    /**
+     * Handle Google OAuth2 callback
+     * Exchange authorization code for tokens and return user data
+     */
+    async handleGoogleCallback(code: string): Promise<{ user: User; token: string }> {
+        if (!code) {
+            throw new HttpException(400, 'Bad Request: Authorization code is required');
+        }
+
+        try {
+            // Exchange authorization code for tokens
+            const { tokens } = await this.oauth2.getToken(code);
+            this.oauth2.setCredentials(tokens);
+
+            // Verify the ID token
+            const ticket = await this.oauth2.verifyIdToken({
+                idToken: tokens.id_token!,
+                audience: process.env.GOOGLE_CLIENT_ID,
+            });
+
+            const payload = ticket.getPayload();
+            if (!payload || !payload.email) {
+                throw new HttpException(401, 'Unauthorized: Invalid token payload');
+            }
+
+            let user = await UserFinder.getByEmail(payload.email);
+            
+            // Register user if not exists
+            if (!user) {
+                user = await User.create({
+                    email: payload.email!,
+                    name: payload.name || payload.email?.split('@')[0] || null,
+                    avatar: payload.picture || null,
+                    is2FAEnabled: false,
+                    twoFASecret: null,
+                    provider: 'google',
+                });
+
+                return {
+                    user: user,
+                    token: jwtService.getToken(user),
+                };
+            }
+
+            return { user, token: jwtService.getToken(user) };
+        } catch (error) {
+            console.error('Google OAuth callback error:', error);
+            throw new HttpException(401, 'Unauthorized: Failed to authenticate with Google');
+        }
     }
 
 

@@ -2,20 +2,17 @@ import { AxiosResponse } from "axios";
 import { APIService } from "@shared/lib/api";
 
 class AuthApi extends APIService {
-    /**
-     * Authenticate user with Google
-     * @param token - Google ID token
-     * @returns AuthResponse containing user data and access token
-     */
-    async googleAuth(token: string): Promise<User | null> {
-        try {
-            const response: AxiosResponse<User> = await this.api.post("/auth/google", {
-                token,
-            });
 
-            return response.data
+    /**
+     * Get Google OAuth2 redirect URL
+     * @returns Object containing the authorization URL
+     */
+    async getGoogleAuthUrl(): Promise<{ authUrl: string } | null> {
+        try {
+            const response: AxiosResponse<{ authUrl: string }> = await this.api.get("/auth/google");
+            return response.data;
         } catch (error) {
-            console.error("Error during Google authentication:", error);
+            console.error("Error getting Google auth URL:", error);
             return null;
         }
     }
