@@ -13,7 +13,6 @@ import { HttpException } from '@/utils/exceptions';
 
 @Controller('/auth')
 export class AuthController extends BaseController {
-
     @GET('/')
     async getAuthUserController(request: FastifyRequest, reply: FastifyReply) {
         try {
@@ -35,7 +34,6 @@ export class AuthController extends BaseController {
 
     @POST('/logout')
     async logoutUserController(request: FastifyRequest, reply: FastifyReply) {
-
         return reply
             .clearCookie('session', {
                 path: '/',
@@ -51,7 +49,7 @@ export class AuthController extends BaseController {
     async googleAuthController(request: FastifyRequest, reply: FastifyReply) {
         try {
             const authUrl = AuthService.getGoogleAuthUrl();
-            
+
             return reply.status(200).send({ authUrl });
         } catch (error: unknown) {
             this.respondWithError(reply, error);
@@ -63,33 +61,32 @@ export class AuthController extends BaseController {
      * Processes the authorization code and authenticates the user
      */
     @GET('/google/callback')
-    async googleCallbackController(request: FastifyRequest, reply: FastifyReply) {
+    async googleCallbackController(
+        request: FastifyRequest,
+        reply: FastifyReply
+    ) {
+        const url = process.env.FRONTEND_URL || 'http://localhost:3000';
+
         try {
-            const { code, error } = request.query as { code?: string; error?: string };
+            const { code, error } = request.query as {
+                code?: string;
+                error?: string;
+            };
 
-            if (error) {
-                // Redirect to frontend with error
-                return reply.redirect(`${process.env.FRONTEND_URL || 'http://localhost:3000'}/auth?error=${encodeURIComponent(error)}`);
-            }
+            if (error || !code)
+                return reply.redirect(
+                    `${url}/auth?error=${encodeURIComponent(error || 'no_code')}`
+                );
 
-            if (!code) {
-                return reply.redirect(`${process.env.FRONTEND_URL || 'http://localhost:3000'}/auth?error=no_code`);
-            }
+            const { user, token: session } =
+                await AuthService.handleGoogleCallback(code);
 
-            const { user, token: session } = await AuthService.handleGoogleCallback(code);
-
-            // Set the session cookie
             reply.setCookie('session', session, cookieService.createSession());
-
-            // Redirect to frontend with success indicator
-            const redirectUrl = user.is2FAEnabled 
-                ? `${process.env.FRONTEND_URL || 'http://localhost:3000'}/auth?success=true&require2fa=true`
-                : `${process.env.FRONTEND_URL || 'http://localhost:3000'}/auth?success=true`;
-
-            return reply.redirect(redirectUrl);
+            return reply.redirect(
+                `${url}/auth?success=true&require2fa=${user.is2FAEnabled}`
+            );
         } catch (error: unknown) {
-            console.error('Google callback error:', error);
-            return reply.redirect(`${process.env.FRONTEND_URL || 'http://localhost:3000'}/auth?error=auth_failed`);
+            return reply.redirect(`${url}/auth?error=auth_failed`);
         }
     }
 
@@ -106,13 +103,11 @@ export class AuthController extends BaseController {
             );
 
             if (shouldSetCookie) {
-                return reply
-                    .setCookie(
-                        'session',
-                        session,
-                        cookieService.createSession()
-                    )
-                    .send({ success: true });
+                reply.setCookie(
+                    'session',
+                    session,
+                    cookieService.createSession()
+                );
             }
 
             return reply.send({ success: true });
@@ -136,16 +131,15 @@ export class AuthController extends BaseController {
         }
     }
 
-
     // Beqas
-
 
     @POST('/register')
     async registerUserController(request: FastifyRequest, reply: FastifyReply) {
         try {
             const { email, name, password } = request.body as UserRegister;
             const user = await AuthService.register(email, name, password);
-            reply.send(user);
+        
+            return reply.send(user);
         } catch (error: unknown) {
             this.respondWithError(reply, error);
         }
@@ -157,11 +151,10 @@ export class AuthController extends BaseController {
             const { email, password } = request.body as UserLogin;
             const { user, token } = await AuthService.login(email, password);
 
-            reply
-                .setCookie('session', token, cookieService.createSession())
-                .send({
-                    user: user.is2FAEnabled ? { twoFa: true } : user,
-                });
+            reply.setCookie('session', token, cookieService.createSession());
+            return reply.send({
+                user: user.is2FAEnabled ? { twoFa: true } : user,
+            });
         } catch (error: unknown) {
             this.respondWithError(reply, error);
         }

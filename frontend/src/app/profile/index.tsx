@@ -6,6 +6,8 @@ import {
 } from "@features/auth";
 import { useUser } from "@features/auth/model/useUser";
 
+
+// TODO: Divide to components, this is just test
 export const Profile = () => {
     const { user } = useUser();
     const navigate = useNavigate();

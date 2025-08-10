@@ -1,10 +1,10 @@
 import React, { useRef, useEffect, useState } from "react";
+
 import gsap from "gsap";
 import { MotionPathPlugin } from "gsap/MotionPathPlugin";
+
 import { ShinyText } from "@shared/components/Shiny";
 import BallField from "@features/landing/ui/BallField";
-import { IoIosArrowDown } from "react-icons/io";
-import { Icon } from "@shared/components/Icon";
 
 gsap.registerPlugin(MotionPathPlugin);
 
@@ -42,7 +42,9 @@ export default function LandingSection() {
     }, []);
 
     return (
-        <section className="relative w-full h-screen overflow-x-hidden">
+        <section className="relative w-full h-full">
+            <div className="z-100 absolute top-[75%] left-1/2 -translate-x-1/2 w-[600px] h-[200px] bg-indigo-500/20 rounded-full blur-[80px]" />
+        
             {showField && <BallField />}
 
             {/* Content */}
@@ -75,15 +77,6 @@ export default function LandingSection() {
                 >
                     {showField ? "Close Playground" : "Start Playing"}
                 </button>
-
-                {/* Scroll down indicator */}
-                <div
-                    ref={scrollRef}
-                    className="opacity-0 absolute bottom-6 flex flex-col items-center text-zinc-400 animate-bounce"
-                >
-                    <span className="text-sm">Scroll Down</span>
-                    <Icon icon={IoIosArrowDown} />
-                </div>
             </div>
         </section>
     );
