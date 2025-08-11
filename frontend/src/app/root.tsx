@@ -7,6 +7,7 @@ import MainMenu from "@features/menu/ui/MainMenu";
 import Auth from "./auth";
 import { useUser } from "@features/auth/model/useUser";
 import { Profile } from "./profile";
+import { Game } from "./game";
 
 export default function Root() {
     const { fetchUser } = useUser();
@@ -25,6 +26,7 @@ export default function Root() {
                 <Router src="/" component={<Home />} />
                 <Router src="/auth" component={<Auth />} />
                 <Router src="/profile" component={<Profile />} />
+                <Router src="/game" component={<Game />} />
             </BrowserRouter>
         </main>
     );
