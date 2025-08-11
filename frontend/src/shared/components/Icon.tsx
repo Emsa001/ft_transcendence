@@ -26,6 +26,11 @@ interface IconProps {
 
 export const Icon = ({ icon, width, height, size, color, className }: IconProps) => {
 
+    if (!icon) {
+        console.warn("Icon component: No icon provided");
+        return  <div />;
+    }
+
     const iconElement = icon() as unknown as ReactElement;
     const viewBox = iconElement.props.attr.viewBox;
 
