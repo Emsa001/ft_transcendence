@@ -1,13 +1,16 @@
 import React, { useRef, useEffect, useNavigate } from "react";
 import gsap from "gsap";
 import { Icon } from "@shared/components/Icon";
-import { FaHome, FaGamepad, FaUser } from "react-icons/fa";
+import { FaHome, FaGamepad, FaUser, FaCog } from "react-icons/fa";
+import { useUser } from "@features/auth/model/useUser";
+
 
 let loaded = false;
 
 export default function MainMenu() {
-    const menuRef = useRef<HTMLDivElement | null>(null);
     const navigate = useNavigate();
+    const menuRef = useRef<HTMLDivElement | null>(null);
+    const { user } = useUser();
 
     useEffect(() => {
         if(loaded) return ;
@@ -28,19 +31,45 @@ export default function MainMenu() {
     }, []);
 
     const menuItems = [
-        { label: "Home", icon: FaHome, link: "/" },
-        { label: "Auth", icon: FaGamepad, link: "/auth" },
-        { label: "Profile", icon: FaUser, link: "/profile" },
+        { label: "" , icon: null, link: "" },
     ];
 
+    const profileItems = [
+        { label: "Profile", icon: null, link: "/profile" },
+    ];
+
+    const loginItems = [
+        { label: "Login", icon: null, link: "/auth" },
+    ];
+
+
+    const items = user ? profileItems : loginItems;
+
     return (
-        <nav className="fixed top-0 left-0 w-full z-50 backdrop-blur-xl text-white px-6 py-4 flex items-center justify-center">
-            <div ref={menuRef} className="flex items-center gap-8">
+        <nav className="fixed top-0 left-0 w-full z-50 bg-gray-400/10 backdrop-blur-xl shadow-lg text-white px-6 py-4 flex">
+            <div className="flex w-full">
+                <button onClick={() => navigate("./")} className="text-3xl font-bold bg-gradient-to-r from-pink-400 via-purple-400 to-blue-400 text-transparent bg-clip-text">ft_transcendence</button>
+            </div>
+
+            <div className="flex justify-center w-full">
                 {menuItems.map((item, idx) => (
                     <button
                         key={idx}
+                        className="flex items-center gap-2 text-3xl font-medium text-purple-300 hover:text-pink-400 transition-colors duration-200"
+                    >
+                        <Icon icon={item.icon} className="text-3xl" />
+                        {item.label}
+                    </button>
+                ))}
+            </div>
+
+            {/* {condition ? <ButtonA /> : <ButtonB />} */}
+            <div className="flex w-full justify-end space-x-4" ref={menuRef}>
+                {items.map((item, idx) => (
+                    <button
+                        key={idx}
+                        className="flex items-center gap-2 text-2xl font-medium text-purple-300 hover:text-pink-400 transition-colors duration-200"
                         onClick={() => navigate(item.link)}
-                        className="flex items-center gap-2 text-lg font-medium hover:text-pink-400 transition-colors duration-200"
                     >
                         <Icon icon={item.icon} className="text-xl" />
                         {item.label}
