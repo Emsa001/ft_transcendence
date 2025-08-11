@@ -35,11 +35,11 @@ export default function MainMenu() {
     ];
 
     const profileItems = [
-        { label: "Profile", icon: null, link: "/profile" },
+        { label: "Profile", icon: FaUser, link: "/profile" },
     ];
 
     const loginItems = [
-        { label: "Login", icon: null, link: "/auth" },
+        { label: "Login", icon: FaUser, link: "/auth" },
     ];
 
 
@@ -64,7 +64,7 @@ export default function MainMenu() {
             </div>
 
             {/* {condition ? <ButtonA /> : <ButtonB />} */}
-            <div className="flex w-full justify-end space-x-4" ref={menuRef}>
+            <div className="flex w-full justify-end space-x-4 pr-2" ref={menuRef}>
                 {items.map((item, idx) => (
                     <button
                         key={idx}
