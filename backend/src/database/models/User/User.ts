@@ -9,14 +9,19 @@ import {
     Default,
     PrimaryKey,
     AutoIncrement,
+    BelongsToMany,
 } from 'sequelize-typescript';
 import { UserDTO } from './UserDTO';
+import { Game } from '../Game/Game';
+import { GameUsers } from '../Game/GameUsers';
+
+type CreationAttributes = InferCreationAttributes<
+    User,
+    { omit: 'id' | 'games' | 'twoFASecret' | 'is2FAEnabled' }
+>;
 
 @Table
-export class User extends Model<
-    InferAttributes<User>,
-    InferCreationAttributes<User, { omit: 'id' }>
-> {
+export class User extends Model<InferAttributes<User>, CreationAttributes> {
     @PrimaryKey
     @AutoIncrement
     @Column(DataType.INTEGER)
@@ -55,9 +60,12 @@ export class User extends Model<
     @Column(DataType.BOOLEAN)
     declare is2FAEnabled: boolean;
 
-    @Default("email")
+    @Default('email')
     @Column(DataType.STRING)
-    declare provider: "google" | "email";
+    declare provider: 'google' | 'email';
+
+    @BelongsToMany(() => Game, () => GameUsers)
+    declare games: Game[];
 
     toDTO(): UserDTO {
         return new UserDTO(this);
