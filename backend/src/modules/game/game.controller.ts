@@ -8,7 +8,7 @@ import { User } from "@/database/models/User/User";
 
 @Controller("/game")
 export class GameController extends BaseController {
-    @GET("/")
+    @GET("/all")
     async getGames(_: FastifyRequest, reply: FastifyReply) {
         const games = await Game.findAll({
             include: [{ model: User, as: "players" }],

@@ -15,6 +15,7 @@ import { AuthController } from "./modules/auth/auth.controller";
 import metricsPlugin from "fastify-metrics";
 import { DatabaseExampleFeed } from "./database/feed";
 import { GameController } from "./modules/game/game.controller";
+import { HttpException } from "./utils/exceptions";
 
 export default async function App() {
     const app = Fastify({ logger: true });
@@ -29,7 +30,7 @@ export default async function App() {
         controllers: [UserController, AuthController, GameController],
     });
 
-    await app.setErrorHandler((error, request, reply) => {
+    await app.setErrorHandler((error: HttpException, request, reply) => {
         request.log.error(error);
         reply.status(error.statusCode || 500).send({
             error: error.message || "Internal Server Error",

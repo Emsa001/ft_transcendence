@@ -1,6 +1,5 @@
 import {
     InferAttributes,
-    InferCreationAttributes,
     BelongsToManyAddAssociationMixin,
     BelongsToManyAddAssociationsMixin,
     BelongsToManyGetAssociationsMixin,
@@ -20,13 +19,16 @@ import {
     AutoIncrement,
     BelongsToMany,
     Default,
-    BeforeUpdate,
     AllowNull,
-    BeforeCreate,
+    Scopes,
 } from "sequelize-typescript";
 import { User } from "../User/User";
-import { GameUsers } from "./GameUsers";
+import { GameUser } from "./GameUser";
 import { GameDTO } from "./GameDTO";
+
+export type UserWithGameData = User & {
+    GameUser: GameUser;
+};
 
 export enum GameStatus {
     WAITING = "waiting",
@@ -45,6 +47,16 @@ type GameCreationAttributes = {
     maxPlayers?: number;
 };
 
+@Scopes(() => ({
+    defaultScope: {
+        include: [
+            {
+                model: User,
+                through: { attributes: ["score"] },
+            },
+        ],
+    },
+}))
 @Table
 export class Game extends Model<InferAttributes<Game>, GameCreationAttributes> {
     @PrimaryKey
@@ -65,8 +77,8 @@ export class Game extends Model<InferAttributes<Game>, GameCreationAttributes> {
     @Column(DataType.INTEGER)
     declare maxPlayers: number;
 
-    @BelongsToMany(() => User, () => GameUsers)
-    declare players: User[];
+    @BelongsToMany(() => User, () => GameUser)
+    declare players: UserWithGameData[];
 
     /*
         Sequelize automatically generates association methods, it's called magic methods:
@@ -86,5 +98,14 @@ export class Game extends Model<InferAttributes<Game>, GameCreationAttributes> {
     // Custom methods
     toDTO(): GameDTO {
         return new GameDTO(this);
+    }
+
+    playerScore(userId: number, score: number): Promise<[GameUser[], number?]> {
+        return GameUser.increment(
+            { score },
+            {
+                where: { userId, gameId: this.id },
+            }
+        );
     }
 }

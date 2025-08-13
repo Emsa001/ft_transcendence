@@ -1,11 +1,15 @@
 import { UserDTO } from "../User/UserDTO";
 import { Game, GameMode, GameStatus } from "./Game";
 
+type GameUserDTO = UserDTO & {
+    score: number;
+};
+
 export class GameDTO {
     id: number;
     status: GameStatus;
     mode: GameMode;
-    players: UserDTO[];
+    players: GameUserDTO[];
 
     constructor(game: Game) {
         if (!game || !game.id)
@@ -18,7 +22,11 @@ export class GameDTO {
         this.id = game.id;
         this.status = game.status;
         this.mode = game.mode;
-        this.players = game.players?.map((e) => e.toDTO()) || [];
+        this.players =
+            game.players?.map((player) => ({
+                ...player.toDTO(),
+                score: player.GameUser?.score ?? 0,
+            })) || [];
     }
 
     toString(): string {

@@ -1,5 +1,5 @@
 import { Game, GameStatus } from "./Game";
-import { GameUsers } from "./GameUsers";
+import { GameUser } from "./GameUser";
 
 export class GameValidators {
     /**
@@ -17,7 +17,7 @@ export class GameValidators {
         if (game.status !== GameStatus.WAITING)
             throw new Error("Cannot add players to a game that is not waiting");
 
-        const currentPlayersCount = await GameUsers.count({
+        const currentPlayersCount = await GameUser.count({
             where: { gameId: gameId },
         });
 

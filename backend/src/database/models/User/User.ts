@@ -17,7 +17,7 @@ import {
 } from "sequelize-typescript";
 import { UserDTO } from "./UserDTO";
 import { Game } from "../Game/Game";
-import { GameUsers } from "../Game/GameUsers";
+import { GameUser } from "../Game/GameUser";
 
 type CreationAttributes = InferCreationAttributes<
     User,
@@ -68,10 +68,13 @@ export class User extends Model<InferAttributes<User>, CreationAttributes> {
     @Column(DataType.STRING)
     declare provider: "google" | "email";
 
-    @BelongsToMany(() => Game, () => GameUsers)
+    @BelongsToMany(() => Game, () => GameUser)
     declare games: Game[];
 
-    // Methods
+    // Magic Methods
+    declare getGames: BelongsToManyGetAssociationsMixin<Game>;
+
+    // Custom  Methods
 
     toDTO(): UserDTO {
         return new UserDTO(this);
@@ -80,6 +83,4 @@ export class User extends Model<InferAttributes<User>, CreationAttributes> {
     static async findByEmail(email: string): Promise<User | null> {
         return this.findOne({ where: { email } });
     }
-
-    declare getGames: BelongsToManyGetAssociationsMixin<Game>;
 }
