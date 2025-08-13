@@ -124,50 +124,39 @@ class AuthService {
             );
         }
 
-        try {
-            // Exchange authorization code for tokens
-            const { tokens } = await this.oauth2.getToken(code);
-            this.oauth2.setCredentials(tokens);
+        // Exchange authorization code for tokens
+        const { tokens } = await this.oauth2.getToken(code);
+        this.oauth2.setCredentials(tokens);
 
-            // Verify the ID token
-            const ticket = await this.oauth2.verifyIdToken({
-                idToken: tokens.id_token!,
-                audience: process.env.GOOGLE_CLIENT_ID,
+        // Verify the ID token
+        const ticket = await this.oauth2.verifyIdToken({
+            idToken: tokens.id_token!,
+            audience: process.env.GOOGLE_CLIENT_ID,
+        });
+
+        const payload = ticket.getPayload();
+        if (!payload || !payload.email) {
+            throw new HttpException(401, 'Unauthorized: Invalid token payload');
+        }
+
+        let user = await User.findByEmail(payload.email);
+
+        // Register user if not exists
+        if (!user) {
+            user = await User.create({
+                email: payload.email!,
+                name: payload.name || payload.email?.split('@')[0] || null,
+                avatar: payload.picture || null,
+                provider: 'google',
             });
 
-            const payload = ticket.getPayload();
-            if (!payload || !payload.email) {
-                throw new HttpException(
-                    401,
-                    'Unauthorized: Invalid token payload'
-                );
-            }
-
-            let user = await User.findByEmail(payload.email);
-
-            // Register user if not exists
-            if (!user) {
-                user = await User.create({
-                    email: payload.email!,
-                    name: payload.name || payload.email?.split('@')[0] || null,
-                    avatar: payload.picture || null,
-                    provider: 'google',
-                });
-
-                return {
-                    user: user,
-                    token: jwtService.getToken(user),
-                };
-            }
-
-            return { user, token: jwtService.getToken(user) };
-        } catch (error) {
-            console.error('Google OAuth callback error:', error);
-            throw new HttpException(
-                401,
-                'Unauthorized: Failed to authenticate with Google'
-            );
+            return {
+                user: user,
+                token: jwtService.getToken(user),
+            };
         }
+
+        return { user, token: jwtService.getToken(user) };
     }
 
     async register(
