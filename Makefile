@@ -32,6 +32,9 @@ format:
 	npm run format --prefix ./frontend
 	npm run format --prefix ./backend
 
+test: backend
+	npm run test --prefix ./backend
+
 docker:
 	docker-compose down
 	docker-compose up --build
