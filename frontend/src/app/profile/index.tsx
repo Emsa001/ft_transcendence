@@ -6,7 +6,6 @@ import {
 } from "@features/auth";
 import { useUser } from "@features/auth/model/useUser";
 
-
 // TODO: Divide to components, this is just test
 export const Profile = () => {
     const { user } = useUser();
@@ -37,7 +36,11 @@ export const Profile = () => {
 
             <hr />
 
-            {user.is2FAEnabled ? <TwoFactorAuthDisable /> : <TwoFactorAuthEnable />}
+            {user.is2FAEnabled ? (
+                <TwoFactorAuthDisable />
+            ) : (
+                <TwoFactorAuthEnable />
+            )}
 
             <LogoutButton />
         </div>

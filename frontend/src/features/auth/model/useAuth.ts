@@ -18,8 +18,6 @@ export const useAuth = () => {
             setTimeout(() => {
                 setUser(null);
             }, 0);
-
-            
         } catch (error) {
             console.error("Logout failed:", error);
         }
@@ -68,22 +66,28 @@ export const useAuth = () => {
                     alert(`Authentication error: ${error}`);
             }
             // Clean up URL
-            window.history.replaceState({}, document.title, window.location.pathname);
+            window.history.replaceState(
+                {},
+                document.title,
+                window.location.pathname
+            );
             return;
         }
 
         if (success === "true") {
             await fetchUser();
 
-            if (require2fa === "true")
-                twoFactorAuthAlert();
+            if (require2fa === "true") twoFactorAuthAlert();
 
             // Clean up URL
-            window.history.replaceState({}, document.title, window.location.pathname);
+            window.history.replaceState(
+                {},
+                document.title,
+                window.location.pathname
+            );
             return;
         }
     };
-
 
     return {
         handleLogout,

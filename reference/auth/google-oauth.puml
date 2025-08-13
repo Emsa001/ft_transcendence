@@ -8,7 +8,7 @@ participant "AuthController" as AC
 participant "AuthService" as AS
 participant "JWTService" as JWT
 participant "CookieService" as CS
-participant "UserFinder" as UF
+participant "User" as UF
 participant "Database" as DB
 participant "Google OAuth" as GOAuth
 
@@ -20,7 +20,7 @@ FE -> AC: POST /auth/google {token}
 AC -> AS: googleLogin(token)
 AS -> GOAuth: verifyIdToken(token)
 GOAuth --> AS: ticket with payload
-AS -> UF: getByEmail(payload.email)
+AS -> UF: findByEmail(payload.email)
 UF -> DB: SELECT user by email
 DB --> UF: User or null
 

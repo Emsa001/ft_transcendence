@@ -12,7 +12,6 @@ import { FaBeer } from "react-icons/fa";
 
 */
 
-
 import React from "react";
 
 interface IconProps {
@@ -24,8 +23,14 @@ interface IconProps {
     className?: string;
 }
 
-export const Icon = ({ icon, width, height, size, color, className }: IconProps) => {
-
+export const Icon = ({
+    icon,
+    width,
+    height,
+    size,
+    color,
+    className,
+}: IconProps) => {
     const iconElement = icon() as unknown as ReactElement;
     const viewBox = iconElement.props.attr.viewBox;
 

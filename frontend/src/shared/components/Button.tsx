@@ -6,7 +6,7 @@ interface ButtonProps extends DOMAttributes {
     children?: ReactNode;
     type?: "button" | "submit" | "reset";
     disabled?: boolean;
-    
+
     id?: string;
     name?: string;
     value?: string;

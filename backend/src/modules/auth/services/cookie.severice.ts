@@ -5,10 +5,10 @@ class CookieService {
 
     createSession(): CookieSerializeOptions {
         return {
-            path: '/',
+            path: "/",
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production',
-            sameSite: 'lax',
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "lax",
             maxAge: this.maxCookieAge,
         };
     }

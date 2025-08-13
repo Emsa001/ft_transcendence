@@ -10,7 +10,7 @@ export default function MainMenu() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if(loaded) return ;
+        if (loaded) return;
         if (menuRef.current) {
             gsap.fromTo(
                 menuRef.current.children,

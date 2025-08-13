@@ -22,7 +22,9 @@ export const ShinyText = ({
                 {text}
             </span>
             {/* Main text */}
-            <span className={`relative bg-gradient-to-r ${gradient} text-transparent bg-clip-text`}>
+            <span
+                className={`relative bg-gradient-to-r ${gradient} text-transparent bg-clip-text`}
+            >
                 {text}
             </span>
         </span>
