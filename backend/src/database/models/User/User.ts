@@ -22,7 +22,7 @@ type CreationAttributes = InferCreationAttributes<
 >;
 
 @Table
-export class User extends Model<InferAttributes<User>, CreationAttributes> implements UserFinder {
+export class User extends Model<InferAttributes<User>, CreationAttributes> {
     @PrimaryKey
     @AutoIncrement
     @Column(DataType.INTEGER)
