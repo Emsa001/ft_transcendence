@@ -1,5 +1,5 @@
 import { startClean } from "@/database/client";
-import { Game } from "@/database/models/Game/Game";
+import { Game, GameStatus } from "@/database/models/Game/Game";
 import { UserExample } from "@/database/models/User/UserExample";
 import { Sequelize } from "sequelize";
 
@@ -50,5 +50,30 @@ describe("Game Tests", () => {
         expect(players.length).toBe(2);
         expect(await game.hasPlayer(user1)).toBe(true);
         expect(await game.hasPlayer(user2)).toBe(true);
+    });
+
+    it("Should not add player to a game that is not waiting", async () => {
+        const game = await Game.create({ status: GameStatus.IN_PROGRESS });
+        const user1 = await UserExample.create();
+        const user2 = await UserExample.create();
+        const user3 = await UserExample.create();
+
+        await expect(game.addPlayer(user1)).rejects.toThrow(
+            "Cannot add players to a game that is not waiting"
+        );
+        await expect(game.addPlayers([user2, user3])).rejects.toThrow(
+            "Cannot add players to a game that is not waiting"
+        );
+    });
+
+    it("Should not add more players than maxPlayers", async () => {
+        const game = await Game.create({ maxPlayers: 1 });
+        const user1 = await UserExample.create();
+        const user2 = await UserExample.create();
+
+        await game.addPlayer(user1);
+        await expect(game.addPlayer(user2)).rejects.toThrow(
+            "Maximum number of players reached"
+        );
     });
 });

@@ -9,6 +9,7 @@ export class UserGamesService {
             if (!temp) throw new HttpException(404, "User not found");
             user = temp;
         }
+
         const games = await user.getGames();
         return games;
     }

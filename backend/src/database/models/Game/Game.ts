@@ -20,31 +20,50 @@ import {
     AutoIncrement,
     BelongsToMany,
     Default,
+    BeforeUpdate,
+    AllowNull,
+    BeforeCreate,
 } from "sequelize-typescript";
 import { User } from "../User/User";
 import { GameUsers } from "./GameUsers";
 import { GameDTO } from "./GameDTO";
 
-export type GameStatus = "waiting" | "in_progress" | "finished";
-export type GameMode = "normal" | "codebattle";
+export enum GameStatus {
+    WAITING = "waiting",
+    IN_PROGRESS = "in_progress",
+    FINISHED = "finished",
+}
+
+export enum GameMode {
+    NORMAL = "normal",
+    CODE = "code",
+}
+
+type GameCreationAttributes = {
+    status?: GameStatus;
+    mode?: GameMode;
+    maxPlayers?: number;
+};
 
 @Table
-export class Game extends Model<
-    InferAttributes<Game>,
-    InferCreationAttributes<Game, { omit: "id" }>
-> {
+export class Game extends Model<InferAttributes<Game>, GameCreationAttributes> {
     @PrimaryKey
     @AutoIncrement
     @Column(DataType.INTEGER)
     declare id: number;
 
-    @Default("waiting")
+    @Default(GameStatus.WAITING)
     @Column(DataType.STRING)
     declare status: GameStatus;
 
-    @Default("normal")
+    @Default(GameMode.NORMAL)
     @Column(DataType.STRING)
     declare mode: GameMode;
+
+    @Default(2)
+    @AllowNull(false)
+    @Column(DataType.INTEGER)
+    declare maxPlayers: number;
 
     @BelongsToMany(() => User, () => GameUsers)
     declare players: User[];
@@ -64,7 +83,7 @@ export class Game extends Model<
     declare hasPlayers: BelongsToManyHasAssociationsMixin<User, number>;
     declare countPlayers: BelongsToManyCountAssociationsMixin;
 
-    // methods
+    // Custom methods
     toDTO(): GameDTO {
         return new GameDTO(this);
     }

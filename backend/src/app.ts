@@ -13,6 +13,8 @@ import { UserController } from "./modules/user/user.controller";
 import { AuthController } from "./modules/auth/auth.controller";
 
 import metricsPlugin from "fastify-metrics";
+import { DatabaseExampleFeed } from "./database/feed";
+import { GameController } from "./modules/game/game.controller";
 
 export default async function App() {
     const app = Fastify({ logger: true });
@@ -23,6 +25,9 @@ export default async function App() {
         secret: process.env.COOKIE_SECRET || "very-secret-cookie-key",
     });
     await app.register(middie);
+    await app.register(bootstrap, {
+        controllers: [UserController, AuthController, GameController],
+    });
 
     await app.setErrorHandler((error, request, reply) => {
         request.log.error(error);
@@ -34,10 +39,8 @@ export default async function App() {
     // Database
     await registerDB(app);
 
-    // Register decorators
-    app.register(bootstrap, {
-        controllers: [UserController, AuthController],
-    });
+    // Feed database with example data
+    new DatabaseExampleFeed();
 
     // fastify-metrics for Prometheus Database
     await app.register(metricsPlugin, {
