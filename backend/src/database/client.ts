@@ -17,9 +17,6 @@ export const registerDB = async (app: FastifyInstance) => {
     app.decorate('sequelize', sequelize);
 };
 
-
-
-
 export const startClean = async () => {
     const sequelize = new Sequelize({
         dialect: 'sqlite',
