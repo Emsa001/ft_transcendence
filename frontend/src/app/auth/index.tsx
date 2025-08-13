@@ -46,7 +46,10 @@ export default function Auth() {
 
                 <GoogleAuthButton />
 
-                <ToggleAuthMode isRegister={isRegister} setIsRegister={setIsRegister} />
+                <ToggleAuthMode
+                    isRegister={isRegister}
+                    setIsRegister={setIsRegister}
+                />
             </div>
         </section>
     );

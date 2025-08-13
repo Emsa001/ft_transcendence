@@ -20,23 +20,49 @@ export default function LandingSection() {
             gsap.fromTo(
                 titleRef.current,
                 { y: 80, opacity: 0, scale: 0.9 },
-                { y: 0, opacity: 1, scale: 1, ease: "power4.out", duration: 1.2, delay: 0.1 }
+                {
+                    y: 0,
+                    opacity: 1,
+                    scale: 1,
+                    ease: "power4.out",
+                    duration: 1.2,
+                    delay: 0.1,
+                }
             );
             gsap.fromTo(
                 subtitleRef.current,
                 { y: 40, opacity: 0 },
-                { y: 0, opacity: 1, ease: "power3.out", duration: 1, delay: 0.6 }
+                {
+                    y: 0,
+                    opacity: 1,
+                    ease: "power3.out",
+                    duration: 1,
+                    delay: 0.6,
+                }
             );
             gsap.fromTo(
                 buttonRef.current,
                 { y: 20, opacity: 0, scale: 0.8 },
-                { y: 0, opacity: 1, scale: 1, ease: "elastic.out(1, 0.6)", duration: 1, delay: 0.8 }
+                {
+                    y: 0,
+                    opacity: 1,
+                    scale: 1,
+                    ease: "elastic.out(1, 0.6)",
+                    duration: 1,
+                    delay: 0.8,
+                }
             );
 
             gsap.fromTo(
                 scrollRef.current,
                 { y: 20, opacity: 0 },
-                { y: 0, opacity: 1, ease: "power3.out", duration: 1, delay: 1.2 }
+                {
+                    y: 0,
+                    opacity: 1,
+                    ease: "power3.out",
+                    duration: 1,
+                    delay: 1.2,
+                }
             );
         }
     }, []);
@@ -44,7 +70,7 @@ export default function LandingSection() {
     return (
         <section className="relative w-full h-full">
             <div className="absolute top-[75%] left-1/2 -translate-x-1/2 w-[600px] h-[200px] bg-indigo-500/20 rounded-full blur-[80px]" />
-        
+
             {showField && <BallField />}
 
             {/* Content */}
@@ -63,8 +89,8 @@ export default function LandingSection() {
                     ref={subtitleRef}
                     className="opacity-0 mt-6 text-lg md:text-xl text-zinc-300 max-w-2xl leading-relaxed"
                 >
-                    Experience a new dimension of interaction — fast, modern, and beautifully
-                    minimal.
+                    Experience a new dimension of interaction — fast, modern,
+                    and beautifully minimal.
                 </p>
 
                 <button

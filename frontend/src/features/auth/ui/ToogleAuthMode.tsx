@@ -5,7 +5,10 @@ interface ToggleAuthModeProps {
     setIsRegister: (isRegister: boolean) => void;
 }
 
-export default function ToggleAuthMode({ isRegister, setIsRegister }: ToggleAuthModeProps) {
+export default function ToggleAuthMode({
+    isRegister,
+    setIsRegister,
+}: ToggleAuthModeProps) {
     return (
         <p className="text-center mt-6 text-sm text-gray-400">
             {isRegister ? (

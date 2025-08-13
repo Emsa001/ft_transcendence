@@ -13,7 +13,7 @@ export default function MainMenu() {
     const { user } = useUser();
 
     useEffect(() => {
-        if(loaded) return ;
+        if (loaded) return;
         if (menuRef.current) {
             gsap.fromTo(
                 menuRef.current.children,

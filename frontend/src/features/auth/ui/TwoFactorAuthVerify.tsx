@@ -31,7 +31,9 @@ export const twoFactorAuthAlert = async () => {
                     icon: "success",
                 });
             } else {
-                Swal.showValidationMessage(`Code is invalid or expired. ${code}`);
+                Swal.showValidationMessage(
+                    `Code is invalid or expired. ${code}`
+                );
             }
         },
     });

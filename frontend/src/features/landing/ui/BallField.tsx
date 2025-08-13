@@ -19,10 +19,22 @@ export default function BallField() {
     const { maxX, maxY, balls } = useBalls(50, bound);
 
     return (
-        <div className="w-full h-full absolute top-0 overflow-hidden z-20" ref={bound}>
+        <div
+            className="w-full h-full absolute top-0 overflow-hidden z-20"
+            ref={bound}
+        >
             {balls.map((id) => {
-                const gradient = gradients[Math.floor(Math.random() * gradients.length)];
-                return <Ball key={id} bound={bound} className={gradient} maxX={maxX} maxY={maxY} />;
+                const gradient =
+                    gradients[Math.floor(Math.random() * gradients.length)];
+                return (
+                    <Ball
+                        key={id}
+                        bound={bound}
+                        className={gradient}
+                        maxX={maxX}
+                        maxY={maxY}
+                    />
+                );
             })}
         </div>
     );

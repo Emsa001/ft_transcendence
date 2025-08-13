@@ -8,7 +8,9 @@ interface AuthFormProps {
 export default function AuthForm({ isRegister }: AuthFormProps) {
     return (
         <form className="space-y-6">
-            <label className="block text-sm font-semibold text-purple-300">Email</label>
+            <label className="block text-sm font-semibold text-purple-300">
+                Email
+            </label>
             <input
                 type="email"
                 placeholder="you@example.com"
@@ -20,7 +22,9 @@ export default function AuthForm({ isRegister }: AuthFormProps) {
 
             {isRegister && (
                 <div>
-                    <label className="block text-sm font-semibold text-purple-300">Username</label>
+                    <label className="block text-sm font-semibold text-purple-300">
+                        Username
+                    </label>
                     <input
                         type="text"
                         placeholder="Your username"
@@ -32,7 +36,9 @@ export default function AuthForm({ isRegister }: AuthFormProps) {
                 </div>
             )}
 
-            <label className="block text-sm font-semibold text-purple-300">Password</label>
+            <label className="block text-sm font-semibold text-purple-300">
+                Password
+            </label>
             <input
                 type="password"
                 placeholder="••••••••"

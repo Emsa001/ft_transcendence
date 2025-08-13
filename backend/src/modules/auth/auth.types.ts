@@ -1,5 +1,5 @@
 export type Token = string | undefined;
-export type Provider = 'google' | 'email';
+export type Provider = "google" | "email";
 
 export interface TwoFASecret {
     base32: string; // The base32 encoded secret
@@ -13,7 +13,7 @@ export interface JWTPayload {
     twoFA: "disabled" | "started" | "completed";
 }
 
-export type TwoFaAction = 'login' | 'enable' | 'disable';
+export type TwoFaAction = "login" | "enable" | "disable";
 export interface OAuth2Payload {
     code: string;
     action: TwoFaAction;

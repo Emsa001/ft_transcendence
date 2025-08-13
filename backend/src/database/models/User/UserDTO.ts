@@ -1,4 +1,4 @@
-import { User } from './User';
+import { User } from "./User";
 
 export class UserDTO {
     id: number;
@@ -9,10 +9,10 @@ export class UserDTO {
 
     constructor(user: User) {
         if (!user || !user.id)
-            throw new Error('User data is required to create UserDTO');
+            throw new Error("User data is required to create UserDTO");
         if (!user.name || !user.email)
             throw new Error(
-                'User name and email are required to create UserDTO'
+                "User name and email are required to create UserDTO"
             );
 
         this.id = user.id;
@@ -22,13 +22,13 @@ export class UserDTO {
         this.is2FAEnabled = user.is2FAEnabled || false;
     }
 
-    toString(){
+    toString() {
         return `
             ID: ${this.id}
             Name: ${this.name}
             Email: ${this.email}
-            Avatar: ${this.avatar ? this.avatar : 'No avatar set'}
-            2FA Enabled: ${this.is2FAEnabled ? 'Yes' : 'No'}
+            Avatar: ${this.avatar ? this.avatar : "No avatar set"}
+            2FA Enabled: ${this.is2FAEnabled ? "Yes" : "No"}
         `;
     }
 }

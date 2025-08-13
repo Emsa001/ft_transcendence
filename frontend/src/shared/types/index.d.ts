@@ -38,13 +38,19 @@ declare global {
         }
 
         function initialize(config: IdConfiguration): void;
-        function prompt(momentListener?: (notification: PromptMomentNotification) => void): void;
+        function prompt(
+            momentListener?: (notification: PromptMomentNotification) => void
+        ): void;
         function renderButton(
             parent: HTMLElement,
             options: {
                 theme?: "outline" | "filled_blue" | "filled_black";
                 size?: "small" | "medium" | "large";
-                text?: "signin_with" | "signup_with" | "continue_with" | "sign_in_with";
+                text?:
+                    | "signin_with"
+                    | "signup_with"
+                    | "continue_with"
+                    | "sign_in_with";
                 shape?: "rectangular" | "pill" | "circle" | "square";
                 logo_alignment?: "left" | "center";
                 width?: string | number;

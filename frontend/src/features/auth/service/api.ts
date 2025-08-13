@@ -2,14 +2,14 @@ import { AxiosResponse } from "axios";
 import { APIService } from "@shared/lib/api";
 
 class AuthApi extends APIService {
-
     /**
      * Get Google OAuth2 redirect URL
      * @returns Object containing the authorization URL
      */
     async getGoogleAuthUrl(): Promise<{ authUrl: string } | null> {
         try {
-            const response: AxiosResponse<{ authUrl: string }> = await this.api.get("/auth/google");
+            const response: AxiosResponse<{ authUrl: string }> =
+                await this.api.get("/auth/google");
             return response.data;
         } catch (error) {
             console.error("Error getting Google auth URL:", error);
@@ -22,9 +22,12 @@ class AuthApi extends APIService {
      * @returns User object if fully authenticated, or throws '2FA_REQUIRED' if 2FA needed
      */
     async getAuthSession(): Promise<AuthResponse> {
-        const response: AxiosResponse<AuthResponse> = await this.api.get("/auth", {
-            withCredentials: true,
-        });
+        const response: AxiosResponse<AuthResponse> = await this.api.get(
+            "/auth",
+            {
+                withCredentials: true,
+            }
+        );
 
         return response.data;
     }
@@ -54,7 +57,10 @@ class AuthApi extends APIService {
      */
     async verify2FACode(code: string, action: Auth2Action): Promise<boolean> {
         try {
-            const response = await this.api.post("/auth/2fa/verify", { code, action });
+            const response = await this.api.post("/auth/2fa/verify", {
+                code,
+                action,
+            });
             return response.data.success;
         } catch (error) {
             console.error("Error verifying 2FA code:", error);
@@ -63,8 +69,16 @@ class AuthApi extends APIService {
     }
 
     // Why doesn't return anything?
-    async register(email: string, username: string, password: string): Promise<void> {
-        await this.api.post("/auth/register", { email, name: username, password });
+    async register(
+        email: string,
+        username: string,
+        password: string
+    ): Promise<void> {
+        await this.api.post("/auth/register", {
+            email,
+            name: username,
+            password,
+        });
     }
 
     // Why doesn't return anything?
@@ -73,5 +87,7 @@ class AuthApi extends APIService {
     }
 }
 
-const service = new AuthApi(process.env.FT_REACT_PUBLIC_API_HOST || "http://localhost:3000");
+const service = new AuthApi(
+    process.env.FT_REACT_PUBLIC_API_HOST || "http://localhost:3000"
+);
 export default service;

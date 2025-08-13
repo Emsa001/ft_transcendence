@@ -4,7 +4,7 @@ run: frontend backend
 	# TODO: changes this for general compatibility
 	# -> use docker compose --watch ?
 	gnome-terminal -- bash -c "npm run start --prefix ./frontend; exec bash" &
-	gnome-terminal -- bash -c "npm run start --prefix ./backend; exec bash"
+	gnome-terminal -- bash -c "npm run dev --prefix ./backend; exec bash"
 
 dev: run
 
@@ -27,6 +27,13 @@ backend:
 	npm install --prefix ./backend
 
 install: frontend backend
+
+format:
+	npm run format --prefix ./frontend
+	npm run format --prefix ./backend
+
+test: backend
+	npm run test --prefix ./backend
 
 docker:
 	docker-compose down

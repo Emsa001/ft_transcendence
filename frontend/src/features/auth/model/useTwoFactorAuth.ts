@@ -8,7 +8,7 @@ export const useVerify2FACode = () => {
     const [error, setError] = useState<string | null>(null);
 
     const verifyCode = async (code: string) => {
-        if(loading) return;
+        if (loading) return;
 
         try {
             setLoading(true);
@@ -25,7 +25,6 @@ export const useVerify2FACode = () => {
                 text: "Two-Factor Authentication successful.",
                 icon: "success",
             });
-
         } catch (err) {
             setError("Verification failed");
             return false;
