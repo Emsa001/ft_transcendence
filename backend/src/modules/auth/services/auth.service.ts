@@ -40,7 +40,7 @@ class AuthService {
     async isAuthorized(token: Token): Promise<boolean> {
         const { email, twoFA } = jwtService.verify(token);
 
-        const user = await UserFinder.getByEmail(email);
+        const user = await UserFinder.findByEmail(email);
         if (!user)
             return false;
 
@@ -71,7 +71,7 @@ class AuthService {
         if (!payload || !payload.email)
             throw new HttpException(401, 'Unauthorized: Invalid token payload');
 
-        let user = await UserFinder.getByEmail(payload.email);
+        let user = await UserFinder.findByEmail(payload.email);
         
         // Register user if not exists
         if (!user) {
@@ -79,8 +79,6 @@ class AuthService {
                 email: payload.email!,
                 name: payload.name || payload.email?.split('@')[0] || null,
                 avatar: payload.picture || null,
-                is2FAEnabled: false,
-                twoFASecret: null,
                 provider: 'google',
             });
 
@@ -136,7 +134,7 @@ class AuthService {
                 throw new HttpException(401, 'Unauthorized: Invalid token payload');
             }
 
-            let user = await UserFinder.getByEmail(payload.email);
+            let user = await UserFinder.findByEmail(payload.email);
             
             // Register user if not exists
             if (!user) {
@@ -144,8 +142,6 @@ class AuthService {
                     email: payload.email!,
                     name: payload.name || payload.email?.split('@')[0] || null,
                     avatar: payload.picture || null,
-                    is2FAEnabled: false,
-                    twoFASecret: null,
                     provider: 'google',
                 });
 
@@ -175,7 +171,7 @@ class AuthService {
                 'Bad Request: Missing required fields'
             );
 
-        const existingUser = await UserFinder.getByEmail(email);
+        const existingUser = await UserFinder.findByEmail(email);
         if (existingUser)
             throw new HttpException(409, 'Conflict: User already exists');
 
@@ -185,8 +181,6 @@ class AuthService {
             email,
             name,
             password: hashedPassword,
-            is2FAEnabled: false,
-            twoFASecret: null,
             provider: 'email',
         });
 
@@ -203,7 +197,7 @@ class AuthService {
                 'Bad Request: Missing required fields'
             );
 
-        const user = await UserFinder.getByEmail(email);
+        const user = await UserFinder.findByEmail(email);
         if (!user || !user.password)
             throw new HttpException(401, 'Unauthorized: Invalid credentials');
 

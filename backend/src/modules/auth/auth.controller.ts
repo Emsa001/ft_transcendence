@@ -19,7 +19,7 @@ export class AuthController extends BaseController {
             const token = request.cookies.session;
             const { email, twoFA } = JwtService.verify(token);
 
-            const user = await UserFinder.getByEmail(email);
+            const user = await UserFinder.findByEmail(email);
             if (!user)
                 throw new HttpException(
                     401,

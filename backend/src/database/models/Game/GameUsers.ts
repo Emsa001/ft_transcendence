@@ -7,7 +7,6 @@ import {
     PrimaryKey,
     AutoIncrement,
     ForeignKey,
-    BeforeCreate,
 } from 'sequelize-typescript';
 import { Game } from './Game';
 import { User } from '../User/User';

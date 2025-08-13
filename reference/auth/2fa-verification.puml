@@ -17,7 +17,7 @@ FE -> AC: POST /auth/2fa/verify {code, action: 'enable'}
 AC -> TFA: verify(token, code, 'enable')
 TFA -> JWT: verify(token)
 JWT --> TFA: {email, twoFA}
-TFA -> UF: getByEmail(email)
+TFA -> UF: findByEmail(email)
 UF -> DB: SELECT user
 DB --> UF: User
 UF --> TFA: User
@@ -34,7 +34,7 @@ FE -> AC: POST /auth/2fa/verify {code, action: 'login'}
 AC -> TFA: verify(token, code, 'login')
 TFA -> JWT: verify(token)
 JWT --> TFA: {email, twoFA: true}
-TFA -> UF: getByEmail(email)
+TFA -> UF: findByEmail(email)
 UF -> DB: SELECT user
 DB --> UF: User
 UF --> TFA: User

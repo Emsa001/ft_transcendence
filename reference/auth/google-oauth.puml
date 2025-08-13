@@ -20,7 +20,7 @@ FE -> AC: POST /auth/google {token}
 AC -> AS: googleLogin(token)
 AS -> GOAuth: verifyIdToken(token)
 GOAuth --> AS: ticket with payload
-AS -> UF: getByEmail(payload.email)
+AS -> UF: findByEmail(payload.email)
 UF -> DB: SELECT user by email
 DB --> UF: User or null
 

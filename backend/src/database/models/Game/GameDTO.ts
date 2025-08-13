@@ -18,7 +18,7 @@ export class GameDTO {
         this.id = game.id;
         this.status = game.status;
         this.mode = game.mode;
-        this.players = game.users || [];
+        this.players = game.players || [];
     }
 
     toString(): string {

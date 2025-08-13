@@ -15,7 +15,7 @@ User -> FE: Access protected resource
 FE -> AC: GET /auth/ (with session cookie)
 AC -> JWT: verify(token from cookie)
 JWT --> AC: {email, twoFA}
-AC -> UF: getByEmail(email)
+AC -> UF: findByEmail(email)
 UF -> DB: SELECT user
 DB --> UF: User
 UF --> AC: User
@@ -26,7 +26,7 @@ FE --> User: User data or redirect to login
 note over AS: isAuthorized() method
 AS -> JWT: verify(token)
 JWT --> AS: {email, twoFA}
-AS -> UF: getByEmail(email)
+AS -> UF: findByEmail(email)
 UF --> AS: User or null
 
 alt User found and twoFA is false

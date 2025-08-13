@@ -14,6 +14,7 @@ import {
 import { UserDTO } from './UserDTO';
 import { Game } from '../Game/Game';
 import { GameUsers } from '../Game/GameUsers';
+import { UserFinder } from './UserFinder';
 
 type CreationAttributes = InferCreationAttributes<
     User,
@@ -21,7 +22,7 @@ type CreationAttributes = InferCreationAttributes<
 >;
 
 @Table
-export class User extends Model<InferAttributes<User>, CreationAttributes> {
+export class User extends Model<InferAttributes<User>, CreationAttributes> implements UserFinder {
     @PrimaryKey
     @AutoIncrement
     @Column(DataType.INTEGER)
@@ -64,7 +65,7 @@ export class User extends Model<InferAttributes<User>, CreationAttributes> {
     @Column(DataType.STRING)
     declare provider: 'google' | 'email';
 
-    @BelongsToMany(() => Game, () => GameUsers)
+    @BelongsToMany(() => Game, () => GameUsers,)
     declare games: Game[];
 
     toDTO(): UserDTO {

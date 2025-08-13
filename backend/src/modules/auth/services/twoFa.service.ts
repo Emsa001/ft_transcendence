@@ -21,7 +21,7 @@ class TwoFAService {
     ): Promise<{ user: User; session: string; shouldSetCookie: boolean }> {
         const { email, twoFA } = JwtService.verify(token);
 
-        const user = await UserFinder.getByEmail(email);
+        const user = await UserFinder.findByEmail(email);
         if (!user) throw new HttpException(401, 'Unauthorized: User not found');
         if (!user.twoFASecret)
             throw new HttpException(
