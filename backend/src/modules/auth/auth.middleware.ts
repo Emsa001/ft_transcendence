@@ -16,11 +16,11 @@ export function AUTHORIZED(
         try {
             const token = request.cookies.session;
             const isAuthorized = await AuthService.isAuthorized(token);
-    
+
             if (!isAuthorized) {
                 return reply.status(401).send({
                     error: 'Unauthorized',
-                    message: 'Invalid or expired session token'
+                    message: 'Invalid or expired session token',
                 });
             }
 
@@ -29,13 +29,13 @@ export function AUTHORIZED(
             if (error instanceof HttpException) {
                 return reply.status(error.statusCode).send({
                     error: 'Unauthorized',
-                    message: error.message
+                    message: error.message,
                 });
             }
-            
+
             return reply.status(401).send({
                 error: 'Unauthorized',
-                message: 'Authentication failed'
+                message: 'Authentication failed',
             });
         }
     };

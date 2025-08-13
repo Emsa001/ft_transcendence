@@ -1,11 +1,10 @@
-import React, { useNavigate } from "react";
+import React, { useNavigate } from 'react';
 import {
     LogoutButton,
     TwoFactorAuthDisable,
     TwoFactorAuthEnable,
-} from "@features/auth";
-import { useUser } from "@features/auth/model/useUser";
-
+} from '@features/auth';
+import { useUser } from '@features/auth/model/useUser';
 
 // TODO: Divide to components, this is just test
 export const Profile = () => {
@@ -13,7 +12,7 @@ export const Profile = () => {
     const navigate = useNavigate();
 
     if (!user) {
-        navigate("/auth");
+        navigate('/auth');
         return <div />;
     }
 
@@ -23,7 +22,7 @@ export const Profile = () => {
             <img
                 src={user.avatar}
                 alt="User Avatar"
-                style={{ width: "100px", height: "100px", borderRadius: "50%" }}
+                style={{ width: '100px', height: '100px', borderRadius: '50%' }}
             />
             <p>
                 <strong>ID:</strong> {user.id}
@@ -37,7 +36,11 @@ export const Profile = () => {
 
             <hr />
 
-            {user.is2FAEnabled ? <TwoFactorAuthDisable /> : <TwoFactorAuthEnable />}
+            {user.is2FAEnabled ? (
+                <TwoFactorAuthDisable />
+            ) : (
+                <TwoFactorAuthEnable />
+            )}
 
             <LogoutButton />
         </div>

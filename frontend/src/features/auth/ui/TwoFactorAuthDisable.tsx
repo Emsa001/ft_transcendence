@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import { Button } from "@shared/components/Button";
-import { Input } from "@shared/components/Input";
-import { useDisable2FA } from "../model/useTwoFactorAuth";
+import React, { useState } from 'react';
+import { Button } from '@shared/components/Button';
+import { Input } from '@shared/components/Input';
+import { useDisable2FA } from '../model/useTwoFactorAuth';
 
 /**
  * Component for disabling Two-Factor Authentication
@@ -9,14 +9,14 @@ import { useDisable2FA } from "../model/useTwoFactorAuth";
 export const TwoFactorAuthDisable = () => {
     const { disable2FA, error } = useDisable2FA();
 
-    const [code, setCode] = useState("");
+    const [code, setCode] = useState('');
     const [success, setSuccess] = useState<boolean>(false);
 
     const handleDisable = async () => {
         const result = await disable2FA(code);
         if (result) {
             setSuccess(true);
-            setCode("");
+            setCode('');
         }
     };
 
@@ -34,7 +34,7 @@ export const TwoFactorAuthDisable = () => {
                 placeholder="Enter 6-digit code"
             />
             <Button onClick={handleDisable}>Disable 2FA</Button>
-            {error && <p style={{ color: "red" }}>{error}</p>}
+            {error && <p style={{ color: 'red' }}>{error}</p>}
         </div>
     );
 };

@@ -10,7 +10,7 @@ export interface TwoFASecret {
 // This is session token saved in cookies
 export interface JWTPayload {
     email: string;
-    twoFA: "disabled" | "started" | "completed";
+    twoFA: 'disabled' | 'started' | 'completed';
 }
 
 export type TwoFaAction = 'login' | 'enable' | 'disable';

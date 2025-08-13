@@ -2,7 +2,6 @@ import { OAuth2Client } from 'google-auth-library';
 import bcrypt from 'bcrypt';
 
 import { User } from '@/database/models/User/User';
-import { UserFinder } from '@/database/models/User/UserFinder';
 import { HttpException } from '@/utils/exceptions';
 
 import { Token } from '../auth.types';
@@ -19,15 +18,20 @@ class AuthService {
     oauth2: OAuth2Client;
 
     constructor() {
-        const redirectUri = process.env.GOOGLE_REDIRECT_URI || 'http://localhost:8000/auth/google/callback';
-        
+        const redirectUri =
+            process.env.GOOGLE_REDIRECT_URI ||
+            'http://localhost:8000/auth/google/callback';
+
         this.oauth2 = new OAuth2Client(
             process.env.GOOGLE_CLIENT_ID,
             process.env.GOOGLE_CLIENT_SECRET,
             redirectUri
         );
-        
-        console.log('Google OAuth2 Client initialized with redirect URI:', redirectUri);
+
+        console.log(
+            'Google OAuth2 Client initialized with redirect URI:',
+            redirectUri
+        );
     }
 
     /**
@@ -40,11 +44,10 @@ class AuthService {
     async isAuthorized(token: Token): Promise<boolean> {
         const { email, twoFA } = jwtService.verify(token);
 
-        const user = await UserFinder.findByEmail(email);
-        if (!user)
-            return false;
+        const user = await User.findByEmail(email);
+        if (!user) return false;
 
-        return twoFA == "disabled" || twoFA == "completed";
+        return twoFA == 'disabled' || twoFA == 'completed';
     }
 
     /*
@@ -52,9 +55,7 @@ class AuthService {
      * Expects a token from the client-side Google Sign-In
      * Returns the user object if successful
      */
-    async googleLogin(
-        token: Token
-    ): Promise<{ user: User; token: string }> {
+    async googleLogin(token: Token): Promise<{ user: User; token: string }> {
         if (!token)
             throw new HttpException(400, 'Bad Request: Token is required');
 
@@ -71,8 +72,8 @@ class AuthService {
         if (!payload || !payload.email)
             throw new HttpException(401, 'Unauthorized: Invalid token payload');
 
-        let user = await UserFinder.findByEmail(payload.email);
-        
+        let user = await User.findByEmail(payload.email);
+
         // Register user if not exists
         if (!user) {
             user = await User.create({
@@ -113,9 +114,14 @@ class AuthService {
      * Handle Google OAuth2 callback
      * Exchange authorization code for tokens and return user data
      */
-    async handleGoogleCallback(code: string): Promise<{ user: User; token: string }> {
+    async handleGoogleCallback(
+        code: string
+    ): Promise<{ user: User; token: string }> {
         if (!code) {
-            throw new HttpException(400, 'Bad Request: Authorization code is required');
+            throw new HttpException(
+                400,
+                'Bad Request: Authorization code is required'
+            );
         }
 
         try {
@@ -131,11 +137,14 @@ class AuthService {
 
             const payload = ticket.getPayload();
             if (!payload || !payload.email) {
-                throw new HttpException(401, 'Unauthorized: Invalid token payload');
+                throw new HttpException(
+                    401,
+                    'Unauthorized: Invalid token payload'
+                );
             }
 
-            let user = await UserFinder.findByEmail(payload.email);
-            
+            let user = await User.findByEmail(payload.email);
+
             // Register user if not exists
             if (!user) {
                 user = await User.create({
@@ -154,12 +163,13 @@ class AuthService {
             return { user, token: jwtService.getToken(user) };
         } catch (error) {
             console.error('Google OAuth callback error:', error);
-            throw new HttpException(401, 'Unauthorized: Failed to authenticate with Google');
+            throw new HttpException(
+                401,
+                'Unauthorized: Failed to authenticate with Google'
+            );
         }
     }
 
-
-    
     async register(
         email: string,
         name: string,
@@ -171,7 +181,7 @@ class AuthService {
                 'Bad Request: Missing required fields'
             );
 
-        const existingUser = await UserFinder.findByEmail(email);
+        const existingUser = await User.findByEmail(email);
         if (existingUser)
             throw new HttpException(409, 'Conflict: User already exists');
 
@@ -197,7 +207,7 @@ class AuthService {
                 'Bad Request: Missing required fields'
             );
 
-        const user = await UserFinder.findByEmail(email);
+        const user = await User.findByEmail(email);
         if (!user || !user.password)
             throw new HttpException(401, 'Unauthorized: Invalid credentials');
 

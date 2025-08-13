@@ -1,4 +1,4 @@
-import { CookieSerializeOptions } from "@fastify/cookie";
+import { CookieSerializeOptions } from '@fastify/cookie';
 
 class CookieService {
     maxCookieAge = Number(process.env.COOKIE_MAX_AGE) || 60 * 60 * 24; // Default to 1 day

@@ -15,10 +15,10 @@ class JWTService {
         if (!user) {
             throw new HttpException(401, 'Unauthorized: User not found');
         }
-        
+
         const payload: JWTPayload = {
             email: user.email,
-            twoFA: user.is2FAEnabled ? "started" : "disabled",
+            twoFA: user.is2FAEnabled ? 'started' : 'disabled',
         };
 
         return this.sign(payload, '1d');

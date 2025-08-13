@@ -8,28 +8,21 @@ import JwtService from './services/jwt.service';
 import TwoFAService from './services/twoFa.service';
 
 import { OAuth2Payload, UserLogin, UserRegister } from './auth.types';
-import { UserFinder } from '@/database/models/User/UserFinder';
+import { User } from '@/database/models/User/User';
 import { HttpException } from '@/utils/exceptions';
 
 @Controller('/auth')
 export class AuthController extends BaseController {
     @GET('/')
     async getAuthUserController(request: FastifyRequest, reply: FastifyReply) {
-        try {
-            const token = request.cookies.session;
-            const { email, twoFA } = JwtService.verify(token);
+        const token = request.cookies.session;
+        const { email, twoFA } = JwtService.verify(token);
 
-            const user = await UserFinder.findByEmail(email);
-            if (!user)
-                throw new HttpException(
-                    401,
-                    'Unauthorized: Invalid session token'
-                );
+        const user = await User.findByEmail(email);
+        if (!user)
+            throw new HttpException(401, 'Unauthorized: Invalid session token');
 
-            return reply.status(200).send({ user: user.toDTO(), twoFA });
-        } catch (error: unknown) {
-            this.respondWithError(reply, error);
-        }
+        return reply.status(200).send({ user: user.toDTO(), twoFA });
     }
 
     @POST('/logout')
@@ -47,13 +40,8 @@ export class AuthController extends BaseController {
      */
     @GET('/google')
     async googleAuthController(request: FastifyRequest, reply: FastifyReply) {
-        try {
-            const authUrl = AuthService.getGoogleAuthUrl();
-
-            return reply.status(200).send({ authUrl });
-        } catch (error: unknown) {
-            this.respondWithError(reply, error);
-        }
+        const authUrl = AuthService.getGoogleAuthUrl();
+        return reply.status(200).send({ authUrl });
     }
 
     /**
@@ -67,96 +55,73 @@ export class AuthController extends BaseController {
     ) {
         const url = process.env.FRONTEND_URL || 'http://localhost:3000';
 
-        try {
-            const { code, error } = request.query as {
-                code?: string;
-                error?: string;
-            };
+        const { code, error } = request.query as {
+            code?: string;
+            error?: string;
+        };
 
-            if (error || !code)
-                return reply.redirect(
-                    `${url}/auth?error=${encodeURIComponent(error || 'no_code')}`
-                );
-
-            const { user, token: session } =
-                await AuthService.handleGoogleCallback(code);
-
-            reply.setCookie('session', session, cookieService.createSession());
+        if (error || !code)
             return reply.redirect(
-                `${url}/auth?success=true&require2fa=${user.is2FAEnabled}`
+                `${url}/auth?error=${encodeURIComponent(error || 'no_code')}`
             );
-        } catch (error: unknown) {
-            return reply.redirect(`${url}/auth?error=auth_failed`);
-        }
+
+        const { user, token: session } =
+            await AuthService.handleGoogleCallback(code);
+
+        reply.setCookie('session', session, cookieService.createSession());
+
+        return reply.redirect(
+            `${url}/auth?success=true&require2fa=${user.is2FAEnabled}`
+        );
     }
 
     @POST('/2fa/verify')
     async oauth2VerifyController(request: FastifyRequest, reply: FastifyReply) {
-        try {
-            const token = request.cookies.session;
-            const { code, action = 'login' } = request.body as OAuth2Payload;
+        const token = request.cookies.session;
+        const { code, action = 'login' } = request.body as OAuth2Payload;
 
-            const { session, shouldSetCookie } = await TwoFAService.verify(
-                token,
-                code,
-                action
-            );
+        const { session, shouldSetCookie } = await TwoFAService.verify(
+            token,
+            code,
+            action
+        );
 
-            if (shouldSetCookie) {
-                reply.setCookie(
-                    'session',
-                    session,
-                    cookieService.createSession()
-                );
-            }
-
-            return reply.send({ success: true });
-        } catch (error: unknown) {
-            this.respondWithError(reply, error);
+        if (shouldSetCookie) {
+            reply.setCookie('session', session, cookieService.createSession());
         }
+
+        return reply.send({ success: true });
     }
 
     @POST('/2fa/setup')
     async setup2FAController(request: FastifyRequest, reply: FastifyReply) {
-        try {
-            const token = request.cookies.session;
-            const { qrImageUrl, otpauth_url } = await TwoFAService.setup(token);
+        const token = request.cookies.session;
+        const { qrImageUrl, otpauth_url } = await TwoFAService.setup(token);
 
-            return reply.send({
-                qrImageUrl,
-                otpauth_url,
-            });
-        } catch (error: unknown) {
-            this.respondWithError(reply, error);
-        }
+        return reply.send({
+            qrImageUrl,
+            otpauth_url,
+        });
     }
 
     // Beqas
 
     @POST('/register')
     async registerUserController(request: FastifyRequest, reply: FastifyReply) {
-        try {
-            const { email, name, password } = request.body as UserRegister;
-            const user = await AuthService.register(email, name, password);
-        
-            return reply.send(user);
-        } catch (error: unknown) {
-            this.respondWithError(reply, error);
-        }
+        const { email, name, password } = request.body as UserRegister;
+        const user = await AuthService.register(email, name, password);
+
+        return reply.send(user);
     }
 
     @POST('/login')
     async loginUserController(request: FastifyRequest, reply: FastifyReply) {
-        try {
-            const { email, password } = request.body as UserLogin;
-            const { user, token } = await AuthService.login(email, password);
+        const { email, password } = request.body as UserLogin;
+        const { user, token } = await AuthService.login(email, password);
 
-            reply.setCookie('session', token, cookieService.createSession());
-            return reply.send({
-                user: user.is2FAEnabled ? { twoFa: true } : user,
-            });
-        } catch (error: unknown) {
-            this.respondWithError(reply, error);
-        }
+        reply.setCookie('session', token, cookieService.createSession());
+        return reply.send({
+            user: user.is2FAEnabled ? { twoFa: true } : user,
+        });
     }
 }

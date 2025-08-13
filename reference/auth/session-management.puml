@@ -7,7 +7,7 @@ participant "Frontend" as FE
 participant "AuthController" as AC
 participant "AuthService" as AS
 participant "JWTService" as JWT
-participant "UserFinder" as UF
+participant "User" as UF
 participant "Database" as DB
 
 == Authentication Check ==

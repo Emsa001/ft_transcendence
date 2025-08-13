@@ -1,4 +1,4 @@
-import React from "react";
+import React from 'react';
 
 interface AuthFormProps {
     isRegister: boolean;
@@ -8,7 +8,9 @@ interface AuthFormProps {
 export default function AuthForm({ isRegister }: AuthFormProps) {
     return (
         <form className="space-y-6">
-            <label className="block text-sm font-semibold text-purple-300">Email</label>
+            <label className="block text-sm font-semibold text-purple-300">
+                Email
+            </label>
             <input
                 type="email"
                 placeholder="you@example.com"
@@ -20,7 +22,9 @@ export default function AuthForm({ isRegister }: AuthFormProps) {
 
             {isRegister && (
                 <div>
-                    <label className="block text-sm font-semibold text-purple-300">Username</label>
+                    <label className="block text-sm font-semibold text-purple-300">
+                        Username
+                    </label>
                     <input
                         type="text"
                         placeholder="Your username"
@@ -32,7 +36,9 @@ export default function AuthForm({ isRegister }: AuthFormProps) {
                 </div>
             )}
 
-            <label className="block text-sm font-semibold text-purple-300">Password</label>
+            <label className="block text-sm font-semibold text-purple-300">
+                Password
+            </label>
             <input
                 type="password"
                 placeholder="••••••••"
@@ -63,7 +69,7 @@ export default function AuthForm({ isRegister }: AuthFormProps) {
                 className="w-full py-3 rounded-lg bg-gradient-to-r from-indigo-500 via-purple-600 to-pink-500
           text-white font-semibold shadow-lg hover:brightness-110 transition duration-300"
             >
-                {isRegister ? "Register" : "Log In"}
+                {isRegister ? 'Register' : 'Log In'}
             </button>
         </form>
     );

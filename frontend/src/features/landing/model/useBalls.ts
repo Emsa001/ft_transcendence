@@ -1,6 +1,9 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from 'react';
 
-export const useBalls = (totalBalls: number = 50, bound: { current: HTMLDivElement | null }) => {
+export const useBalls = (
+    totalBalls: number = 50,
+    bound: { current: HTMLDivElement | null }
+) => {
     const [maxX, setMaxX] = useState(window.innerWidth);
     const [maxY, setMaxY] = useState(window.innerHeight);
     const [balls, setBalls] = useState<number[]>([]);
@@ -12,8 +15,8 @@ export const useBalls = (totalBalls: number = 50, bound: { current: HTMLDivEleme
             setMaxY(window.innerHeight);
         };
 
-        window.addEventListener("resize", resizeHandler);
-        return () => window.removeEventListener("resize", resizeHandler);
+        window.addEventListener('resize', resizeHandler);
+        return () => window.removeEventListener('resize', resizeHandler);
     }, []);
 
     useEffect(() => {

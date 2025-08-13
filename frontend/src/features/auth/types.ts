@@ -8,7 +8,7 @@ interface User {
 
 interface AuthResponse {
     user: User;
-    twoFA: "disabled" | "started" | "completed";
+    twoFA: 'disabled' | 'started' | 'completed';
 }
 
-type Auth2Action = "login" | "enable" | "disable";
+type Auth2Action = 'login' | 'enable' | 'disable';

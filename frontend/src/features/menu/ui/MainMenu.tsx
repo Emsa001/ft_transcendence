@@ -1,7 +1,7 @@
-import React, { useRef, useEffect, useNavigate } from "react";
-import gsap from "gsap";
-import { Icon } from "@shared/components/Icon";
-import { FaHome, FaGamepad, FaUser } from "react-icons/fa";
+import React, { useRef, useEffect, useNavigate } from 'react';
+import gsap from 'gsap';
+import { Icon } from '@shared/components/Icon';
+import { FaHome, FaGamepad, FaUser } from 'react-icons/fa';
 
 let loaded = false;
 
@@ -10,7 +10,7 @@ export default function MainMenu() {
     const navigate = useNavigate();
 
     useEffect(() => {
-        if(loaded) return ;
+        if (loaded) return;
         if (menuRef.current) {
             gsap.fromTo(
                 menuRef.current.children,
@@ -19,7 +19,7 @@ export default function MainMenu() {
                     y: 0,
                     opacity: 1,
                     stagger: 0.08,
-                    ease: "power3.out",
+                    ease: 'power3.out',
                     duration: 0.6,
                 }
             );
@@ -28,9 +28,9 @@ export default function MainMenu() {
     }, []);
 
     const menuItems = [
-        { label: "Home", icon: FaHome, link: "/" },
-        { label: "Auth", icon: FaGamepad, link: "/auth" },
-        { label: "Profile", icon: FaUser, link: "/profile" },
+        { label: 'Home', icon: FaHome, link: '/' },
+        { label: 'Auth', icon: FaGamepad, link: '/auth' },
+        { label: 'Profile', icon: FaUser, link: '/profile' },
     ];
 
     return (

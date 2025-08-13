@@ -1,7 +1,7 @@
-import React from "react";
-import { useAuth } from "../model/useAuth";
-import { FcGoogle } from "react-icons/fc";
-import { Icon } from "@shared/components/Icon";
+import React from 'react';
+import { useAuth } from '../model/useAuth';
+import { FcGoogle } from 'react-icons/fc';
+import { Icon } from '@shared/components/Icon';
 
 export const GoogleAuthButton = () => {
     const { redirectToGoogleAuth } = useAuth();

@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { AuthApi } from "../";
-import Swal from "sweetalert2";
+import { useState } from 'react';
+import { AuthApi } from '../';
+import Swal from 'sweetalert2';
 
 // Hook for verifying 2FA code after login
 export const useVerify2FACode = () => {
@@ -8,26 +8,25 @@ export const useVerify2FACode = () => {
     const [error, setError] = useState<string | null>(null);
 
     const verifyCode = async (code: string) => {
-        if(loading) return;
+        if (loading) return;
 
         try {
             setLoading(true);
             setError(null);
 
-            const success = await AuthApi.verify2FACode(code, "login");
+            const success = await AuthApi.verify2FACode(code, 'login');
 
             if (!success) {
-                setError("Invalid code");
+                setError('Invalid code');
             }
 
             Swal.fire({
-                title: "Success",
-                text: "Two-Factor Authentication successful.",
-                icon: "success",
+                title: 'Success',
+                text: 'Two-Factor Authentication successful.',
+                icon: 'success',
             });
-
         } catch (err) {
-            setError("Verification failed");
+            setError('Verification failed');
             return false;
         } finally {
             setLoading(false);
@@ -52,7 +51,7 @@ export const useEnable2FA = () => {
             const data = await AuthApi.initiate2FASetup();
             setQrImageUrl(data.qrImageUrl);
         } catch (err) {
-            setError("Failed to initiate 2FA setup");
+            setError('Failed to initiate 2FA setup');
         }
     };
 
@@ -60,16 +59,16 @@ export const useEnable2FA = () => {
         try {
             setError(null);
 
-            const success = await AuthApi.verify2FACode(code, "enable");
+            const success = await AuthApi.verify2FACode(code, 'enable');
 
             if (!success) {
-                setError("Failed to enable 2FA");
+                setError('Failed to enable 2FA');
                 return false;
             }
 
             return true;
         } catch (err) {
-            setError("Failed to enable 2FA");
+            setError('Failed to enable 2FA');
             return false;
         }
     };
@@ -90,16 +89,16 @@ export const useDisable2FA = () => {
         try {
             setError(null);
 
-            const success = await AuthApi.verify2FACode(code, "disable");
+            const success = await AuthApi.verify2FACode(code, 'disable');
 
             if (!success) {
-                setError("Failed to disable 2FA");
+                setError('Failed to disable 2FA');
                 return false;
             }
 
             return true;
         } catch (err) {
-            setError("Failed to disable 2FA");
+            setError('Failed to disable 2FA');
             return false;
         }
     };

@@ -22,7 +22,7 @@ export class UserDTO {
         this.is2FAEnabled = user.is2FAEnabled || false;
     }
 
-    toString(){
+    toString() {
         return `
             ID: ${this.id}
             Name: ${this.name}

@@ -12,8 +12,7 @@ import { FaBeer } from "react-icons/fa";
 
 */
 
-
-import React from "react";
+import React from 'react';
 
 interface IconProps {
     icon: any;
@@ -24,8 +23,14 @@ interface IconProps {
     className?: string;
 }
 
-export const Icon = ({ icon, width, height, size, color, className }: IconProps) => {
-
+export const Icon = ({
+    icon,
+    width,
+    height,
+    size,
+    color,
+    className,
+}: IconProps) => {
     const iconElement = icon() as unknown as ReactElement;
     const viewBox = iconElement.props.attr.viewBox;
 
@@ -34,7 +39,7 @@ export const Icon = ({ icon, width, height, size, color, className }: IconProps)
             xmlns="http://www.w3.org/2000/svg"
             width={width || size || 16}
             height={height || size || 16}
-            fill={color || "currentColor"}
+            fill={color || 'currentColor'}
             viewBox={viewBox}
             className={className}
         >

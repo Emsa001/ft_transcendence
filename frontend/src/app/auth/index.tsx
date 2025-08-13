@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useNavigate } from "react";
+import React, { useState, useEffect, useNavigate } from 'react';
 
-import AuthForm from "@features/auth/ui/AuthForm";
-import ToggleAuthMode from "@features/auth/ui/ToogleAuthMode";
-import { GoogleAuthButton } from "@features/auth";
-import { useAuth } from "@features/auth/model/useAuth";
-import { useUser } from "@features/auth/model/useUser";
+import AuthForm from '@features/auth/ui/AuthForm';
+import ToggleAuthMode from '@features/auth/ui/ToogleAuthMode';
+import { GoogleAuthButton } from '@features/auth';
+import { useAuth } from '@features/auth/model/useAuth';
+import { useUser } from '@features/auth/model/useUser';
 
 export default function Auth() {
     const [isRegister, setIsRegister] = useState(false);
@@ -17,7 +17,7 @@ export default function Auth() {
     }, []);
 
     if (user) {
-        navigate("/profile");
+        navigate('/profile');
         return <div />;
     }
 
@@ -28,12 +28,12 @@ export default function Auth() {
                     className="text-center text-4xl font-extrabold text-transparent bg-clip-text
           bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-500 mb-2"
                 >
-                    {isRegister ? "Create Account" : "Welcome Back"}
+                    {isRegister ? 'Create Account' : 'Welcome Back'}
                 </h1>
                 <p className="text-center text-gray-400 mb-8">
                     {isRegister
-                        ? "Register to start your journey"
-                        : "Please log in to access the application"}
+                        ? 'Register to start your journey'
+                        : 'Please log in to access the application'}
                 </p>
 
                 <AuthForm isRegister={isRegister} />
@@ -46,7 +46,10 @@ export default function Auth() {
 
                 <GoogleAuthButton />
 
-                <ToggleAuthMode isRegister={isRegister} setIsRegister={setIsRegister} />
+                <ToggleAuthMode
+                    isRegister={isRegister}
+                    setIsRegister={setIsRegister}
+                />
             </div>
         </section>
     );

@@ -1,4 +1,8 @@
-import { InferAttributes, InferCreationAttributes } from 'sequelize';
+import {
+    BelongsToManyGetAssociationsMixin,
+    InferAttributes,
+    InferCreationAttributes,
+} from 'sequelize';
 import {
     Table,
     Column,
@@ -14,7 +18,6 @@ import {
 import { UserDTO } from './UserDTO';
 import { Game } from '../Game/Game';
 import { GameUsers } from '../Game/GameUsers';
-import { UserFinder } from './UserFinder';
 
 type CreationAttributes = InferCreationAttributes<
     User,
@@ -65,10 +68,18 @@ export class User extends Model<InferAttributes<User>, CreationAttributes> {
     @Column(DataType.STRING)
     declare provider: 'google' | 'email';
 
-    @BelongsToMany(() => Game, () => GameUsers,)
+    @BelongsToMany(() => Game, () => GameUsers)
     declare games: Game[];
+
+    // Methods
 
     toDTO(): UserDTO {
         return new UserDTO(this);
     }
+
+    static async findByEmail(email: string): Promise<User | null> {
+        return this.findOne({ where: { email } });
+    }
+
+    declare getGames: BelongsToManyGetAssociationsMixin<Game>;
 }

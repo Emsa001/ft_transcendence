@@ -2,7 +2,6 @@ import speakeasy from 'speakeasy';
 import qrcode from 'qrcode';
 
 import { User } from '@/database/models/User/User';
-import { UserFinder } from '@/database/models/User/UserFinder';
 import { HttpException } from '@/utils/exceptions';
 
 import JwtService from './jwt.service';
@@ -21,7 +20,7 @@ class TwoFAService {
     ): Promise<{ user: User; session: string; shouldSetCookie: boolean }> {
         const { email, twoFA } = JwtService.verify(token);
 
-        const user = await UserFinder.findByEmail(email);
+        const user = await User.findByEmail(email);
         if (!user) throw new HttpException(401, 'Unauthorized: User not found');
         if (!user.twoFASecret)
             throw new HttpException(
@@ -51,7 +50,7 @@ class TwoFAService {
                 const newToken = JwtService.sign(
                     {
                         email: user.email,
-                        twoFA: "disabled",
+                        twoFA: 'disabled',
                     },
                     '1d'
                 );
@@ -131,7 +130,6 @@ class TwoFAService {
                     qrImageUrl,
                 });
             });
-            
         });
     }
 }

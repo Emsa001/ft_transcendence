@@ -7,16 +7,19 @@ export class APIService {
         this.api = axios.create({
             baseURL: baseUrl,
             headers: {
-                "Content-Type": "application/json",
-                Accept: "application/json",
+                'Content-Type': 'application/json',
+                Accept: 'application/json',
             },
             withCredentials: true,
         });
 
         this.api.interceptors.response.use(
-            response => response,
-            error => {
-                console.error("API Error:", error.response?.data || error.message);
+            (response) => response,
+            (error) => {
+                console.error(
+                    'API Error:',
+                    error.response?.data || error.message
+                );
                 return Promise.reject(error);
             }
         );

@@ -1,12 +1,12 @@
-import "@shared/styles/global.css";
-import "@shared/styles/animations.css";
+import '@shared/styles/global.css';
+import '@shared/styles/animations.css';
 
-import React, { BrowserRouter, Router, useEffect } from "react";
-import Home from "./home";
-import MainMenu from "@features/menu/ui/MainMenu";
-import Auth from "./auth";
-import { useUser } from "@features/auth/model/useUser";
-import { Profile } from "./profile";
+import React, { BrowserRouter, Router, useEffect } from 'react';
+import Home from './home';
+import MainMenu from '@features/menu/ui/MainMenu';
+import Auth from './auth';
+import { useUser } from '@features/auth/model/useUser';
+import { Profile } from './profile';
 
 export default function Root() {
     const { fetchUser } = useUser();
