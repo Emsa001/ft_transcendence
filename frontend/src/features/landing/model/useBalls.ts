@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from "react";
 
 export const useBalls = (
     totalBalls: number = 50,
@@ -15,8 +15,8 @@ export const useBalls = (
             setMaxY(window.innerHeight);
         };
 
-        window.addEventListener('resize', resizeHandler);
-        return () => window.removeEventListener('resize', resizeHandler);
+        window.addEventListener("resize", resizeHandler);
+        return () => window.removeEventListener("resize", resizeHandler);
     }, []);
 
     useEffect(() => {

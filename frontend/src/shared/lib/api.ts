@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios from "axios";
 
 export class APIService {
     protected api;
@@ -7,8 +7,8 @@ export class APIService {
         this.api = axios.create({
             baseURL: baseUrl,
             headers: {
-                'Content-Type': 'application/json',
-                Accept: 'application/json',
+                "Content-Type": "application/json",
+                Accept: "application/json",
             },
             withCredentials: true,
         });
@@ -17,7 +17,7 @@ export class APIService {
             (response) => response,
             (error) => {
                 console.error(
-                    'API Error:',
+                    "API Error:",
                     error.response?.data || error.message
                 );
                 return Promise.reject(error);

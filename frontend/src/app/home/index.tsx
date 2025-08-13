@@ -1,5 +1,5 @@
-import LandingSection from '@features/landing/ui';
-import React from 'react';
+import LandingSection from "@features/landing/ui";
+import React from "react";
 
 export default function Home() {
     return (

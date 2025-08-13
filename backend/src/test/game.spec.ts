@@ -1,9 +1,9 @@
-import { startClean } from '@/database/client';
-import { Game } from '@/database/models/Game/Game';
-import { UserExample } from '@/database/models/User/UserExample';
-import { Sequelize } from 'sequelize';
+import { startClean } from "@/database/client";
+import { Game } from "@/database/models/Game/Game";
+import { UserExample } from "@/database/models/User/UserExample";
+import { Sequelize } from "sequelize";
 
-describe('Game Tests', () => {
+describe("Game Tests", () => {
     let sequelize: Sequelize;
 
     beforeEach(async () => {
@@ -14,7 +14,7 @@ describe('Game Tests', () => {
         await sequelize.close();
     });
 
-    it('should add player to a game', async () => {
+    it("should add player to a game", async () => {
         const game = await Game.create();
         const user = await UserExample.create();
 
@@ -27,7 +27,7 @@ describe('Game Tests', () => {
         expect(await game.hasPlayer(user)).toBe(true);
     });
 
-    it('should remove player from a game', async () => {
+    it("should remove player from a game", async () => {
         const game = await Game.create();
         const user = await UserExample.create();
 
@@ -38,7 +38,7 @@ describe('Game Tests', () => {
         expect((await game.getPlayers()).length).toBe(0);
     });
 
-    it('should create a game with multiple players', async () => {
+    it("should create a game with multiple players", async () => {
         const game = await Game.create();
         const user1 = await UserExample.create();
         const user2 = await UserExample.create();

@@ -10,7 +10,7 @@ import {
     BelongsToManyHasAssociationMixin,
     BelongsToManyHasAssociationsMixin,
     BelongsToManyCountAssociationsMixin,
-} from 'sequelize';
+} from "sequelize";
 import {
     Table,
     Column,
@@ -20,29 +20,29 @@ import {
     AutoIncrement,
     BelongsToMany,
     Default,
-} from 'sequelize-typescript';
-import { User } from '../User/User';
-import { GameUsers } from './GameUsers';
-import { GameDTO } from './GameDTO';
+} from "sequelize-typescript";
+import { User } from "../User/User";
+import { GameUsers } from "./GameUsers";
+import { GameDTO } from "./GameDTO";
 
-export type GameStatus = 'waiting' | 'in_progress' | 'finished';
-export type GameMode = 'normal' | 'codebattle';
+export type GameStatus = "waiting" | "in_progress" | "finished";
+export type GameMode = "normal" | "codebattle";
 
 @Table
 export class Game extends Model<
     InferAttributes<Game>,
-    InferCreationAttributes<Game, { omit: 'id' }>
+    InferCreationAttributes<Game, { omit: "id" }>
 > {
     @PrimaryKey
     @AutoIncrement
     @Column(DataType.INTEGER)
     declare id: number;
 
-    @Default('waiting')
+    @Default("waiting")
     @Column(DataType.STRING)
     declare status: GameStatus;
 
-    @Default('normal')
+    @Default("normal")
     @Column(DataType.STRING)
     declare mode: GameMode;
 

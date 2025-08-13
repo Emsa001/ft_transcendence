@@ -1,16 +1,16 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { Ball } from './Ball';
-import { useBalls } from '../model/useBalls';
+import React, { useEffect, useRef, useState } from "react";
+import { Ball } from "./Ball";
+import { useBalls } from "../model/useBalls";
 
 const gradients = [
-    'bg-gradient-to-br from-gray-900 via-blue-900 to-indigo-900',
-    'bg-gradient-to-r from-indigo-900 via-purple-900 to-blue-900',
-    'bg-gradient-to-tl from-pink-900 via-purple-900 to-indigo-900',
-    'bg-gradient-to-b from-purple-900 via-indigo-900 to-blue-900',
-    'bg-gradient-to-tr from-indigo-900 via-pink-900 to-purple-900',
-    'bg-gradient-to-l from-blue-900 via-indigo-900 to-purple-900',
-    'bg-gradient-to-t from-purple-900 via-indigo-900 to-pink-900',
-    'bg-gradient-to-bl from-pink-900 via-purple-900 to-blue-900',
+    "bg-gradient-to-br from-gray-900 via-blue-900 to-indigo-900",
+    "bg-gradient-to-r from-indigo-900 via-purple-900 to-blue-900",
+    "bg-gradient-to-tl from-pink-900 via-purple-900 to-indigo-900",
+    "bg-gradient-to-b from-purple-900 via-indigo-900 to-blue-900",
+    "bg-gradient-to-tr from-indigo-900 via-pink-900 to-purple-900",
+    "bg-gradient-to-l from-blue-900 via-indigo-900 to-purple-900",
+    "bg-gradient-to-t from-purple-900 via-indigo-900 to-pink-900",
+    "bg-gradient-to-bl from-pink-900 via-purple-900 to-blue-900",
 ];
 
 export default function BallField() {

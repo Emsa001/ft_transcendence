@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 interface InputProps {
     type?: string;
@@ -9,11 +9,11 @@ interface InputProps {
 }
 
 export const Input = ({
-    type = 'text',
+    type = "text",
     value,
     onChange,
-    placeholder = '',
-    className = '',
+    placeholder = "",
+    className = "",
 }: InputProps) => {
     return (
         <input

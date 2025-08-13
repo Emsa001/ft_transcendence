@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 interface ToggleAuthModeProps {
     isRegister: boolean;
@@ -13,7 +13,7 @@ export default function ToggleAuthMode({
         <p className="text-center mt-6 text-sm text-gray-400">
             {isRegister ? (
                 <div>
-                    Already have an account?{' '}
+                    Already have an account?{" "}
                     <button
                         onClick={() => setIsRegister(false)}
                         className="font-semibold text-pink-500 hover:underline"
@@ -24,7 +24,7 @@ export default function ToggleAuthMode({
                 </div>
             ) : (
                 <div>
-                    Don’t have an account?{' '}
+                    Don’t have an account?{" "}
                     <button
                         onClick={() => setIsRegister(true)}
                         className="font-semibold text-pink-500 hover:underline"

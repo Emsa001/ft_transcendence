@@ -1,10 +1,10 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useEffect, useState } from "react";
 
-import gsap from 'gsap';
-import { MotionPathPlugin } from 'gsap/MotionPathPlugin';
+import gsap from "gsap";
+import { MotionPathPlugin } from "gsap/MotionPathPlugin";
 
-import { ShinyText } from '@shared/components/Shiny';
-import BallField from '@features/landing/ui/BallField';
+import { ShinyText } from "@shared/components/Shiny";
+import BallField from "@features/landing/ui/BallField";
 
 gsap.registerPlugin(MotionPathPlugin);
 
@@ -24,7 +24,7 @@ export default function LandingSection() {
                     y: 0,
                     opacity: 1,
                     scale: 1,
-                    ease: 'power4.out',
+                    ease: "power4.out",
                     duration: 1.2,
                     delay: 0.1,
                 }
@@ -35,7 +35,7 @@ export default function LandingSection() {
                 {
                     y: 0,
                     opacity: 1,
-                    ease: 'power3.out',
+                    ease: "power3.out",
                     duration: 1,
                     delay: 0.6,
                 }
@@ -47,7 +47,7 @@ export default function LandingSection() {
                     y: 0,
                     opacity: 1,
                     scale: 1,
-                    ease: 'elastic.out(1, 0.6)',
+                    ease: "elastic.out(1, 0.6)",
                     duration: 1,
                     delay: 0.8,
                 }
@@ -59,7 +59,7 @@ export default function LandingSection() {
                 {
                     y: 0,
                     opacity: 1,
-                    ease: 'power3.out',
+                    ease: "power3.out",
                     duration: 1,
                     delay: 1.2,
                 }
@@ -101,7 +101,7 @@ export default function LandingSection() {
                         bg-[length:200%_200%] hover:bg-[position:100%_0%]
                         hover:scale-105 active:scale-95 text-white"
                 >
-                    {showField ? 'Close Playground' : 'Start Playing'}
+                    {showField ? "Close Playground" : "Start Playing"}
                 </button>
             </div>
         </section>

@@ -44,15 +44,15 @@ declare global {
         function renderButton(
             parent: HTMLElement,
             options: {
-                theme?: 'outline' | 'filled_blue' | 'filled_black';
-                size?: 'small' | 'medium' | 'large';
+                theme?: "outline" | "filled_blue" | "filled_black";
+                size?: "small" | "medium" | "large";
                 text?:
-                    | 'signin_with'
-                    | 'signup_with'
-                    | 'continue_with'
-                    | 'sign_in_with';
-                shape?: 'rectangular' | 'pill' | 'circle' | 'square';
-                logo_alignment?: 'left' | 'center';
+                    | "signin_with"
+                    | "signup_with"
+                    | "continue_with"
+                    | "sign_in_with";
+                shape?: "rectangular" | "pill" | "circle" | "square";
+                logo_alignment?: "left" | "center";
                 width?: string | number;
                 locale?: string;
             }

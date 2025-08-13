@@ -2,7 +2,7 @@ import {
     BelongsToManyGetAssociationsMixin,
     InferAttributes,
     InferCreationAttributes,
-} from 'sequelize';
+} from "sequelize";
 import {
     Table,
     Column,
@@ -14,14 +14,14 @@ import {
     PrimaryKey,
     AutoIncrement,
     BelongsToMany,
-} from 'sequelize-typescript';
-import { UserDTO } from './UserDTO';
-import { Game } from '../Game/Game';
-import { GameUsers } from '../Game/GameUsers';
+} from "sequelize-typescript";
+import { UserDTO } from "./UserDTO";
+import { Game } from "../Game/Game";
+import { GameUsers } from "../Game/GameUsers";
 
 type CreationAttributes = InferCreationAttributes<
     User,
-    { omit: 'id' | 'games' | 'twoFASecret' | 'is2FAEnabled' }
+    { omit: "id" | "games" | "twoFASecret" | "is2FAEnabled" }
 >;
 
 @Table
@@ -64,9 +64,9 @@ export class User extends Model<InferAttributes<User>, CreationAttributes> {
     @Column(DataType.BOOLEAN)
     declare is2FAEnabled: boolean;
 
-    @Default('email')
+    @Default("email")
     @Column(DataType.STRING)
-    declare provider: 'google' | 'email';
+    declare provider: "google" | "email";
 
     @BelongsToMany(() => Game, () => GameUsers)
     declare games: Game[];

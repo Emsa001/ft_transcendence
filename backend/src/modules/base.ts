@@ -1,11 +1,11 @@
-import { HttpException } from '@/utils/exceptions';
-import { FastifyReply } from 'fastify';
+import { HttpException } from "@/utils/exceptions";
+import { FastifyReply } from "fastify";
 
 export class BaseController {
     constructor() {}
 
     respondWithError(reply: FastifyReply, error: unknown) {
-        console.error('Error:', error);
+        console.error("Error:", error);
         if (error instanceof HttpException) {
             return reply
                 .status(error.statusCode)
@@ -13,9 +13,9 @@ export class BaseController {
         }
 
         const message =
-            typeof error === 'object' && error !== null && 'message' in error
+            typeof error === "object" && error !== null && "message" in error
                 ? (error as { message?: string }).message
                 : undefined;
-        return reply.status(500).send(message || 'Internal Server Error');
+        return reply.status(500).send(message || "Internal Server Error");
     }
 }

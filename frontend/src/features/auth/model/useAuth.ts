@@ -1,6 +1,6 @@
-import { useNavigate } from 'react';
-import { twoFactorAuthAlert, AuthApi } from '../';
-import { useUser } from './useUser';
+import { useNavigate } from "react";
+import { twoFactorAuthAlert, AuthApi } from "../";
+import { useUser } from "./useUser";
 
 export const useAuth = () => {
     const { setUser, fetchUser } = useUser();
@@ -9,7 +9,7 @@ export const useAuth = () => {
     const handleLogout = async () => {
         try {
             await AuthApi.logout();
-            navigate('/');
+            navigate("/");
 
             /* 
                 Don't ask question, useStatic is just stupid and does rerenders differently, that's why we need to timeout it to avoid conflicts between rerenders (I'll try to fix it)
@@ -19,7 +19,7 @@ export const useAuth = () => {
                 setUser(null);
             }, 0);
         } catch (error) {
-            console.error('Logout failed:', error);
+            console.error("Logout failed:", error);
         }
     };
 
@@ -32,10 +32,10 @@ export const useAuth = () => {
             if (response?.authUrl) {
                 window.location.href = response.authUrl;
             } else {
-                console.error('Failed to get Google auth URL');
+                console.error("Failed to get Google auth URL");
             }
         } catch (error) {
-            console.error('Error redirecting to Google auth:', error);
+            console.error("Error redirecting to Google auth:", error);
         }
     };
 
@@ -45,22 +45,22 @@ export const useAuth = () => {
      */
     const handleOAuthCallback = async () => {
         const urlParams = new URLSearchParams(window.location.search);
-        const success = urlParams.get('success');
-        const error = urlParams.get('error');
-        const require2fa = urlParams.get('require2fa');
+        const success = urlParams.get("success");
+        const error = urlParams.get("error");
+        const require2fa = urlParams.get("require2fa");
 
         if (error) {
-            console.error('OAuth error:', error);
+            console.error("OAuth error:", error);
             // Handle different error types
             switch (error) {
-                case 'access_denied':
-                    alert('Access denied. Please try again.');
+                case "access_denied":
+                    alert("Access denied. Please try again.");
                     break;
-                case 'auth_failed':
-                    alert('Authentication failed. Please try again.');
+                case "auth_failed":
+                    alert("Authentication failed. Please try again.");
                     break;
-                case 'no_code':
-                    alert('No authorization code received.');
+                case "no_code":
+                    alert("No authorization code received.");
                     break;
                 default:
                     alert(`Authentication error: ${error}`);
@@ -74,10 +74,10 @@ export const useAuth = () => {
             return;
         }
 
-        if (success === 'true') {
+        if (success === "true") {
             await fetchUser();
 
-            if (require2fa === 'true') twoFactorAuthAlert();
+            if (require2fa === "true") twoFactorAuthAlert();
 
             // Clean up URL
             window.history.replaceState(

@@ -1,5 +1,5 @@
-import { AxiosResponse } from 'axios';
-import { APIService } from '@shared/lib/api';
+import { AxiosResponse } from "axios";
+import { APIService } from "@shared/lib/api";
 
 class AuthApi extends APIService {
     /**
@@ -9,10 +9,10 @@ class AuthApi extends APIService {
     async getGoogleAuthUrl(): Promise<{ authUrl: string } | null> {
         try {
             const response: AxiosResponse<{ authUrl: string }> =
-                await this.api.get('/auth/google');
+                await this.api.get("/auth/google");
             return response.data;
         } catch (error) {
-            console.error('Error getting Google auth URL:', error);
+            console.error("Error getting Google auth URL:", error);
             return null;
         }
     }
@@ -23,7 +23,7 @@ class AuthApi extends APIService {
      */
     async getAuthSession(): Promise<AuthResponse> {
         const response: AxiosResponse<AuthResponse> = await this.api.get(
-            '/auth',
+            "/auth",
             {
                 withCredentials: true,
             }
@@ -37,7 +37,7 @@ class AuthApi extends APIService {
      * @returns void
      */
     async logout(): Promise<void> {
-        await this.api.post('/auth/logout');
+        await this.api.post("/auth/logout");
     }
 
     /**
@@ -45,7 +45,7 @@ class AuthApi extends APIService {
      * @returns AxiosResponse containing QR code and secret key
      */
     async initiate2FASetup(): Promise<{ qrImageUrl: string; secret: string }> {
-        const response = await this.api.post('/auth/2fa/setup');
+        const response = await this.api.post("/auth/2fa/setup");
         return response.data;
     }
 
@@ -57,13 +57,13 @@ class AuthApi extends APIService {
      */
     async verify2FACode(code: string, action: Auth2Action): Promise<boolean> {
         try {
-            const response = await this.api.post('/auth/2fa/verify', {
+            const response = await this.api.post("/auth/2fa/verify", {
                 code,
                 action,
             });
             return response.data.success;
         } catch (error) {
-            console.error('Error verifying 2FA code:', error);
+            console.error("Error verifying 2FA code:", error);
             return false;
         }
     }
@@ -74,7 +74,7 @@ class AuthApi extends APIService {
         username: string,
         password: string
     ): Promise<void> {
-        await this.api.post('/auth/register', {
+        await this.api.post("/auth/register", {
             email,
             name: username,
             password,
@@ -83,11 +83,11 @@ class AuthApi extends APIService {
 
     // Why doesn't return anything?
     async login(email: string, password: string): Promise<void> {
-        await this.api.post('/auth/login', { email, password });
+        await this.api.post("/auth/login", { email, password });
     }
 }
 
 const service = new AuthApi(
-    process.env.FT_REACT_PUBLIC_API_HOST || 'http://localhost:3000'
+    process.env.FT_REACT_PUBLIC_API_HOST || "http://localhost:3000"
 );
 export default service;

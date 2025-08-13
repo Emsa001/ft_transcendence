@@ -1,4 +1,4 @@
-import { InferAttributes, InferCreationAttributes } from 'sequelize';
+import { InferAttributes, InferCreationAttributes } from "sequelize";
 import {
     Table,
     Column,
@@ -7,9 +7,9 @@ import {
     PrimaryKey,
     AutoIncrement,
     ForeignKey,
-} from 'sequelize-typescript';
-import { Game } from './Game';
-import { User } from '../User/User';
+} from "sequelize-typescript";
+import { Game } from "./Game";
+import { User } from "../User/User";
 
 /**
  * Extra table that connects users to games.
@@ -20,13 +20,13 @@ import { User } from '../User/User';
     indexes: [
         {
             unique: true,
-            fields: ['userId', 'gameId'],
+            fields: ["userId", "gameId"],
         },
     ],
 })
 export class GameUsers extends Model<
     InferAttributes<GameUsers>,
-    InferCreationAttributes<GameUsers, { omit: 'id' }>
+    InferCreationAttributes<GameUsers, { omit: "id" }>
 > {
     @PrimaryKey
     @AutoIncrement

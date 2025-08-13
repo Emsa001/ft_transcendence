@@ -1,5 +1,5 @@
-import { faker } from '@faker-js/faker';
-import { User } from './User';
+import { faker } from "@faker-js/faker";
+import { User } from "./User";
 
 export class UserExample {
     static async create() {
@@ -8,7 +8,7 @@ export class UserExample {
             name: faker.person.firstName(),
             password: faker.internet.password(),
             avatar: faker.image.avatar(),
-            provider: 'email',
+            provider: "email",
         });
     }
 }

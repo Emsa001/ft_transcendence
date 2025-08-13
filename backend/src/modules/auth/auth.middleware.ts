@@ -1,6 +1,6 @@
-import { FastifyReply, FastifyRequest } from 'fastify';
-import { HttpException } from '@/utils/exceptions';
-import AuthService from './services/auth.service';
+import { FastifyReply, FastifyRequest } from "fastify";
+import { HttpException } from "@/utils/exceptions";
+import AuthService from "./services/auth.service";
 
 export function AUTHORIZED(
     target: any,
@@ -14,14 +14,10 @@ export function AUTHORIZED(
         reply: FastifyReply
     ) {
         const token = request.cookies.session;
-        const isAuthorized = await AuthService.isAuthorized(token);
 
-        if (!isAuthorized) {
-            return reply.status(401).send({
-                error: 'Unauthorized',
-                message: 'Invalid or expired session token',
-            });
-        }
+        const isAuthorized = await AuthService.isAuthorized(token);
+        if (!isAuthorized)
+            throw new HttpException(401, "Missing or invalid token");
 
         return method.call(this, request, reply);
     };

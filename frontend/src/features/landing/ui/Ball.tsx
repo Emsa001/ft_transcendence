@@ -1,7 +1,7 @@
-import React, { useEffect, useRef } from 'react';
-import gsap from 'gsap';
-import { Draggable } from 'gsap/Draggable';
-import { InertiaPlugin } from 'gsap/InertiaPlugin';
+import React, { useEffect, useRef } from "react";
+import gsap from "gsap";
+import { Draggable } from "gsap/Draggable";
+import { InertiaPlugin } from "gsap/InertiaPlugin";
 
 gsap.registerPlugin(Draggable, InertiaPlugin);
 
@@ -16,7 +16,7 @@ const minOpacity = 0.3;
 const maxOpacity = 0.9;
 
 export const Ball = ({
-    className = 'bg-gradient-to-br from-red-400 to-pink-500',
+    className = "bg-gradient-to-br from-red-400 to-pink-500",
     bound,
     maxX = window.innerWidth,
     maxY = window.innerHeight,
@@ -34,12 +34,12 @@ export const Ball = ({
             duration: 1,
             x: x,
             y: y,
-            ease: 'power2.out',
+            ease: "power2.out",
             onComplete: () => {
                 gsap.to(ballRef.current, {
                     duration: 1,
                     opacity: minOpacity,
-                    ease: 'power2.out',
+                    ease: "power2.out",
                 });
             },
         });
@@ -52,7 +52,7 @@ export const Ball = ({
         ball.style.opacity = `${maxOpacity}`;
 
         gsap.defaults({
-            overwrite: 'auto',
+            overwrite: "auto",
         });
 
         gsap.set(ball, {
@@ -81,7 +81,7 @@ export const Ball = ({
                 gsap.to(ball, {
                     duration: 0.1,
                     opacity: maxOpacity,
-                    ease: 'power2.in',
+                    ease: "power2.in",
                 });
             },
             onDragEnd: animateBounce,
@@ -89,10 +89,10 @@ export const Ball = ({
         });
 
         function animateBounce(
-            x: number | string = '+=0',
-            y: number | string = '+=0',
-            vx: number | string = 'auto',
-            vy: number | string = 'auto'
+            x: number | string = "+=0",
+            y: number | string = "+=0",
+            vx: number | string = "auto",
+            vy: number | string = "auto"
         ) {
             gsap.fromTo(
                 ball,
@@ -107,7 +107,7 @@ export const Ball = ({
                         gsap.to(ball, {
                             duration: 0.5,
                             opacity: minOpacity,
-                            ease: 'power2.in',
+                            ease: "power2.in",
                         });
                     },
                 }
@@ -116,10 +116,10 @@ export const Ball = ({
 
         function checkBounds() {
             let r = radius;
-            let x = ballProps('x') as number;
-            let y = ballProps('y') as number;
-            let vx = InertiaPlugin.getVelocity(ball!, 'x');
-            let vy = InertiaPlugin.getVelocity(ball!, 'y');
+            let x = ballProps("x") as number;
+            let y = ballProps("y") as number;
+            let vx = InertiaPlugin.getVelocity(ball!, "x");
+            let vy = InertiaPlugin.getVelocity(ball!, "y");
 
             let xPos = x;
             let yPos = y;

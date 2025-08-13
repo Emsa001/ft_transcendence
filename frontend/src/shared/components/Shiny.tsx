@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 interface ShinyProps {
     text: string;
@@ -8,7 +8,7 @@ interface ShinyProps {
 
 export const ShinyText = ({
     text,
-    gradient = 'from-red-500 via-blue-500 to-green-500',
+    gradient = "from-red-500 via-blue-500 to-green-500",
     opacity = 100,
 }: ShinyProps) => {
     return (

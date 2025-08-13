@@ -1,4 +1,4 @@
-import React from 'react';
+import React from "react";
 
 interface AuthFormProps {
     isRegister: boolean;
@@ -69,7 +69,7 @@ export default function AuthForm({ isRegister }: AuthFormProps) {
                 className="w-full py-3 rounded-lg bg-gradient-to-r from-indigo-500 via-purple-600 to-pink-500
           text-white font-semibold shadow-lg hover:brightness-110 transition duration-300"
             >
-                {isRegister ? 'Register' : 'Log In'}
+                {isRegister ? "Register" : "Log In"}
             </button>
         </form>
     );

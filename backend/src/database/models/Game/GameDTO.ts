@@ -1,5 +1,5 @@
-import { User } from '../User/User';
-import { Game, GameMode, GameStatus } from './Game';
+import { User } from "../User/User";
+import { Game, GameMode, GameStatus } from "./Game";
 
 export class GameDTO {
     id: number;
@@ -9,10 +9,10 @@ export class GameDTO {
 
     constructor(game: Game) {
         if (!game || !game.id)
-            throw new Error('Game data is required to create GameDTO');
+            throw new Error("Game data is required to create GameDTO");
         if (!game.status || !game.mode)
             throw new Error(
-                'Game status and mode are required to create GameDTO'
+                "Game status and mode are required to create GameDTO"
             );
 
         this.id = game.id;

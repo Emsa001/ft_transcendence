@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { Button } from '@shared/components/Button';
-import { Input } from '@shared/components/Input';
-import { useEnable2FA } from '../model/useTwoFactorAuth';
+import React, { useState } from "react";
+import { Button } from "@shared/components/Button";
+import { Input } from "@shared/components/Input";
+import { useEnable2FA } from "../model/useTwoFactorAuth";
 
 /**
  * Component for enabling Two-Factor Authentication
@@ -10,13 +10,13 @@ export const TwoFactorAuthEnable = () => {
     const { initiateSetup, enable2FA, qrImageUrl, error } = useEnable2FA();
 
     const [success, setSuccess] = useState<boolean>(false);
-    const [code, setCode] = useState('');
+    const [code, setCode] = useState("");
 
     const handleEnable = async () => {
         const result = await enable2FA(code);
         if (result) {
             setSuccess(true);
-            setCode('');
+            setCode("");
         }
     };
 
@@ -41,7 +41,7 @@ export const TwoFactorAuthEnable = () => {
                         />
                         <Button onClick={handleEnable}>Submit</Button>
                         <p>Scan the QR code with your authenticator app.</p>
-                        {error && <p style={{ color: 'red' }}>{error}</p>}
+                        {error && <p style={{ color: "red" }}>{error}</p>}
                     </div>
                 )}
             </div>

@@ -1,35 +1,35 @@
-import { FastifyReply, FastifyRequest } from 'fastify';
-import { Controller, GET, POST } from 'fastify-decorators';
+import { FastifyReply, FastifyRequest } from "fastify";
+import { Controller, GET, POST } from "fastify-decorators";
 
-import { BaseController } from '../base';
-import AuthService from './services/auth.service';
-import cookieService from './services/cookie.severice';
-import JwtService from './services/jwt.service';
-import TwoFAService from './services/twoFa.service';
+import { BaseController } from "../base";
+import AuthService from "./services/auth.service";
+import cookieService from "./services/cookie.severice";
+import JwtService from "./services/jwt.service";
+import TwoFAService from "./services/twoFa.service";
 
-import { OAuth2Payload, UserLogin, UserRegister } from './auth.types';
-import { User } from '@/database/models/User/User';
-import { HttpException } from '@/utils/exceptions';
+import { OAuth2Payload, UserLogin, UserRegister } from "./auth.types";
+import { User } from "@/database/models/User/User";
+import { HttpException } from "@/utils/exceptions";
 
-@Controller('/auth')
+@Controller("/auth")
 export class AuthController extends BaseController {
-    @GET('/')
+    @GET("/")
     async getAuthUserController(request: FastifyRequest, reply: FastifyReply) {
         const token = request.cookies.session;
         const { email, twoFA } = JwtService.verify(token);
 
         const user = await User.findByEmail(email);
         if (!user)
-            throw new HttpException(401, 'Unauthorized: Invalid session token');
+            throw new HttpException(401, "Unauthorized: Invalid session token");
 
         return reply.status(200).send({ user: user.toDTO(), twoFA });
     }
 
-    @POST('/logout')
+    @POST("/logout")
     async logoutUserController(request: FastifyRequest, reply: FastifyReply) {
         return reply
-            .clearCookie('session', {
-                path: '/',
+            .clearCookie("session", {
+                path: "/",
             })
             .send({ success: true });
     }
@@ -38,7 +38,7 @@ export class AuthController extends BaseController {
      * Initiate Google OAuth2 redirect flow
      * Returns the Google authorization URL
      */
-    @GET('/google')
+    @GET("/google")
     async googleAuthController(request: FastifyRequest, reply: FastifyReply) {
         const authUrl = AuthService.getGoogleAuthUrl();
         return reply.status(200).send({ authUrl });
@@ -48,12 +48,12 @@ export class AuthController extends BaseController {
      * Handle Google OAuth2 callback
      * Processes the authorization code and authenticates the user
      */
-    @GET('/google/callback')
+    @GET("/google/callback")
     async googleCallbackController(
         request: FastifyRequest,
         reply: FastifyReply
     ) {
-        const url = process.env.FRONTEND_URL || 'http://localhost:3000';
+        const url = process.env.FRONTEND_URL || "http://localhost:3000";
 
         const { code, error } = request.query as {
             code?: string;
@@ -62,23 +62,23 @@ export class AuthController extends BaseController {
 
         if (error || !code)
             return reply.redirect(
-                `${url}/auth?error=${encodeURIComponent(error || 'no_code')}`
+                `${url}/auth?error=${encodeURIComponent(error || "no_code")}`
             );
 
         const { user, token: session } =
             await AuthService.handleGoogleCallback(code);
 
-        reply.setCookie('session', session, cookieService.createSession());
+        reply.setCookie("session", session, cookieService.createSession());
 
         return reply.redirect(
             `${url}/auth?success=true&require2fa=${user.is2FAEnabled}`
         );
     }
 
-    @POST('/2fa/verify')
+    @POST("/2fa/verify")
     async oauth2VerifyController(request: FastifyRequest, reply: FastifyReply) {
         const token = request.cookies.session;
-        const { code, action = 'login' } = request.body as OAuth2Payload;
+        const { code, action = "login" } = request.body as OAuth2Payload;
 
         const { session, shouldSetCookie } = await TwoFAService.verify(
             token,
@@ -87,13 +87,13 @@ export class AuthController extends BaseController {
         );
 
         if (shouldSetCookie) {
-            reply.setCookie('session', session, cookieService.createSession());
+            reply.setCookie("session", session, cookieService.createSession());
         }
 
         return reply.send({ success: true });
     }
 
-    @POST('/2fa/setup')
+    @POST("/2fa/setup")
     async setup2FAController(request: FastifyRequest, reply: FastifyReply) {
         const token = request.cookies.session;
         const { qrImageUrl, otpauth_url } = await TwoFAService.setup(token);
@@ -106,7 +106,7 @@ export class AuthController extends BaseController {
 
     // Beqas
 
-    @POST('/register')
+    @POST("/register")
     async registerUserController(request: FastifyRequest, reply: FastifyReply) {
         const { email, name, password } = request.body as UserRegister;
         const user = await AuthService.register(email, name, password);
@@ -114,12 +114,12 @@ export class AuthController extends BaseController {
         return reply.send(user);
     }
 
-    @POST('/login')
+    @POST("/login")
     async loginUserController(request: FastifyRequest, reply: FastifyReply) {
         const { email, password } = request.body as UserLogin;
         const { user, token } = await AuthService.login(email, password);
 
-        reply.setCookie('session', token, cookieService.createSession());
+        reply.setCookie("session", token, cookieService.createSession());
         return reply.send({
             user: user.is2FAEnabled ? { twoFa: true } : user,
         });

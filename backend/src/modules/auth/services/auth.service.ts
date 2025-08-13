@@ -1,11 +1,11 @@
-import { OAuth2Client } from 'google-auth-library';
-import bcrypt from 'bcrypt';
+import { OAuth2Client } from "google-auth-library";
+import bcrypt from "bcrypt";
 
-import { User } from '@/database/models/User/User';
-import { HttpException } from '@/utils/exceptions';
+import { User } from "@/database/models/User/User";
+import { HttpException } from "@/utils/exceptions";
 
-import { Token } from '../auth.types';
-import jwtService from './jwt.service';
+import { Token } from "../auth.types";
+import jwtService from "./jwt.service";
 
 /*
 
@@ -20,7 +20,7 @@ class AuthService {
     constructor() {
         const redirectUri =
             process.env.GOOGLE_REDIRECT_URI ||
-            'http://localhost:8000/auth/google/callback';
+            "http://localhost:8000/auth/google/callback";
 
         this.oauth2 = new OAuth2Client(
             process.env.GOOGLE_CLIENT_ID,
@@ -29,7 +29,7 @@ class AuthService {
         );
 
         console.log(
-            'Google OAuth2 Client initialized with redirect URI:',
+            "Google OAuth2 Client initialized with redirect URI:",
             redirectUri
         );
     }
@@ -47,7 +47,7 @@ class AuthService {
         const user = await User.findByEmail(email);
         if (!user) return false;
 
-        return twoFA == 'disabled' || twoFA == 'completed';
+        return twoFA == "disabled" || twoFA == "completed";
     }
 
     /*
@@ -57,7 +57,7 @@ class AuthService {
      */
     async googleLogin(token: Token): Promise<{ user: User; token: string }> {
         if (!token)
-            throw new HttpException(400, 'Bad Request: Token is required');
+            throw new HttpException(400, "Bad Request: Token is required");
 
         const ticket = await this.oauth2
             .verifyIdToken({
@@ -70,7 +70,7 @@ class AuthService {
 
         const payload = ticket.getPayload();
         if (!payload || !payload.email)
-            throw new HttpException(401, 'Unauthorized: Invalid token payload');
+            throw new HttpException(401, "Unauthorized: Invalid token payload");
 
         let user = await User.findByEmail(payload.email);
 
@@ -78,9 +78,9 @@ class AuthService {
         if (!user) {
             user = await User.create({
                 email: payload.email!,
-                name: payload.name || payload.email?.split('@')[0] || null,
+                name: payload.name || payload.email?.split("@")[0] || null,
                 avatar: payload.picture || null,
-                provider: 'google',
+                provider: "google",
             });
 
             return {
@@ -98,8 +98,8 @@ class AuthService {
      */
     getGoogleAuthUrl(): string {
         const scopes = [
-            'https://www.googleapis.com/auth/userinfo.email',
-            'https://www.googleapis.com/auth/userinfo.profile',
+            "https://www.googleapis.com/auth/userinfo.email",
+            "https://www.googleapis.com/auth/userinfo.profile",
         ];
 
         const authUrl = this.oauth2.generateAuthUrl({
@@ -120,7 +120,7 @@ class AuthService {
         if (!code) {
             throw new HttpException(
                 400,
-                'Bad Request: Authorization code is required'
+                "Bad Request: Authorization code is required"
             );
         }
 
@@ -136,7 +136,7 @@ class AuthService {
 
         const payload = ticket.getPayload();
         if (!payload || !payload.email) {
-            throw new HttpException(401, 'Unauthorized: Invalid token payload');
+            throw new HttpException(401, "Unauthorized: Invalid token payload");
         }
 
         let user = await User.findByEmail(payload.email);
@@ -145,9 +145,9 @@ class AuthService {
         if (!user) {
             user = await User.create({
                 email: payload.email!,
-                name: payload.name || payload.email?.split('@')[0] || null,
+                name: payload.name || payload.email?.split("@")[0] || null,
                 avatar: payload.picture || null,
-                provider: 'google',
+                provider: "google",
             });
 
             return {
@@ -167,12 +167,12 @@ class AuthService {
         if (!email || !name || !password)
             throw new HttpException(
                 400,
-                'Bad Request: Missing required fields'
+                "Bad Request: Missing required fields"
             );
 
         const existingUser = await User.findByEmail(email);
         if (existingUser)
-            throw new HttpException(409, 'Conflict: User already exists');
+            throw new HttpException(409, "Conflict: User already exists");
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -180,7 +180,7 @@ class AuthService {
             email,
             name,
             password: hashedPassword,
-            provider: 'email',
+            provider: "email",
         });
 
         return user;
@@ -193,16 +193,16 @@ class AuthService {
         if (!email || !password)
             throw new HttpException(
                 400,
-                'Bad Request: Missing required fields'
+                "Bad Request: Missing required fields"
             );
 
         const user = await User.findByEmail(email);
         if (!user || !user.password)
-            throw new HttpException(401, 'Unauthorized: Invalid credentials');
+            throw new HttpException(401, "Unauthorized: Invalid credentials");
 
         const isPasswordValid = await bcrypt.compare(password, user.password);
         if (!isPasswordValid)
-            throw new HttpException(401, 'Unauthorized: Invalid credentials');
+            throw new HttpException(401, "Unauthorized: Invalid credentials");
 
         return { user, token: jwtService.getToken(user) };
     }
