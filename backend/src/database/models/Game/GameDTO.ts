@@ -11,6 +11,8 @@ export class GameDTO {
     mode: GameMode;
     players: GameUserDTO[];
     winner: number | null;
+    updatedAt: Date;
+    createdAt: Date;
 
     constructor(game: Game) {
         if (!game || !game.id)
@@ -28,6 +30,8 @@ export class GameDTO {
             score: player.GameUser.score,
         }));
         this.winner = game.winnerId || null;
+        this.createdAt = game.createdAt;
+        this.updatedAt = game.updatedAt;
     }
 
     toString(): string {

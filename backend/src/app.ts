@@ -40,9 +40,6 @@ export default async function App() {
     // Register Database client and models
     await registerDB(app);
 
-    // Feed database with example data
-    new DatabaseExampleFeed();
-
     // fastify-metrics for Prometheus Database
     await app.register(metricsPlugin, {
         endpoint: "/metrics",

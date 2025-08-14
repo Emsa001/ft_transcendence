@@ -2,33 +2,29 @@ import { Game, GameMode, GameStatus } from "./models/Game/Game";
 import { User } from "./models/User/User";
 import { UserExample } from "./models/User/UserExample";
 
+interface FeedOptions {
+    users?: number;
+    games?: number;
+}
+
 export class DatabaseExampleFeed {
-    users: number = 10;
-    games: number = 5;
+    static async feed(options: FeedOptions = {}): Promise<void> {
+        const { users = 10, games = 5 } = options;
 
-    constructor(users: number = 10, games: number = 5) {
-        this.users = users;
-        this.games = games;
-        this.feed().catch((error) => {
-            console.error("Error feeding database with example data:", error);
-        });
-    }
-
-    private async feed(): Promise<void> {
         console.log("Feeding database with example data...");
-        await this.createExampleUsers(this.users);
-        await this.createExampleGames(this.games);
+        await this.createExampleUsers(users);
+        await this.createExampleGames(games);
         await this.assignGamesToUsers();
         console.log("Database example data created successfully.");
     }
 
-    async createExampleUsers(users: number): Promise<void> {
+    static async createExampleUsers(users: number): Promise<void> {
         for (let i = 0; i < users; i++) {
             await UserExample.create();
         }
     }
 
-    async createExampleGames(games: number): Promise<void> {
+    static async createExampleGames(games: number): Promise<void> {
         const modes = Object.values(GameMode);
 
         for (let i = 0; i < games; i++) {
@@ -39,7 +35,7 @@ export class DatabaseExampleFeed {
         }
     }
 
-    async assignGamesToUsers(): Promise<void> {
+    static async assignGamesToUsers(): Promise<void> {
         const users = await User.findAll();
         const games = await Game.findAll({
             where: { status: GameStatus.WAITING },
@@ -56,7 +52,7 @@ export class DatabaseExampleFeed {
         }
     }
 
-    private getRandomUsers(users: User[], count: number): User[] {
+    static getRandomUsers(users: User[], count: number): User[] {
         const shuffled = users.sort(() => 0.5 - Math.random());
         return shuffled.slice(0, count);
     }

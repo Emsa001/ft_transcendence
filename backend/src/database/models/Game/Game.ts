@@ -109,14 +109,13 @@ export class Game extends Model<InferAttributes<Game>, GameCreationAttributes> {
         return new GameDTO(this);
     }
 
-    playerScore(userId: number, score: number): Promise<[GameUser[], number?]> {
-        return GameUser.increment(
+    playerScore = (userId: number, score: number) =>
+        GameUser.increment(
             { score },
             {
                 where: { userId, gameId: this.id },
             }
         );
-    }
 
     // hooks
 

@@ -3,6 +3,7 @@ import { Sequelize } from "sequelize-typescript";
 import { User } from "./models/User/User";
 import { Game } from "./models/Game/Game";
 import { GameUser } from "./models/Game/GameUser";
+import { DatabaseExampleFeed } from "./feed";
 
 const models = [User, Game, GameUser];
 
@@ -15,6 +16,9 @@ export const registerDB = async (app: FastifyInstance) => {
 
     await sequelize.sync({ force: true });
     app.decorate("sequelize", sequelize);
+
+    // Feed database with example data
+    await DatabaseExampleFeed.feed({});
 };
 
 export const startClean = async () => {

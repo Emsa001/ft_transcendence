@@ -9,9 +9,9 @@ import {
     Default,
     BelongsTo,
 } from "sequelize-typescript";
-import { GameValidators } from "./GameValidators";
 import { Game } from "./Game";
 import { User } from "../User/User";
+import { GameUserHooks } from "./GameHooks";
 
 @Table({
     indexes: [
@@ -43,20 +43,12 @@ export class GameUser extends Model {
 
     // Hooks
     @BeforeCreate
-    static async verifyAddPlayer(gameUser: GameUser): Promise<void> {
-        await GameValidators.validateGameState(gameUser.gameId, 1);
+    static async verifyAddPlayer(GameUser: GameUser) {
+        await GameUserHooks.verifyAddPlayer(GameUser);
     }
 
     @BeforeBulkCreate
-    static async verifyBulkAddPlayer(GameUser: GameUser[]): Promise<void> {
-        const gameGroups: Record<number, number> = {};
-        for (const gu of GameUser) {
-            gameGroups[gu.gameId] = (gameGroups[gu.gameId] || 0) + 1;
-        }
-
-        for (const gameIdStr in gameGroups) {
-            const gameId = parseInt(gameIdStr, 10);
-            await GameValidators.validateGameState(gameId, gameGroups[gameId]);
-        }
+    static async verifyBulkAddPlayer(GameUser: GameUser[]) {
+        await GameUserHooks.verifyBulkAddPlayer(GameUser);
     }
 }
