@@ -22,11 +22,10 @@ export class GameDTO {
         this.id = game.id;
         this.status = game.status;
         this.mode = game.mode;
-        this.players =
-            game.players?.map((player) => ({
-                ...player.toDTO(),
-                score: player.GameUser?.score ?? 0,
-            })) || [];
+        this.players = game.players.map((player) => ({
+            ...player.toDTO(),
+            score: player.GameUser.score,
+        }));
     }
 
     toString(): string {
