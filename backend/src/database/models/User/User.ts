@@ -2,11 +2,11 @@ import {
     BelongsToManyCountAssociationsMixin,
     BelongsToManyGetAssociationsMixin,
     FindOptions,
-	BelongsToManyAddAssociationMixin,
-	BelongsToManyRemoveAssociationMixin,
+    BelongsToManyAddAssociationMixin,
+    BelongsToManyRemoveAssociationMixin,
     InferAttributes,
     InferCreationAttributes,
-	Op,
+    Op,
 } from "sequelize";
 import {
     Table,
@@ -99,7 +99,9 @@ export class User extends Model<InferAttributes<User>, CreationAttributes> {
     declare getTournamentsCount: BelongsToManyCountAssociationsMixin;
 
     // Custom  Methods
-	@BelongsToMany(() => User, () => UserFriends, 'userId1', 'userId2')
+    declare getGames: BelongsToManyGetAssociationsMixin<Game>;
+
+    @BelongsToMany(() => User, () => UserFriends, "userId1", "userId2")
     declare friends: User[];
 
     toDTO(): UserDTO {
