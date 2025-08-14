@@ -3,8 +3,6 @@ import {
     Column,
     Model,
     DataType,
-    PrimaryKey,
-    AutoIncrement,
     ForeignKey,
     BeforeCreate,
     BeforeBulkCreate,

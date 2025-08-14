@@ -76,7 +76,5 @@ export class User extends Model<InferAttributes<User>, CreationAttributes> {
         return new UserDTO(this);
     }
 
-    static async findByEmail(email: string): Promise<User | null> {
-        return this.findOne({ where: { email } });
-    }
+    static findByEmail = (email: string) => User.findOne({ where: { email } });
 }

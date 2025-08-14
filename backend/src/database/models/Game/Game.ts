@@ -87,6 +87,7 @@ export class Game extends Model<InferAttributes<Game>, GameCreationAttributes> {
     @Default(null)
     @Column(DataType.INTEGER)
     declare winnerId?: number;
+
     /*
         Sequelize automatically generates association methods, it's called magic methods:
         https://medium.com/@julianne.marik/sequelize-associations-magic-methods-c72008db91c9
@@ -103,6 +104,7 @@ export class Game extends Model<InferAttributes<Game>, GameCreationAttributes> {
     declare countPlayers: BelongsToManyCountAssociationsMixin;
 
     // Custom methods
+
     toDTO(): GameDTO {
         return new GameDTO(this);
     }
