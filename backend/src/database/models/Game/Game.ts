@@ -23,10 +23,12 @@ import {
     Model,
     BeforeUpdate,
     ForeignKey,
+    AfterUpdate,
 } from "sequelize-typescript";
 import { User } from "../User/User";
 import { GameUser } from "./GameUser";
 import { GameDTO } from "./GameDTO";
+import { GameHooks } from "./GameHooks";
 
 type UserWithGameData = User & {
     GameUser: GameUser;
@@ -119,22 +121,9 @@ export class Game extends Model<InferAttributes<Game>, GameCreationAttributes> {
 
     // hooks
 
-    @BeforeUpdate
+    @AfterUpdate
     static async setGameWinner(instance: Game) {
-        if (instance.status !== GameStatus.FINISHED) return;
-
-        await instance.reload({
-            include: [{ model: User, as: "players" }],
-        });
-
-        if (instance.players.length < 1) return;
-
-        const winner = instance.players.reduce((prev, current) => {
-            return prev.GameUser.score > current.GameUser.score
-                ? prev
-                : current;
-        });
-
-        instance.winnerId = winner.GameUser.userId;
+        console.log(instance.status);
+        await GameHooks.setGameWinner(instance);
     }
 }

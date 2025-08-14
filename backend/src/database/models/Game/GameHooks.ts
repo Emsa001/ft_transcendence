@@ -1,3 +1,5 @@
+import { User } from "../User/User";
+import { Game, GameStatus } from "./Game";
 import { GameUser } from "./GameUser";
 import { GameValidators } from "./GameValidators";
 
@@ -16,5 +18,25 @@ export class GameUserHooks {
             const gameId = parseInt(gameIdStr, 10);
             await GameValidators.validateGameState(gameId, gameGroups[gameId]);
         }
+    }
+}
+
+export class GameHooks {
+    static async setGameWinner(instance: Game) {
+        if (instance.status !== GameStatus.FINISHED) return;
+
+        await instance.reload({
+            include: [{ model: User, as: "players" }],
+        });
+
+        if (instance.players.length < 1) return;
+
+        const winner = instance.players.reduce((prev, current) => {
+            return prev.GameUser.score > current.GameUser.score
+                ? prev
+                : current;
+        });
+
+        instance.winnerId = winner.GameUser.userId;
     }
 }
