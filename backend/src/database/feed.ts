@@ -42,6 +42,7 @@ export class DatabaseExampleFeed {
         });
 
         for (const game of games) {
+            game.status = GameStatus.IN_PROGRESS;
             const randomUsers = this.getRandomUsers(users, 2);
             for (const user of randomUsers) {
                 await game.addPlayer(user);

@@ -111,19 +111,21 @@ export class Game extends Model<InferAttributes<Game>, GameCreationAttributes> {
         return new GameDTO(this);
     }
 
-    playerScore = (userId: number, score: number) =>
+    playerScore = (userId: number, score: number) => {
+        if (this.status !== GameStatus.IN_PROGRESS)
+            throw new Error("Game is not in progress");
         GameUser.increment(
             { score },
             {
                 where: { userId, gameId: this.id },
             }
         );
+    };
 
     // hooks
 
     @AfterUpdate
     static async setGameWinner(instance: Game) {
-        console.log(instance.status);
         await GameHooks.setGameWinner(instance);
     }
 }

@@ -90,6 +90,8 @@ describe("Game Tests", () => {
 
         await game.addPlayers([user1, user2, user3, user4]);
 
+        game.status = GameStatus.IN_PROGRESS;
+
         await game.playerScore(user1.id, 10);
         await game.playerScore(user2.id, 20);
         await game.playerScore(user3.id, 15);
