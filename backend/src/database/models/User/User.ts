@@ -1,10 +1,10 @@
 import {
     BelongsToManyGetAssociationsMixin,
-	BelongsToManyAddAssociationMixin,
-	BelongsToManyRemoveAssociationMixin,
+    BelongsToManyAddAssociationMixin,
+    BelongsToManyRemoveAssociationMixin,
     InferAttributes,
     InferCreationAttributes,
-	Op,
+    Op,
 } from "sequelize";
 import {
     Table,
@@ -75,46 +75,84 @@ export class User extends Model<InferAttributes<User>, CreationAttributes> {
     @BelongsToMany(() => Game, () => GameUsers)
     declare games: Game[];
 
-	@BelongsToMany(() => User, () => UserFriends, 'userId1', 'userId2')
+    declare getGames: BelongsToManyGetAssociationsMixin<Game>;
+
+    @BelongsToMany(() => User, () => UserFriends, "userId1", "userId2")
     declare friends: User[];
+
+    // TODO: Move Methods to some UserRepository
+
+    async getFriends(): Promise<User[]> {
+        const friendships = await UserFriends.findAll({
+            where: {
+                [Op.or]: [{ userId1: this.id }, { userId2: this.id }],
+                accepted: true,
+            },
+        });
+
+        const friendIds = friendships.map((f) =>
+            f.userId1 === this.id ? f.userId2 : f.userId1
+        );
+
+        return User.findAll({
+            where: { id: friendIds },
+        });
+    }
+
+    async addFriend(friend: User): Promise<void> {
+        if (friend.id === this.id) {
+            throw new Error("Cannot add yourself as a friend");
+        }
+
+        const found = await UserFriends.count({
+            where: {
+                [Op.or]: [
+                    { userId1: this.id, userId2: friend.id },
+                    { userId1: friend.id, userId2: this.id },
+                ],
+            },
+        });
+
+        if (found > 0) {
+            throw new Error("Friendship already exists");
+        }
+
+        await UserFriends.create({
+            userId1: this.id,
+            userId2: friend.id,
+        });
+    }
+
+    async acceptFriend(friend: User): Promise<void> {
+        const friendship = await UserFriends.findOne({
+            where: {
+                [Op.or]: [{ userId1: friend.id, userId2: this.id }],
+                accepted: false,
+            },
+        });
+
+        if (!friendship) {
+            throw new Error("No pending invitation found");
+        }
+
+        friendship.accepted = true;
+        await friendship.save();
+    }
+
+    async removeFriend(friend: User): Promise<void> {
+        await UserFriends.destroy({
+            where: {
+                [Op.or]: [
+                    { userId1: this.id, userId2: friend.id },
+                    { userId1: friend.id, userId2: this.id },
+                ],
+            },
+        });
+    }
 
     toDTO(): UserDTO {
         return new UserDTO(this);
     }
 
-    static async findByEmail(email: string): Promise<User | null> {
-        return this.findOne({ where: { email } });
-    }
-
-	async getFriends(): Promise<User[]> {
-		const allFriends = await UserFriends.findAll({
-			where: {
-				[Op.or]: [
-					{ userId1: this.id },
-					{ userId2: this.id }
-				]
-			}
-		});
-
-		const friendIds = allFriends.map(allFriends => {
-			return allFriends.userId1 === this.id ? allFriends.userId2 : allFriends.userId1;
-		});
-
-		return User.findAll({
-			where: {
-				id: friendIds
-			}
-		});
-	}
-
-	async addFriend(friend: User): Promise<UserFriends> {
-		return UserFriends.create({
-			userId1: this.id,
-			userId2: friend.id,
-			accepted: true
-		});
-	}
-
-    declare getGames: BelongsToManyGetAssociationsMixin<Game>;
-	declare removeFriend: BelongsToManyRemoveAssociationMixin<User, number>;
+    static findByEmail = (email: string) => User.findOne({ where: { email } });
 }
