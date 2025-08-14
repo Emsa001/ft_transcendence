@@ -3,8 +3,9 @@ import { Sequelize } from "sequelize-typescript";
 import { User } from "./models/User/User";
 import { Game } from "./models/Game/Game";
 import { GameUsers } from "./models/Game/GameUsers";
+import { UserFriends } from "./models/User/UserFriends";
 
-const models = [User, Game, GameUsers];
+const models = [User, Game, GameUsers, UserFriends];
 
 export const registerDB = async (app: FastifyInstance) => {
     const sequelize = new Sequelize({
