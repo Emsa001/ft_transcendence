@@ -2,7 +2,11 @@ import {
     BelongsToManyCountAssociationsMixin,
     BelongsToManyGetAssociationsMixin,
     FindOptions,
+	BelongsToManyAddAssociationMixin,
+	BelongsToManyRemoveAssociationMixin,
     InferAttributes,
+    InferCreationAttributes,
+	Op,
 } from "sequelize";
 import {
     Table,
@@ -29,14 +33,10 @@ import { chatDBService } from "@/modules/chat/service/db.service";
 import { BlockedUsers } from "./BlockedUsers";
 import { BlockUserService } from "@/modules/user/services/user.block";
 
-type CreationAttributes = {
-    email?: string | null;
-    username: string;
-    password?: string | null;
-    avatar?: string | null;
-    provider?: "google" | "local";
-    status?: "active" | "deleted";
-};
+type CreationAttributes = InferCreationAttributes<
+    User,
+    { omit: "id" | "games" | "twoFASecret" | "is2FAEnabled" | "friends" }
+>;
 
 @Table
 export class User extends Model<InferAttributes<User>, CreationAttributes> {
@@ -99,6 +99,8 @@ export class User extends Model<InferAttributes<User>, CreationAttributes> {
     declare getTournamentsCount: BelongsToManyCountAssociationsMixin;
 
     // Custom  Methods
+	@BelongsToMany(() => User, () => UserFriends, 'userId1', 'userId2')
+    declare friends: User[];
 
     toDTO(): UserDTO {
         return new UserDTO(this);
