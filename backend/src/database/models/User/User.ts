@@ -2,7 +2,11 @@ import {
     BelongsToManyCountAssociationsMixin,
     BelongsToManyGetAssociationsMixin,
     FindOptions,
+	BelongsToManyAddAssociationMixin,
+	BelongsToManyRemoveAssociationMixin,
     InferAttributes,
+    InferCreationAttributes,
+	Op,
 } from "sequelize";
 import {
     Table,
@@ -20,15 +24,12 @@ import { UserDTO } from "./UserDTO";
 import { Game } from "../Game/Game";
 import { GameUser } from "../Game/GameUser";
 import { HttpException } from "@/utils/exceptions";
+import { UserFriends } from "./UserFriends";
 
-type CreationAttributes = {
-    email?: string | null;
-    username: string;
-    password?: string | null;
-    avatar?: string | null;
-    provider?: "google" | "local";
-    status?: "active" | "deleted";
-};
+type CreationAttributes = InferCreationAttributes<
+    User,
+    { omit: "id" | "games" | "twoFASecret" | "is2FAEnabled" | "friends" }
+>;
 
 @Table
 export class User extends Model<InferAttributes<User>, CreationAttributes> {
@@ -86,6 +87,8 @@ export class User extends Model<InferAttributes<User>, CreationAttributes> {
     declare getGamesCount: BelongsToManyCountAssociationsMixin;
 
     // Custom  Methods
+	@BelongsToMany(() => User, () => UserFriends, 'userId1', 'userId2')
+    declare friends: User[];
 
     toDTO(): UserDTO {
         return new UserDTO(this);
@@ -112,4 +115,39 @@ export class User extends Model<InferAttributes<User>, CreationAttributes> {
 
         return user;
     };
+    static async findByEmail(email: string): Promise<User | null> {
+        return this.findOne({ where: { email } });
+    }
+
+	async getFriends(): Promise<User[]> {
+		const allFriends = await UserFriends.findAll({
+			where: {
+				[Op.or]: [
+					{ userId1: this.id },
+					{ userId2: this.id }
+				]
+			}
+		});
+
+		const friendIds = allFriends.map(allFriends => {
+			return allFriends.userId1 === this.id ? allFriends.userId2 : allFriends.userId1;
+		});
+
+		return User.findAll({
+			where: {
+				id: friendIds
+			}
+		});
+	}
+
+	async addFriend(friend: User): Promise<UserFriends> {
+		return UserFriends.create({
+			userId1: this.id,
+			userId2: friend.id,
+			accepted: true
+		});
+	}
+
+    declare getGames: BelongsToManyGetAssociationsMixin<Game>;
+	declare removeFriend: BelongsToManyRemoveAssociationMixin<User, number>;
 }
