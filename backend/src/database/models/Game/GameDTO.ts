@@ -10,6 +10,7 @@ export class GameDTO {
     status: GameStatus;
     mode: GameMode;
     players: GameUserDTO[];
+    winner: number | null;
 
     constructor(game: Game) {
         if (!game || !game.id)
@@ -26,6 +27,7 @@ export class GameDTO {
             ...player.toDTO(),
             score: player.GameUser.score,
         }));
+        this.winner = game.winnerId || null;
     }
 
     toString(): string {

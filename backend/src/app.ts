@@ -37,7 +37,7 @@ export default async function App() {
         });
     });
 
-    // Database
+    // Register Database client and models
     await registerDB(app);
 
     // Feed database with example data

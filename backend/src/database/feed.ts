@@ -29,14 +29,11 @@ export class DatabaseExampleFeed {
     }
 
     async createExampleGames(games: number): Promise<void> {
-        const statuses = Object.values(GameStatus);
         const modes = Object.values(GameMode);
 
         for (let i = 0; i < games; i++) {
-            const status = statuses[i % statuses.length];
             const mode = modes[Math.floor(Math.random() * modes.length)];
             await Game.create({
-                status,
                 mode,
             });
         }
@@ -54,6 +51,8 @@ export class DatabaseExampleFeed {
                 await game.addPlayer(user);
                 await game.playerScore(user.id, Math.floor(Math.random() * 11));
             }
+            game.status = GameStatus.FINISHED;
+            await game.save();
         }
     }
 

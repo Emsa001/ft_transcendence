@@ -9,8 +9,8 @@ import {
     BeforeCreate,
     BeforeBulkCreate,
     Default,
+    BelongsTo,
 } from "sequelize-typescript";
-import { InferAttributes, InferCreationAttributes } from "sequelize";
 import { GameValidators } from "./GameValidators";
 import { Game } from "./Game";
 import { User } from "../User/User";
@@ -23,15 +23,7 @@ import { User } from "../User/User";
         },
     ],
 })
-export class GameUser extends Model<
-    InferAttributes<GameUser>,
-    InferCreationAttributes<GameUser, { omit: "id" }>
-> {
-    @PrimaryKey
-    @AutoIncrement
-    @Column(DataType.INTEGER)
-    declare id: number;
-
+export class GameUser extends Model {
     @ForeignKey(() => User)
     @Column(DataType.INTEGER)
     declare userId: number;
@@ -43,6 +35,13 @@ export class GameUser extends Model<
     @Default(0)
     @Column(DataType.INTEGER)
     declare score: number;
+
+    // Associations
+    @BelongsTo(() => User)
+    declare user: User;
+
+    @BelongsTo(() => Game)
+    declare game: Game;
 
     // Hooks
     @BeforeCreate

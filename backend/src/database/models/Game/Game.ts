@@ -13,7 +13,6 @@ import {
 import {
     Table,
     Column,
-    Model,
     DataType,
     PrimaryKey,
     AutoIncrement,
@@ -21,12 +20,15 @@ import {
     Default,
     AllowNull,
     Scopes,
+    Model,
+    BeforeUpdate,
+    ForeignKey,
 } from "sequelize-typescript";
 import { User } from "../User/User";
 import { GameUser } from "./GameUser";
 import { GameDTO } from "./GameDTO";
 
-export type UserWithGameData = User & {
+type UserWithGameData = User & {
     GameUser: GameUser;
 };
 
@@ -52,7 +54,7 @@ type GameCreationAttributes = {
         include: [
             {
                 model: User,
-                through: { attributes: ["score"] },
+                as: "players",
             },
         ],
     },
@@ -80,6 +82,11 @@ export class Game extends Model<InferAttributes<Game>, GameCreationAttributes> {
     @BelongsToMany(() => User, () => GameUser)
     declare players: UserWithGameData[];
 
+    @ForeignKey(() => GameUser)
+    @AllowNull(true)
+    @Default(null)
+    @Column(DataType.INTEGER)
+    declare winnerId?: number;
     /*
         Sequelize automatically generates association methods, it's called magic methods:
         https://medium.com/@julianne.marik/sequelize-associations-magic-methods-c72008db91c9
@@ -107,5 +114,26 @@ export class Game extends Model<InferAttributes<Game>, GameCreationAttributes> {
                 where: { userId, gameId: this.id },
             }
         );
+    }
+
+    // hooks
+
+    @BeforeUpdate
+    static async setGameWinner(instance: Game) {
+        if (instance.status !== GameStatus.FINISHED) return;
+
+        await instance.reload({
+            include: [{ model: User, as: "players" }],
+        });
+
+        if (instance.players.length < 1) return;
+
+        const winner = instance.players.reduce((prev, current) => {
+            return prev.GameUser.score > current.GameUser.score
+                ? prev
+                : current;
+        });
+
+        instance.winnerId = winner.GameUser.userId;
     }
 }

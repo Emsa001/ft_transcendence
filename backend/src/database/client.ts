@@ -25,6 +25,6 @@ export const startClean = async () => {
         models,
     });
 
-    await sequelize.sync({ force: true });
+    await sequelize.sync();
     return sequelize;
 };

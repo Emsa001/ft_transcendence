@@ -1,8 +1,4 @@
-import {
-    BelongsToManyGetAssociationsMixin,
-    InferAttributes,
-    InferCreationAttributes,
-} from "sequelize";
+import { BelongsToManyGetAssociationsMixin, InferAttributes } from "sequelize";
 import {
     Table,
     Column,
@@ -19,10 +15,13 @@ import { UserDTO } from "./UserDTO";
 import { Game } from "../Game/Game";
 import { GameUser } from "../Game/GameUser";
 
-type CreationAttributes = InferCreationAttributes<
-    User,
-    { omit: "id" | "games" | "twoFASecret" | "is2FAEnabled" }
->;
+type CreationAttributes = {
+    email: string;
+    name: string | null;
+    password?: string | null;
+    avatar?: string | null;
+    provider?: "google" | "email";
+};
 
 @Table
 export class User extends Model<InferAttributes<User>, CreationAttributes> {
@@ -36,11 +35,9 @@ export class User extends Model<InferAttributes<User>, CreationAttributes> {
     @Column(DataType.STRING)
     declare email: string;
 
-    @AllowNull(true)
-    @Default(null)
     @Column({
         type: DataType.STRING,
-        validate: { len: [3, 100] },
+        validate: { len: [2, 100] },
     })
     declare name: string | null;
 
@@ -60,13 +57,12 @@ export class User extends Model<InferAttributes<User>, CreationAttributes> {
     declare twoFASecret: string | null;
 
     @Default(false)
-    @AllowNull(true)
     @Column(DataType.BOOLEAN)
     declare is2FAEnabled: boolean;
 
     @Default("email")
     @Column(DataType.STRING)
-    declare provider: "google" | "email";
+    declare provider: CreationAttributes["provider"];
 
     @BelongsToMany(() => Game, () => GameUser)
     declare games: Game[];
