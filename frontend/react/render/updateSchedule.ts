@@ -19,8 +19,7 @@ async function ensureRefExists(component: ReactComponentInstance) {
         attempts++;
     }
     if (!component.vNode?.ref) {
-        console.error("Component ref is still null after waiting.");
-        throw new Error("Component ref is still null after waiting.");
+        throw new Error(`Component ${component.name} ref is still null after waiting.`);
     }
 }
 

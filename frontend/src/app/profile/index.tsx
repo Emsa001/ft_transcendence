@@ -1,48 +1,65 @@
-import React, { useNavigate } from "react";
+import React, { useEffect, useNavigate } from "react";
 import {
     LogoutButton,
     TwoFactorAuthDisable,
     TwoFactorAuthEnable,
 } from "@features/auth";
 import { useUser } from "@features/auth/model/useUser";
+import { UserStats } from "@features/user/ui/UserStats";
+import { GameHistory } from "@features/user/ui/GameHistory";
+import { UserAvatar } from "@features/user/ui/UserAvatar";
 
-// TODO: Divide to components, this is just test
 export const Profile = () => {
-    const { user } = useUser();
+    // Just for test - get user ID from URL query params to see their stats
+    const query = new URLSearchParams(window.location.search);
+    const userId = query.get("id");
+
+    const { user, loading } = useUser();
     const navigate = useNavigate();
 
-    if (!user) {
-        navigate("/auth");
-        return <div />;
-    }
+    useEffect(() => {
+        if (!user && !loading) navigate("/auth");
+    }, [user, loading]);
+
+    if (!user) return <div />;
 
     return (
-        <div className="text-white flex flex-col w-screen h-screen items-center justify-center">
-            <h2>User Information</h2>
-            <img
-                src={user.avatar}
-                alt="User Avatar"
-                style={{ width: "100px", height: "100px", borderRadius: "50%" }}
-            />
-            <p>
-                <strong>ID:</strong> {user.id}
-            </p>
-            <p>
-                <strong>Name:</strong> {user.name}
-            </p>
-            <p>
-                <strong>Email:</strong> {user.email}
-            </p>
+        <div className="min-h-screen w-full bg-gradient-to-br from-purple-600 via-blue-600 to-purple-700 p-6 flex flex-col items-center justify-center">
+            {/* Profile Card */}
+            <div className="max-w-3xl w-full bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl shadow-lg p-6 mb-8 text-white">
+                <div className="flex flex-col md:flex-row items-center gap-6">
+                    <UserAvatar src={user.avatar} name={user.name} />
+                    <div>
+                        <h2 className="text-2xl font-bold">{user.name}</h2>
+                        <p className="text-white/80">ID: {user.id}</p>
+                        <p className="text-white/80">{user.email}</p>
+                    </div>
+                </div>
 
-            <hr />
+                {/* 2FA Toggle */}
+                <div className="mt-6">
+                    {user.is2FAEnabled ? (
+                        <TwoFactorAuthDisable />
+                    ) : (
+                        <TwoFactorAuthEnable />
+                    )}
+                </div>
 
-            {user.is2FAEnabled ? (
-                <TwoFactorAuthDisable />
-            ) : (
-                <TwoFactorAuthEnable />
-            )}
+                {/* Logout */}
+                <div className="mt-4">
+                    <LogoutButton />
+                </div>
+            </div>
 
-            <LogoutButton />
+            {/* Stats */}
+            <div className="max-w-3xl w-full mb-8">
+                <UserStats userId={userId || user.id} />
+            </div>
+
+            {/* Game History */}
+            <div className="max-w-3xl w-full">
+                <GameHistory userId={userId || user.id} />
+            </div>
         </div>
     );
 };
