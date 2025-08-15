@@ -51,13 +51,15 @@
         "ts-jest": "^29.4.1"
     },
     "jest": {
+        "preset": "ts-jest",
         "moduleFileExtensions": [
             "js",
             "json",
             "ts"
         ],
         "moduleNameMapper": {
-            "^@/(.*)$": "<rootDir>/$1"
+            "^@/(.*)$": "<rootDir>/$1",
+            "^shared$": "<rootDir>/../../shared/src/index.ts"
         },
         "rootDir": "src",
         "testRegex": ".*\\.spec\\.ts$",
