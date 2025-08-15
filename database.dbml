@@ -1,12 +1,8 @@
-// Database schema for ft_transcendence project
-// Generated from Sequelize TypeScript models
-
 Project ft_transcendence {
   database_type: 'SQLite'
   Note: 'A transcendence gaming platform with user management and game tracking'
 }
 
-// Users table
 Table users {
   id integer [primary key, increment, not null]
   email varchar(255) [unique, not null]
@@ -22,7 +18,6 @@ Table users {
   Note: 'Users table storing authentication and profile information'
 }
 
-// Games table
 Table games {
   id integer [primary key, increment, not null]
   status varchar(50) [default: 'waiting', not null, note: 'Game status: waiting, in_progress, finished']
@@ -35,7 +30,6 @@ Table games {
   Note: 'Games table storing game instances and their metadata'
 }
 
-// Junction table for many-to-many relationship between users and games
 Table game_users {
   id integer [primary key, increment, not null]
   userId integer [not null]
@@ -51,7 +45,7 @@ Table game_users {
   Note: 'Junction table linking users to games with player-specific data like scores'
 }
 
-// Define relationships
+// Relationships
 Ref: game_users.userId > users.id [delete: cascade]
 Ref: game_users.gameId > games.id [delete: cascade]
 Ref: users.id < games.winnerId [delete: set null]
