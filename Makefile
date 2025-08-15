@@ -12,13 +12,9 @@ build:
 	npm run build --prefix ./frontend
 
 clean:
-	rm -rf ./frontend/node_modules
-	rm -rf ./frontend/dist
-	rm -rf ./frontend/package-lock.json
-
-	rm -rf ./backend/node_modules
-	rm -rf ./backend/dist
-	rm -rf ./backend/package-lock.json
+	rm -rf ./*/node_modules
+	rm -rf ./*/dist
+	rm -rf ./*/package-lock.json
 
 frontend: shared
 	npm install --prefix ./frontend

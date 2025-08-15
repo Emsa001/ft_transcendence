@@ -4,10 +4,9 @@
     "main": "dist/index.js",
     "types": "dist/index.d.ts",
     "scripts": {
-        "build": "tsc ./src/index.ts --outDir dist --declaration"
+        "build": "npx tsc"
     },
     "dependencies": {
-        "tsc": "^2.0.4",
         "typescript": "^5.9.2"
     }
 }
