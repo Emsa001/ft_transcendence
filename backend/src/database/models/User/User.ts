@@ -1,4 +1,8 @@
-import { BelongsToManyGetAssociationsMixin, InferAttributes } from "sequelize";
+import {
+    BelongsToManyCountAssociationsMixin,
+    BelongsToManyGetAssociationsMixin,
+    InferAttributes,
+} from "sequelize";
 import {
     Table,
     Column,
@@ -14,6 +18,7 @@ import {
 import { UserDTO } from "./UserDTO";
 import { Game } from "../Game/Game";
 import { GameUser } from "../Game/GameUser";
+import { HttpException } from "@/utils/exceptions";
 
 type CreationAttributes = {
     email: string;
@@ -69,6 +74,7 @@ export class User extends Model<InferAttributes<User>, CreationAttributes> {
 
     // Magic Methods
     declare getGames: BelongsToManyGetAssociationsMixin<Game>;
+    declare getGamesCount: BelongsToManyCountAssociationsMixin;
 
     // Custom  Methods
 
@@ -77,4 +83,16 @@ export class User extends Model<InferAttributes<User>, CreationAttributes> {
     }
 
     static findByEmail = (email: string) => User.findOne({ where: { email } });
+    static findById = async (id: number | string | undefined) => {
+        if (typeof id === "undefined")
+            throw new HttpException(400, "User ID is required");
+
+        if (typeof id === "string" && Number.isNaN(Number(id)))
+            throw new HttpException(400, "Invalid user ID");
+
+        const user = await User.findByPk(id);
+        if (!user) throw new HttpException(404, "User not found");
+
+        return user;
+    };
 }

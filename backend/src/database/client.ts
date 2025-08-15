@@ -18,7 +18,10 @@ export const registerDB = async (app: FastifyInstance) => {
     app.decorate("sequelize", sequelize);
 
     // Feed database with example data
-    await DatabaseExampleFeed.feed({});
+    await DatabaseExampleFeed.feed({
+        users: 3,
+        games: 30,
+    });
 };
 
 export const startClean = async () => {

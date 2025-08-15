@@ -1,6 +1,6 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { HttpException } from "@/utils/exceptions";
-import AuthService from "./services/auth.service";
+import authService from "./services/auth.service";
 
 export function AUTHORIZED(
     target: any,
@@ -15,7 +15,7 @@ export function AUTHORIZED(
     ) {
         const token = request.cookies.session;
 
-        const isAuthorized = await AuthService.isAuthorized(token);
+        const isAuthorized = await authService.isAuthorized(token);
         if (!isAuthorized)
             throw new HttpException(401, "Missing or invalid token");
 

@@ -13,7 +13,6 @@ import { UserController } from "./modules/user/user.controller";
 import { AuthController } from "./modules/auth/auth.controller";
 
 import metricsPlugin from "fastify-metrics";
-import { DatabaseExampleFeed } from "./database/feed";
 import { GameController } from "./modules/game/game.controller";
 import { HttpException } from "./utils/exceptions";
 
