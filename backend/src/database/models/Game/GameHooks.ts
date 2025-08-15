@@ -38,7 +38,7 @@ export class GameHooks {
                 : current;
         });
 
-        instance.winnerId = winner.GameUser.userId;
+        instance.winnerId = winner.id;
         await instance.save();
     }
 }
