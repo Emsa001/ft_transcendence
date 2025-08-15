@@ -13,7 +13,10 @@ import { UserController } from "./modules/user/user.controller";
 import { AuthController } from "./modules/auth/auth.controller";
 
 import metricsPlugin from "fastify-metrics";
+
 import { GameController } from "./modules/game/game.controller";
+import { GameService } from "./modules/game/game.service";
+
 import { HttpException } from "./utils/exceptions";
 import websocketPlugin from "@fastify/websocket";
 
@@ -36,6 +39,8 @@ export const getApp = () => {
 };
 
 import { WebSocketServer } from 'ws';
+
+
 
 export default async function App() {
     app = Fastify({ logger: false });
@@ -95,6 +100,8 @@ export default async function App() {
     // Create an HTTP server from Fastify's raw server
     const wss = new WebSocketServer({ noServer: true});
 
+    const gameService = new GameService();
+
     // Handle websocket upgrade requests
     app.server.on('upgrade', (request, socket, head) => {
     // Only upgrade certain paths if you want to restrict
@@ -106,12 +113,37 @@ export default async function App() {
         socket.destroy();
     }
     });
+    
+    // Initialize game service with WebSocket server
+    gameService.initialize(wss);
 
-    // Handle WS connections
-    wss.on("connection", (ws, req) => {
-        console.log(`Client connected to ${req.url}`);
-        ws.send(`Hello from ${req.url}`);
+    
+
+    // Cleanup on server shutdown
+    process.on('SIGTERM', () => {
+        gameService.cleanup();
+        wss.close();
+        process.exit(0);
     });
+
+    process.on('SIGINT', () => {
+        gameService.cleanup();
+        wss.close();
+        process.exit(0);
+    });
+
+
+
+
+
+
+
+
+    // // Handle WS connections
+    // wss.on("connection", (ws, req) => {
+    //     console.log(`Client connected to ${req.url}`);
+    //     ws.send(`Hello from ${req.url}`);
+    // });
 
     return app;
 }

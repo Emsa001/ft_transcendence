@@ -8,7 +8,7 @@
     "main": "src/bin/server.ts",
     "scripts": {
         "format": "prettier --write \"src/**/*.ts\"",
-        "start": "npx tsx src/bin/server.ts",
+        "start": "npx tsx -r tsconfig-paths/register src/bin/server.ts",
         "dev": "tsx watch src/bin/server.ts",
         "test": "jest",
         "test:watch": "jest --watch",
@@ -39,6 +39,7 @@
         "sharp": "^0.34.3",
         "speakeasy": "^2.0.0",
         "sqlite3": "^5.1.7",
+        "tsconfig-paths": "^4.2.0",
         "tsx": "^4.19.4",
         "typescript": "^5.8.3",
         "ws": "^8.18.3"
