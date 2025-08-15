@@ -35,6 +35,8 @@ export const getApp = () => {
     return app;
 };
 
+import { WebSocketServer } from 'ws';
+
 export default async function App() {
     app = Fastify({ logger: false });
 
@@ -87,6 +89,28 @@ export default async function App() {
         endpoint: "/metrics",
         defaultMetrics: { enabled: true },
         routeMetrics: { enabled: true },
+    });
+
+
+    // Create an HTTP server from Fastify's raw server
+    const wss = new WebSocketServer({ noServer: true});
+
+    // Handle websocket upgrade requests
+    app.server.on('upgrade', (request, socket, head) => {
+    // Only upgrade certain paths if you want to restrict
+    if (request.url === '/ws') {
+        wss.handleUpgrade(request, socket, head, (ws) => {
+        wss.emit('connection', ws, request);
+        });
+    } else {
+        socket.destroy();
+    }
+    });
+
+    // Handle WS connections
+    wss.on("connection", (ws, req) => {
+        console.log(`Client connected to ${req.url}`);
+        ws.send(`Hello from ${req.url}`);
     });
 
     return app;

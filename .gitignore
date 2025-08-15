@@ -4,3 +4,4 @@ package-lock.json
 dist
 .env
 *.sqlite
+backend/index.js
