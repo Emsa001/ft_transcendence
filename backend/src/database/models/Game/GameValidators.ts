@@ -1,4 +1,5 @@
-import { Game, GameStatus } from "./Game";
+import { GameStatus } from "shared";
+import { Game } from "./Game";
 import { GameUser } from "./GameUser";
 
 export class GameValidators {

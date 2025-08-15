@@ -1,4 +1,5 @@
-import { Game, GameMode, GameStatus } from "./models/Game/Game";
+import { GameMode, GameStatus } from "shared";
+import { Game } from "./models/Game/Game";
 import { User } from "./models/User/User";
 import { UserExample } from "./models/User/UserExample";
 

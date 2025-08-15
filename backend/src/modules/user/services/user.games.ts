@@ -1,19 +1,8 @@
 import { Game } from "@/database/models/Game/Game";
 import { User } from "@/database/models/User/User";
 import { Op } from "sequelize";
+import { GameHistoryFilter, GetStatisticsResponse } from "shared";
 
-interface GetStatisticsResponse {
-    totalGames: number;
-    wins: number;
-    losses: number;
-    winRate: number;
-}
-
-interface GameHistoryFilter {
-    start?: Date;
-    end?: Date;
-    limit?: number;
-}
 export class UserGamesService {
     static async getHistory(
         user: User | number,

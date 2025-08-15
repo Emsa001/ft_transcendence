@@ -20,13 +20,17 @@ clean:
 	rm -rf ./backend/dist
 	rm -rf ./backend/package-lock.json
 
-frontend:
+frontend: shared
 	npm install --prefix ./frontend
 
-backend:
+backend: shared
 	npm install --prefix ./backend
 
-install: frontend backend
+shared:
+	npm install --prefix ./shared
+	npm run build --prefix ./shared
+
+install: frontend backend 
 
 format:
 	npm run format --prefix ./frontend
@@ -39,4 +43,4 @@ docker:
 	docker-compose down
 	docker-compose up --build
 
-.PHONY: all run dev build clean frontend backend docker install
+.PHONY: all run dev build clean frontend backend docker install shared

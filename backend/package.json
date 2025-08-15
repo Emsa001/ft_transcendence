@@ -32,6 +32,7 @@
         "reflect-metadata": "^0.2.2",
         "sequelize": "^6.37.7",
         "sequelize-typescript": "^2.1.6",
+        "shared": "file:../shared",
         "speakeasy": "^2.0.0",
         "sqlite3": "^5.1.7",
         "tsx": "^4.19.4",
@@ -45,8 +46,8 @@
         "@types/qrcode": "^1.5.5",
         "@types/speakeasy": "^2.0.10",
         "@types/validator": "^13.15.2",
-        "prettier": "^3.6.2",
         "jest": "^30.0.5",
+        "prettier": "^3.6.2",
         "ts-jest": "^29.4.1"
     },
     "jest": {
@@ -61,7 +62,7 @@
         "rootDir": "src",
         "testRegex": ".*\\.spec\\.ts$",
         "transform": {
-            "^.+\\.(t|j)s$": "ts-jest"
+            "^.+\\.ts$": "ts-jest"
         },
         "collectCoverageFrom": [
             "**/*.(t|j)s"

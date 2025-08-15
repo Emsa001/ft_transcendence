@@ -1,6 +1,7 @@
+import { UserDTOType } from "shared";
 import { User } from "./User";
 
-export class UserDTO {
+export class UserDTO implements UserDTOType {
     id: number;
     name: string;
     email: string;

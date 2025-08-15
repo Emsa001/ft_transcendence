@@ -1,5 +1,6 @@
+import { GameStatus } from "shared";
 import { User } from "../User/User";
-import { Game, GameStatus } from "./Game";
+import { Game } from "./Game";
 import { GameUser } from "./GameUser";
 import { GameValidators } from "./GameValidators";
 

@@ -29,21 +29,11 @@ import { User } from "../User/User";
 import { GameUser } from "./GameUser";
 import { GameDTO } from "./GameDTO";
 import { GameHooks } from "./GameHooks";
+import { GameMode, GameStatus } from "shared";
 
 type UserWithGameData = User & {
     GameUser: GameUser;
 };
-
-export enum GameStatus {
-    WAITING = "waiting",
-    IN_PROGRESS = "in_progress",
-    FINISHED = "finished",
-}
-
-export enum GameMode {
-    NORMAL = "normal",
-    CODE = "code",
-}
 
 type GameCreationAttributes = {
     status?: GameStatus;

@@ -1,7 +1,8 @@
 import { startClean } from "@/database/client";
-import { Game, GameStatus } from "@/database/models/Game/Game";
+import { Game } from "@/database/models/Game/Game";
 import { UserExample } from "@/database/models/User/UserExample";
 import { Sequelize } from "sequelize";
+import { GameStatus } from "shared";
 
 describe("Game Tests", () => {
     let sequelize: Sequelize;

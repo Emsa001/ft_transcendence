@@ -1,15 +1,11 @@
-import { UserDTO } from "../User/UserDTO";
-import { Game, GameMode, GameStatus } from "./Game";
+import { GameDTOType, GameMode, GameStatus, GameUserDTOType } from "shared";
+import { Game } from "./Game";
 
-type GameUserDTO = UserDTO & {
-    score: number;
-};
-
-export class GameDTO {
+export class GameDTO implements GameDTOType {
     id: number;
     status: GameStatus;
     mode: GameMode;
-    players: GameUserDTO[];
+    players: GameUserDTOType[];
     winner: number | null;
     updatedAt: Date;
     createdAt: Date;
