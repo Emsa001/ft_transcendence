@@ -1,11 +1,11 @@
+import { UserDTOType } from "shared";
 import { User } from "./User";
 
-export class UserDTO {
+export class UserDTO implements UserDTOType {
     id: number;
     name: string;
     email: string;
     avatar: string | null;
-    is2FAEnabled: boolean;
 
     constructor(user: User) {
         if (!user || !user.id)
@@ -19,7 +19,6 @@ export class UserDTO {
         this.name = user.name;
         this.email = user.email;
         this.avatar = user.avatar;
-        this.is2FAEnabled = user.is2FAEnabled || false;
     }
 
     toString() {
@@ -28,7 +27,6 @@ export class UserDTO {
             Name: ${this.name}
             Email: ${this.email}
             Avatar: ${this.avatar ? this.avatar : "No avatar set"}
-            2FA Enabled: ${this.is2FAEnabled ? "Yes" : "No"}
         `;
     }
 }

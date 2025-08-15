@@ -1,0 +1,13 @@
+{
+    "name": "shared",
+    "version": "1.0.0",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "scripts": {
+        "build": "tsc ./src/index.ts --outDir dist --declaration"
+    },
+    "dependencies": {
+        "tsc": "^2.0.4",
+        "typescript": "^5.9.2"
+    }
+}

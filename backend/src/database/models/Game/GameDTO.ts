@@ -1,11 +1,14 @@
-import { User } from "../User/User";
-import { Game, GameMode, GameStatus } from "./Game";
+import { GameDTOType, GameMode, GameStatus, GameUserDTOType } from "shared";
+import { Game } from "./Game";
 
-export class GameDTO {
+export class GameDTO implements GameDTOType {
     id: number;
     status: GameStatus;
     mode: GameMode;
-    players: User[];
+    players: GameUserDTOType[];
+    winner: number | null;
+    updatedAt: Date;
+    createdAt: Date;
 
     constructor(game: Game) {
         if (!game || !game.id)
@@ -18,7 +21,13 @@ export class GameDTO {
         this.id = game.id;
         this.status = game.status;
         this.mode = game.mode;
-        this.players = game.players || [];
+        this.players = game.players.map((player) => ({
+            ...player.toDTO(),
+            score: player.GameUser.score,
+        }));
+        this.winner = game.winnerId || null;
+        this.createdAt = game.createdAt;
+        this.updatedAt = game.updatedAt;
     }
 
     toString(): string {

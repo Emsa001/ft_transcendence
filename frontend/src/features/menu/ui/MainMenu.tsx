@@ -4,7 +4,6 @@ import { Icon } from "@shared/components/Icon";
 import { FaHome, FaGamepad, FaUser, FaCog } from "react-icons/fa";
 import { useUser } from "@features/auth/model/useUser";
 
-
 let loaded = false;
 
 export default function MainMenu() {
@@ -30,25 +29,23 @@ export default function MainMenu() {
         }
     }, []);
 
-    const menuItems = [
-        { label: "" , icon: null, link: "" },
-    ];
+    const menuItems = [{ label: "", icon: null, link: "" }];
 
-    const profileItems = [
-        { label: "Profile", icon: FaUser, link: "/profile" },
-    ];
+    const profileItems = [{ label: "Profile", icon: FaUser, link: "/profile" }];
 
-    const loginItems = [
-        { label: "Login", icon: FaUser, link: "/auth" },
-    ];
-
+    const loginItems = [{ label: "Login", icon: FaUser, link: "/auth" }];
 
     const items = user ? profileItems : loginItems;
 
     return (
         <nav className="fixed top-0 left-0 w-full z-50 bg-gray-400/10 backdrop-blur-xl shadow-lg text-white px-6 py-4 flex">
             <div className="flex w-full">
-                <button onClick={() => navigate("./")} className="text-3xl font-bold bg-gradient-to-r from-pink-400 via-purple-400 to-blue-400 text-transparent bg-clip-text">ft_transcendence</button>
+                <button
+                    onClick={() => navigate("./")}
+                    className="text-3xl font-bold bg-gradient-to-r from-pink-400 via-purple-400 to-blue-400 text-transparent bg-clip-text"
+                >
+                    ft_transcendence
+                </button>
             </div>
 
             <div className="flex justify-center w-full">
@@ -64,7 +61,10 @@ export default function MainMenu() {
             </div>
 
             {/* {condition ? <ButtonA /> : <ButtonB />} */}
-            <div className="flex w-full justify-end space-x-4 pr-2" ref={menuRef}>
+            <div
+                className="flex w-full justify-end space-x-4 pr-2"
+                ref={menuRef}
+            >
                 {items.map((item, idx) => (
                     <button
                         key={idx}

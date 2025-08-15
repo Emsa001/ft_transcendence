@@ -1,6 +1,5 @@
 import {
     InferAttributes,
-    InferCreationAttributes,
     BelongsToManyAddAssociationMixin,
     BelongsToManyAddAssociationsMixin,
     BelongsToManyGetAssociationsMixin,
@@ -14,40 +13,72 @@ import {
 import {
     Table,
     Column,
-    Model,
     DataType,
     PrimaryKey,
     AutoIncrement,
     BelongsToMany,
     Default,
+    AllowNull,
+    Scopes,
+    Model,
+    BeforeUpdate,
+    ForeignKey,
+    AfterUpdate,
 } from "sequelize-typescript";
 import { User } from "../User/User";
-import { GameUsers } from "./GameUsers";
+import { GameUser } from "./GameUser";
 import { GameDTO } from "./GameDTO";
+import { GameHooks } from "./GameHooks";
+import { GameMode, GameStatus } from "shared";
 
-export type GameStatus = "waiting" | "in_progress" | "finished";
-export type GameMode = "normal" | "codebattle";
+type UserWithGameData = User & {
+    GameUser: GameUser;
+};
 
+type GameCreationAttributes = {
+    status?: GameStatus;
+    mode?: GameMode;
+    maxPlayers?: number;
+};
+
+@Scopes(() => ({
+    defaultScope: {
+        include: [
+            {
+                model: User,
+                as: "players",
+            },
+        ],
+    },
+}))
 @Table
-export class Game extends Model<
-    InferAttributes<Game>,
-    InferCreationAttributes<Game, { omit: "id" }>
-> {
+export class Game extends Model<InferAttributes<Game>, GameCreationAttributes> {
     @PrimaryKey
     @AutoIncrement
     @Column(DataType.INTEGER)
     declare id: number;
 
-    @Default("waiting")
+    @Default(GameStatus.WAITING)
     @Column(DataType.STRING)
     declare status: GameStatus;
 
-    @Default("normal")
+    @Default(GameMode.NORMAL)
     @Column(DataType.STRING)
     declare mode: GameMode;
 
-    @BelongsToMany(() => User, () => GameUsers)
-    declare players: User[];
+    @Default(2)
+    @AllowNull(false)
+    @Column(DataType.INTEGER)
+    declare maxPlayers: number;
+
+    @BelongsToMany(() => User, () => GameUser)
+    declare players: UserWithGameData[];
+
+    @ForeignKey(() => GameUser)
+    @AllowNull(true)
+    @Default(null)
+    @Column(DataType.INTEGER)
+    declare winnerId?: number;
 
     /*
         Sequelize automatically generates association methods, it's called magic methods:
@@ -64,8 +95,27 @@ export class Game extends Model<
     declare hasPlayers: BelongsToManyHasAssociationsMixin<User, number>;
     declare countPlayers: BelongsToManyCountAssociationsMixin;
 
-    // methods
+    // Custom methods
+
     toDTO(): GameDTO {
         return new GameDTO(this);
+    }
+
+    playerScore = (userId: number, score: number) => {
+        if (this.status !== GameStatus.IN_PROGRESS)
+            throw new Error("Game is not in progress");
+        GameUser.increment(
+            { score },
+            {
+                where: { userId, gameId: this.id },
+            }
+        );
+    };
+
+    // hooks
+
+    @AfterUpdate
+    static async setGameWinner(instance: Game) {
+        await GameHooks.setGameWinner(instance);
     }
 }

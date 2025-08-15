@@ -87,7 +87,5 @@ class AuthApi extends APIService {
     }
 }
 
-const service = new AuthApi(
-    process.env.FT_REACT_PUBLIC_API_HOST || "http://localhost:3000"
-);
+const service = new AuthApi();
 export default service;

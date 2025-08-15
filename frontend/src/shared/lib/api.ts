@@ -3,9 +3,12 @@ import axios from "axios";
 export class APIService {
     protected api;
 
-    constructor(baseUrl: string) {
+    constructor(baseUrl?: string) {
         this.api = axios.create({
-            baseURL: baseUrl,
+            baseURL:
+                baseUrl ||
+                process.env.FT_REACT_PUBLIC_API_HOST ||
+                "http://localhost:3000",
             headers: {
                 "Content-Type": "application/json",
                 Accept: "application/json",

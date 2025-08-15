@@ -2,9 +2,10 @@ import { FastifyInstance } from "fastify";
 import { Sequelize } from "sequelize-typescript";
 import { User } from "./models/User/User";
 import { Game } from "./models/Game/Game";
-import { GameUsers } from "./models/Game/GameUsers";
+import { GameUser } from "./models/Game/GameUser";
+import { DatabaseExampleFeed } from "./feed";
 
-const models = [User, Game, GameUsers];
+const models = [User, Game, GameUser];
 
 export const registerDB = async (app: FastifyInstance) => {
     const sequelize = new Sequelize({
@@ -15,6 +16,12 @@ export const registerDB = async (app: FastifyInstance) => {
 
     await sequelize.sync({ force: true });
     app.decorate("sequelize", sequelize);
+
+    // Feed database with example data
+    await DatabaseExampleFeed.feed({
+        users: 3,
+        games: 6,
+    });
 };
 
 export const startClean = async () => {
@@ -25,6 +32,6 @@ export const startClean = async () => {
         models,
     });
 
-    await sequelize.sync({ force: true });
+    await sequelize.sync();
     return sequelize;
 };
