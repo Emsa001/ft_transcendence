@@ -58,17 +58,11 @@ export class UserController extends BaseController {
         const { email } = jwtService.verify(token);
         const data = await request.file();
 
-        try {
-            const pictureURL = await userAccountService.uploadPicture(
-                email,
-                data
-            );
-            return reply.send({ success: true, picture: pictureURL });
-        } catch (error) {
-            return reply
-                .status(500)
-                .send({ error: "Failed to upload picture" });
-        }
+        const pictureURL = await userAccountService.uploadPicture(
+            email,
+            data
+        );
+        return reply.send({ success: true, picture: pictureURL });
     }
 
     @POST("/edit")
@@ -79,20 +73,15 @@ export class UserController extends BaseController {
         };
         const token = request.cookies.session;
         const { email } = jwtService.verify(token);
-        try {
-            const user = await userAccountService.editProfile(email, {
-                name: userName,
-                email: userEmail,
-            });
 
-            const token = jwtService.getToken(user);
+        const user = await userAccountService.editProfile(email, {
+            name: userName,
+            email: userEmail,
+        });
 
-            reply.setCookie("session", token, cookieService.createSession());
-            return reply.send({ success: true, user });
-        } catch (error) {
-            return reply
-                .status(500)
-                .send({ error: "Failed to update profile" });
-        }
+        const token = jwtService.getToken(user);
+
+        reply.setCookie("session", token, cookieService.createSession());
+        return reply.send({ success: true, user });
     }
 }
