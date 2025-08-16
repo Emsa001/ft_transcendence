@@ -36,7 +36,7 @@ class UserAccountService {
     }
 
     async uploadPicture(email: string, data?: MultipartFile) {
-        const user = await User.findOne({ where: { email } });
+        const user = await User.findByEmail(email);
         if (!user) {
             throw new Error("User not found");
         }
@@ -45,16 +45,11 @@ class UserAccountService {
             throw new Error("No file provided");
         }
 
-        const account = await User.findByPk(user.id);
-        if (!account) {
-            throw new Error("Account not found");
-        }
+        const imagePath = await uploadImage(data, user.id.toString());
+        user.avatar = imagePath;
+        await user.save();
 
-        const imagePath = await uploadImage(data, account.id.toString());
-        account.avatar = imagePath;
-        await account.save();
-
-        return account.avatar;
+        return user.avatar;
     }
 
     async editProfile(email: string, data: { name?: string; email?: string }) {
