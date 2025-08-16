@@ -163,7 +163,7 @@ class AuthService {
         email: string,
         name: string,
         password: string
-    ): Promise<User> {
+    ): Promise<{ user: User; token: string }> {
         if (!email || !name || !password)
             throw new HttpException(
                 400,
@@ -183,7 +183,8 @@ class AuthService {
             provider: "email",
         });
 
-        return user;
+        // success
+        return { user, token: jwtService.getToken(user) };
     }
 
     async login(

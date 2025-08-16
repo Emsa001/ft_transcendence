@@ -1,4 +1,6 @@
-import React from "react";
+import React, { useState } from "react";
+import { useAuth } from "../model/useAuth";
+import { useUser } from "../model/useUser";
 
 interface AuthFormProps {
     isRegister: boolean;
@@ -6,12 +8,35 @@ interface AuthFormProps {
 
 // TODO: Simplify and make pretty
 export default function AuthForm({ isRegister }: AuthFormProps) {
+    const { handleEmailLogin, handleEmailRegister, error } = useAuth();
+
+    const handleSubmit = async (e: FormDataEvent) => {
+        e.preventDefault();
+        const formData = new FormData(e.target as HTMLFormElement);
+
+        if (isRegister) {
+            await handleEmailRegister(
+                formData.get("email") as string,
+                formData.get("username") as string,
+                formData.get("password") as string,
+                formData.get("confirmPassword") as string
+            );
+        } else {
+            await handleEmailLogin(
+                formData.get("email") as string,
+                formData.get("password") as string
+            );
+        }
+    };
+
     return (
-        <form className="space-y-6">
+        <form className="space-y-6" onSubmit={handleSubmit}>
+            <div className="text-red-400">{error}</div>
             <label className="block text-sm font-semibold text-purple-300">
                 Email
             </label>
             <input
+                name="email"
                 type="email"
                 placeholder="you@example.com"
                 required
@@ -26,6 +51,7 @@ export default function AuthForm({ isRegister }: AuthFormProps) {
                         Username
                     </label>
                     <input
+                        name="username"
                         type="text"
                         placeholder="Your username"
                         required
@@ -40,6 +66,7 @@ export default function AuthForm({ isRegister }: AuthFormProps) {
                 Password
             </label>
             <input
+                name="password"
                 type="password"
                 placeholder="••••••••"
                 required
@@ -54,6 +81,7 @@ export default function AuthForm({ isRegister }: AuthFormProps) {
                         Confirm Password
                     </label>
                     <input
+                        name="confirmPassword"
                         type="password"
                         placeholder="••••••••"
                         required

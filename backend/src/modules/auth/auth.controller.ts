@@ -109,9 +109,13 @@ export class AuthController extends BaseController {
     @POST("/register")
     async registerUserController(request: FastifyRequest, reply: FastifyReply) {
         const { email, name, password } = request.body as UserRegister;
-        const user = await AuthService.register(email, name, password);
-
-        return reply.send(user);
+        const { user, token } = await AuthService.register(
+            email,
+            name,
+            password
+        );
+        reply.setCookie("session", token, cookieService.createSession());
+        return reply.send({ user });
     }
 
     @POST("/login")

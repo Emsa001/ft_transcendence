@@ -1,10 +1,11 @@
-import { useNavigate } from "react";
+import { useNavigate, useState } from "react";
 import { twoFactorAuthAlert, AuthApi } from "../";
 import { useUser } from "./useUser";
 
 export const useAuth = () => {
     const { setUser, fetchUser } = useUser();
     const navigate = useNavigate();
+    const [error, setError] = useState<string | null>(null);
 
     const handleLogout = async () => {
         try {
@@ -89,9 +90,39 @@ export const useAuth = () => {
         }
     };
 
+    const handleEmailLogin = async (email: string, password: string) => {
+        try {
+            const data = await AuthApi.login(email, password);
+            setUser(data);
+        } catch (error: any) {
+            setError(error.message);
+        }
+    };
+
+    const handleEmailRegister = async (
+        email: string,
+        username: string,
+        password: string,
+        confirmPassword: string
+    ) => {
+        try {
+            if (password !== confirmPassword) {
+                throw new Error("Passwords do not match");
+            }
+
+            let data = await AuthApi.register(email, username, password);
+            setUser(data);
+        } catch (error: any) {
+            setError(error.message);
+        }
+    };
+
     return {
         handleLogout,
         redirectToGoogleAuth,
         handleOAuthCallback,
+        handleEmailLogin,
+        handleEmailRegister,
+        error,
     };
 };
