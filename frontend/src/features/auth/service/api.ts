@@ -68,22 +68,27 @@ class AuthApi extends APIService {
         }
     }
 
-    // Why doesn't return anything?
     async register(
         email: string,
         username: string,
         password: string
-    ): Promise<void> {
-        await this.api.post("/auth/register", {
+    ): Promise<User> {
+        const response = await this.api.post("/auth/register", {
             email,
             name: username,
             password,
         });
+
+        return response.data;
     }
 
-    // Why doesn't return anything?
-    async login(email: string, password: string): Promise<void> {
-        await this.api.post("/auth/login", { email, password });
+    async login(email: string, password: string): Promise<User> {
+        const response = await this.api.post("/auth/login", {
+            email,
+            password,
+        });
+
+        return response.data;
     }
 }
 

@@ -9,11 +9,11 @@ import { useUser } from "@features/auth/model/useUser";
 export default function Auth() {
     const [isRegister, setIsRegister] = useState(false);
     const { user } = useUser();
-    const { handleOAuthCallback } = useAuth();
+    const authHook = useAuth();
     const navigate = useNavigate();
 
     useEffect(() => {
-        handleOAuthCallback();
+        authHook.handleOAuthCallback();
     }, []);
 
     if (user) {
@@ -36,7 +36,7 @@ export default function Auth() {
                         : "Please log in to access the application"}
                 </p>
 
-                <AuthForm isRegister={isRegister} />
+                <AuthForm isRegister={isRegister} authHook={authHook} />
 
                 <div className="flex items-center my-8">
                     <div className="flex-grow border-t border-gray-700"></div>

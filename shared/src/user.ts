@@ -4,3 +4,8 @@ export interface UserDTOType {
     email: string;
     avatar: string | null;
 }
+
+export interface UserEditableData {
+    name: string;
+    email: string;
+}

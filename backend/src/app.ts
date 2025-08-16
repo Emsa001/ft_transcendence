@@ -16,8 +16,33 @@ import metricsPlugin from "fastify-metrics";
 import { GameController } from "./modules/game/game.controller";
 import { HttpException } from "./utils/exceptions";
 
+import fastifyMultipart from "@fastify/multipart";
+import fastifyStatic from "@fastify/static";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
+import path from "path";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+const publicPath = path.join(__dirname, "../public");
+
 export default async function App() {
     const app = Fastify({ logger: true });
+
+    // Static files
+    await app.register(fastifyStatic, {
+        root: publicPath,
+        prefix: "/public/",
+        decorateReply: false,
+        constraints: {},
+    });
+
+    // Multipart support
+    await app.register(fastifyMultipart, {
+        limits: {
+            fileSize: 5 * 1024 * 1024, // 5MB limit
+        },
+    });
 
     // Fastify Modules
     await app.register(cors, { origin: process.env.ORIGIN, credentials: true });
