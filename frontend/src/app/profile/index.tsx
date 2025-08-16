@@ -38,7 +38,7 @@ export const Profile = () => {
     if (!user) return <div />;
 
     return (
-        <div className="min-h-screen w-full bg-gradient-to-br from-purple-600 via-blue-600 to-purple-700 p-6 flex flex-col items-center justify-center">
+        <div className="min-h-screen w-full p-6 flex flex-col items-center justify-center">
             {/* Profile Card */}
             <div className="max-w-3xl w-full bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl shadow-lg p-6 mb-8 text-white">
                 <div className="flex flex-col md:flex-row items-center gap-6">
