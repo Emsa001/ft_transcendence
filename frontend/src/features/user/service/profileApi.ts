@@ -4,12 +4,7 @@ import { APIService } from "@shared/lib/api";
 class ProfileApi extends APIService {
     async getUser(): Promise<User> {
         try {
-            const response: AxiosResponse<AuthResponse> = await this.api.get(
-                "/user",
-                {
-                    withCredentials: true,
-                }
-            );
+            const response: AxiosResponse<AuthResponse> = await this.api.get("/user",);
             return response.data as unknown as User;
         } catch (error) {
             console.error("Error during Google token verification:", error);
@@ -26,7 +21,6 @@ class ProfileApi extends APIService {
                 headers: {
                     "Content-Type": "multipart/form-data",
                 },
-                withCredentials: true,
             });
             return response.data.picture as string;
         } catch (error) {
@@ -39,11 +33,7 @@ class ProfileApi extends APIService {
         try {
             const response = await this.api.post("/user/edit", {
                 userName: name,
-                userEmail: email,
-                headers: {
-                    "Content-Type": "multipart/form-data",
-                },
-                withCredentials: true,
+                userEmail: email
             });
             console.log("Updated user:", response.data);
             return response.data.user as User;
