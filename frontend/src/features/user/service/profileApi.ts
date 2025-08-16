@@ -1,10 +1,12 @@
 import { AxiosResponse } from "axios";
 import { APIService } from "@shared/lib/api";
+import { UserEditableData } from "shared";
 
 class ProfileApi extends APIService {
     async getUser(): Promise<User> {
         try {
-            const response: AxiosResponse<AuthResponse> = await this.api.get("/user",);
+            const response: AxiosResponse<AuthResponse> =
+                await this.api.get("/user");
             return response.data as unknown as User;
         } catch (error) {
             console.error("Error during Google token verification:", error);
@@ -29,12 +31,9 @@ class ProfileApi extends APIService {
         }
     }
 
-    async updateUser(name: string, email: string): Promise<User> {
+    async updateUser(data: UserEditableData): Promise<User> {
         try {
-            const response = await this.api.post("/user/edit", {
-                userName: name,
-                userEmail: email
-            });
+            const response = await this.api.post("/user/edit", data);
             console.log("Updated user:", response.data);
             return response.data.user as User;
         } catch (error) {

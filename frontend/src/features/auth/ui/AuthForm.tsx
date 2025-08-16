@@ -1,14 +1,18 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { useAuth } from "../model/useAuth";
-import { useUser } from "../model/useUser";
 
 interface AuthFormProps {
     isRegister: boolean;
+    authHook: ReturnType<typeof useAuth>;
 }
 
 // TODO: Simplify and make pretty
-export default function AuthForm({ isRegister }: AuthFormProps) {
-    const { handleEmailLogin, handleEmailRegister, error } = useAuth();
+export default function AuthForm({ isRegister, authHook }: AuthFormProps) {
+    const { handleEmailLogin, handleEmailRegister, error } = authHook;
+
+    useEffect(() => {
+        authHook.setError(null);
+    }, [isRegister]);
 
     const handleSubmit = async (e: FormDataEvent) => {
         e.preventDefault();

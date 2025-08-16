@@ -6,10 +6,8 @@ import { useUser } from "@features/auth/model/useUser";
 
 export function UserPicture() {
     const { user, setUser } = useUser();
-    if (!user) {
-        window.location.href = "/auth";
-        return null;
-    }
+
+    if (!user) return <div />;
 
     const handleFileChange = async (e: Event) => {
         const input = e.target as HTMLInputElement;

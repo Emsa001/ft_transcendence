@@ -6,6 +6,7 @@ import { fileURLToPath } from "url";
 import { dirname } from "path";
 import sharp from "sharp";
 import jwtService from "@/modules/auth/services/jwt.service";
+import { UserEditableData } from "shared";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -52,7 +53,7 @@ class UserAccountService {
         return user.avatar;
     }
 
-    async editProfile(email: string, data: { name?: string; email?: string }) {
+    async editProfile(email: string, data: UserEditableData) {
         const user = await User.findOne({ where: { email } });
         if (!user) {
             throw new Error("User not found");

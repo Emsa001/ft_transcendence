@@ -22,9 +22,11 @@ export const Profile = () => {
 
     const handleSubmit = async (e: any) => {
         e.preventDefault();
-        const name = e.target[0].value;
-        const email = e.target[1].value;
-        const newUser = await ProfileApi.updateUser(name, email);
+        const data = {
+            name: e.target[0].value,
+            email: e.target[1].value,
+        };
+        const newUser = await ProfileApi.updateUser(data);
         setEdit(false);
         setUser(newUser);
     };

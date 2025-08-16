@@ -8,6 +8,7 @@ import { HttpException } from "@/utils/exceptions";
 import jwtService from "../auth/services/jwt.service";
 import cookieService from "../auth/services/cookie.severice";
 import userAccountService from "./services/user.account";
+import { UserEditableData } from "shared";
 
 @Controller("/user")
 export class UserController extends BaseController {
@@ -58,30 +59,21 @@ export class UserController extends BaseController {
         const { email } = jwtService.verify(token);
         const data = await request.file();
 
-        const pictureURL = await userAccountService.uploadPicture(
-            email,
-            data
-        );
+        const pictureURL = await userAccountService.uploadPicture(email, data);
         return reply.send({ success: true, picture: pictureURL });
     }
 
     @POST("/edit")
     async editProfile(request: FastifyRequest, reply: FastifyReply) {
-        const { userName, userEmail } = request.body as {
-            userName: string;
-            userEmail: string;
-        };
+        const data = request.body as UserEditableData;
         const token = request.cookies.session;
         const { email } = jwtService.verify(token);
 
-        const user = await userAccountService.editProfile(email, {
-            name: userName,
-            email: userEmail,
-        });
+        const user = await userAccountService.editProfile(email, data);
 
-        const token = jwtService.getToken(user);
+        const newToken = jwtService.getToken(user);
 
-        reply.setCookie("session", token, cookieService.createSession());
+        reply.setCookie("session", newToken, cookieService.createSession());
         return reply.send({ success: true, user });
     }
 }

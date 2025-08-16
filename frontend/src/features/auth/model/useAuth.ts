@@ -95,7 +95,10 @@ export const useAuth = () => {
             const data = await AuthApi.login(email, password);
             setUser(data);
         } catch (error: any) {
-            setError(error.message);
+            console.log(error.response);
+            setError(
+                error.response.data.message || "Login failed. Try again later"
+            );
         }
     };
 
@@ -107,13 +110,17 @@ export const useAuth = () => {
     ) => {
         try {
             if (password !== confirmPassword) {
-                throw new Error("Passwords do not match");
+                setError("Passwords do not match");
+                return;
             }
 
             let data = await AuthApi.register(email, username, password);
             setUser(data);
         } catch (error: any) {
-            setError(error.message);
+            setError(
+                error.response.data.message ||
+                    "Registration failed. Try again later"
+            );
         }
     };
 
@@ -124,5 +131,6 @@ export const useAuth = () => {
         handleEmailLogin,
         handleEmailRegister,
         error,
+        setError,
     };
 };
