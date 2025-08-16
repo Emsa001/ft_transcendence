@@ -100,37 +100,39 @@ export default async function App() {
     // Create an HTTP server from Fastify's raw server
     const wss = new WebSocketServer({ noServer: true});
 
-    const gameService = new GameService();
-
+    
     // Handle websocket upgrade requests
     app.server.on('upgrade', (request, socket, head) => {
-    // Only upgrade certain paths if you want to restrict
-    if (request.url === '/ws') {
-        wss.handleUpgrade(request, socket, head, (ws) => {
-        wss.emit('connection', ws, request);
-        });
-    } else {
-        socket.destroy();
-    }
+        // Only upgrade certain paths if you want to restrict
+        if (request.url === '/ws') {
+            wss.handleUpgrade(request, socket, head, (ws) => {
+                wss.emit('connection', ws, request);
+            });
+        } else {
+            socket.destroy();
+        }
     });
     
-    // Initialize game service with WebSocket server
+
+
+    const gameService = new GameService();
+    // // Initialize game service with WebSocket server
     gameService.initialize(wss);
 
     
 
-    // Cleanup on server shutdown
-    process.on('SIGTERM', () => {
-        gameService.cleanup();
-        wss.close();
-        process.exit(0);
-    });
+    // // Cleanup on server shutdown
+    // process.on('SIGTERM', () => {
+    //     gameService.cleanup();
+    //     wss.close();
+    //     process.exit(0);
+    // });
 
-    process.on('SIGINT', () => {
-        gameService.cleanup();
-        wss.close();
-        process.exit(0);
-    });
+    // process.on('SIGINT', () => {
+    //     gameService.cleanup();
+    //     wss.close();
+    //     process.exit(0);
+    // });
 
 
 

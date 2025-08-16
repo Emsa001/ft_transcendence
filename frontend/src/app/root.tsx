@@ -23,9 +23,9 @@ export default function Root() {
         subscribeToOnline();
     }, []);
 
-    useEffect(() => {
-        fetchUser();
-    }, []);
+    // useEffect(() => {
+    //     fetchUser();
+    // }, []);
 
     useEffect(() => {
         if (!user || loading) return;
