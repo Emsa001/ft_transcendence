@@ -5,7 +5,8 @@ import { User } from "@/database/models/User/User";
 import { HttpException } from "@/utils/exceptions";
 
 import JwtService from "./jwt.service";
-import { Token, TwoFaAction, TwoFASecret } from "../auth.types";
+import { Token, TwoFASecret } from "../auth.types";
+import { TwoFaAction } from "shared";
 
 class TwoFAService {
     /*
@@ -18,9 +19,9 @@ class TwoFAService {
         code: string,
         action: TwoFaAction = "login"
     ): Promise<{ user: User; session: string; shouldSetCookie: boolean }> {
-        const { email, twoFA } = JwtService.verify(token);
+        const { id, twoFA } = JwtService.verify(token);
 
-        const user = await User.findByEmail(email);
+        const user = await User.findById(id);
         if (!user) throw new HttpException(401, "Unauthorized: User not found");
         if (!user.twoFASecret)
             throw new HttpException(
@@ -49,7 +50,7 @@ class TwoFAService {
 
                 const newToken = JwtService.sign(
                     {
-                        email: user.email,
+                        id: user.id,
                         twoFA: "disabled",
                     },
                     "1d"
@@ -96,14 +97,15 @@ class TwoFAService {
      * Generates a new 2FA secret and returns the QR code image URL
      */
     async setup(token: Token): Promise<TwoFASecret> {
-        const { email } = await JwtService.verify(token);
-        const twoFASecret = await this.generate(email);
+        const { id } = await JwtService.verify(token);
+        const user = await User.findById(id);
+        if (!user) throw new HttpException(401, "Unauthorized: User not found");
+
+        const twoFASecret = await this.generate(user.username);
 
         // Update the user's twoFASecret
-        await User.update(
-            { twoFASecret: twoFASecret.base32 },
-            { where: { email } }
-        );
+        user.twoFASecret = twoFASecret.base32;
+        await user.save();
 
         return twoFASecret;
     }
@@ -112,9 +114,9 @@ class TwoFAService {
      * Generates a new 2FA secret for the user
      * Returns the secret in base32 format, the otpauth URL, and the QR
      */
-    async generate(userEmail: string): Promise<TwoFASecret> {
+    async generate(username: string): Promise<TwoFASecret> {
         const secret = speakeasy.generateSecret({
-            name: `ft_transcendence (${userEmail})`,
+            name: `ft_transcendence (${username})`,
         });
 
         return new Promise((resolve, reject) => {

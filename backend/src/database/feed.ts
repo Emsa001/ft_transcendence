@@ -1,7 +1,7 @@
 import { GameMode, GameStatus } from "shared";
 import { Game } from "./models/Game/Game";
 import { User } from "./models/User/User";
-import { UserExample } from "./models/User/UserExample";
+import { UserGenerate } from "./models/User/UserGenerate";
 
 interface FeedOptions {
     users?: number;
@@ -21,7 +21,7 @@ export class DatabaseExampleFeed {
 
     static async createExampleUsers(users: number): Promise<void> {
         for (let i = 0; i < users; i++) {
-            await UserExample.create();
+            await UserGenerate.createExample();
         }
     }
 

@@ -30,6 +30,7 @@ import { GameUser } from "./GameUser";
 import { GameDTO } from "./GameDTO";
 import { GameHooks } from "./GameHooks";
 import { GameMode, GameStatus } from "shared";
+import { HttpException } from "@/utils/exceptions";
 
 type UserWithGameData = User & {
     GameUser: GameUser;
@@ -101,10 +102,10 @@ export class Game extends Model<InferAttributes<Game>, GameCreationAttributes> {
         return new GameDTO(this);
     }
 
-    playerScore = (userId: number, score: number) => {
+    playerScore = async (userId: number, score: number) => {
         if (this.status !== GameStatus.IN_PROGRESS)
-            throw new Error("Game is not in progress");
-        GameUser.increment(
+            throw new HttpException(400, "Game is not in progress");
+        await GameUser.increment(
             { score },
             {
                 where: { userId, gameId: this.id },

@@ -3,13 +3,15 @@ import { useAuth } from "../model/useAuth";
 import { FcGoogle } from "react-icons/fc";
 import { Icon } from "@shared/components/Icon";
 
-export const GoogleAuthButton = () => {
-    const { redirectToGoogleAuth } = useAuth();
+interface GoogleAuthButtonProps {
+    handleLogin: () => Promise<void>;
+}
 
+export const GoogleAuthButton = ({ handleLogin }: GoogleAuthButtonProps) => {
     return (
         <div>
             <button
-                onClick={redirectToGoogleAuth}
+                onClick={handleLogin}
                 className="w-full flex items-center justify-center gap-3 py-3 rounded-lg border border-pink-500
             text-white font-semibold hover:bg-pink-600 transition duration-300"
                 type="button"

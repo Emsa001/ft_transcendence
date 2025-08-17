@@ -9,12 +9,25 @@ import { useUser } from "@features/auth/model/useUser";
 export default function Auth() {
     const [isRegister, setIsRegister] = useState(false);
     const { user } = useUser();
-    const authHook = useAuth();
+
+    const {
+        handleOAuthCallback,
+        handleEmailLogin,
+        handleEmailRegister,
+        redirectToGoogleAuth,
+        error,
+        setError,
+    } = useAuth();
+
     const navigate = useNavigate();
 
     useEffect(() => {
-        authHook.handleOAuthCallback();
+        handleOAuthCallback();
     }, []);
+
+    useEffect(() => {
+        setError("");
+    }, [isRegister]);
 
     if (user) {
         navigate("/profile");
@@ -36,7 +49,13 @@ export default function Auth() {
                         : "Please log in to access the application"}
                 </p>
 
-                <AuthForm isRegister={isRegister} authHook={authHook} />
+                <AuthForm
+                    isRegister={isRegister}
+                    handleEmailLogin={handleEmailLogin}
+                    handleEmailRegister={handleEmailRegister}
+                />
+
+                <p className="text-red-400 mt-4">{error}</p>
 
                 <div className="flex items-center my-8">
                     <div className="flex-grow border-t border-gray-700"></div>
@@ -44,7 +63,7 @@ export default function Auth() {
                     <div className="flex-grow border-t border-gray-700"></div>
                 </div>
 
-                <GoogleAuthButton />
+                <GoogleAuthButton handleLogin={redirectToGoogleAuth} />
 
                 <ToggleAuthMode
                     isRegister={isRegister}

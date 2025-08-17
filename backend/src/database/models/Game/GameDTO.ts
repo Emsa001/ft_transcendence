@@ -1,5 +1,6 @@
 import { GameDTOType, GameMode, GameStatus, GameUserDTOType } from "shared";
 import { Game } from "./Game";
+import { HttpException } from "@/utils/exceptions";
 
 export class GameDTO implements GameDTOType {
     id: number;
@@ -12,9 +13,13 @@ export class GameDTO implements GameDTOType {
 
     constructor(game: Game) {
         if (!game || !game.id)
-            throw new Error("Game data is required to create GameDTO");
+            throw new HttpException(
+                404,
+                "Game data is required to create GameDTO"
+            );
         if (!game.status || !game.mode)
-            throw new Error(
+            throw new HttpException(
+                400,
                 "Game status and mode are required to create GameDTO"
             );
 

@@ -2,7 +2,8 @@ import jwt from "jsonwebtoken";
 import { HttpException } from "@/utils/exceptions";
 import { User } from "@/database/models/User/User";
 
-import { JWTPayload, Token } from "../auth.types";
+import { Token } from "../auth.types";
+import { JWTPayload } from "shared";
 
 class JWTService {
     private secret: string;
@@ -12,12 +13,10 @@ class JWTService {
     }
 
     getToken(user: User): string {
-        if (!user) {
-            throw new HttpException(401, "Unauthorized: User not found");
-        }
+        if (!user) throw new HttpException(401, "Unauthorized: User not found");
 
         const payload: JWTPayload = {
-            email: user.email,
+            id: user.id,
             twoFA: user.is2FAEnabled ? "started" : "disabled",
         };
 
@@ -34,6 +33,7 @@ class JWTService {
         const token = jwt.sign(payload, this.secret, {
             expiresIn,
         } as jwt.SignOptions);
+
         return token;
     }
 

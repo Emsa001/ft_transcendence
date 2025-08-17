@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import AuthApi from "../service/api";
 import Swal from "sweetalert2";
 

@@ -19,8 +19,8 @@ export const registerDB = async (app: FastifyInstance) => {
 
     // Feed database with example data
     await DatabaseExampleFeed.feed({
-        users: 3,
-        games: 6,
+        users: 4,
+        games: 50,
     });
 };
 

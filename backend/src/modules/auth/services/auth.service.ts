@@ -6,6 +6,8 @@ import { HttpException } from "@/utils/exceptions";
 
 import { Token } from "../auth.types";
 import jwtService from "./jwt.service";
+import { UserGenerate } from "@/database/models/User/UserGenerate";
+import { Op } from "sequelize";
 
 /*
 
@@ -42,54 +44,12 @@ class AuthService {
      * @returns True if the user is authorized, false otherwise.
      */
     async isAuthorized(token: Token): Promise<boolean> {
-        const { email, twoFA } = jwtService.verify(token);
+        const { id, twoFA } = jwtService.verify(token);
 
-        const user = await User.findByEmail(email);
+        const user = await User.findByPk(id);
         if (!user) return false;
 
         return twoFA == "disabled" || twoFA == "completed";
-    }
-
-    /*
-     * Google OAuth2 login endpoint
-     * Expects a token from the client-side Google Sign-In
-     * Returns the user object if successful
-     */
-    async googleLogin(token: Token): Promise<{ user: User; token: string }> {
-        if (!token)
-            throw new HttpException(400, "Bad Request: Token is required");
-
-        const ticket = await this.oauth2
-            .verifyIdToken({
-                idToken: token,
-                audience: process.env.GOOGLE_CLIENT_ID,
-            })
-            .catch(() => {
-                throw new HttpException(401, `Unauthorized: Invalid token`);
-            });
-
-        const payload = ticket.getPayload();
-        if (!payload || !payload.email)
-            throw new HttpException(401, "Unauthorized: Invalid token payload");
-
-        let user = await User.findByEmail(payload.email);
-
-        // Register user if not exists
-        if (!user) {
-            user = await User.create({
-                email: payload.email!,
-                name: payload.name || payload.email?.split("@")[0] || null,
-                avatar: payload.picture || null,
-                provider: "google",
-            });
-
-            return {
-                user: user,
-                token: jwtService.getToken(user),
-            };
-        }
-
-        return { user, token: jwtService.getToken(user) };
     }
 
     /**
@@ -145,7 +105,7 @@ class AuthService {
         if (!user) {
             user = await User.create({
                 email: payload.email!,
-                name: payload.name || payload.email?.split("@")[0] || null,
+                username: await UserGenerate.createUsername(payload.email),
                 avatar: payload.picture || null,
                 provider: "google",
             });
@@ -160,27 +120,25 @@ class AuthService {
     }
 
     async register(
-        email: string,
-        name: string,
+        username: string,
         password: string
     ): Promise<{ user: User; token: string }> {
-        if (!email || !name || !password)
+        if (!username || !password)
             throw new HttpException(
                 400,
                 "Bad Request: Missing required fields"
             );
 
-        const existingUser = await User.findByEmail(email);
+        const existingUser = await User.findByUsername(username);
         if (existingUser)
             throw new HttpException(409, "Conflict: User already exists");
 
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const user = await User.create({
-            email,
-            name,
+            username,
             password: hashedPassword,
-            provider: "email",
+            provider: "local",
         });
 
         // success
@@ -188,20 +146,25 @@ class AuthService {
     }
 
     async login(
-        email: string,
+        username: string,
         password: string
     ): Promise<{ user: User; token: string }> {
-        if (!email || !password)
+        if (!username || !password)
             throw new HttpException(
                 400,
                 "Bad Request: Missing required fields"
             );
 
-        const user = await User.findByEmail(email);
-        if (!user || !user.password)
+        const user = await User.findOne({
+            where: {
+                username,
+                provider: "local",
+            },
+        });
+        if (!user)
             throw new HttpException(401, "Unauthorized: Invalid credentials");
 
-        const isPasswordValid = await bcrypt.compare(password, user.password);
+        const isPasswordValid = await bcrypt.compare(password, user.password!);
         if (!isPasswordValid)
             throw new HttpException(401, "Unauthorized: Invalid credentials");
 

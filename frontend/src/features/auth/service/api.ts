@@ -1,5 +1,7 @@
 import { AxiosResponse } from "axios";
 import { APIService } from "@shared/lib/api";
+import { TwoFaAction } from "shared";
+import { AuthResponse, User } from "../types";
 
 class AuthApi extends APIService {
     /**
@@ -55,7 +57,7 @@ class AuthApi extends APIService {
      * @param action - Action to perform (login, enable, disable)
      * @returns AxiosResponse containing verification result
      */
-    async verify2FACode(code: string, action: Auth2Action): Promise<boolean> {
+    async verify2FACode(code: string, action: TwoFaAction): Promise<boolean> {
         try {
             const response = await this.api.post("/auth/2fa/verify", {
                 code,
@@ -68,23 +70,18 @@ class AuthApi extends APIService {
         }
     }
 
-    async register(
-        email: string,
-        username: string,
-        password: string
-    ): Promise<User> {
+    async register(username: string, password: string): Promise<User> {
         const response = await this.api.post("/auth/register", {
-            email,
-            name: username,
+            username,
             password,
         });
 
         return response.data;
     }
 
-    async login(email: string, password: string): Promise<User> {
+    async login(username: string, password: string): Promise<User> {
         const response = await this.api.post("/auth/login", {
-            email,
+            username,
             password,
         });
 
