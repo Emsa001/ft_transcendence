@@ -1,15 +1,21 @@
-import React, { useEffect } from "react";
-import { useAuth } from "../model/useAuth";
+import React from "react";
 
 interface AuthFormProps {
     isRegister: boolean;
-    authHook: ReturnType<typeof useAuth>;
+    handleEmailLogin: (email: string, password: string) => Promise<void>;
+    handleEmailRegister: (
+        email: string,
+        username: string,
+        password: string,
+        confirmPassword: string
+    ) => Promise<void>;
 }
 
-// TODO: Simplify and make pretty
-export default function AuthForm({ isRegister, authHook }: AuthFormProps) {
-    const { handleEmailLogin, handleEmailRegister } = authHook;
-
+export default function AuthForm({
+    isRegister,
+    handleEmailLogin,
+    handleEmailRegister,
+}: AuthFormProps) {
     const handleSubmit = async (e: FormDataEvent) => {
         e.preventDefault();
         const formData = new FormData(e.target as HTMLFormElement);
@@ -30,6 +36,19 @@ export default function AuthForm({ isRegister, authHook }: AuthFormProps) {
 
     return (
         <form className="space-y-6" onSubmit={handleSubmit}>
+            <label className="block text-sm font-semibold text-purple-300">
+                Email
+            </label>
+            <input
+                name="email"
+                type="email"
+                placeholder="you@example.com"
+                required
+                className="w-full rounded-lg bg-gray-800 bg-opacity-60 border border-transparent
+          focus:border-pink-500 px-4 py-3 text-purple-200 placeholder-purple-400
+          focus:outline-none focus:ring-2 focus:ring-pink-500 transition"
+            />
+
             <div>
                 <label className="block text-sm font-semibold text-purple-300">
                     Username
