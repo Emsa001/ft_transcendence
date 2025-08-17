@@ -1,5 +1,6 @@
 import { UserDTOType } from "shared";
 import { User } from "./User";
+import { HttpException } from "@/utils/exceptions";
 
 export class UserDTO implements UserDTOType {
     private user!: User;
@@ -12,7 +13,10 @@ export class UserDTO implements UserDTOType {
 
     constructor(user: User) {
         if (!user || !user.id)
-            throw new Error("User data is required to create UserDTO");
+            throw new HttpException(
+                404,
+                "User data is required to create UserDTO"
+            );
 
         this.id = user.id;
         this.username = user.username;

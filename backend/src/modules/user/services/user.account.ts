@@ -7,6 +7,7 @@ import { dirname } from "path";
 import sharp from "sharp";
 import { UserEditableData } from "shared";
 import { Op } from "sequelize";
+import { HttpException } from "@/utils/exceptions";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -38,13 +39,9 @@ class UserAccountService {
 
     async uploadPicture(id: number, data?: MultipartFile) {
         const user = await User.findByPk(id);
-        if (!user) {
-            throw new Error("User not found");
-        }
+        if (!user) throw new HttpException(404, "User not found");
 
-        if (!data) {
-            throw new Error("No file provided");
-        }
+        if (!data) throw new HttpException(400, "No file provided");
 
         const imagePath = await uploadImage(data, user.id.toString());
         user.avatar = imagePath;
@@ -55,16 +52,13 @@ class UserAccountService {
 
     async editProfile(id: number, data: UserEditableData) {
         const user = await User.findByPk(id);
-        if (!user) {
-            throw new Error("User not found");
-        }
+        if (!user) throw new HttpException(404, "User not found");
 
         const existingUser = await User.findByUsername(data.username, {
             where: { id: { [Op.ne]: user.id } },
         });
-        if (existingUser) {
-            throw new Error("Username already taken");
-        }
+        if (existingUser)
+            throw new HttpException(400, "Username already exists");
 
         user.username = data.username || user.username;
         await user.save();
