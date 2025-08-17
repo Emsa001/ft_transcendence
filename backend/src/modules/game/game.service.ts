@@ -1,6 +1,11 @@
 import { WebSocketServer, WebSocket } from 'ws';
 import { GameState, PaddleMovement } from './game.types';
 
+/* 
+    maybe have more balls
+    Make in a nice way that is escalable 
+*/
+
 export class GameService {
     // === Properties ===
     private wss: WebSocketServer;
@@ -32,6 +37,8 @@ export class GameService {
         this.wss = wss;
 
         // Start the game loop at 60 FPS
+        // probably don't need to do in a frequency, but only when receive input
+
         this.gameInterval = setInterval(this.gameLoop.bind(this), 1000 / 60);
 
         // Listen for new connections
