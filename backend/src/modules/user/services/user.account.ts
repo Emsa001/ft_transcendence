@@ -5,8 +5,8 @@ import path from "path";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import sharp from "sharp";
-import jwtService from "@/modules/auth/services/jwt.service";
 import { UserEditableData } from "shared";
+import { Op } from "sequelize";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -36,8 +36,8 @@ class UserAccountService {
         return await User.findByPk(id);
     }
 
-    async uploadPicture(email: string, data?: MultipartFile) {
-        const user = await User.findByEmail(email);
+    async uploadPicture(id: number, data?: MultipartFile) {
+        const user = await User.findByPk(id);
         if (!user) {
             throw new Error("User not found");
         }
@@ -53,14 +53,20 @@ class UserAccountService {
         return user.avatar;
     }
 
-    async editProfile(email: string, data: UserEditableData) {
-        const user = await User.findOne({ where: { email } });
+    async editProfile(id: number, data: UserEditableData) {
+        const user = await User.findByPk(id);
         if (!user) {
             throw new Error("User not found");
         }
 
-        user.name = data.name || user.name;
-        user.email = data.email || user.email;
+        const existingUser = await User.findByUsername(data.username, {
+            where: { id: { [Op.ne]: user.id } },
+        });
+        if (existingUser && existingUser.id !== user.id) {
+            throw new Error("Username already taken");
+        }
+
+        user.username = data.username || user.username;
         await user.save();
         return user;
     }

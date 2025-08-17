@@ -8,11 +8,7 @@ interface AuthFormProps {
 
 // TODO: Simplify and make pretty
 export default function AuthForm({ isRegister, authHook }: AuthFormProps) {
-    const { handleEmailLogin, handleEmailRegister, error } = authHook;
-
-    useEffect(() => {
-        authHook.setError(null);
-    }, [isRegister]);
+    const { handleEmailLogin, handleEmailRegister } = authHook;
 
     const handleSubmit = async (e: FormDataEvent) => {
         e.preventDefault();
@@ -20,14 +16,13 @@ export default function AuthForm({ isRegister, authHook }: AuthFormProps) {
 
         if (isRegister) {
             await handleEmailRegister(
-                formData.get("email") as string,
                 formData.get("username") as string,
                 formData.get("password") as string,
                 formData.get("confirmPassword") as string
             );
         } else {
             await handleEmailLogin(
-                formData.get("email") as string,
+                formData.get("username") as string,
                 formData.get("password") as string
             );
         }
@@ -35,36 +30,20 @@ export default function AuthForm({ isRegister, authHook }: AuthFormProps) {
 
     return (
         <form className="space-y-6" onSubmit={handleSubmit}>
-            <div className="text-red-400">{error}</div>
-            <label className="block text-sm font-semibold text-purple-300">
-                Email
-            </label>
-            <input
-                name="email"
-                type="email"
-                placeholder="you@example.com"
-                required
-                className="w-full rounded-lg bg-gray-800 bg-opacity-60 border border-transparent
-          focus:border-pink-500 px-4 py-3 text-purple-200 placeholder-purple-400
-          focus:outline-none focus:ring-2 focus:ring-pink-500 transition"
-            />
-
-            {isRegister && (
-                <div>
-                    <label className="block text-sm font-semibold text-purple-300">
-                        Username
-                    </label>
-                    <input
-                        name="username"
-                        type="text"
-                        placeholder="Your username"
-                        required
-                        className="w-full rounded-lg bg-gray-800 bg-opacity-60 border border-transparent
+            <div>
+                <label className="block text-sm font-semibold text-purple-300">
+                    Username
+                </label>
+                <input
+                    name="username"
+                    type="text"
+                    placeholder="Your username"
+                    required
+                    className="w-full rounded-lg bg-gray-800 bg-opacity-60 border border-transparent
               focus:border-pink-500 px-4 py-3 text-purple-200 placeholder-purple-400
               focus:outline-none focus:ring-2 focus:ring-pink-500 transition"
-                    />
-                </div>
-            )}
+                />
+            </div>
 
             <label className="block text-sm font-semibold text-purple-300">
                 Password
@@ -90,8 +69,8 @@ export default function AuthForm({ isRegister, authHook }: AuthFormProps) {
                         placeholder="••••••••"
                         required
                         className="w-full rounded-lg bg-gray-800 bg-opacity-60 border border-transparent
-              focus:border-pink-500 px-4 py-3 text-purple-200 placeholder-purple-400
-              focus:outline-none focus:ring-2 focus:ring-pink-500 transition"
+          focus:border-pink-500 px-4 py-3 text-purple-200 placeholder-purple-400
+          focus:outline-none focus:ring-2 focus:ring-pink-500 transition"
                     />
                 </div>
             )}

@@ -1,14 +1,14 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { Controller, GET, POST } from "fastify-decorators";
+import { UserEditableData } from "shared";
 
 import { BaseController } from "../base";
 import { UserGamesService } from "./services/user.games";
 import { User } from "@/database/models/User/User";
 import { HttpException } from "@/utils/exceptions";
 import jwtService from "../auth/services/jwt.service";
-import cookieService from "../auth/services/cookie.severice";
+import cookieService from "../auth/services/cookie.service";
 import userAccountService from "./services/user.account";
-import { UserEditableData } from "shared";
 
 @Controller("/user")
 export class UserController extends BaseController {
@@ -31,13 +31,19 @@ export class UserController extends BaseController {
     @GET("/:id/history")
     async getUserGameHistory(request: FastifyRequest, reply: FastifyReply) {
         const { id } = request.params as { id?: string };
-        const { limit } = request.query as { limit?: string };
+        const { limit, start, end } = request.query as {
+            limit?: string;
+            start?: string;
+            end?: string;
+        };
 
         if (!id || Number.isNaN(Number(id)))
             throw new HttpException(400, "Invalid user ID");
 
         const games = await UserGamesService.getHistory(Number(id), {
             limit: limit ? Number(limit) : undefined,
+            start: start ? new Date(start) : undefined,
+            end: end ? new Date(end) : undefined,
         });
 
         return reply.send(games.map((game) => game.toDTO()));
@@ -56,10 +62,10 @@ export class UserController extends BaseController {
     @POST("/picture")
     async uploadProfilePicture(request: FastifyRequest, reply: FastifyReply) {
         const token = request.cookies.session;
-        const { email } = jwtService.verify(token);
+        const { id } = jwtService.verify(token);
         const data = await request.file();
 
-        const pictureURL = await userAccountService.uploadPicture(email, data);
+        const pictureURL = await userAccountService.uploadPicture(id, data);
         return reply.send({ success: true, picture: pictureURL });
     }
 
@@ -67,9 +73,9 @@ export class UserController extends BaseController {
     async editProfile(request: FastifyRequest, reply: FastifyReply) {
         const data = request.body as UserEditableData;
         const token = request.cookies.session;
-        const { email } = jwtService.verify(token);
+        const { id } = jwtService.verify(token);
 
-        const user = await userAccountService.editProfile(email, data);
+        const user = await userAccountService.editProfile(id, data);
 
         const newToken = jwtService.getToken(user);
 

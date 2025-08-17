@@ -1,6 +1,7 @@
 import {
     BelongsToManyCountAssociationsMixin,
     BelongsToManyGetAssociationsMixin,
+    FindOptions,
     InferAttributes,
 } from "sequelize";
 import {
@@ -21,11 +22,11 @@ import { GameUser } from "../Game/GameUser";
 import { HttpException } from "@/utils/exceptions";
 
 type CreationAttributes = {
-    email: string;
-    name: string | null;
+    email?: string | null;
+    username: string;
     password?: string | null;
     avatar?: string | null;
-    provider?: "google" | "email";
+    provider?: "google" | "local";
 };
 
 @Table
@@ -36,15 +37,18 @@ export class User extends Model<InferAttributes<User>, CreationAttributes> {
     declare id: number;
 
     @Unique
-    @AllowNull(false)
+    @AllowNull(true)
+    @Default(null)
     @Column(DataType.STRING)
-    declare email: string;
+    declare email: string | null;
 
+    @Unique
+    @AllowNull(false)
     @Column({
         type: DataType.STRING,
         validate: { len: [2, 100] },
     })
-    declare name: string | null;
+    declare username: string;
 
     @AllowNull(true)
     @Default(null)
@@ -65,7 +69,7 @@ export class User extends Model<InferAttributes<User>, CreationAttributes> {
     @Column(DataType.BOOLEAN)
     declare is2FAEnabled: boolean;
 
-    @Default("email")
+    @Default("local")
     @Column(DataType.STRING)
     declare provider: CreationAttributes["provider"];
 
@@ -82,7 +86,10 @@ export class User extends Model<InferAttributes<User>, CreationAttributes> {
         return new UserDTO(this);
     }
 
-    static findByEmail = (email: string) => User.findOne({ where: { email } });
+    static findByEmail = (email: string, options?: FindOptions) =>
+        User.findOne({ where: { email }, ...options });
+    static findByUsername = (username: string, options?: FindOptions) =>
+        User.findOne({ where: { username }, ...options });
     static findById = async (id: number | string | undefined) => {
         if (typeof id === "undefined")
             throw new HttpException(400, "User ID is required");

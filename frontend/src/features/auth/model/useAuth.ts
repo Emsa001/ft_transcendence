@@ -90,9 +90,9 @@ export const useAuth = () => {
         }
     };
 
-    const handleEmailLogin = async (email: string, password: string) => {
+    const handleEmailLogin = async (username: string, password: string) => {
         try {
-            const data = await AuthApi.login(email, password);
+            const data = await AuthApi.login(username, password);
             setUser(data);
         } catch (error: any) {
             console.log(error.response);
@@ -103,7 +103,6 @@ export const useAuth = () => {
     };
 
     const handleEmailRegister = async (
-        email: string,
         username: string,
         password: string,
         confirmPassword: string
@@ -114,7 +113,7 @@ export const useAuth = () => {
                 return;
             }
 
-            let data = await AuthApi.register(email, username, password);
+            let data = await AuthApi.register(username, password);
             setUser(data);
         } catch (error: any) {
             setError(

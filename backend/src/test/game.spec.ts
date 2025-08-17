@@ -1,6 +1,6 @@
 import { startClean } from "@/database/client";
 import { Game } from "@/database/models/Game/Game";
-import { UserExample } from "@/database/models/User/UserExample";
+import { UserGenerate } from "@/database/models/User/UserGenerate";
 import { Sequelize } from "sequelize";
 import { GameStatus } from "shared";
 
@@ -17,7 +17,7 @@ describe("Game Tests", () => {
 
     it("should add player to a game", async () => {
         const game = await Game.create();
-        const user = await UserExample.create();
+        const user = await UserGenerate.createExample();
 
         await game.addPlayer(user);
 
@@ -30,8 +30,8 @@ describe("Game Tests", () => {
 
     it("should remove player from a game", async () => {
         const game = await Game.create();
-        const user1 = await UserExample.create();
-        const user2 = await UserExample.create();
+        const user1 = await UserGenerate.createExample();
+        const user2 = await UserGenerate.createExample();
 
         await game.addPlayers([user1, user2]);
         await game.removePlayer(user2);
@@ -42,8 +42,8 @@ describe("Game Tests", () => {
 
     it("should create a game with multiple players", async () => {
         const game = await Game.create();
-        const user1 = await UserExample.create();
-        const user2 = await UserExample.create();
+        const user1 = await UserGenerate.createExample();
+        const user2 = await UserGenerate.createExample();
 
         await game.addPlayer(user1);
         await game.addPlayer(user2);
@@ -56,9 +56,9 @@ describe("Game Tests", () => {
 
     it("Should not add player to a game that is not waiting", async () => {
         const game = await Game.create({ status: GameStatus.IN_PROGRESS });
-        const user1 = await UserExample.create();
-        const user2 = await UserExample.create();
-        const user3 = await UserExample.create();
+        const user1 = await UserGenerate.createExample();
+        const user2 = await UserGenerate.createExample();
+        const user3 = await UserGenerate.createExample();
 
         await expect(game.addPlayer(user1)).rejects.toThrow(
             "Cannot add players to a game that is not waiting"
@@ -70,8 +70,8 @@ describe("Game Tests", () => {
 
     it("Should not add more players than maxPlayers", async () => {
         const game = await Game.create({ maxPlayers: 1 });
-        const user1 = await UserExample.create();
-        const user2 = await UserExample.create();
+        const user1 = await UserGenerate.createExample();
+        const user2 = await UserGenerate.createExample();
 
         await game.addPlayer(user1);
         await expect(game.addPlayer(user2)).rejects.toThrow(
@@ -84,10 +84,10 @@ describe("Game Tests", () => {
             status: GameStatus.WAITING,
             maxPlayers: 4,
         });
-        const user1 = await UserExample.create();
-        const user2 = await UserExample.create();
-        const user3 = await UserExample.create();
-        const user4 = await UserExample.create();
+        const user1 = await UserGenerate.createExample();
+        const user2 = await UserGenerate.createExample();
+        const user3 = await UserGenerate.createExample();
+        const user4 = await UserGenerate.createExample();
 
         await game.addPlayers([user1, user2, user3, user4]);
 

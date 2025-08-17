@@ -23,8 +23,7 @@ export const Profile = () => {
     const handleSubmit = async (e: any) => {
         e.preventDefault();
         const data = {
-            name: e.target[0].value,
-            email: e.target[1].value,
+            username: e.target[0].value,
         };
         const newUser = await ProfileApi.updateUser(data);
         setEdit(false);
@@ -44,7 +43,7 @@ export const Profile = () => {
                 <div className="flex flex-col md:flex-row items-center gap-6">
                     <UserPicture />
                     <div>
-                        <h2 className="text-2xl font-bold">{user.name}</h2>
+                        <h2 className="text-2xl font-bold">{user.username}</h2>
                         <p className="text-white/80">ID: {user.id}</p>
                         <p className="text-white/80">{user.email}</p>
                     </div>
@@ -64,12 +63,7 @@ export const Profile = () => {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <InfoHandler
                                 input="Name"
-                                value={user.name}
-                                readonly={!edit}
-                            />
-                            <InfoHandler
-                                input="Email"
-                                value={user.email}
+                                value={user.username}
                                 readonly={!edit}
                             />
                         </div>

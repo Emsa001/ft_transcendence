@@ -1,13 +1,14 @@
 import { AxiosResponse } from "axios";
 import { APIService } from "@shared/lib/api";
-import { UserEditableData } from "shared";
+import { UserDTOType, UserEditableData } from "shared";
+import { AuthResponse, User } from "@features/auth/types";
 
 class ProfileApi extends APIService {
     async getUser(): Promise<User> {
         try {
-            const response: AxiosResponse<AuthResponse> =
+            const response: AxiosResponse<UserDTOType> =
                 await this.api.get("/user");
-            return response.data as unknown as User;
+            return response.data;
         } catch (error) {
             console.error("Error during Google token verification:", error);
             return Promise.reject(error);

@@ -3,26 +3,27 @@ import { Controller, GET, POST } from "fastify-decorators";
 
 import { BaseController } from "../base";
 import AuthService from "./services/auth.service";
-import cookieService from "./services/cookie.severice";
+import cookieService from "./services/cookie.service";
 import JwtService from "./services/jwt.service";
 import TwoFAService from "./services/twoFa.service";
 
-import { OAuth2Payload, UserLogin, UserRegister } from "./auth.types";
+import { UserLogin } from "./auth.types";
 import { User } from "@/database/models/User/User";
 import { HttpException } from "@/utils/exceptions";
+import { OAuth2Payload } from "shared";
 
 @Controller("/auth")
 export class AuthController extends BaseController {
     @GET("/")
     async getAuthUserController(request: FastifyRequest, reply: FastifyReply) {
         const token = request.cookies.session;
-        const { email, twoFA } = JwtService.verify(token);
+        const { id, twoFA } = JwtService.verify(token);
 
-        const user = await User.findByEmail(email);
+        const user = await User.findByPk(id);
         if (!user)
             throw new HttpException(401, "Unauthorized: Invalid session token");
 
-        return reply.status(200).send({ user: user.toDTO(), twoFA });
+        return reply.status(200).send({ user: user.toDTO().full(), twoFA });
     }
 
     @POST("/logout")
@@ -108,20 +109,16 @@ export class AuthController extends BaseController {
 
     @POST("/register")
     async registerUserController(request: FastifyRequest, reply: FastifyReply) {
-        const { email, name, password } = request.body as UserRegister;
-        const { user, token } = await AuthService.register(
-            email,
-            name,
-            password
-        );
+        const { username, password } = request.body as UserLogin;
+        const { user, token } = await AuthService.register(username, password);
         reply.setCookie("session", token, cookieService.createSession());
         return reply.send({ user });
     }
 
     @POST("/login")
     async loginUserController(request: FastifyRequest, reply: FastifyReply) {
-        const { email, password } = request.body as UserLogin;
-        const { user, token } = await AuthService.login(email, password);
+        const { username, password } = request.body as UserLogin;
+        const { user, token } = await AuthService.login(username, password);
 
         reply.setCookie("session", token, cookieService.createSession());
         return reply.send({
