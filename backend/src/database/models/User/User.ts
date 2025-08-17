@@ -86,10 +86,15 @@ export class User extends Model<InferAttributes<User>, CreationAttributes> {
         return new UserDTO(this);
     }
 
-    static findByEmail = (email: string, options?: FindOptions) =>
-        User.findOne({ where: { email }, ...options });
-    static findByUsername = (username: string, options?: FindOptions) =>
-        User.findOne({ where: { username }, ...options });
+    static findByEmail = (email: string, options?: FindOptions) => {
+        const where = { email, ...(options?.where ?? {}) };
+        return User.findOne({ ...options, where });
+    };
+
+    static findByUsername = (username: string, options?: FindOptions) => {
+        const where = { username, ...(options?.where ?? {}) };
+        return User.findOne({ ...options, where });
+    };
     static findById = async (id: number | string | undefined) => {
         if (typeof id === "undefined")
             throw new HttpException(400, "User ID is required");
