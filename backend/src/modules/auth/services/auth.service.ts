@@ -7,6 +7,7 @@ import { HttpException } from "@/utils/exceptions";
 import { Token } from "../auth.types";
 import jwtService from "./jwt.service";
 import { UserGenerate } from "@/database/models/User/UserGenerate";
+import { Op } from "sequelize";
 
 /*
 
@@ -154,8 +155,13 @@ class AuthService {
                 "Bad Request: Missing required fields"
             );
 
-        const user = await User.findByUsername(username);
-        if (!user || user.provider !== "local")
+        const user = await User.findOne({
+            where: {
+                username,
+                provider: "local",
+            },
+        });
+        if (!user)
             throw new HttpException(401, "Unauthorized: Invalid credentials");
 
         const isPasswordValid = await bcrypt.compare(password, user.password!);
