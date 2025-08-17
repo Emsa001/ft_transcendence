@@ -62,7 +62,7 @@ class UserAccountService {
         const existingUser = await User.findByUsername(data.username, {
             where: { id: { [Op.ne]: user.id } },
         });
-        if (existingUser && existingUser.id !== user.id) {
+        if (existingUser) {
             throw new Error("Username already taken");
         }
 
