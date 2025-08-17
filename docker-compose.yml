@@ -5,12 +5,11 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./backend/db.sqlite:/app/db.sqlite
+      - ./backend:/app
     ports:
       - "8000:8000"
     env_file:
       - ./backend/.env
-    volumes:
-      - ./backend:/app
     networks:
       - monitoring
 
@@ -26,8 +25,7 @@ services:
       - ./frontend/.env
     volumes:
        - ./frontend:/app
-    
-
+  
   prometheus:
     image: prom/prometheus:v2.37.0
     container_name: prometheus
@@ -39,14 +37,21 @@ services:
       - backend
     networks:
       - monitoring
-  
+
   grafana:
     image: grafana/grafana:9.0.0
     container_name: grafana
     ports:
       - "3001:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=admin
     volumes:
       - grafana-data:/var/lib/grafana
+      # Provisioning config
+      - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
+       # Dashboards JSON files
+      - ./grafana/dashboards:/var/lib/grafana/dashboards
     depends_on:
       - prometheus
     networks:
@@ -57,4 +62,3 @@ networks:
 
 volumes:
   grafana-data:
-

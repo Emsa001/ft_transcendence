@@ -1,0 +1,10 @@
+# This tells Grafana to load all JSON files in /var/lib/grafana/dashboards
+apiVersion: 1
+
+providers:
+  - name: 'default'
+    orgId: 1
+    folder: ''
+    type: file
+    options:
+      path: /var/lib/grafana/dashboards
