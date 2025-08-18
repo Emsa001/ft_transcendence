@@ -33,7 +33,7 @@ export default function MainMenu() {
 
     const profileItems = [{ label: "Profile", icon: FaUser, link: "/profile" }];
 
-    const loginItems = [{ label: "Login", icon: FaUser, link: "/auth" }];
+    const loginItems = [{ label: "Login", icon: FaUser, link: "/auth" }, {label: "test", icon: FaGamepad, link: "/game"}];
 
     const items = user ? profileItems : loginItems;
 
