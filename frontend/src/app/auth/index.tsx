@@ -12,8 +12,8 @@ export default function Auth() {
 
     const {
         handleOAuthCallback,
-        handleEmailLogin,
-        handleEmailRegister,
+        handleUsernameLogin,
+        handleUsernameRegister,
         redirectToGoogleAuth,
         error,
         setError,
@@ -51,8 +51,8 @@ export default function Auth() {
 
                 <AuthForm
                     isRegister={isRegister}
-                    handleEmailLogin={handleEmailLogin}
-                    handleEmailRegister={handleEmailRegister}
+                    handleUsernameLogin={handleUsernameLogin}
+                    handleUsernameRegister={handleUsernameRegister}
                 />
 
                 <p className="text-red-400 mt-4">{error}</p>

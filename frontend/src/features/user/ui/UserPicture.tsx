@@ -13,11 +13,11 @@ export function UserPicture() {
         const input = e.target as HTMLInputElement;
         const file = input.files?.[0] || null;
         if (file) {
-            try {
-                const pictureUrl = await ProfileApi.updateUserPicture(file);
+            const pictureUrl = await ProfileApi.updateUserPicture(file);
+            if (pictureUrl) {
                 setUser({ ...user, avatar: pictureUrl });
-            } catch (error) {
-                console.error("Failed to update user picture:", error);
+            } else {
+                console.warn("Failed to update user picture: pictureUrl is null.");
             }
         } else {
             console.warn("No file provided for picture update.");
@@ -25,7 +25,7 @@ export function UserPicture() {
     };
 
     return (
-        <div className="relative group">
+        <div className="min-w-[80px] relative group">
             {user.avatar ? (
                 <img
                     src={`${user.avatar}?ver=${Date.now()}`}

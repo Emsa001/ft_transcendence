@@ -15,7 +15,7 @@ class ProfileApi extends APIService {
         }
     }
 
-    async updateUserPicture(file: File): Promise<string> {
+    async updateUserPicture(file: File): Promise<string | null> {
         const formData = new FormData();
         formData.append("file", file);
 
@@ -28,18 +28,27 @@ class ProfileApi extends APIService {
             return response.data.picture as string;
         } catch (error) {
             console.error("API Error:", error);
-            throw error;
+            return null;
         }
     }
 
-    async updateUser(data: UserEditableData): Promise<User> {
+    async updateUser(data: UserEditableData): Promise<User | null> {
         try {
             const response = await this.api.post("/user/edit", data);
-            console.log("Updated user:", response.data);
             return response.data.user as User;
         } catch (error) {
             console.error("API Error:", error);
-            throw error;
+            return null;
+        }
+    }
+
+    async deleteUser(): Promise<boolean> {
+        try {
+            const response = await this.api.post("/user/delete");
+            return response.data.success;
+        } catch (error) {
+            console.error("API Error:", error);
+            return false;
         }
     }
 }

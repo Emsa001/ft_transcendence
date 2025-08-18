@@ -90,7 +90,7 @@ export const useAuth = () => {
         }
     };
 
-    const handleEmailLogin = async (username: string, password: string) => {
+    const handleUsernameLogin = async (username: string, password: string) => {
         try {
             const data = await AuthApi.login(username, password);
             setUser(data);
@@ -102,7 +102,7 @@ export const useAuth = () => {
         }
     };
 
-    const handleEmailRegister = async (
+    const handleUsernameRegister = async (
         username: string,
         password: string,
         confirmPassword: string
@@ -127,8 +127,8 @@ export const useAuth = () => {
         handleLogout,
         redirectToGoogleAuth,
         handleOAuthCallback,
-        handleEmailLogin,
-        handleEmailRegister,
+        handleUsernameLogin,
+        handleUsernameRegister,
         error,
         setError,
     };

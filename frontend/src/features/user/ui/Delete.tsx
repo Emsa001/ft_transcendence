@@ -1,0 +1,26 @@
+import React, { useNavigate } from "react";
+import { Button } from "@shared/components/Button";
+import ProfileApi from "@features/user/service/profileApi";
+import { useUser } from "@features/auth/model/useUser";
+
+export const DeleteButton = () => {
+    const { setUser } = useUser();
+    const handleDelete = async () => {
+        const isConfirmed = window.confirm(
+            "Are you sure you want to delete your account?"
+        );
+        if (!isConfirmed) return;
+        const status = await ProfileApi.deleteUser();
+        if (status) {
+            setUser(null);
+        }
+    };
+
+    return (
+        <div>
+            <Button onClick={handleDelete} color="error">
+                Delete Account
+            </Button>
+        </div>
+    );
+};
