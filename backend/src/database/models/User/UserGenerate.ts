@@ -11,13 +11,12 @@ export class UserGenerate {
         });
     }
 
-    static async createUsername(email: string): Promise<string> {
-        let username = email.split("@")[0];
-        while (await User.findByUsername(username)) {
+    static async createUsername(name: string): Promise<string> {
+        while (await User.findByUsername(name)) {
             const randomSuffix = faker.string.alphanumeric(5);
-            username = `${username}_${randomSuffix}`;
+            name = `${name}_${randomSuffix}`;
         }
 
-        return username;
+        return name;
     }
 }

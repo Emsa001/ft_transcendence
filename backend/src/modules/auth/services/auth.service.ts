@@ -105,7 +105,9 @@ class AuthService {
         if (!user) {
             user = await User.create({
                 email: payload.email!,
-                username: await UserGenerate.createUsername(payload.email),
+                username: await UserGenerate.createUsername(
+                    payload.email.split("@")[0]
+                ),
                 avatar: payload.picture || null,
                 provider: "google",
             });
@@ -159,6 +161,7 @@ class AuthService {
             where: {
                 username,
                 provider: "local",
+                status: "active",
             },
         });
         if (!user)

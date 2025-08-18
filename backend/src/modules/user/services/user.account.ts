@@ -6,6 +6,7 @@ import sharp from "sharp";
 import { UserEditableData } from "shared";
 import { Op } from "sequelize";
 import { HttpException } from "@/utils/exceptions";
+import { UserGenerate } from "@/database/models/User/UserGenerate";
 
 const imageDirUrl = `${process.env.BASE_URL}/public/uploads/`;
 
@@ -82,7 +83,14 @@ class UserAccountService {
             await deleteImage(user.avatar);
         }
 
-        await user.destroy();
+        // await user.destroy();
+        user.status = "deleted";
+        user.password = null;
+        user.username = await UserGenerate.createUsername(
+            `deleted_user_${user.id}`
+        );
+        await user.save();
+
         return { message: "User account deleted successfully" };
     }
 }

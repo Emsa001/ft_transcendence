@@ -13,12 +13,8 @@ export function UserPicture() {
         const input = e.target as HTMLInputElement;
         const file = input.files?.[0] || null;
         if (file) {
-            try {
-                const pictureUrl = await ProfileApi.updateUserPicture(file);
-                setUser({ ...user, avatar: pictureUrl });
-            } catch (error) {
-                console.error("Failed to update user picture:", error);
-            }
+            const pictureUrl = await ProfileApi.updateUserPicture(file);
+            setUser({ ...user, avatar: pictureUrl });
         } else {
             console.warn("No file provided for picture update.");
         }

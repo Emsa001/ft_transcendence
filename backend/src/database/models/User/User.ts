@@ -27,6 +27,7 @@ type CreationAttributes = {
     password?: string | null;
     avatar?: string | null;
     provider?: "google" | "local";
+    status?: "active" | "deleted";
 };
 
 @Table
@@ -72,6 +73,10 @@ export class User extends Model<InferAttributes<User>, CreationAttributes> {
     @Default("local")
     @Column(DataType.STRING)
     declare provider: CreationAttributes["provider"];
+
+    @Default("active")
+    @Column(DataType.STRING)
+    declare status: "active" | "deleted";
 
     @BelongsToMany(() => Game, () => GameUser)
     declare games: Game[];

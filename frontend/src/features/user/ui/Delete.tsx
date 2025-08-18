@@ -1,22 +1,18 @@
 import React, { useNavigate } from "react";
 import { Button } from "@shared/components/Button";
 import ProfileApi from "@features/user/service/profileApi";
+import { useUser } from "@features/auth/model/useUser";
 
 export const DeleteButton = () => {
-    const navigate = useNavigate();
-
+    const { setUser } = useUser();
     const handleDelete = async () => {
         const isConfirmed = window.confirm(
             "Are you sure you want to delete your account?"
         );
-
         if (!isConfirmed) return;
-
-        try {
-            await ProfileApi.deleteUser();
-            navigate("/");
-        } catch (error) {
-            console.error("Error deleting user:", error);
+        const status = await ProfileApi.deleteUser();
+        if (status) {
+            setUser(null);
         }
     };
 
