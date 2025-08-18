@@ -1,6 +1,7 @@
 import { UserDTOType } from "./user";
 
 export enum GameStatus {
+    LOCKED = "locked",
     WAITING = "waiting",
     IN_PROGRESS = "in_progress",
     FINISHED = "finished",

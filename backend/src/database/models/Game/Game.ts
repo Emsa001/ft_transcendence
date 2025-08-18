@@ -24,6 +24,7 @@ import {
     BeforeUpdate,
     ForeignKey,
     AfterUpdate,
+    BelongsTo,
 } from "sequelize-typescript";
 import { User } from "../User/User";
 import { GameUser } from "./GameUser";
@@ -31,15 +32,14 @@ import { GameDTO } from "./GameDTO";
 import { GameHooks } from "./GameHooks";
 import { GameMode, GameStatus } from "shared";
 import { HttpException } from "@/utils/exceptions";
+import { UserWithGameData } from "./types";
+import { Tournament } from "../Tournaments/Tournament";
 
-type UserWithGameData = User & {
-    GameUser: GameUser;
-};
-
-type GameCreationAttributes = {
+export type GameCreationAttributes = {
     status?: GameStatus;
     mode?: GameMode;
     maxPlayers?: number;
+    tournamentId?: number;
 };
 
 @Scopes(() => ({
@@ -80,6 +80,10 @@ export class Game extends Model<InferAttributes<Game>, GameCreationAttributes> {
     @Default(null)
     @Column(DataType.INTEGER)
     declare winnerId?: number;
+
+    @ForeignKey(() => Tournament)
+    @Column(DataType.INTEGER)
+    declare tournamentId?: number;
 
     /*
         Sequelize automatically generates association methods, it's called magic methods:
