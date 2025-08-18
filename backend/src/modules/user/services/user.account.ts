@@ -86,6 +86,7 @@ class UserAccountService {
         // await user.destroy();
         user.status = "deleted";
         user.password = null;
+        user.email = null;
         user.username = await UserGenerate.createUsername(
             `deleted_user_${user.id}`
         );
