@@ -6,18 +6,17 @@ import {
 } from "@features/auth";
 import { useUser } from "@features/auth/model/useUser";
 
-
 export default function Friends() {
 
     const { user } = useUser();
 
     // fake friends data
     const fakeFriends = [
-        { id: 12, name: "Emanuel Scure", status: "online", avatar: "https://via.placeholder.com/50" },
+        { id: 12, name: "Emanuella Scura", status: "online", avatar: "https://via.placeholder.com/50" },
         { id: 4, name: "Tobias Riedel", status: "offline", avatar: "https://via.placeholder.com/50" },
         { id: 5, name: "Bequ Beqa", status: "online", avatar: "https://via.placeholder.com/50" },
         { id: 7, name: "Emma Watson", status: "offline", avatar: "https://via.placeholder.com/50" },
-        { id: 2, name: "Kitty Cat", status: "online", avatar: "https://via.placeholder.com/50" },
+        { id: 2, name: "Paulo Beckhausa", status: "online", avatar: "https://via.placeholder.com/50" },
     ];
 
     if (!user || typeof user !== 'object') {
