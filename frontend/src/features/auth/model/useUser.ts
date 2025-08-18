@@ -1,6 +1,8 @@
 import { useStatic } from "react";
 import { AuthApi, twoFactorAuthAlert } from "..";
 import { User } from "../types";
+import { useState, useStatic } from "react";
+import { AuthApi, twoFactorAuthAlert, User } from "..";
 
 export const useUser = () => {
     const [user, setUser] = useStatic<User | null>("user", null);
