@@ -14,7 +14,11 @@ export function UserPicture() {
         const file = input.files?.[0] || null;
         if (file) {
             const pictureUrl = await ProfileApi.updateUserPicture(file);
-            setUser({ ...user, avatar: pictureUrl });
+            if (pictureUrl) {
+                setUser({ ...user, avatar: pictureUrl });
+            } else {
+                console.warn("Failed to update user picture: pictureUrl is null.");
+            }
         } else {
             console.warn("No file provided for picture update.");
         }
