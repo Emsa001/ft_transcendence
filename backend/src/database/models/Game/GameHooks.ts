@@ -2,11 +2,11 @@ import { GameStatus } from "shared";
 import { User } from "../User/User";
 import { Game } from "./Game";
 import { GameUser } from "./GameUser";
-import { GameValidators } from "./GameValidators";
+import { Validators } from "@/database/other/Validators";
 
 export class GameUserHooks {
     static async verifyAddPlayer(gameUser: GameUser) {
-        await GameValidators.validateGameState(gameUser.gameId, 1);
+        await Validators.validateGame(gameUser.gameId, 1);
     }
 
     static async verifyBulkAddPlayer(GameUser: GameUser[]) {
@@ -17,7 +17,7 @@ export class GameUserHooks {
 
         for (const gameIdStr in gameGroups) {
             const gameId = parseInt(gameIdStr, 10);
-            await GameValidators.validateGameState(gameId, gameGroups[gameId]);
+            await Validators.validateGame(gameId, gameGroups[gameId]);
         }
     }
 }

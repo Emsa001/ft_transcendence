@@ -17,7 +17,9 @@ export function UserPicture() {
             if (pictureUrl) {
                 setUser({ ...user, avatar: pictureUrl });
             } else {
-                console.warn("Failed to update user picture: pictureUrl is null.");
+                console.warn(
+                    "Failed to update user picture: pictureUrl is null."
+                );
             }
         } else {
             console.warn("No file provided for picture update.");
