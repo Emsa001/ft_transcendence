@@ -1,5 +1,5 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { Controller, GET, POST } from "fastify-decorators";
+import { Controller, DELETE, GET, POST } from "fastify-decorators";
 import { UserEditableData } from "shared";
 
 import { BaseController } from "../base";
@@ -81,5 +81,16 @@ export class UserController extends BaseController {
 
         reply.setCookie("session", newToken, cookieService.createSession());
         return reply.send({ success: true, user });
+    }
+
+    @POST("/delete")
+    async deleteAccount(request: FastifyRequest, reply: FastifyReply) {
+        const token = request.cookies.session;
+        const { id } = jwtService.verify(token);
+
+        await userAccountService.deleteAccount(id);
+
+        reply.clearCookie("session");
+        return reply.send({ success: true });
     }
 }

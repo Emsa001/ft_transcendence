@@ -9,7 +9,7 @@ import { UserStats } from "@features/user/ui/UserStats";
 import { GameHistory } from "@features/user/ui/GameHistory";
 import { UserPicture } from "@features/user/ui/UserPicture";
 import ProfileApi from "@features/user/service/profileApi";
-import { InfoHandler } from "@features/user/ui/InfoHandler";
+import { DeleteButton } from "@features/user/ui/Delete";
 
 export const Profile = () => {
     // Just for test - get user ID from URL query params to see their stats
@@ -39,14 +39,45 @@ export const Profile = () => {
     return (
         <div className="min-h-screen w-full p-6 flex flex-col items-center justify-center">
             {/* Profile Card */}
-            <div className="max-w-3xl w-full bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl shadow-lg p-6 mb-8 text-white">
-                <div className="flex flex-col md:flex-row items-center gap-6">
+            <div className="relative max-w-3xl w-full bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl shadow-lg p-6 mb-8 text-white">
+                <button
+                    className="absolute top-6 right-4 text-white p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors z-10"
+                    onClick={() => setEdit(!edit)}
+                >
+                    {edit ? "Cancel" : "Edit"}
+                </button>
+
+                <div className="flex flex-col md:flex-row items-start gap-6">
                     <UserPicture />
-                    <div>
-                        <h2 className="text-2xl font-bold">{user.username}</h2>
-                        <p className="text-white/80">ID: {user.id}</p>
-                        <p className="text-white/80">{user.email}</p>
-                    </div>
+                    {!edit ? (
+                        <div className="space-y-1">
+                            <h2 className="text-2xl font-bold">
+                                {user.username}
+                            </h2>
+                            <p className="text-white/80">ID: {user.id}</p>
+                            <p className="text-white/80">{user.email}</p>
+                        </div>
+                    ) : (
+                        <form
+                            onSubmit={handleSubmit}
+                            className="w-full space-y-3 flex-1 pr-15"
+                        >
+                            <input
+                                type="text"
+                                name="username"
+                                value={user.username}
+                                defaultValue={user.username}
+                                className="w-full p-2 rounded bg-white/20 border border-white/30 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                placeholder="Username"
+                            />
+                            <button
+                                type="submit"
+                                className="w-full bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded transition-colors font-medium"
+                            >
+                                Save Changes
+                            </button>
+                        </form>
+                    )}
                 </div>
 
                 {/* 2FA Toggle */}
@@ -58,33 +89,10 @@ export const Profile = () => {
                     )}
                 </div>
 
-                <form onSubmit={handleSubmit}>
-                    <div className="flex-1 space-y-4">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <InfoHandler
-                                input="Name"
-                                value={user.username}
-                                readonly={!edit}
-                            />
-                        </div>
-                    </div>
-                    <button
-                        type="submit"
-                        className="text-black p-2 bg-gray-200 rounded-lg"
-                    >
-                        Submit
-                    </button>
-                </form>
-                <button
-                    className="text-black p-2 bg-gray-200 rounded-lg"
-                    onClick={() => setEdit(!edit)}
-                >
-                    {edit ? "Cancel" : "Edit"}
-                </button>
-
                 {/* Logout */}
-                <div className="mt-4">
+                <div className="mt-4 flex gap-2 items-center">
                     <LogoutButton />
+                    <DeleteButton />
                 </div>
             </div>
 

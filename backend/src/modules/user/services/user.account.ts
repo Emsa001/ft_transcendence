@@ -2,20 +2,17 @@ import { User } from "@/database/models/User/User";
 import { MultipartFile } from "@fastify/multipart";
 import fs from "fs";
 import path from "path";
-import { fileURLToPath } from "url";
-import { dirname } from "path";
 import sharp from "sharp";
 import { UserEditableData } from "shared";
 import { Op } from "sequelize";
 import { HttpException } from "@/utils/exceptions";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+const imageDirUrl = `${process.env.BASE_URL}/public/uploads/`;
 
-const url = process.env.BASE_URL || "http://localhost:8000";
+async function uploadImage(image: MultipartFile, fileName: string) {
+    const imagesDir = path.join(process.cwd(), "public", "uploads");
 
-export async function uploadImage(image: MultipartFile, fileName: string) {
-    const imagesDir = path.join(__dirname, "../../../../public/uploads/");
+    console.log("Images directory:", imagesDir);
 
     if (!fs.existsSync(imagesDir)) {
         fs.mkdirSync(imagesDir, { recursive: true });
@@ -29,7 +26,19 @@ export async function uploadImage(image: MultipartFile, fileName: string) {
         .webp({ quality: 80 })
         .toFile(filePath);
 
-    return `${url}/public/uploads/${fileName}`;
+    return `${imageDirUrl}${fileName}`;
+}
+
+async function deleteImage(fileName: string) {
+    const imagesDir = path.join(process.cwd(), "public", "uploads");
+
+    const originalFileName = fileName.split("/").pop();
+
+    const finalFileName = `${imagesDir}/${originalFileName}`;
+
+    if (fs.existsSync(finalFileName)) {
+        fs.unlinkSync(finalFileName);
+    }
 }
 
 class UserAccountService {
@@ -63,6 +72,18 @@ class UserAccountService {
         user.username = data.username || user.username;
         await user.save();
         return user;
+    }
+
+    async deleteAccount(id: number) {
+        const user = await User.findByPk(id);
+        if (!user) throw new HttpException(404, "User not found");
+
+        if (user.avatar) {
+            await deleteImage(user.avatar);
+        }
+
+        await user.destroy();
+        return { message: "User account deleted successfully" };
     }
 }
 

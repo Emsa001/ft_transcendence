@@ -2,8 +2,8 @@ import React from "react";
 
 interface AuthFormProps {
     isRegister: boolean;
-    handleEmailLogin: (username: string, password: string) => Promise<void>;
-    handleEmailRegister: (
+    handleUsernameLogin: (username: string, password: string) => Promise<void>;
+    handleUsernameRegister: (
         username: string,
         password: string,
         confirmPassword: string
@@ -20,8 +20,8 @@ interface FormInputProps {
 
 export default function AuthForm({
     isRegister,
-    handleEmailLogin,
-    handleEmailRegister,
+    handleUsernameLogin,
+    handleUsernameRegister,
 }: AuthFormProps) {
     const handleSubmit = async (e: HTMLFormElement) => {
         e.preventDefault();
@@ -32,9 +32,9 @@ export default function AuthForm({
 
         if (isRegister) {
             const confirmPassword = formData.get("confirmPassword") as string;
-            await handleEmailRegister(username, password, confirmPassword);
+            await handleUsernameRegister(username, password, confirmPassword);
         } else {
-            await handleEmailLogin(username, password);
+            await handleUsernameLogin(username, password);
         }
     };
 

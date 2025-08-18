@@ -35,8 +35,16 @@ class ProfileApi extends APIService {
     async updateUser(data: UserEditableData): Promise<User> {
         try {
             const response = await this.api.post("/user/edit", data);
-            console.log("Updated user:", response.data);
             return response.data.user as User;
+        } catch (error) {
+            console.error("API Error:", error);
+            throw error;
+        }
+    }
+
+    async deleteUser(): Promise<void> {
+        try {
+            await this.api.post("/user/delete");
         } catch (error) {
             console.error("API Error:", error);
             throw error;

@@ -25,7 +25,7 @@ export function UserPicture() {
     };
 
     return (
-        <div className="relative group">
+        <div className="min-w-[80px] relative group">
             {user.avatar ? (
                 <img
                     src={`${user.avatar}?ver=${Date.now()}`}
