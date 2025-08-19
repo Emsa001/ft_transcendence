@@ -13,8 +13,6 @@ const imageDirUrl = `${process.env.BASE_URL}/public/uploads/`;
 async function uploadImage(image: MultipartFile, fileName: string) {
     const imagesDir = path.join(process.cwd(), "public", "uploads");
 
-    console.log("Images directory:", imagesDir);
-
     if (!fs.existsSync(imagesDir)) {
         fs.mkdirSync(imagesDir, { recursive: true });
     }
@@ -43,10 +41,6 @@ async function deleteImage(fileName: string) {
 }
 
 class UserAccountService {
-    async getAccount(id: number) {
-        return await User.findByPk(id);
-    }
-
     async uploadPicture(id: number, data?: MultipartFile) {
         const user = await User.findByPk(id);
         if (!user) throw new HttpException(404, "User not found");

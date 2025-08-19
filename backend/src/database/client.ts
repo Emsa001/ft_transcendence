@@ -11,6 +11,7 @@ export const registerDB = async (app: FastifyInstance) => {
     const sequelize = new Sequelize({
         dialect: "sqlite",
         storage: "./db.sqlite",
+        logging: false,
         models,
     });
 
@@ -20,7 +21,7 @@ export const registerDB = async (app: FastifyInstance) => {
     // Feed database with example data
     await DatabaseExampleFeed.feed({
         users: 4,
-        games: 50,
+        games: 1,
     });
 };
 

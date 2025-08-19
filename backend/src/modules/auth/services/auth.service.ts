@@ -43,13 +43,18 @@ class AuthService {
      * @param token - The JWT token to verify.
      * @returns True if the user is authorized, false otherwise.
      */
-    async isAuthorized(token: Token): Promise<boolean> {
+    async isAuthorized(
+        token: Token
+    ): Promise<{ status: boolean; user?: User }> {
         const { id, twoFA } = jwtService.verify(token);
 
         const user = await User.findByPk(id);
-        if (!user) return false;
+        if (!user) return { status: false };
 
-        return twoFA == "disabled" || twoFA == "completed";
+        return {
+            status: twoFA == "disabled" || twoFA == "completed",
+            user,
+        };
     }
 
     /**
