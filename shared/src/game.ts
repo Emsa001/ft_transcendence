@@ -26,14 +26,6 @@ export interface GameDTOType {
     updatedAt: Date;
 }
 
-
-export interface GetStatisticsResponse {
-    totalGames: number;
-    wins: number;
-    losses: number;
-    winRate: number;
-}
-
 export interface GameHistoryFilter {
     start?: Date;
     end?: Date;

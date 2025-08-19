@@ -8,7 +8,6 @@ import {
     BelongsToManyHasAssociationMixin,
     BelongsToManyHasAssociationsMixin,
     BelongsToManyCountAssociationsMixin,
-    HasManyAddAssociationMixin,
     HasManyCreateAssociationMixin,
     HasManyGetAssociationsMixin,
 } from "sequelize";
@@ -26,15 +25,21 @@ import {
     Scopes,
     ForeignKey,
     AllowNull,
+    AfterCreate,
+    AfterUpdate,
 } from "sequelize-typescript";
 import { User } from "../User/User";
 import { TournamentUser } from "./TournamentUser";
 import { Game } from "../Game/Game";
 import { GameStatus } from "shared";
 import { TournamentHooks } from "./TournamentHooks";
-import { TournamentCreationService } from "@/modules/tournament/services/torunament.creation";
-import { UserWithTournamentData } from "./types";
 import { TournamentDTO } from "./TournamentDTO";
+import { TournamentGamePlayService } from "@/modules/tournament/services/tournament.gameplay";
+import { TournamentCreationService } from "@/modules/tournament/services/tournament.creation";
+
+type UserWithTournamentData = User & {
+    TournamentUser: TournamentUser;
+};
 
 @Scopes(() => ({
     defaultScope: {
@@ -93,22 +98,25 @@ export class Tournament extends Model {
     declare createGame: HasManyCreateAssociationMixin<Game>;
     declare getGames: HasManyGetAssociationsMixin<Game>;
 
-    @BeforeCreate
-    static async beforeCreateTournament(tournament: Tournament): Promise<void> {
-        await TournamentHooks.beforeCreateTournament(tournament);
-    }
-
     getActivePlayers = async (): Promise<UserWithTournamentData[]> => {
         const allPlayers = await this.getPlayers();
         return allPlayers.filter((player) => !player.TournamentUser.eliminated);
     };
 
     start = async () => TournamentCreationService.start(this);
-    startRound = async () => TournamentCreationService.startRound(this);
+    end = async () => TournamentCreationService.end(this);
+    createRound = async () => TournamentCreationService.createRound(this);
     eliminatePlayer = async (playerId: number) =>
-        TournamentCreationService.eliminatePlayer(this, playerId);
+        TournamentGamePlayService.eliminatePlayer(this, playerId);
+    exampleRoundFlow = async (winner?: number) =>
+        TournamentGamePlayService.exampleRoundFlow(this, winner);
 
     toDTO() {
         return new TournamentDTO(this);
+    }
+
+    @BeforeCreate
+    static async beforeCreateTournament(tournament: Tournament): Promise<void> {
+        await TournamentHooks.beforeCreateTournament(tournament);
     }
 }

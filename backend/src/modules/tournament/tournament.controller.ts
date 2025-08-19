@@ -5,7 +5,6 @@ import { BaseController } from "../base";
 import { HttpException } from "@/utils/exceptions";
 import { Tournament } from "@/database/models/Tournaments/Tournament";
 import { UserGenerate } from "@/database/models/User/UserGenerate";
-import { tournamentExampleRoundFlow } from "./services/tournament.flow";
 import { GameStatus } from "shared";
 
 @Controller("/tournament")
@@ -50,8 +49,8 @@ export class TournamentController extends BaseController {
             tournament.status = GameStatus.IN_PROGRESS;
         }
 
-        const round = await tournament.startRound();
-        await tournamentExampleRoundFlow(tournament);
+        const round = await tournament.createRound();
+        await tournament.exampleRoundFlow();
         return reply.send({
             message: `Round started for tournament ${tournament.name}`,
             games: round,

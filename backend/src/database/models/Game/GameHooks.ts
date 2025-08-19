@@ -3,6 +3,7 @@ import { User } from "../User/User";
 import { Game } from "./Game";
 import { GameUser } from "./GameUser";
 import { Validators } from "@/database/other/Validators";
+import { Tournament } from "../Tournaments/Tournament";
 
 export class GameUserHooks {
     static async verifyAddPlayer(gameUser: GameUser) {
@@ -39,6 +40,19 @@ export class GameHooks {
         });
 
         instance.winnerId = winner.id;
+
+        if (instance.tournamentId) {
+            const tournament = await Tournament.findByPk(instance.tournamentId);
+            if (!tournament) return;
+
+            const eliminated = instance.players.filter(
+                (p) => p.id != winner.id
+            );
+            for (const player of eliminated) {
+                await tournament.eliminatePlayer(player.id);
+            }
+        }
+
         await instance.save();
     }
 }
