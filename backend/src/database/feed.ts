@@ -67,13 +67,5 @@ export class DatabaseExampleFeed {
         const user2 = await UserGenerate.createExample();
 
         await tournament.addPlayers([user1, user2]);
-
-        const participants = await tournament.getPlayers();
-        await tournament.createGame();
-        console.log(`Tournament created with ${participants.length} players.`);
-        // const users = await User.findAll({ limit: maxPlayers });
-
-        // await tournament.addPlayers(users);
-        // console.log(`Tournament created with ${users.length} players.`);
     };
 }

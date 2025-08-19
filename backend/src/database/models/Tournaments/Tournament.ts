@@ -23,6 +23,9 @@ import {
     BelongsToMany,
     Default,
     BeforeCreate,
+    Scopes,
+    ForeignKey,
+    AllowNull,
 } from "sequelize-typescript";
 import { User } from "../User/User";
 import { TournamentUser } from "./TournamentUser";
@@ -30,7 +33,19 @@ import { Game } from "../Game/Game";
 import { GameStatus } from "shared";
 import { TournamentHooks } from "./TournamentHooks";
 import { TournamentCreationService } from "@/modules/tournament/services/torunament.creation";
+import { UserWithTournamentData } from "./types";
+import { TournamentDTO } from "./TournamentDTO";
 
+@Scopes(() => ({
+    defaultScope: {
+        include: [
+            {
+                model: User,
+                as: "players",
+            },
+        ],
+    },
+}))
 @Table
 export class Tournament extends Model {
     @PrimaryKey
@@ -49,16 +64,26 @@ export class Tournament extends Model {
     declare games: Game[];
 
     @BelongsToMany(() => User, () => TournamentUser)
-    declare players: User[];
+    declare players: UserWithTournamentData[];
+
+    @Default(0)
+    @Column(DataType.INTEGER)
+    declare round: number;
 
     @Default(16)
     @Column(DataType.INTEGER)
     declare maxPlayers: number;
 
+    @ForeignKey(() => TournamentUser)
+    @AllowNull(true)
+    @Default(null)
+    @Column(DataType.INTEGER)
+    declare winnerId?: number;
+
     // Magic association methods
     declare addPlayer: BelongsToManyAddAssociationMixin<User, number>;
     declare addPlayers: BelongsToManyAddAssociationsMixin<User, number>;
-    declare getPlayers: BelongsToManyGetAssociationsMixin<User>;
+    declare getPlayers: BelongsToManyGetAssociationsMixin<UserWithTournamentData>;
     declare setPlayers: BelongsToManySetAssociationsMixin<User, number>;
     declare removePlayer: BelongsToManyRemoveAssociationMixin<User, number>;
     declare removePlayers: BelongsToManyRemoveAssociationsMixin<User, number>;
@@ -73,5 +98,17 @@ export class Tournament extends Model {
         await TournamentHooks.beforeCreateTournament(tournament);
     }
 
-    createAllGames = async () => TournamentCreationService.createAllGames(this);
+    getActivePlayers = async (): Promise<UserWithTournamentData[]> => {
+        const allPlayers = await this.getPlayers();
+        return allPlayers.filter((player) => !player.TournamentUser.eliminated);
+    };
+
+    start = async () => TournamentCreationService.start(this);
+    startRound = async () => TournamentCreationService.startRound(this);
+    eliminatePlayer = async (playerId: number) =>
+        TournamentCreationService.eliminatePlayer(this, playerId);
+
+    toDTO() {
+        return new TournamentDTO(this);
+    }
 }
