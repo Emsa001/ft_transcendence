@@ -1,6 +1,7 @@
 import { Validators } from "@/database/other/Validators";
 import { Tournament } from "./Tournament";
 import { TournamentUser } from "./TournamentUser";
+import { GameStatus } from "shared";
 
 export class TournamentUserHooks {
     static async verifyAddPlayer(tournamentUser: TournamentUser) {

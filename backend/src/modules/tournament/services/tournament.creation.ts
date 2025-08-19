@@ -3,6 +3,9 @@ import { Tournament } from "@/database/models/Tournaments/Tournament";
 import { HttpException } from "@/utils/exceptions";
 import { GameStatus } from "shared";
 
+// https://www.geeksforgeeks.org/aptitude/puzzle-single-elimination-tournament/
+
+// TODO: clean
 export class TournamentCreationService {
     static async start(tournament: Tournament): Promise<void> {
         if (tournament.status != GameStatus.WAITING) {
@@ -22,7 +25,21 @@ export class TournamentCreationService {
         await tournament.save();
     }
 
-    static async startRound(tournament: Tournament): Promise<Game[]> {
+    static async end(tournament: Tournament): Promise<void> {
+        const activePlayers = await tournament.getActivePlayers();
+        if (activePlayers.length != 1)
+            throw new HttpException(
+                400,
+                "Tournament cannot be ended, there is no winner"
+            );
+
+        tournament.status = GameStatus.FINISHED;
+        const winner = activePlayers[0];
+        tournament.winnerId = winner.id;
+        await tournament.save();
+    }
+
+    static async createRound(tournament: Tournament): Promise<Game[]> {
         if (tournament.status !== GameStatus.IN_PROGRESS) {
             throw new HttpException(400, "Tournament is not in progress");
         }
@@ -66,18 +83,5 @@ export class TournamentCreationService {
         await tournament.save();
 
         return games;
-    }
-
-    static async eliminatePlayer(
-        tournament: Tournament,
-        playerId: number
-    ): Promise<void> {
-        const player = await tournament
-            .getPlayers()
-            .then((players) => players.find((p) => p.id === playerId));
-        if (!player) throw new Error("Player not found in tournament");
-
-        // Mark player as eliminated
-        await player.TournamentUser.update({ eliminated: true });
     }
 }

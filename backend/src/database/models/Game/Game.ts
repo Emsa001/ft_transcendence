@@ -9,6 +9,7 @@ import {
     BelongsToManyHasAssociationMixin,
     BelongsToManyHasAssociationsMixin,
     BelongsToManyCountAssociationsMixin,
+    BelongsToGetAssociationMixin,
 } from "sequelize";
 import {
     Table,
@@ -29,17 +30,21 @@ import {
 import { User } from "../User/User";
 import { GameUser } from "./GameUser";
 import { GameDTO } from "./GameDTO";
-import { GameHooks } from "./GameHooks";
 import { GameMode, GameStatus } from "shared";
 import { HttpException } from "@/utils/exceptions";
-import { UserWithGameData } from "./types";
 import { Tournament } from "../Tournaments/Tournament";
+import { GameHooks } from "./GameHooks";
 
 export type GameCreationAttributes = {
     status?: GameStatus;
     mode?: GameMode;
     maxPlayers?: number;
     tournamentId?: number;
+    winnerId?: number | null;
+};
+
+type UserWithGameData = User & {
+    GameUser: GameUser;
 };
 
 @Scopes(() => ({

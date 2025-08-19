@@ -1,7 +1,12 @@
-import { GameDTOType, GameStatus, TournamentUserDTOType } from "shared";
+import {
+    GameDTOType,
+    GameStatus,
+    TournamentDTOType,
+    TournamentUserDTOType,
+} from "shared";
 import { Tournament } from "./Tournament";
 
-export class TournamentDTO {
+export class TournamentDTO implements TournamentDTOType {
     id: number;
     name: string;
     status: GameStatus;

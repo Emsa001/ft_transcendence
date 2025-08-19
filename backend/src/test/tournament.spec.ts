@@ -2,7 +2,6 @@ import { startClean } from "@/database/client";
 import { Op, Sequelize } from "sequelize";
 import { UserGenerate } from "@/database/models/User/UserGenerate";
 import { Tournament } from "@/database/models/Tournaments/Tournament";
-import { tournamentExampleRoundFlow } from "@/modules/tournament/services/tournament.flow";
 import { GameStatus } from "shared";
 
 describe("Tournament Tests", () => {
@@ -37,7 +36,7 @@ describe("Tournament Tests", () => {
             await tournament.addPlayer(user);
         }
 
-        tournament.status = GameStatus.IN_PROGRESS;
+        await tournament.start();
 
         // round 1: 2 games
         // round 2: 4 games
@@ -45,24 +44,24 @@ describe("Tournament Tests", () => {
         // final: 1 game
 
         // Round 1
-        const round1 = await tournament.startRound();
+        const round1 = await tournament.createRound();
         expect(round1.length).toBe(2);
-        await tournamentExampleRoundFlow(tournament);
+        await tournament.exampleRoundFlow();
 
         // Round 2
-        const round2 = await tournament.startRound();
+        const round2 = await tournament.createRound();
         expect(round2.length).toBe(4);
-        await tournamentExampleRoundFlow(tournament);
+        await tournament.exampleRoundFlow();
 
         // Round 3
-        const round3 = await tournament.startRound();
+        const round3 = await tournament.createRound();
         expect(round3.length).toBe(2);
-        await tournamentExampleRoundFlow(tournament);
+        await tournament.exampleRoundFlow();
 
         // Final
-        const final = await tournament.startRound();
+        const final = await tournament.createRound();
         expect(final.length).toBe(1);
-        await tournamentExampleRoundFlow(tournament);
+        await tournament.exampleRoundFlow();
     });
 
     it("should declare winner and all eliminated players", async () => {
@@ -72,30 +71,28 @@ describe("Tournament Tests", () => {
             await tournament.addPlayer(user);
         }
 
-        tournament.status = GameStatus.IN_PROGRESS;
+        await tournament.start();
 
         while (tournament.status === GameStatus.IN_PROGRESS) {
-            await tournament.startRound();
-            await tournamentExampleRoundFlow(tournament);
+            await tournament.createRound();
+            await tournament.exampleRoundFlow();
         }
-
-        const winner = tournament.winnerId;
-        const playedGames = await tournament.getGames({
-            include: [
-                {
-                    association: "players",
-                    where: { id: winner },
-                },
-            ],
-        });
 
         const eliminatedPlayers = (await tournament.getPlayers()).filter(
             (player) => player.TournamentUser.eliminated
         );
 
         expect(eliminatedPlayers.length).toBe(7);
-        expect(winner).toBeDefined();
-        expect(playedGames.length).toBe(3);
+
+        const winner = tournament.winnerId;
+        const winnerGames = await tournament.getGames({
+            where: {
+                winnerId: winner,
+            },
+        });
+
+        expect(winner).not.toBeNull();
+        expect(winnerGames.length).toBe(3);
         expect(tournament.status).toBe(GameStatus.FINISHED);
     });
 
@@ -144,12 +141,12 @@ describe("Tournament Tests", () => {
         expect(tournament.status).toBe(GameStatus.IN_PROGRESS);
 
         while (tournament.status === GameStatus.IN_PROGRESS) {
-            await tournament.startRound();
-            await tournamentExampleRoundFlow(tournament);
+            await tournament.createRound();
+            await tournament.exampleRoundFlow();
         }
 
         expect(tournament.round).toBe(6);
         expect(tournament.status).toBe(GameStatus.FINISHED);
-        expect(tournament.winnerId).toBeDefined();
+        expect(tournament.winnerId).not.toBeNull();
     });
 });
