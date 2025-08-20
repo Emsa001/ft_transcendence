@@ -10,7 +10,7 @@ export const Profile = () => {
     const { user, loading } = useUser();
 
     const navigate = useNavigate();
-    //const [activeTab, setActiveTab] = useState("profile");
+    const [activeTab, setActiveTab] = useState("profile");
 
     const handleSubmit = async (e: any) => {
         e.preventDefault();
