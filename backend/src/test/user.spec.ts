@@ -6,6 +6,7 @@ import userAccountService from "@/modules/user/services/user.account";
 import { UserGamesService } from "@/modules/user/services/user.games";
 import { Sequelize } from "sequelize";
 import { GameStatus } from "shared";
+import 
 
 describe("User Tests", () => {
     let sequelize: Sequelize;
@@ -50,11 +51,6 @@ describe("User Tests", () => {
         expect(players).toHaveLength(2);
     });
 });
-import { startClean } from "@/database/client";
-import { Game } from "@/database/models/Game/Game";
-import { UserExample } from "@/database/models/User/UserExample";
-import { Sequelize } from "sequelize";
-
 describe("User Tests", () => {
     let sequelize: Sequelize;
 
