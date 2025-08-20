@@ -93,4 +93,24 @@ export class UserController extends BaseController {
         reply.clearCookie("session");
         return reply.send({ success: true });
     }
+
+    @POST("/requestAddFriend")
+    async sendFriendRequest(request: FastifyRequest, reply: FastifyReply) {
+        const token = request.cookies.session;
+        const { id } = jwtService.verify(token);
+        const { friendId } = request.body as { friendId: number };
+
+        console.log("we are adding friend", friendId);
+
+        const newFriend = await User.findById(friendId);
+        const user = await User.findById(id);
+
+        await user.addFriend(newFriend);
+
+        return reply.send({ success: true });
+    }
+
+    
+
+
 }
