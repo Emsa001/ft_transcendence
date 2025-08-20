@@ -8,7 +8,7 @@ import { Op } from "sequelize";
 import { HttpException } from "@/utils/exceptions";
 import { UserGenerate } from "@/database/models/User/UserGenerate";
 
-const imageDirUrl = `${process.env.BASE_URL}/public/uploads/`;
+const imageDirUrl = `${process.env.BACKEND_URL}/public/uploads/`;
 
 async function uploadImage(image: MultipartFile, fileName: string) {
     const imagesDir = path.join(process.cwd(), "public", "uploads");
@@ -30,7 +30,6 @@ async function uploadImage(image: MultipartFile, fileName: string) {
 
 async function deleteImage(fileName: string) {
     const imagesDir = path.join(process.cwd(), "public", "uploads");
-
     const originalFileName = fileName.split("/").pop();
 
     const finalFileName = `${imagesDir}/${originalFileName}`;
@@ -41,41 +40,33 @@ async function deleteImage(fileName: string) {
 }
 
 class UserAccountService {
-    async uploadPicture(id: number, data?: MultipartFile) {
-        const user = await User.findByPk(id);
-        if (!user) throw new HttpException(404, "User not found");
-
+    async uploadPicture(user: User, data?: MultipartFile) {
         if (!data) throw new HttpException(400, "No file provided");
 
         const imagePath = await uploadImage(data, user.id.toString());
+
         user.avatar = imagePath;
         await user.save();
 
         return user.avatar;
     }
 
-    async editProfile(id: number, data: UserEditableData) {
-        const user = await User.findByPk(id);
-        if (!user) throw new HttpException(404, "User not found");
-
+    async editProfile(user: User, data: UserEditableData) {
         const existingUser = await User.findByUsername(data.username, {
             where: { id: { [Op.ne]: user.id } },
         });
+
         if (existingUser)
             throw new HttpException(400, "Username already exists");
 
         user.username = data.username || user.username;
         await user.save();
+
         return user;
     }
 
-    async deleteAccount(id: number) {
-        const user = await User.findByPk(id);
-        if (!user) throw new HttpException(404, "User not found");
-
-        if (user.avatar) {
-            await deleteImage(user.avatar);
-        }
+    async deleteAccount(user: User) {
+        if (user.avatar) await deleteImage(user.avatar);
 
         // await user.destroy();
         user.status = "deleted";
@@ -84,6 +75,7 @@ class UserAccountService {
         user.username = await UserGenerate.createUsername(
             `deleted_user_${user.id}`
         );
+
         await user.save();
 
         return { message: "User account deleted successfully" };

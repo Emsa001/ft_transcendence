@@ -11,7 +11,8 @@ import cookieService from "../auth/services/cookie.service";
 import userAccountService from "./services/user.account";
 import { WebSocket } from "@fastify/websocket";
 import userStatusService from "./services/user.status";
-import { UUID } from "sequelize";
+import { AUTHORIZED, WS_AUTHORIZED } from "../auth/auth.middleware";
+import { randomUUID } from "crypto";
 
 @Controller("/user")
 export class UserController extends BaseController {
@@ -63,35 +64,37 @@ export class UserController extends BaseController {
     }
 
     @POST("/picture")
+    @AUTHORIZED
     async uploadProfilePicture(request: FastifyRequest, reply: FastifyReply) {
-        const token = request.cookies.session;
-        const { id } = jwtService.verify(token);
         const data = await request.file();
 
-        const pictureURL = await userAccountService.uploadPicture(id, data);
+        const pictureURL = await userAccountService.uploadPicture(
+            request.user,
+            data
+        );
         return reply.send({ success: true, picture: pictureURL });
     }
 
     @POST("/edit")
+    @AUTHORIZED
     async editProfile(request: FastifyRequest, reply: FastifyReply) {
         const data = request.body as UserEditableData;
-        const token = request.cookies.session;
-        const { id } = jwtService.verify(token);
 
-        const user = await userAccountService.editProfile(id, data);
+        const updatedUser = await userAccountService.editProfile(
+            request.user,
+            data
+        );
 
-        const newToken = jwtService.getToken(user);
+        const newToken = jwtService.getToken(updatedUser);
 
         reply.setCookie("session", newToken, cookieService.createSession());
-        return reply.send({ success: true, user });
+        return reply.send({ success: true, user: updatedUser });
     }
 
     @POST("/delete")
+    @AUTHORIZED
     async deleteAccount(request: FastifyRequest, reply: FastifyReply) {
-        const token = request.cookies.session;
-        const { id } = jwtService.verify(token);
-
-        await userAccountService.deleteAccount(id);
+        await userAccountService.deleteAccount(request.user);
 
         reply.clearCookie("session");
         return reply.send({ success: true });
@@ -100,11 +103,11 @@ export class UserController extends BaseController {
     @GET("/status", { websocket: true })
     async getStatus(connection: WebSocket, req: FastifyRequest) {
         try {
-            let userId: number;
+            let userId: string;
             const token = req.cookies.session;
 
-            if (!token) userId = Date.now();
-            else userId = jwtService.verify(token).id;
+            if (!token) userId = randomUUID();
+            else userId = jwtService.verify(token).id.toString();
 
             userStatusService.addUser(userId, connection);
 
@@ -112,6 +115,7 @@ export class UserController extends BaseController {
                 userStatusService.removeUser(userId, connection);
             });
         } catch (err) {
+            console.error("WebSocket error:", err);
             connection.close();
         }
     }
