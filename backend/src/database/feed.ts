@@ -7,6 +7,7 @@ import { Tournament } from "./models/Tournaments/Tournament";
 interface FeedOptions {
     users?: number;
     games?: number;
+    s;
 }
 
 export class DatabaseExampleFeed {
@@ -14,9 +15,9 @@ export class DatabaseExampleFeed {
         const { users = 10, games = 5 } = options;
 
         console.log("Feeding database with example data...");
-        await this.createExampleUsers(users);
-        await this.createExampleGames(games);
-        await this.assignGamesToUsers();
+        // await this.createExampleUsers(users);
+        // await this.createExampleGames(games);
+        // await this.assignGamesToUsers();
         await this.createExampleTournament();
         console.log("Database example data created successfully.");
     }
