@@ -17,7 +17,9 @@ export function UserPicture() {
             if (pictureUrl) {
                 setUser({ ...user, avatar: pictureUrl });
             } else {
-                console.warn("Failed to update user picture: pictureUrl is null.");
+                console.warn(
+                    "Failed to update user picture: pictureUrl is null."
+                );
             }
         } else {
             console.warn("No file provided for picture update.");
@@ -33,7 +35,7 @@ export function UserPicture() {
                     className="w-28 h-28 rounded-full object-cover border-4 border-blue-400"
                 />
             ) : (
-                <Icon icon={FaUserCircle} className="text-blue-400 w-28 h-28" />
+                <Icon icon={FaUserCircle} className="text-gray-400 w-28 h-28" />
             )}
             <label className="absolute inset-0 flex items-center justify-center bg-gray-800 opacity-0 group-hover:opacity-70 transition-opacity cursor-pointer rounded-full">
                 <Icon icon={FaCamera} className="text-white w-10 h-10" />

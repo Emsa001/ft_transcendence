@@ -9,6 +9,9 @@ import { HttpException } from "@/utils/exceptions";
 import jwtService from "../auth/services/jwt.service";
 import cookieService from "../auth/services/cookie.service";
 import userAccountService from "./services/user.account";
+import { WebSocket } from "@fastify/websocket";
+import userStatusService from "./services/user.status";
+import { UUID } from "sequelize";
 
 @Controller("/user")
 export class UserController extends BaseController {
@@ -92,5 +95,24 @@ export class UserController extends BaseController {
 
         reply.clearCookie("session");
         return reply.send({ success: true });
+    }
+
+    @GET("/status", { websocket: true })
+    async getStatus(connection: WebSocket, req: FastifyRequest) {
+        try {
+            let userId: number;
+            const token = req.cookies.session;
+
+            if (!token) userId = Date.now();
+            else userId = jwtService.verify(token).id;
+
+            userStatusService.addUser(userId, connection);
+
+            connection.on("close", () => {
+                userStatusService.removeUser(userId, connection);
+            });
+        } catch (err) {
+            connection.close();
+        }
     }
 }

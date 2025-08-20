@@ -1,7 +1,7 @@
 import "reflect-metadata";
 import "dotenv/config";
 
-import Fastify from "fastify";
+import Fastify, { FastifyInstance } from "fastify";
 
 import { bootstrap } from "fastify-decorators";
 import cors from "@fastify/cors";
@@ -15,6 +15,7 @@ import { AuthController } from "./modules/auth/auth.controller";
 import metricsPlugin from "fastify-metrics";
 import { GameController } from "./modules/game/game.controller";
 import { HttpException } from "./utils/exceptions";
+import websocketPlugin from "@fastify/websocket";
 
 import fastifyMultipart from "@fastify/multipart";
 import fastifyStatic from "@fastify/static";
@@ -26,8 +27,17 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const publicPath = path.join(__dirname, "../public");
 
+let app: FastifyInstance;
+
+export const getApp = () => {
+    return app;
+};
+
 export default async function App() {
-    const app = Fastify({ logger: true });
+    app = Fastify({ logger: false });
+
+    // WebSocket support
+    await app.register(websocketPlugin);
 
     // Static files
     await app.register(fastifyStatic, {

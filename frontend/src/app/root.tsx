@@ -7,9 +7,28 @@ import MainMenu from "@features/menu/ui/MainMenu";
 import Auth from "./auth";
 import { useUser } from "@features/auth/model/useUser";
 import { Profile } from "./profile";
+import { useOnlineUsers } from "@features/user/model/useOnlineUsers";
+
+let mounted = false;
 
 export default function Root() {
-    const { fetchUser } = useUser();
+    const { user, fetchUser } = useUser();
+    const { subscribeToOnline } = useOnlineUsers();
+
+    useEffect(() => {
+        if (mounted) return;
+        mounted = true;
+        const ws = subscribeToOnline();
+
+        return () => {
+            ws?.close();
+        };
+    }, []);
+
+    useEffect(() => {
+        if (!user) return;
+        subscribeToOnline();
+    }, [user]);
 
     useEffect(() => {
         fetchUser();
