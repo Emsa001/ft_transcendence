@@ -80,7 +80,7 @@ export class User extends Model<InferAttributes<User>, CreationAttributes> {
 
     @Default("local")
     @Column(DataType.STRING)
-    declare provider: CreationAttributes["provider"];
+    //declare provider: CreationAttributes["provider"];
 
     @Default("active")
     @Column(DataType.STRING)
@@ -103,10 +103,6 @@ export class User extends Model<InferAttributes<User>, CreationAttributes> {
 
     @BelongsToMany(() => User, () => UserFriends, "userId1", "userId2")
     declare friends: User[];
-
-    toDTO(): UserDTO {
-        return new UserDTO(this);
-    }
 
     static findByEmail = (email: string, options?: FindOptions) => {
         const where = { email, ...(options?.where ?? {}) };

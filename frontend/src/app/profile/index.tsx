@@ -10,6 +10,17 @@ export const Profile = () => {
     const { user, loading } = useUser();
 
     const navigate = useNavigate();
+    //const [activeTab, setActiveTab] = useState("profile");
+
+    const handleSubmit = async (e: any) => {
+        e.preventDefault();
+        const data = {
+            username: e.target[0].value,
+        };
+        const newUser = await ProfileApi.updateUser(data);
+        setEdit(false);
+        setUser(newUser);
+    };
 
     useEffect(() => {
         if (!user && !loading) navigate("/auth");
