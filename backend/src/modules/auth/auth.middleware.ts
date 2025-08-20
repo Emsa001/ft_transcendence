@@ -2,6 +2,7 @@ import { FastifyReply, FastifyRequest } from "fastify";
 import { HttpException } from "@/utils/exceptions";
 import authService from "./services/auth.service";
 import { User } from "@/database/models/User/User";
+import { WebSocket } from "@fastify/websocket";
 
 export function AUTHORIZED(
     target: any,
@@ -53,7 +54,6 @@ export function WS_AUTHORIZED(
 
     return descriptor;
 }
-
 
 declare module "fastify" {
     export interface FastifyRequest {
