@@ -14,7 +14,6 @@ export function AUTHORIZED(
         reply: FastifyReply
     ) {
         const token = request.cookies.session;
-        console.log(token);
 
         const isAuthorized = await authService.isAuthorized(token);
         if (!isAuthorized.status)
