@@ -27,7 +27,7 @@ describe("User Tests", () => {
         expect(deletedUser!.username).toMatch(/deleted_user_\d+/);
     });
 
-    it("should set user as deleted when has games", async () => {
+    it("should set user with game history as deleted", async () => {
         const game = await Game.create({
             status: GameStatus.WAITING,
             maxPlayers: 2,
