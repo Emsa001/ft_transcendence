@@ -7,7 +7,6 @@ import { Tournament } from "./models/Tournaments/Tournament";
 interface FeedOptions {
     users?: number;
     games?: number;
-    s;
 }
 
 export class DatabaseExampleFeed {
