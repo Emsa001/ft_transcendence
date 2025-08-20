@@ -73,7 +73,7 @@ export class User extends Model<InferAttributes<User>, CreationAttributes> {
 
     @Default("local")
     @Column(DataType.STRING)
-    declare provider: CreationAttributes["provider"];
+    //declare provider: CreationAttributes["provider"];
 
     @Default("active")
     @Column(DataType.STRING)
@@ -86,15 +86,8 @@ export class User extends Model<InferAttributes<User>, CreationAttributes> {
     declare getGames: BelongsToManyGetAssociationsMixin<Game>;
     declare getGamesCount: BelongsToManyCountAssociationsMixin;
 
-    // Custom  Methods
-    declare getGames: BelongsToManyGetAssociationsMixin<Game>;
-
     @BelongsToMany(() => User, () => UserFriends, "userId1", "userId2")
     declare friends: User[];
-
-    toDTO(): UserDTO {
-        return new UserDTO(this);
-    }
 
     static findByEmail = (email: string, options?: FindOptions) => {
         const where = { email, ...(options?.where ?? {}) };
@@ -117,8 +110,7 @@ export class User extends Model<InferAttributes<User>, CreationAttributes> {
 
         return user;
     };
-    static async findByEmail(email: string): Promise<User | null> {
-        return this.findOne({ where: { email } });
+
     // TODO: Move Methods to some UserRepository
 
     async getFriends(): Promise<User[]> {
@@ -192,6 +184,4 @@ export class User extends Model<InferAttributes<User>, CreationAttributes> {
     toDTO(): UserDTO {
         return new UserDTO(this);
     }
-
-    static findByEmail = (email: string) => User.findOne({ where: { email } });
 }

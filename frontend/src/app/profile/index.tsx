@@ -6,8 +6,8 @@ import {
 } from "@features/auth";
 import { useUser } from "@features/auth/model/useUser";
 import { FaEdit, FaUser, FaUsers } from "react-icons/fa";
-import Friends  from "./friends";
-import ProfileCard from "./profile";
+// import Friends  from "./friends";
+//import ProfileCard from "./profile";
 
 import { UserStats } from "@features/user/ui/UserStats";
 import { GameHistory } from "@features/user/ui/GameHistory";
@@ -23,7 +23,7 @@ export const Profile = () => {
 
     const { user, loading, setUser } = useUser();
     const navigate = useNavigate();
-    const [activeTab, setActiveTab] = useState("profile");
+    //const [activeTab, setActiveTab] = useState("profile");
 
     const handleSubmit = async (e: any) => {
         e.preventDefault();
@@ -110,10 +110,9 @@ export const Profile = () => {
             <div className="max-w-3xl w-full">
                 <GameHistory userId={userId || user.id} />
             </div>
-        <div className="flex flex-col w-screen items-center justify-center bg-gradient-to-b from-black via-zinc-900 to-black text-white p-6">
+        {/* {{<div className="flex flex-col w-screen items-center justify-center bg-gradient-to-b from-black via-zinc-900 to-black text-white p-6">
             <div className="bg-black/40 backdrop-blur-xl rounded-2xl p-8 shadow-2xl border border-white/10 max-w-4xl w-full">
                 
-                {/* Tab Navigation */}
                 <div className="flex justify-center mb-8">
                     <div className="flex bg-white/5 rounded-xl p-1 border border-white/10">
 
@@ -139,7 +138,7 @@ export const Profile = () => {
                 {activeTab === "profile" && (
                     <ProfileCard />
                 )}
-            </div>
+            </div> */}
         </div>
     );
 };
