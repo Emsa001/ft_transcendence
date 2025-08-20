@@ -4,6 +4,17 @@ import { UserDTOType, UserEditableData } from "shared";
 import { AuthResponse, User } from "@features/auth/types";
 
 class ProfileApi extends APIService {
+    async getAllUsers(): Promise<UserDTOType[]> {
+        try {
+            const response: AxiosResponse<UserDTOType[]> =
+                await this.api.get("/user/all");
+            return response.data;
+        } catch (error) {
+            console.error("Error fetching all users:", error);
+            return Promise.reject(error);
+        }
+    }
+
     async getUser(): Promise<User> {
         try {
             const response: AxiosResponse<UserDTOType> =

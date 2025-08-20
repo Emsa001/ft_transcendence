@@ -38,7 +38,7 @@ export default function MainMenu() {
     const items = user ? profileItems : loginItems;
 
     return (
-        <nav className="fixed top-0 left-0 w-full z-50 bg-gray-400/10 backdrop-blur-xl shadow-lg text-white px-6 py-4 flex">
+        <nav className="w-full z-50 bg-gray-400/10 backdrop-blur-xl shadow-lg text-white px-6 py-4 flex">
             <div className="flex w-full">
                 <button
                     onClick={() => navigate("./")}

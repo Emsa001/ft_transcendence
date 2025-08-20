@@ -22,6 +22,7 @@ import fastifyStatic from "@fastify/static";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import path from "path";
+import { FriendsController } from "./modules/friends/friends.controller";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -61,7 +62,12 @@ export default async function App() {
     });
     await app.register(middie);
     await app.register(bootstrap, {
-        controllers: [UserController, AuthController, GameController],
+        controllers: [
+            UserController,
+            AuthController,
+            GameController,
+            FriendsController,
+        ],
     });
 
     await app.setErrorHandler((error: HttpException, request, reply) => {

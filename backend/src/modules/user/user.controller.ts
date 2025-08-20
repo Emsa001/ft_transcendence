@@ -11,7 +11,6 @@ import cookieService from "../auth/services/cookie.service";
 import userAccountService from "./services/user.account";
 import { WebSocket } from "@fastify/websocket";
 import userStatusService from "./services/user.status";
-import { UUID } from "sequelize";
 
 @Controller("/user")
 export class UserController extends BaseController {

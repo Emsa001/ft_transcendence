@@ -20,6 +20,7 @@ import { UserDTO } from "./UserDTO";
 import { Game } from "../Game/Game";
 import { GameUser } from "../Game/GameUser";
 import { HttpException } from "@/utils/exceptions";
+import { UserFriends } from "./UserFriends";
 
 type CreationAttributes = {
     email?: string | null;
@@ -81,9 +82,14 @@ export class User extends Model<InferAttributes<User>, CreationAttributes> {
     @BelongsToMany(() => Game, () => GameUser)
     declare games: Game[];
 
+    @BelongsToMany(() => User, () => UserFriends, "userId1", "userId2")
+    declare friends: User[];
+
     // Magic Methods
     declare getGames: BelongsToManyGetAssociationsMixin<Game>;
     declare getGamesCount: BelongsToManyCountAssociationsMixin;
+
+    declare getFriends: BelongsToManyGetAssociationsMixin<User>;
 
     // Custom  Methods
 
