@@ -1,3 +1,5 @@
+import { WebSocket } from "@fastify/websocket";
+
 class UserStatusService {
     private connections: Map<number, Set<WebSocket>> = new Map();
 
