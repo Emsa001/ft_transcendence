@@ -25,8 +25,6 @@ import {
     Scopes,
     ForeignKey,
     AllowNull,
-    AfterCreate,
-    AfterUpdate,
 } from "sequelize-typescript";
 import { User } from "../User/User";
 import { TournamentUser } from "./TournamentUser";
