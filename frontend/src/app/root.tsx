@@ -21,6 +21,9 @@ export default function Root() {
         if (mounted) return;
         mounted = true;
         subscribeToOnline();
+    }, []);
+
+    useEffect(() => {
         fetchUser();
     }, []);
 
