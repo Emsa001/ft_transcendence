@@ -41,7 +41,7 @@ export default function MainMenu() {
         <nav className="fixed top-0 left-0 w-full z-50 bg-gray-900/10 backdrop-blur-xl shadow-lg text-white px-6 py-4 flex">
             <div className="flex w-full">
                 <button
-                    onClick={() => navigate("./")}
+                    onClick={() => navigate("/")}
                     className="text-3xl font-bold bg-logo-gradient text-transparent bg-clip-text"
                 >
                     ft_transcendence
