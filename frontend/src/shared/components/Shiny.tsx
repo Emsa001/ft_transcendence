@@ -15,7 +15,7 @@ export const ShinyText = ({
         <span className="relative inline-block">
             {/* Drop shadow layer */}
             <span
-                className={`absolute inset-0 bg-gradient-to-r ${gradient} text-transparent bg-clip-text blur-lg  select-none pointer-events-none`}
+                className={`absolute inset-0 ${gradient} text-transparent bg-clip-text blur-lg  select-none pointer-events-none`}
                 aria-hidden="true"
                 style={{ opacity: opacity / 100 }}
             >
@@ -23,7 +23,7 @@ export const ShinyText = ({
             </span>
             {/* Main text */}
             <span
-                className={`relative bg-gradient-to-r ${gradient} text-transparent bg-clip-text`}
+                className={`relative ${gradient} text-transparent bg-clip-text`}
             >
                 {text}
             </span>

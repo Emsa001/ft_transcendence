@@ -10,7 +10,8 @@ export const useOnlineUsers = () => {
 
     const subscribeToOnline = () => {
         if (ws) {
-            ws.close();
+            // ws.close();
+            return ws;
         }
         ws = new WebSocket(`ws://localhost:8000/user/status`);
 
@@ -24,5 +25,22 @@ export const useOnlineUsers = () => {
         return ws;
     };
 
-    return { onlineUsers, subscribeToOnline };
+    const unsubscribeFromOnline = () => {
+        if (ws) {
+            ws.close();
+            ws = undefined;
+        }
+    };
+
+    const resubscribe = () => {
+        unsubscribeFromOnline();
+        subscribeToOnline();
+    };
+
+    return {
+        onlineUsers,
+        subscribeToOnline,
+        unsubscribeFromOnline,
+        resubscribe,
+    };
 };

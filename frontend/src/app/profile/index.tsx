@@ -27,6 +27,7 @@ export const Profile = () => {
             username: e.target[0].value,
         };
         const newUser = await ProfileApi.updateUser(data);
+        if (newUser == null) return;
         setEdit(false);
         setUser(newUser);
     };

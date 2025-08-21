@@ -5,8 +5,10 @@ const container = document.getElementById("root")!;
 async function renderApp(clearCache = true) {
     const { default: Root } = await import("../../src/app/root");
 
-    React.components.clear();
-    React.staticComponents.clear();
+    // unmount everything
+    for (const component of Array.from(React.components.values())) {
+        component.onUnmount();
+    }
 
     const root = React.createElement(Root);
     React.render(root, container);
@@ -24,8 +26,9 @@ if (import.meta.webpackHot) {
 
 // TODO: Handle popstate event properly, by re-rendering the current route
 window.addEventListener("popstate", async () => {
-    console.log("[HMR] Popstate detected...");
+    console.log("[HMR] Reloading App module...");
     await renderApp(false);
+
 });
 
 renderApp();
