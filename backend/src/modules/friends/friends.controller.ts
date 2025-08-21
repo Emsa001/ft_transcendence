@@ -3,6 +3,7 @@ import { Controller, GET, POST } from "fastify-decorators";
 import { BaseController } from "../base";
 import jwtService from "../auth/services/jwt.service";
 import friendsService from "./services/user.friends";
+import { User } from "@/database/models/User/User";
 
 @Controller("/friends")
 export class FriendsController extends BaseController {
@@ -10,16 +11,26 @@ export class FriendsController extends BaseController {
     async getFriends(request: FastifyRequest, reply: FastifyReply) {
         const token = request.cookies.session;
         const { id } = jwtService.verify(token);
-        const friends = await friendsService.getFriends(id);
-        return reply.send(friends);
+
+        const user = await User.findByPk(id);
+        if (!user) {
+            return reply.status(404).send({ error: "User not found" });
+        }
+
+        return reply.send(user.getFriends());
     }
 
     @GET("/requests")
     async getFriendRequests(request: FastifyRequest, reply: FastifyReply) {
         const token = request.cookies.session;
         const { id } = jwtService.verify(token);
-        const friendRequests = await friendsService.getFriendRequests(id);
-        return reply.send(friendRequests);
+
+        const user = await User.findByPk(id);
+        if (!user) {
+            return reply.status(404).send({ error: "User not found" });
+        }
+
+        return reply.send(user.getFriendRequests());
     }
 
     @POST("/add")
@@ -28,7 +39,12 @@ export class FriendsController extends BaseController {
         const { id } = jwtService.verify(token);
         const { friendId } = request.body as { friendId: number };
 
-        await friendsService.askFriendRequest(id, friendId);
+        const user = await User.findByPk(id);
+        if (!user) {
+            return reply.status(404).send({ error: "User not found" });
+        }
+
+        user.askFriendRequest(friendId);
 
         return reply.send({ success: true });
     }
@@ -39,7 +55,12 @@ export class FriendsController extends BaseController {
         const { id } = jwtService.verify(token);
         const { friendId } = request.body as { friendId: number };
 
-        await friendsService.acceptFriendRequest(friendId, id);
+        const user = await User.findByPk(id);
+        if (!user) {
+            return reply.status(404).send({ error: "User not found" });
+        }
+
+        user.acceptFriendRequest(friendId);
 
         return reply.send({ success: true });
     }
@@ -50,7 +71,12 @@ export class FriendsController extends BaseController {
         const { id } = jwtService.verify(token);
         const { friendId } = request.body as { friendId: number };
 
-        await friendsService.removeFriend(id, friendId);
+        const user = await User.findByPk(id);
+        if (!user) {
+            return reply.status(404).send({ error: "User not found" });
+        }
+
+        user.removeFriend(friendId);
 
         return reply.send({ success: true });
     }

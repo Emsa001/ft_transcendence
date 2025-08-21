@@ -21,6 +21,7 @@ import { Game } from "../Game/Game";
 import { GameUser } from "../Game/GameUser";
 import { HttpException } from "@/utils/exceptions";
 import { UserFriends } from "./UserFriends";
+import friendsService from "@/modules/friends/services/user.friends";
 
 type CreationAttributes = {
     email?: string | null;
@@ -82,14 +83,9 @@ export class User extends Model<InferAttributes<User>, CreationAttributes> {
     @BelongsToMany(() => Game, () => GameUser)
     declare games: Game[];
 
-    @BelongsToMany(() => User, () => UserFriends, "userId1", "userId2")
-    declare friends: User[];
-
     // Magic Methods
     declare getGames: BelongsToManyGetAssociationsMixin<Game>;
     declare getGamesCount: BelongsToManyCountAssociationsMixin;
-
-    declare getFriends: BelongsToManyGetAssociationsMixin<User>;
 
     // Custom  Methods
 
@@ -118,4 +114,20 @@ export class User extends Model<InferAttributes<User>, CreationAttributes> {
 
         return user;
     };
+
+    @BelongsToMany(() => User, () => UserFriends, "userId1", "userId2")
+    declare friends: User[];
+
+    declare getFriends: BelongsToManyGetAssociationsMixin<User>;
+
+    askFriendRequest = async (friendId: number) =>
+        friendsService.askFriendRequest(this.id, friendId);
+
+    acceptFriendRequest = async (friendId: number) =>
+        friendsService.acceptFriendRequest(friendId, this.id);
+
+    removeFriend = async (friendId: number) =>
+        friendsService.removeFriend(this.id, friendId);
+
+    getFriendRequests = async () => friendsService.getFriendRequests(this.id);
 }
