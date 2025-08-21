@@ -1,0 +1,16 @@
+@theme {
+    --color-gradient-from: var(--color-indigo-400);
+    --color-gradient-via: var(--color-purple-400);
+    --color-gradient-to: var(--color-pink-400);
+
+    --logo-gradient: linear-gradient(
+        to right,
+        var(--color-gradient-from),
+        var(--color-gradient-via),
+        var(--color-gradient-to)
+    );
+}
+
+.bg-logo-gradient {
+    background: var(--logo-gradient);
+}

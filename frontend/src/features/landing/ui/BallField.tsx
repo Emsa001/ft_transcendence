@@ -1,6 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
 import { Ball } from "./Ball";
-import { useBalls } from "../model/useBalls";
 
 const gradients = [
     "bg-gradient-to-br from-gray-900 via-blue-900 to-indigo-900",
@@ -13,10 +12,49 @@ const gradients = [
     "bg-gradient-to-bl from-pink-900 via-purple-900 to-blue-900",
 ];
 
-export default function BallField() {
-    const bound = useRef<HTMLDivElement | null>(null);
+interface BallFieldProps {
+    amount?: number;
+    delay?: number;
+}
 
-    const { maxX, maxY, balls } = useBalls(50, bound);
+export default function BallField({ amount = 30, delay = 0 }: BallFieldProps) {
+    const bound = useRef<HTMLDivElement | null>(null);
+    const [maxX, setMaxX] = useState(window.innerWidth);
+    const [maxY, setMaxY] = useState(window.innerHeight);
+    const [balls, setBalls] = useState<number[]>([]);
+
+    useEffect(() => {
+        const resizeHandler = () => {
+            if (!bound?.current) return;
+            setMaxX(window.innerWidth);
+            setMaxY(window.innerHeight);
+        };
+
+        window.addEventListener("resize", resizeHandler);
+        return () => window.removeEventListener("resize", resizeHandler);
+    }, []);
+
+    useEffect(() => {
+        let i = 0;
+        let interval: NodeJS.Timeout;
+
+        const timeout = setTimeout(() => {
+            interval = setInterval(() => {
+                setBalls((prev) => {
+                    if (prev.length >= amount) {
+                        clearInterval(interval);
+                        return prev;
+                    }
+                    return [...prev, i++];
+                });
+            }, 10);
+        }, delay);
+
+        return () => {
+            clearTimeout(timeout);
+            if (interval) clearInterval(interval);
+        };
+    }, [delay, amount]);
 
     return (
         <div

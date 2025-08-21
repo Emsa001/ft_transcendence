@@ -47,7 +47,7 @@ export function RouterMethod(props: RouterProps) {
     const { src, component } = props;
     const path = window.location.pathname;
 
-    if (matchPath(src, path)) {
+    if (matchPath(src, path) || props.default) {
         const params = extractParams(src, path);
         return React.cloneElement(component, { ...params });
     }

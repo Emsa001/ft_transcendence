@@ -35,8 +35,8 @@ export default function Auth() {
     }
 
     return (
-        <section className="min-h-screen flex items-center justify-center px-4 bg-gradient-to-b from-black via-zinc-900 to-black">
-            <div className="max-w-md w-full bg-gray-900 bg-opacity-90 rounded-3xl p-10 shadow-lg">
+        <section className="min-h-screen flex items-center justify-center px-4">
+            <div className="max-w-md w-full bg-indigo-900/30 rounded-3xl p-10 shadow-xl">
                 <h1
                     className="text-center text-4xl font-extrabold text-transparent bg-clip-text
           bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-500 mb-2"
