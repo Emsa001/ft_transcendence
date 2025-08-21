@@ -4,7 +4,6 @@ import gsap from "gsap";
 import { MotionPathPlugin } from "gsap/MotionPathPlugin";
 
 import { ShinyText } from "@shared/components/Shiny";
-import BallField from "@features/landing/ui/BallField";
 
 gsap.registerPlugin(MotionPathPlugin);
 
@@ -68,8 +67,6 @@ export default function LandingSection() {
 
     return (
         <section className="relative w-full h-full">
-            <BallField delay={1500} />
-
             <div className="relative flex flex-col items-center justify-center h-full px-4 text-center">
                 <h1
                     ref={titleRef}

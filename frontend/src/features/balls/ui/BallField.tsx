@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useStatic } from "react";
 import { Ball } from "./Ball";
 
 const gradients = [
@@ -17,7 +17,7 @@ interface BallFieldProps {
     delay?: number;
 }
 
-export default function BallField({ amount = 30, delay = 0 }: BallFieldProps) {
+export function BallField({ amount = 30, delay = 0 }: BallFieldProps) {
     const bound = useRef<HTMLDivElement | null>(null);
     const [maxX, setMaxX] = useState(window.innerWidth);
     const [maxY, setMaxY] = useState(window.innerHeight);
@@ -57,23 +57,25 @@ export default function BallField({ amount = 30, delay = 0 }: BallFieldProps) {
     }, [delay, amount]);
 
     return (
-        <div
-            className="w-full h-full absolute top-0 overflow-hidden z-20"
-            ref={bound}
-        >
-            {balls.map((id) => {
-                const gradient =
-                    gradients[Math.floor(Math.random() * gradients.length)];
-                return (
-                    <Ball
-                        key={id}
-                        bound={bound}
-                        className={gradient}
-                        maxX={maxX}
-                        maxY={maxY}
-                    />
-                );
-            })}
+        <div>
+            <div
+                className={`w-full h-full absolute top-0 overflow-hidden z-5`}
+                ref={bound}
+            >
+                {balls.map((id) => {
+                    const gradient =
+                        gradients[Math.floor(Math.random() * gradients.length)];
+                    return (
+                        <Ball
+                            key={id}
+                            bound={bound}
+                            className={gradient}
+                            maxX={maxX}
+                            maxY={maxY}
+                        />
+                    );
+                })}
+            </div>
         </div>
     );
 }
