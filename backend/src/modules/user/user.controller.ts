@@ -22,9 +22,10 @@ export class UserController extends BaseController {
 
     @GET("/:id")
     async getUserById(request: FastifyRequest, reply: FastifyReply) {
-        const { id } = request.params as { id?: string };
-        if (!id || Number.isNaN(Number(id)))
-            throw new HttpException(400, "Invalid user ID");
+        const { id } = request.params as { id: string };
+        
+        if (Number.isNaN(Number(id)))
+            return reply.send((await User.findByUsername(id))?.toDTO());
 
         const user = await User.findById(Number(id));
         return reply.send(user?.toDTO());

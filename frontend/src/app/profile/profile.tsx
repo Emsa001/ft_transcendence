@@ -38,8 +38,6 @@ export const ProfileCard = () => {
     if (!user) return <div />;
 
     return (
-        <div className="min-h-screen w-full p-6 flex flex-col items-center justify-center">
-            {/* Profile Card */}
             <div className="relative max-w-3xl w-full bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl shadow-lg p-6 mb-8 text-white">
                 <button
                     className="absolute top-6 right-4 text-white p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors z-10"
@@ -96,6 +94,5 @@ export const ProfileCard = () => {
                     <DeleteButton />
                 </div>
             </div>
-        </div>
     );
 };

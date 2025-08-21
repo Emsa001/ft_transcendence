@@ -47,35 +47,55 @@ export const Profile = () => {
             {/* profile nav bar */}
             <div className="text-white bg-white/5 rounded-xl p-1 border border-white/10">
                 <button
-                    className="p-2 size-lg "
+                    className={`px-6 py-3 rounded-lg transition-all duration-300 ${
+                activeTab === "profile"
+                    ? "bg-purple-600 text-white shadow-lg"
+                    : "text-gray-400 hover:text-white hover:bg-white/10"
+                }`}
                     onClick={setActiveTab.bind(null, "profile")}
                 >
                     Profile
                 </button>
 
                 <button
-                    className="p-2 size-lg"
+                    className={`px-6 py-3 rounded-lg transition-all duration-300 ${
+                    activeTab === "friends"
+                    ? "bg-purple-600 text-white shadow-lg"
+                    : "text-gray-400 hover:text-white hover:bg-white/10"
+                    }`}
                     onClick={setActiveTab.bind(null, "friends")}
                 >
                     Friends
                 </button>
 
                 <button
-                    className="p-2 size-lg"
+                    className={`px-6 py-3 rounded-lg transition-all duration-300 ${
+                    activeTab === "stats"
+                    ? "bg-purple-600 text-white shadow-lg"
+                    : "text-gray-400 hover:text-white hover:bg-white/10" 
+                    }`}
                     onClick={setActiveTab.bind(null, "stats")}
                 >
                     Stats
                 </button>
 
                 <button
-                    className="p-2 size-lg"
+                    className={`px-6 py-3 rounded-lg transition-all duration-300 ${
+                    activeTab === "users"
+                    ? "bg-purple-600 text-white shadow-lg"
+                    : "text-gray-400 hover:text-white hover:bg-white/10"
+                    }`}
                     onClick={setActiveTab.bind(null, "users")}
                 >
                     All Users
                 </button>
 
                 <button
-                    className="p-2 size-lg"
+                    className={`px-6 py-3 rounded-lg transition-all duration-300 ${
+                    activeTab === "history"
+                    ? "bg-purple-600 text-white shadow-lg"
+                    : "text-gray-400 hover:text-white hover:bg-white/10"
+                    }`}
                     onClick={setActiveTab.bind(null, "history")}
                 >
                     History
@@ -83,7 +103,7 @@ export const Profile = () => {
             </div>
 
             {/* cards */}
-            <div className="">
+            <div className="w-96 h-96">
                 {/* Profile Card */}
                 {activeTab === "profile" && <ProfileCard />}
 

@@ -26,6 +26,17 @@ class FriendsApi extends APIService {
         }
     }
 
+    async getAllSentRequests(): Promise<UserDTOType[]> {
+        try {
+            const response: AxiosResponse<UserDTOType[]> =
+                await this.api.get("/friends/requests/sent");
+            return response.data;
+        } catch (error) {
+            console.error("Error fetching all sent friend requests:", error);
+            return Promise.reject(error);
+        }
+    }
+
     async addFriend(friendId: string): Promise<void> {
         try {
             await this.api.post(`/friends/add`, { friendId });
@@ -49,6 +60,16 @@ class FriendsApi extends APIService {
             await this.api.post(`/friends/remove`, { friendId });
         } catch (error) {
             console.error("Error removing friend:", error);
+            return Promise.reject(error);
+        }
+    }
+
+    async getUserByIdOrUsername(idOrUsername: string): Promise<UserDTOType | null> {
+        try {
+            const response: AxiosResponse<UserDTOType> = await this.api.get(`/user/${idOrUsername}`);
+            return response.data;
+        } catch (error) {
+            console.error("Error fetching user by ID or username:", error);
             return Promise.reject(error);
         }
     }

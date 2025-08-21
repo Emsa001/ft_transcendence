@@ -7,10 +7,15 @@ import {
 import { useUser } from "@features/auth/model/useUser";
 import FriendsApi from "@features/user/service/friendsApi";
 import { UserDTOType } from "shared";
+import { APIService } from "@shared/lib/api";
+
 
 export default function Friends() {
     const { user } = useUser();
     const [friends, setFriends] = useState<UserDTOType[]>([]);
+    const [friendRequests, setFriendRequests] = useState<UserDTOType[]>([]);
+    const [sentRequests, setSentRequests] = useState<UserDTOType[]>([]);
+    const [newFriend, setNewFriend] = useState<string>("");
 
     useEffect(() => {
         const fetchFriends = async () => {
@@ -22,7 +27,27 @@ export default function Friends() {
             }
         };
 
+        const fetchRequests = async () => {
+            try {
+                const allRequests = await FriendsApi.getFriendRequests();
+                setFriendRequests(allRequests);
+            } catch (error) {
+                console.error("Error fetching friend requests:", error);
+            }
+        };
+
+        const fetchSentRequests = async () => {
+            try {
+                const allSentRequests = await FriendsApi.getAllSentRequests();
+                setSentRequests(allSentRequests);
+            } catch (error) {
+                console.error("Error fetching sent friend requests:", error);
+            }
+        };
+
         fetchFriends();
+        fetchRequests();
+        fetchSentRequests();
     }, []);
 
     if (!user || typeof user !== "object") {
@@ -42,8 +67,57 @@ export default function Friends() {
         }
     };
 
+    const handleRemoveFriend = async (friendId: number) => {
+        try {
+            await FriendsApi.removeFriend(friendId.toString());
+            setFriends((prev) => prev.filter((friend) => friend.id !== friendId));
+        } catch (error) {
+            console.error("Error removing friend:", error);
+        }
+    }
+
+    const handleAcceptRequest = async (requestId: number) => {
+        try {
+            await FriendsApi.acceptFriendRequest(requestId.toString());
+            setFriendRequests((prev) => prev.filter((req) => req.id !== requestId));
+            setFriends((prev) => [...prev, { id: requestId } as UserDTOType]);
+        } catch (error) {
+            console.error("Error accepting friend request:", error);
+        }
+    };
+
+    const handleAddFriendByUsername = async (username: string) => {
+        try {
+            const newFriend = await FriendsApi.getUserByIdOrUsername(username);
+            if (newFriend) {
+                await FriendsApi.addFriend(newFriend.id.toString());
+                setSentRequests((prev) => [...prev, { id: newFriend.id } as UserDTOType]);
+            }
+        } catch (error) {
+            console.error("Error adding friend by username:", error);
+        }
+    };
+
+    const handleCancelRequest = async (requestId: number) => {
+        try {
+            await FriendsApi.removeFriend(requestId.toString());
+            setSentRequests((prev) => prev.filter((req) => req.id !== requestId));
+        } catch (error) {
+            console.error("Error canceling friend request:", error);
+        }
+    };
+
+    const handleDeclineRequest = async (requestId: number) => {
+        try {
+            await FriendsApi.removeFriend(requestId.toString());
+            setFriendRequests((prev) => prev.filter((req) => req.id !== requestId));
+        } catch (error) {
+            console.error("Error declining friend request:", error);
+        }
+    };
+
     return (
-        <div>
+        <div className="text-white">
             <div className="text-center mb-8">
                 <h1 className="text-3xl font-bold mb-2">My Friends</h1>
                 <p className="text-gray-400">
@@ -51,7 +125,7 @@ export default function Friends() {
                 </p>
             </div>
 
-            <div className="space-y-4 mb-8">
+            <div className="space-y-4 mb-8 bg-gray-900 rounded border border-gray-700">
                 {friends.map((friend) => (
                     <div
                         key={friend.id}
@@ -73,17 +147,11 @@ export default function Friends() {
                                     </h3>
                                 </div>
                             </div>
-                            <div className="flex gap-2">
-                                <button className="px-4 py-2 bg-purple-600 hover:bg-purple-700 rounded-lg transition-colors text-sm">
-                                    Message
-                                </button>
-                                <button className="px-4 py-2 bg-pink-600 hover:bg-pink-700 rounded-lg transition-colors text-sm">
-                                    Game
-                                </button>
+                            <div className="flex gap-2 rounded bg-red-800 p-1">
                                 <button
-                                    onClick={() => handleAddFriend(friend.id)}
+                                    onClick={() => handleRemoveFriend(friend.id)}
                                 >
-                                    Add Friend
+                                    remove friend
                                 </button>
                             </div>
                         </div>
@@ -91,12 +159,91 @@ export default function Friends() {
                 ))}
             </div>
 
+            <div>
+                <h2>Friend Request</h2>
+                <div>
+                    {friendRequests.length > 0 ? (
+                        friendRequests.map((request) => (
+                            <div
+                                key={request.id}
+                                className="bg-white/5 rounded-lg p-4 border border-white/10 hover:bg-white/10 transition-all duration-300"
+                            >
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-4">
+                                        <img
+                                            src={request.avatar}
+                                            alt={request.username}
+                                            className="w-12 h-12 rounded-full ring-2 ring-purple-500/30"
+                                        />
+                                        <h3 className="text-lg font-semibold text-white">
+                                            {request.username}
+                                        </h3>
+                                    </div>
+                                    <button
+                                        onClick={() => handleAcceptRequest(request.id)}
+                                    >
+                                        Accept
+                                    </button>
+                                    <button
+                                        onClick={() => handleDeclineRequest(request.id)}
+                                    >
+                                        Decline
+                                    </button>
+                                </div>
+                            </div>
+                        ))
+                    ) : (
+                        <p>---</p>
+                    )}
+                </div>
+                <h2 className="mt-8">Sent Requests</h2>
+                <div>
+                    {sentRequests.length > 0 ? (
+                        sentRequests.map((request) => (
+                            <div
+                            key={request.id}
+                            className="bg-white/5 rounded-lg p-4 border border-white/10 hover:bg-white/10 transition-all duration-300"
+                            >
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-4">
+                                        <img
+                                            src={request.avatar}
+                                            alt={request.username}
+                                            className="w-12 h-12 rounded-full ring-2 ring-purple-500/30"
+                                            />
+                                        <h3 className=" text-lg font-semibold text-white">
+                                            {request.username}
+                                        </h3>
+                                    </div>
+                                    <button
+                                        onClick={() => handleCancelRequest(request.id)}
+                                        >
+                                        Cancel Request
+                                    </button>
+                                </div>
+                            </div>
+                        ))
+                    ) : (
+                        <p>---</p>
+                    )}
+                </div>
+
+            </div>
+
             <div className="flex flex-wrap gap-4 justify-center">
-                <button className="px-6 py-3 bg-green-600 hover:bg-green-700 rounded-lg transition-colors">
+                <input
+                    type="text"
+                    placeholder="Enter username"
+                    className="px-4 py-2 border border-white/10 rounded-lg bg-transparent"
+                    value={newFriend}
+                    onChange={(e) => {
+                        if (e.target) setNewFriend((e.target as HTMLInputElement).value);
+                    }}
+                />
+                <button className="px-6 py-3 bg-green-600 hover:bg-green-700 rounded-lg transition-colors"
+                    onClick={() => handleAddFriendByUsername(newFriend)}
+                >
                     Add Friend
-                </button>
-                <button className="px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-lg transition-colors">
-                    Find Players
                 </button>
             </div>
         </div>
