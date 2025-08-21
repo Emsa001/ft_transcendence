@@ -91,7 +91,7 @@ export default function Friends() {
             const newFriend = await FriendsApi.getUserByIdOrUsername(username);
             if (newFriend) {
                 await FriendsApi.addFriend(newFriend.id.toString());
-                setSentRequests((prev) => [...prev, { id: newFriend.id } as UserDTOType]);
+                setSentRequests((prev) => [...prev, { username: newFriend.username, id: newFriend.id } as UserDTOType]);
             }
         } catch (error) {
             console.error("Error adding friend by username:", error);
@@ -117,15 +117,15 @@ export default function Friends() {
     };
 
     return (
-        <div className="text-white">
-            <div className="text-center mb-8">
-                <h1 className="text-3xl font-bold mb-2">My Friends</h1>
+        <div className="text-white p-1">
+            <div className="flex-1 text-center mb-1">
+                <h1 className="text-3xl font-bold mb-1">My Friends</h1>
                 <p className="text-gray-400">
                     You have {friends.length} friends
                 </p>
             </div>
 
-            <div className="space-y-4 mb-8 bg-gray-900 rounded border border-gray-700">
+            <div className="flex-3 space-y-1 mb-1 p-2 bg-gray-900 rounded border border-gray-700">
                 {friends.map((friend) => (
                     <div
                         key={friend.id}
@@ -158,79 +158,81 @@ export default function Friends() {
                     </div>
                 ))}
             </div>
-
-            <div>
-                <h2>Friend Request</h2>
-                <div>
-                    {friendRequests.length > 0 ? (
-                        friendRequests.map((request) => (
+            {/* Friend Requests, next to each other */}
+            <div className="flex flex-row flex-2">
+                <div className="bg-white/10 rounded-xl p-4 my-4 flex-1 mr-2">
+                    <h2>Friend Request</h2>
+                    <div>
+                        {friendRequests.length > 0 ? (
+                            friendRequests.map((request) => (
                             <div
                                 key={request.id}
-                                className="bg-white/5 rounded-lg p-4 border border-white/10 hover:bg-white/10 transition-all duration-300"
-                            >
+                                className="bg-white/5 rounded-lg p-1 border border-white/10 hover:bg-white/10 transition-all duration-300"
+                                >
                                 <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-4">
+                                    <div className="flex items-center gap-1">
                                         <img
                                             src={request.avatar}
                                             alt={request.username}
                                             className="w-12 h-12 rounded-full ring-2 ring-purple-500/30"
-                                        />
+                                            />
                                         <h3 className="text-lg font-semibold text-white">
                                             {request.username}
                                         </h3>
                                     </div>
                                     <button
                                         onClick={() => handleAcceptRequest(request.id)}
-                                    >
+                                        >
                                         Accept
                                     </button>
                                     <button
                                         onClick={() => handleDeclineRequest(request.id)}
-                                    >
+                                        >
                                         Decline
                                     </button>
                                 </div>
                             </div>
                         ))
-                    ) : (
-                        <p>---</p>
-                    )}
+                        ) : (
+                            <p>---</p>
+                        )}
+                    </div>
                 </div>
-                <h2 className="mt-8">Sent Requests</h2>
-                <div>
-                    {sentRequests.length > 0 ? (
-                        sentRequests.map((request) => (
+
+                <div className="bg-white/10 rounded-xl p-4 my-4 flex-1 ml-2">
+                    <h2 className="">Sent Requests</h2>
+                    <div>
+                        {sentRequests.map((request) => (
                             <div
-                            key={request.id}
-                            className="bg-white/5 rounded-lg p-4 border border-white/10 hover:bg-white/10 transition-all duration-300"
-                            >
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-4">
-                                        <img
-                                            src={request.avatar}
-                                            alt={request.username}
-                                            className="w-12 h-12 rounded-full ring-2 ring-purple-500/30"
-                                            />
-                                        <h3 className=" text-lg font-semibold text-white">
-                                            {request.username}
-                                        </h3>
+                                key={request.id}
+                                className="bg-white/5 rounded-lg p-4 border border-white/10 hover:bg-white/10 transition-all duration-300"
+                                >
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-4">
+                                            <img
+                                                src={request.avatar}
+                                                alt={request.username}
+                                                className="w-12 h-12 rounded-full ring-2 ring-purple-500/30"
+                                                />
+                                            <h3 className=" text-lg font-semibold text-white">
+                                                {request.username}
+                                            </h3>
+                                        </div>
+                                        <button
+                                            onClick={() => handleCancelRequest(request.id)}
+                                            >
+                                            Cancel Request
+                                        </button>
                                     </div>
-                                    <button
-                                        onClick={() => handleCancelRequest(request.id)}
-                                        >
-                                        Cancel Request
-                                    </button>
                                 </div>
-                            </div>
-                        ))
-                    ) : (
-                        <p>---</p>
-                    )}
+                            ))
+                        }
+                    </div>
                 </div>
 
             </div>
 
-            <div className="flex flex-wrap gap-4 justify-center">
+            <div className="flex flex-wrap flex-1 gap-4 justify-center">
                 <input
                     type="text"
                     placeholder="Enter username"

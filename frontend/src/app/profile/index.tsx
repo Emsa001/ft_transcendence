@@ -43,9 +43,9 @@ export const Profile = () => {
     if (!user) return <div />;
 
     return (
-        <div className="min-h-screen w-full py-6 flex flex-col items-center justify-center">
+        <div className="min-h-screen w-full py-10 flex flex-col items-center justify-center">
             {/* profile nav bar */}
-            <div className="text-white bg-white/5 rounded-xl p-1 border border-white/10">
+            <div className="flex flex-row text-white bg-white/5 rounded-xl p-2 border border-white/10 mb-8 space-between">
                 <button
                     className={`px-6 py-3 rounded-lg transition-all duration-300 ${
                 activeTab === "profile"
@@ -89,39 +89,44 @@ export const Profile = () => {
                 >
                     All Users
                 </button>
-
-                <button
-                    className={`px-6 py-3 rounded-lg transition-all duration-300 ${
-                    activeTab === "history"
-                    ? "bg-purple-600 text-white shadow-lg"
-                    : "text-gray-400 hover:text-white hover:bg-white/10"
-                    }`}
-                    onClick={setActiveTab.bind(null, "history")}
-                >
-                    History
-                </button>
             </div>
 
             {/* cards */}
-            <div className="w-96 h-96">
-                {/* Profile Card */}
-                {activeTab === "profile" && <ProfileCard />}
+            <div className="w-[900px] h-[600px] p-6 bg-black/40 rounded-2xl shadow-2xl border border-white/10">
+                <div className="w-full h-full flex items-center justify-center">
+                    {/* Profile Card */}
+                    {activeTab === "profile" && (
+                        <div className="w-full h-full">
+                            <ProfileCard />
+                        </div>
+                    )}
+                    
+                    {/* Friends page */}
+                    {activeTab === "friends" && (
+                        <div className="w-full h-full overflow-y-auto">
+                            <Friends />
+                        </div>
+                    )}
+                    
+                    {/* Stats */}
+                    {activeTab === "stats" && (
+                        <div className="w-full h-full flex flex-row items-center justify-center gap-8">
+                            <div className="flex-1">
+                                <UserStats userId={userId || user.id} />
+                            </div>
+                            <div className="flex-1">
+                                <GameHistory userId={userId || user.id} />
+                            </div>
+                        </div>
+                    )}
 
-                {/* Stats */}
-                {activeTab === "stats" && (
-                    <UserStats userId={userId || user.id} />
-                )}
-
-                {/* Game History */}
-                {activeTab === "history" && (
-                    <GameHistory userId={userId || user.id} />
-                )}
-
-                {/* Game History */}
-                {activeTab === "users" && <AllUsers />}
-
-                {/* friends page */}
-                {activeTab === "friends" && <Friends />}
+                    {/* All Users */}
+                    {activeTab === "users" && (
+                        <div className="w-full h-full">
+                            <AllUsers />
+                        </div>
+                    )}
+                </div>
             </div>
         </div>
     );

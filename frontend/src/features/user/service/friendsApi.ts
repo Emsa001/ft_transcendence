@@ -39,7 +39,7 @@ class FriendsApi extends APIService {
 
     async addFriend(friendId: string): Promise<void> {
         try {
-            await this.api.post(`/friends/add`, { friendId });
+            return await this.api.post(`/friends/add`, { friendId });
         } catch (error) {
             console.error("Error adding friend:", error);
             return Promise.reject(error);
