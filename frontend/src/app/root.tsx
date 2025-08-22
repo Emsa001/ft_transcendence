@@ -7,8 +7,8 @@ import Auth from "./auth";
 import { useUser } from "@features/auth/model/useUser";
 import { Profile } from "./profile";
 import { useOnlineUsers } from "@features/user/model/useOnlineUsers";
-import { Local } from "./local";
 import MainMenu from "@features/menu/ui/MainMenu";
+import Game from "./game";
 
 let mounted = false;
 let lastUserId = -1;
@@ -45,7 +45,7 @@ export default function Root() {
                 <Router src="/" component={<Home />} />
                 <Router src="/auth" component={<Auth />} />
                 <Router src="/profile" component={<Profile />} />
-                <Router src="/local" component={<Local />} />
+                <Router src="/game/:type" component={<Game />} />
             </BrowserRouter>
         </div>
     );
