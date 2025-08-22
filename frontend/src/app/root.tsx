@@ -42,7 +42,7 @@ export default function Root() {
 
             <MainMenu />
             <BrowserRouter>
-                <Router src="/" component={<Home />} />
+                <Router src="/" component={<Home />} default />
                 <Router src="/auth" component={<Auth />} />
                 <Router src="/profile" component={<Profile />} />
                 <Router src="/game/:type" component={<Game />} />
