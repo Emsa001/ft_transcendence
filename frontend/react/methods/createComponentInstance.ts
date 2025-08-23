@@ -28,6 +28,7 @@ export function createComponentInstanceMethod(element: ReactElement): ReactCompo
         onMount() {
             if(IS_DEVELOPMENT) console.log("Component mounted:", this.name);
             this.isMounted = true;
+            this.hookIndex = 0;
         },
         onUnmount() {
             if(IS_DEVELOPMENT) console.log("Component unmounted:", this.name);
@@ -36,9 +37,6 @@ export function createComponentInstanceMethod(element: ReactElement): ReactCompo
             if(IS_DEVELOPMENT) console.log("Unmounting children:", allChildren);
             for (const child of allChildren) unMountNode(child);
 
-            React.components.delete(this.name);
-            React.staticComponents.delete(this.name);
-            
             this.vNode?.ref?.remove();
             this.queueFunctions.forEach((fn) => fn());
             this.queueFunctions.clear();
@@ -49,10 +47,14 @@ export function createComponentInstanceMethod(element: ReactElement): ReactCompo
             this.hooks = [];
             this.hookIndex = 0;
             
+            React.components.delete(this.name);
+            React.staticComponents.delete(this.name);
+            
         },
         onUpdate() {
             if(IS_DEVELOPMENT) console.log("Component updated:", this.name);
             
+            this.hookIndex = 0;
             this.isDirty = false;
         },
     };

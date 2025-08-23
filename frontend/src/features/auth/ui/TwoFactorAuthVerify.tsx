@@ -1,4 +1,3 @@
-import React, { useState } from "react";
 import AuthApi from "../service/api";
 import Swal from "sweetalert2";
 
@@ -31,7 +30,9 @@ export const twoFactorAuthAlert = async () => {
                     icon: "success",
                 });
             } else {
-                Swal.showValidationMessage(`Code is invalid or expired. ${code}`);
+                Swal.showValidationMessage(
+                    `Code is invalid or expired. ${code}`
+                );
             }
         },
     });

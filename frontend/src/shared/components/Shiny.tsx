@@ -6,7 +6,7 @@ interface ShinyProps {
     gradient?: string;
 }
 
-const Shiny = ({
+export const ShinyText = ({
     text,
     gradient = "from-red-500 via-blue-500 to-green-500",
     opacity = 100,
@@ -15,18 +15,18 @@ const Shiny = ({
         <span className="relative inline-block">
             {/* Drop shadow layer */}
             <span
-                className={`absolute inset-0 bg-gradient-to-r ${gradient} text-transparent bg-clip-text blur-lg  select-none pointer-events-none`}
+                className={`absolute inset-0 ${gradient} text-transparent bg-clip-text blur-lg  select-none pointer-events-none`}
                 aria-hidden="true"
                 style={{ opacity: opacity / 100 }}
             >
                 {text}
             </span>
             {/* Main text */}
-            <span className={`relative bg-gradient-to-r ${gradient} text-transparent bg-clip-text`}>
+            <span
+                className={`relative ${gradient} text-transparent bg-clip-text`}
+            >
                 {text}
             </span>
         </span>
     );
 };
-
-export default Shiny;

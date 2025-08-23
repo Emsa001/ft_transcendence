@@ -1,13 +1,15 @@
 import React from "react";
-import { useLogout } from "../model/useLogout";
 import { Button } from "@shared/components/Button";
+import { useAuth } from "../model/useAuth";
 
-export const LogoutButton = ({ onLogout }: { onLogout: () => void }) => {
-    const { handleLogout } = useLogout({ onLogout });
+export const LogoutButton = () => {
+    const { handleLogout } = useAuth();
 
     return (
-        <Button onClick={handleLogout} color="error">
-            Logout
-        </Button>
+        <div>
+            <Button onClick={handleLogout} color="error">
+                Logout
+            </Button>
+        </div>
     );
 };

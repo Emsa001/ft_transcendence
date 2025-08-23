@@ -1,21 +1,20 @@
 import { AxiosResponse } from "axios";
 import { APIService } from "@shared/lib/api";
+import { TwoFaAction } from "shared";
+import { AuthResponse, User } from "../types";
 
 class AuthApi extends APIService {
     /**
-     * Authenticate user with Google
-     * @param token - Google ID token
-     * @returns AuthResponse containing user data and access token
+     * Get Google OAuth2 redirect URL
+     * @returns Object containing the authorization URL
      */
-    async googleAuth(token: string): Promise<User | null> {
+    async getGoogleAuthUrl(): Promise<{ authUrl: string } | null> {
         try {
-            const response: AxiosResponse<User> = await this.api.post("/auth/google", {
-                token,
-            });
-
-            return response.data
+            const response: AxiosResponse<{ authUrl: string }> =
+                await this.api.get("/auth/google");
+            return response.data;
         } catch (error) {
-            console.error("Error during Google authentication:", error);
+            console.error("Error getting Google auth URL:", error);
             return null;
         }
     }
@@ -25,9 +24,12 @@ class AuthApi extends APIService {
      * @returns User object if fully authenticated, or throws '2FA_REQUIRED' if 2FA needed
      */
     async getAuthSession(): Promise<AuthResponse> {
-        const response: AxiosResponse<AuthResponse> = await this.api.get("/auth", {
-            withCredentials: true,
-        });
+        const response: AxiosResponse<AuthResponse> = await this.api.get(
+            "/auth",
+            {
+                withCredentials: true,
+            }
+        );
 
         return response.data;
     }
@@ -55,9 +57,12 @@ class AuthApi extends APIService {
      * @param action - Action to perform (login, enable, disable)
      * @returns AxiosResponse containing verification result
      */
-    async verify2FACode(code: string, action: Auth2Action): Promise<boolean> {
+    async verify2FACode(code: string, action: TwoFaAction): Promise<boolean> {
         try {
-            const response = await this.api.post("/auth/2fa/verify", { code, action });
+            const response = await this.api.post("/auth/2fa/verify", {
+                code,
+                action,
+            });
             return response.data.success;
         } catch (error) {
             console.error("Error verifying 2FA code:", error);
@@ -65,16 +70,24 @@ class AuthApi extends APIService {
         }
     }
 
-    // Why doesn't return anything?
-    async register(email: string, username: string, password: string): Promise<void> {
-        await this.api.post("/auth/register", { email, name: username, password });
+    async register(username: string, password: string): Promise<User> {
+        const response = await this.api.post("/auth/register", {
+            username,
+            password,
+        });
+
+        return response.data;
     }
 
-    // Why doesn't return anything?
-    async login(email: string, password: string): Promise<void> {
-        await this.api.post("/auth/login", { email, password });
+    async login(username: string, password: string): Promise<User> {
+        const response = await this.api.post("/auth/login", {
+            username,
+            password,
+        });
+
+        return response.data;
     }
 }
 
-const service = new AuthApi(process.env.FT_REACT_PUBLIC_API_HOST || "http://localhost:3000");
+const service = new AuthApi();
 export default service;

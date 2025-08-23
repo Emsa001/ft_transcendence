@@ -4,8 +4,8 @@
 @import "tailwindcss/theme.css" layer(theme);
 @import "tailwindcss/preflight.css" layer(base);
 @import "tailwindcss/utilities.css" layer(utilities);
-
-@custom-variant dark (&:where([data-theme=dark], [data-theme=dark] *));
+@import "./theme.css" layer(theme);
+@import "./animations.css" layer(utilities);
 
 *{
     scroll-behavior: smooth;;
@@ -18,5 +18,9 @@ body {
         "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue", sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    @apply bg-gray-900 text-white font-sans min-h-screen;
 }
+
+button{
+    cursor: pointer;
+}
+

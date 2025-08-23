@@ -1,140 +1,128 @@
-import { FastifyReply, FastifyRequest } from 'fastify';
-import { Controller, GET, POST } from 'fastify-decorators';
+import { FastifyReply, FastifyRequest } from "fastify";
+import { Controller, GET, POST } from "fastify-decorators";
 
-import { BaseController } from '../base';
-import AuthService from './services/auth.service';
-import cookieService from './services/cookie.severice';
-import JwtService from './services/jwt.service';
-import TwoFAService from './services/twoFa.service';
+import { BaseController } from "../base";
+import AuthService from "./services/auth.service";
+import cookieService from "./services/cookie.service";
+import JwtService from "./services/jwt.service";
+import TwoFAService from "./services/twoFa.service";
 
-import { OAuth2Payload, UserLogin, UserRegister } from './auth.types';
-import { UserFinder } from '@/database/models/User/UserFinder';
-import { HttpException } from '@/utils/exceptions';
+import { UserLogin } from "./auth.types";
+import { User } from "@/database/models/User/User";
+import { HttpException } from "@/utils/exceptions";
+import { OAuth2Payload } from "shared";
 
-@Controller('/auth')
+@Controller("/auth")
 export class AuthController extends BaseController {
-
-    @GET('/')
+    @GET("/")
     async getAuthUserController(request: FastifyRequest, reply: FastifyReply) {
-        try {
-            const token = request.cookies.session;
-            const { email, twoFA } = JwtService.verify(token);
+        const token = request.cookies.session;
+        const { id, twoFA } = JwtService.verify(token);
 
-            const user = await UserFinder.getByEmail(email);
-            if (!user)
-                throw new HttpException(
-                    401,
-                    'Unauthorized: Invalid session token'
-                );
+        const user = await User.findByPk(id);
+        if (!user)
+            throw new HttpException(401, "Unauthorized: Invalid session token");
 
-            return reply.status(200).send({ user: user.toDTO(), twoFA });
-        } catch (error: unknown) {
-            this.respondWithError(reply, error);
-        }
+        return reply.status(200).send({ user: user.toDTO().full(), twoFA });
     }
 
-    @POST('/logout')
+    @POST("/logout")
     async logoutUserController(request: FastifyRequest, reply: FastifyReply) {
-
         return reply
-            .clearCookie('session', {
-                path: '/',
+            .clearCookie("session", {
+                path: "/",
             })
             .send({ success: true });
     }
 
     /**
-     * Login with google
-     * 
+     * Initiate Google OAuth2 redirect flow
+     * Returns the Google authorization URL
      */
-    @POST('/google')
+    @GET("/google")
     async googleAuthController(request: FastifyRequest, reply: FastifyReply) {
-        try {
-            const { token } = request.body as { token: string };
-            const { user, token: session } = await AuthService.googleLogin(token);
-
-            /**
-             * Cookie not available in javascript, so have twoFA sent in response
-             */
-            reply
-                .setCookie('session', session, cookieService.createSession())
-                .send(user.toDTO()); // userDTO has is2FAEnabled enabled flag - used to check in frontend if should run dialog
-        } catch (error: unknown) {
-            this.respondWithError(reply, error);
-        }
+        const authUrl = AuthService.getGoogleAuthUrl();
+        return reply.status(200).send({ authUrl });
     }
 
-    @POST('/2fa/verify')
-    async oauth2VerifyController(request: FastifyRequest, reply: FastifyReply) {
-        try {
-            const token = request.cookies.session;
-            const { code, action = 'login' } = request.body as OAuth2Payload;
+    /**
+     * Handle Google OAuth2 callback
+     * Processes the authorization code and authenticates the user
+     */
+    @GET("/google/callback")
+    async googleCallbackController(
+        request: FastifyRequest,
+        reply: FastifyReply
+    ) {
+        const url = process.env.FRONTEND_URL || "http://localhost:3000";
 
-            const { session, shouldSetCookie } = await TwoFAService.verify(
-                token,
-                code,
-                action
+        const { code, error } = request.query as {
+            code?: string;
+            error?: string;
+        };
+
+        if (error || !code)
+            return reply.redirect(
+                `${url}/auth?error=${encodeURIComponent(error || "no_code")}`
             );
 
-            if (shouldSetCookie) {
-                return reply
-                    .setCookie(
-                        'session',
-                        session,
-                        cookieService.createSession()
-                    )
-                    .send({ success: true });
-            }
+        const { user, token: session } =
+            await AuthService.handleGoogleCallback(code);
 
-            return reply.send({ success: true });
-        } catch (error: unknown) {
-            this.respondWithError(reply, error);
-        }
+        reply.setCookie("session", session, cookieService.createSession());
+
+        return reply.redirect(
+            `${url}/auth?success=true&require2fa=${user.is2FAEnabled}`
+        );
     }
 
-    @POST('/2fa/setup')
+    @POST("/2fa/verify")
+    async oauth2VerifyController(request: FastifyRequest, reply: FastifyReply) {
+        const token = request.cookies.session;
+        const { code, action = "login" } = request.body as OAuth2Payload;
+
+        const { session, shouldSetCookie } = await TwoFAService.verify(
+            token,
+            code,
+            action
+        );
+
+        if (shouldSetCookie) {
+            reply.setCookie("session", session, cookieService.createSession());
+        }
+
+        return reply.send({ success: true });
+    }
+
+    @POST("/2fa/setup")
     async setup2FAController(request: FastifyRequest, reply: FastifyReply) {
-        try {
-            const token = request.cookies.session;
-            const { qrImageUrl, otpauth_url } = await TwoFAService.setup(token);
+        const token = request.cookies.session;
+        const { qrImageUrl, otpauth_url } = await TwoFAService.setup(token);
 
-            return reply.send({
-                qrImageUrl,
-                otpauth_url,
-            });
-        } catch (error: unknown) {
-            this.respondWithError(reply, error);
-        }
+        return reply.send({
+            qrImageUrl,
+            otpauth_url,
+        });
     }
-
 
     // Beqas
 
-
-    @POST('/register')
+    @POST("/register")
     async registerUserController(request: FastifyRequest, reply: FastifyReply) {
-        try {
-            const { email, name, password } = request.body as UserRegister;
-            const user = await AuthService.register(email, name, password);
-            reply.send(user);
-        } catch (error: unknown) {
-            this.respondWithError(reply, error);
-        }
+        const { username, password } = request.body as UserLogin;
+        const { user, token } = await AuthService.register(username, password);
+        reply.setCookie("session", token, cookieService.createSession());
+        return reply.send({ user });
     }
 
-    @POST('/login')
+    @POST("/login")
     async loginUserController(request: FastifyRequest, reply: FastifyReply) {
-        try {
-            const { email, password } = request.body as UserLogin;
-            const { user, token } = await AuthService.login(email, password);
+        const { username, password } = request.body as UserLogin;
+        const { user, token } = await AuthService.login(username, password);
 
-            reply
-                .setCookie('session', token, cookieService.createSession())
-                .send({
-                    user: user.is2FAEnabled ? { twoFa: true } : user,
-                });
-        } catch (error: unknown) {
-            this.respondWithError(reply, error);
-        }
+        reply.setCookie("session", token, cookieService.createSession());
+        return reply.send({
+            user: user.is2FAEnabled ? { twoFa: true } : user,
+        });
     }
 }

@@ -1,70 +1,50 @@
-import jwt from 'jsonwebtoken';
-import { HttpException } from '@/utils/exceptions';
-import { User } from '@/database/models/User/User';
+import jwt from "jsonwebtoken";
+import { HttpException } from "@/utils/exceptions";
+import { User } from "@/database/models/User/User";
 
-import { JWTPayload, Token } from '../auth.types';
+import { Token } from "../auth.types";
+import { JWTPayload } from "shared";
 
 class JWTService {
     private secret: string;
 
     constructor() {
-        this.secret = process.env.JWT_SECRET || 'default_secret';
+        this.secret = process.env.JWT_SECRET || "default_secret";
     }
 
     getToken(user: User): string {
-        if (!user) {
-            throw new HttpException(401, 'Unauthorized: User not found');
-        }
-        
+        if (!user) throw new HttpException(401, "Unauthorized: User not found");
+
         const payload: JWTPayload = {
-            email: user.email,
+            id: user.id,
             twoFA: user.is2FAEnabled ? "started" : "disabled",
         };
 
-        return this.sign(payload, '1d');
+        return this.sign(payload, "1d");
     }
 
-    sign(payload: JWTPayload, expiresIn: string = '1h'): string {
-        if (!payload)
-            throw new HttpException(
-                400,
-                'Payload is required for signing the token'
-            );
-
+    sign(payload: JWTPayload, expiresIn: string = "1h"): string {
         try {
             const token = jwt.sign(payload, this.secret, {
                 expiresIn,
             } as jwt.SignOptions);
+
             return token;
         } catch (error) {
-            throw new HttpException(500, 'Error signing the token');
-        }
-    }
-
-    decode(token: Token): JWTPayload | null {
-        if (!token)
-            throw new HttpException(400, 'Token is required for decoding');
-
-        try {
-            const decoded = jwt.decode(token) as JWTPayload;
-            return decoded;
-        } catch (error) {
-            throw new HttpException(500, 'Error decoding the token');
+            console.error("Error signing JWT:", error);
+            throw new HttpException(
+                500,
+                "Internal Server Error: Unable to sign token"
+            );
         }
     }
 
     verify(token: Token): JWTPayload {
-        if (!token)
-            throw new HttpException(
-                401,
-                'Unauthorized: No session token provided'
-            );
-
         try {
-            const payload = jwt.verify(token, this.secret) as JWTPayload;
+            const payload = jwt.verify(token || "", this.secret) as JWTPayload;
             return payload;
         } catch (error) {
-            throw new HttpException(401, 'Unauthorized: Invalid session token');
+            throw new HttpException(401, "Unauthorized: Invalid session token");
         }
     }
 }

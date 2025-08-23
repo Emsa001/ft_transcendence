@@ -1,14 +1,8 @@
-interface User {
-    id: number;
-    name: string;
-    email: string;
-    avatar: string | null;
-    is2FAEnabled: boolean;
-}
+import { TwoFaStatus, UserDTOType } from "shared";
 
-interface AuthResponse {
+export type User = UserDTOType;
+
+export interface AuthResponse {
     user: User;
-    twoFA: "disabled" | "started" | "completed";
+    twoFA: TwoFaStatus;
 }
-
-type Auth2Action = "login" | "enable" | "disable";

@@ -1,12 +1,12 @@
-import speakeasy from 'speakeasy';
-import qrcode from 'qrcode';
+import speakeasy from "speakeasy";
+import qrcode from "qrcode";
 
-import { User } from '@/database/models/User/User';
-import { UserFinder } from '@/database/models/User/UserFinder';
-import { HttpException } from '@/utils/exceptions';
+import { User } from "@/database/models/User/User";
+import { HttpException } from "@/utils/exceptions";
 
-import JwtService from './jwt.service';
-import { Token, TwoFaAction, TwoFASecret } from '../auth.types';
+import JwtService from "./jwt.service";
+import { Token, TwoFASecret } from "../auth.types";
+import { TwoFaAction } from "shared";
 
 class TwoFAService {
     /*
@@ -17,43 +17,43 @@ class TwoFAService {
     async verify(
         token: Token,
         code: string,
-        action: TwoFaAction = 'login'
+        action: TwoFaAction = "login"
     ): Promise<{ user: User; session: string; shouldSetCookie: boolean }> {
-        const { email, twoFA } = JwtService.verify(token);
+        const { id, twoFA } = JwtService.verify(token);
 
-        const user = await UserFinder.getByEmail(email);
-        if (!user) throw new HttpException(401, 'Unauthorized: User not found');
+        const user = await User.findById(id);
+        if (!user) throw new HttpException(401, "Unauthorized: User not found");
         if (!user.twoFASecret)
             throw new HttpException(
                 401,
-                'Unauthorized: 2FA secret not set for user'
+                "Unauthorized: 2FA secret not set for user"
             );
 
         const isValid = speakeasy.totp.verify({
             secret: user.twoFASecret,
-            encoding: 'base32',
+            encoding: "base32",
             token: code,
             window: 1,
         });
 
         if (!isValid)
-            throw new HttpException(401, 'Unauthorized: Invalid 2FA code');
+            throw new HttpException(401, "Unauthorized: Invalid 2FA code");
 
         switch (action) {
-            case 'login':
+            case "login":
                 if (!user.is2FAEnabled || !twoFA) {
                     throw new HttpException(
                         400,
-                        'Bad Request: Two-Factor Authentication is not enabled or already verified for this user'
+                        "Bad Request: Two-Factor Authentication is not enabled or already verified for this user"
                     );
                 }
 
                 const newToken = JwtService.sign(
                     {
-                        email: user.email,
+                        id: user.id,
                         twoFA: "disabled",
                     },
-                    '1d'
+                    "1d"
                 );
 
                 return {
@@ -62,23 +62,23 @@ class TwoFAService {
                     shouldSetCookie: true,
                 };
 
-            case 'enable':
+            case "enable":
                 if (user.is2FAEnabled)
                     throw new HttpException(
                         400,
-                        'Bad Request: User already has 2FA enabled'
+                        "Bad Request: User already has 2FA enabled"
                     );
 
                 await User.update(
                     { is2FAEnabled: true },
                     { where: { id: user.id } }
                 );
-                return { user, session: '', shouldSetCookie: false };
-            case 'disable':
+                return { user, session: "", shouldSetCookie: false };
+            case "disable":
                 if (!user.is2FAEnabled)
                     throw new HttpException(
                         400,
-                        'Bad Request: User does not have 2FA enabled'
+                        "Bad Request: User does not have 2FA enabled"
                     );
 
                 user.is2FAEnabled = false;
@@ -86,9 +86,9 @@ class TwoFAService {
 
                 await user.save();
 
-                return { user, session: '', shouldSetCookie: false };
+                return { user, session: "", shouldSetCookie: false };
             default:
-                throw new HttpException(400, 'Bad Request: Invalid action');
+                throw new HttpException(400, "Bad Request: Invalid action");
         }
     }
 
@@ -97,14 +97,15 @@ class TwoFAService {
      * Generates a new 2FA secret and returns the QR code image URL
      */
     async setup(token: Token): Promise<TwoFASecret> {
-        const { email } = await JwtService.verify(token);
-        const twoFASecret = await this.generate(email);
+        const { id } = await JwtService.verify(token);
+        const user = await User.findById(id);
+        if (!user) throw new HttpException(401, "Unauthorized: User not found");
+
+        const twoFASecret = await this.generate(user.username);
 
         // Update the user's twoFASecret
-        await User.update(
-            { twoFASecret: twoFASecret.base32 },
-            { where: { email } }
-        );
+        user.twoFASecret = twoFASecret.base32;
+        await user.save();
 
         return twoFASecret;
     }
@@ -113,14 +114,14 @@ class TwoFAService {
      * Generates a new 2FA secret for the user
      * Returns the secret in base32 format, the otpauth URL, and the QR
      */
-    async generate(userEmail: string): Promise<TwoFASecret> {
+    async generate(username: string): Promise<TwoFASecret> {
         const secret = speakeasy.generateSecret({
-            name: `ft_transcendence (${userEmail})`,
+            name: `ft_transcendence (${username})`,
         });
 
         return new Promise((resolve, reject) => {
             if (!secret.otpauth_url)
-                return reject(new Error('OTPAuth URL is undefined'));
+                return reject(new Error("OTPAuth URL is undefined"));
 
             qrcode.toDataURL(secret.otpauth_url, (err, qrImageUrl) => {
                 if (err) return reject(err);
@@ -131,7 +132,6 @@ class TwoFAService {
                     qrImageUrl,
                 });
             });
-            
         });
     }
 }

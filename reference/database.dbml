@@ -1,0 +1,68 @@
+Project ft_transcendence {
+  database_type: 'SQLite'
+  Note: 'A transcendence gaming platform with user management and game tracking'
+}
+
+Table users {
+  id integer [primary key, increment, not null]
+  email varchar(255) [unique, not null]
+  name varchar(100) [note: 'User display name, length validated between 2-100 chars']
+  password varchar(255) [null, note: 'Hashed password, null for OAuth users']
+  avatar varchar(255) [null, note: 'Avatar image URL or path']
+  twoFASecret varchar(255) [null, note: 'Two-factor authentication secret']
+  is2FAEnabled boolean [default: false, not null]
+  provider varchar(50) [default: 'email', note: 'Authentication provider: google or email']
+  createdAt timestamp [default: `now()`, not null]
+  updatedAt timestamp [default: `now()`, not null]
+
+  Note: 'Users table storing authentication and profile information'
+}
+
+Table games {
+  id integer [primary key, increment, not null]
+  status varchar(50) [default: 'waiting', not null, note: 'Game status: waiting, in_progress, finished']
+  mode varchar(50) [default: 'normal', not null, note: 'Game mode: normal, code']
+  maxPlayers integer [default: 2, not null, note: 'Maximum number of players allowed']
+  winnerId integer [null, note: 'ID of the winning user, set when game finishes']
+  createdAt timestamp [default: `now()`, not null]
+  updatedAt timestamp [default: `now()`, not null]
+
+  Note: 'Games table storing game instances and their metadata'
+}
+
+Table game_users {
+  id integer [primary key, increment, not null]
+  userId integer [not null]
+  gameId integer [not null]
+  score integer [default: 0, not null, note: 'Player score in this specific game']
+  createdAt timestamp [default: `now()`, not null]
+  updatedAt timestamp [default: `now()`, not null]
+
+  indexes {
+    (userId, gameId) [unique, name: 'unique_user_game']
+  }
+
+  Note: 'Junction table linking users to games with player-specific data like scores'
+}
+
+// Relationships
+Ref: game_users.userId > users.id [delete: cascade]
+Ref: game_users.gameId > games.id [delete: cascade]
+Ref: users.id < games.winnerId [delete: set null]
+
+// Enums
+Enum game_status {
+  waiting
+  in_progress
+  finished
+}
+
+Enum game_mode {
+  normal
+  code
+}
+
+Enum auth_provider {
+  email
+  google
+}

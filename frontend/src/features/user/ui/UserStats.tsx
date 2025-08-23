@@ -1,0 +1,79 @@
+import React, { useEffect, useState } from "react";
+import { useStats } from "../model/useStats";
+import { GetStatisticsResponse } from "shared";
+
+/*
+    Test component to display user stats.
+    usage: <UserStats userId={1} /> // will fetch and display user stats for user with ID 1
+*/
+export const UserStats = ({ userId }: { userId: string | number }) => {
+    const { fetchUserStats, loading, error } = useStats();
+    const [stats, setStats] = useState<GetStatisticsResponse | null>(null);
+
+    useEffect(() => {
+        if (userId) {
+            fetchUserStats(userId).then((data) => {
+                if (data) {
+                    setStats(data);
+                } else {
+                    console.error("Failed to fetch user stats");
+                }
+            });
+        }
+    }, [userId]);
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center h-40">
+                <div className="text-white animate-pulse">Loading stats...</div>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="text-red-400 text-center">
+                Failed to load stats. Please try again later.
+            </div>
+        );
+    }
+
+    if (!stats) {
+        return (
+            <div className="text-gray-300 text-center">
+                No stats available for this user.
+            </div>
+        );
+    }
+
+    return (
+        <div className="max-w-md mx-auto p-6 rounded-2xl shadow-lg bg-gradient-to-br from-purple-500/30 to-blue-500/30 backdrop-blur-lg border border-white/20">
+            <h2 className="text-2xl font-bold text-white mb-4 text-center">
+                Player Statistics
+            </h2>
+
+            <div className="grid grid-cols-2 gap-4">
+                <StatCard label="Total Games" value={stats.totalGames} />
+                <StatCard label="Wins" value={stats.wins} />
+                <StatCard label="Losses" value={stats.losses} />
+                <StatCard
+                    label="Win Rate"
+                    value={`${stats.winRate.toFixed(1)}%`}
+                />
+            </div>
+        </div>
+    );
+};
+
+const StatCard = ({
+    label,
+    value,
+}: {
+    label: string;
+    value: string | number;
+}) => (
+    <div className="p-4 rounded-xl bg-white/10 backdrop-blur-md border border-white/10 text-center">
+        <div className="text-lg font-semibold text-white">{value}</div>
+        <div className="text-sm text-white/70">{label}</div>
+    </div>
+);

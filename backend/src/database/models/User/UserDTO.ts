@@ -1,34 +1,47 @@
-import { User } from './User';
+import { UserDTOType } from "shared";
+import { User } from "./User";
+import { HttpException } from "@/utils/exceptions";
 
-export class UserDTO {
+export class UserDTO implements UserDTOType {
+    private user!: User;
+
     id: number;
-    name: string;
-    email: string;
+    email?: string | null;
+    username: string;
     avatar: string | null;
-    is2FAEnabled: boolean;
+    is2FAEnabled?: boolean;
 
     constructor(user: User) {
         if (!user || !user.id)
-            throw new Error('User data is required to create UserDTO');
-        if (!user.name || !user.email)
-            throw new Error(
-                'User name and email are required to create UserDTO'
+            throw new HttpException(
+                404,
+                "User data is required to create UserDTO"
             );
 
         this.id = user.id;
-        this.name = user.name;
-        this.email = user.email;
+        this.username = user.username;
         this.avatar = user.avatar;
-        this.is2FAEnabled = user.is2FAEnabled || false;
+
+        // don't expose user instance directly
+        Object.defineProperty(this, "user", {
+            value: user,
+            writable: true,
+            enumerable: false,
+            configurable: true,
+        });
     }
 
-    toString(){
+    full(): UserDTO {
+        this.email = this.user.email;
+        this.is2FAEnabled = this.user.is2FAEnabled;
+        return this;
+    }
+
+    toString() {
         return `
             ID: ${this.id}
-            Name: ${this.name}
-            Email: ${this.email}
-            Avatar: ${this.avatar ? this.avatar : 'No avatar set'}
-            2FA Enabled: ${this.is2FAEnabled ? 'Yes' : 'No'}
+            Name: ${this.username}
+            Avatar: ${this.avatar ? this.avatar : "No avatar set"}
         `;
     }
 }

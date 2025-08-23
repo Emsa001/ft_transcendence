@@ -1,4 +1,9 @@
-import { InferAttributes, InferCreationAttributes } from 'sequelize';
+import {
+    BelongsToManyCountAssociationsMixin,
+    BelongsToManyGetAssociationsMixin,
+    FindOptions,
+    InferAttributes,
+} from "sequelize";
 import {
     Table,
     Column,
@@ -9,31 +14,42 @@ import {
     Default,
     PrimaryKey,
     AutoIncrement,
-} from 'sequelize-typescript';
-import { UserDTO } from './UserDTO';
+    BelongsToMany,
+} from "sequelize-typescript";
+import { UserDTO } from "./UserDTO";
+import { Game } from "../Game/Game";
+import { GameUser } from "../Game/GameUser";
+import { HttpException } from "@/utils/exceptions";
+
+type CreationAttributes = {
+    email?: string | null;
+    username: string;
+    password?: string | null;
+    avatar?: string | null;
+    provider?: "google" | "local";
+    status?: "active" | "deleted";
+};
 
 @Table
-export class User extends Model<
-    InferAttributes<User>,
-    InferCreationAttributes<User, { omit: 'id' }>
-> {
+export class User extends Model<InferAttributes<User>, CreationAttributes> {
     @PrimaryKey
     @AutoIncrement
     @Column(DataType.INTEGER)
     declare id: number;
 
     @Unique
-    @AllowNull(false)
-    @Column(DataType.STRING)
-    declare email: string;
-
     @AllowNull(true)
     @Default(null)
+    @Column(DataType.STRING)
+    declare email: string | null;
+
+    @Unique
+    @AllowNull(false)
     @Column({
         type: DataType.STRING,
-        validate: { len: [3, 100] },
+        validate: { len: [2, 100] },
     })
-    declare name: string | null;
+    declare username: string;
 
     @AllowNull(true)
     @Default(null)
@@ -51,15 +67,49 @@ export class User extends Model<
     declare twoFASecret: string | null;
 
     @Default(false)
-    @AllowNull(true)
     @Column(DataType.BOOLEAN)
     declare is2FAEnabled: boolean;
 
-    @Default("email")
+    @Default("local")
     @Column(DataType.STRING)
-    declare provider: "google" | "email";
+    declare provider: CreationAttributes["provider"];
+
+    @Default("active")
+    @Column(DataType.STRING)
+    declare status: "active" | "deleted";
+
+    @BelongsToMany(() => Game, () => GameUser)
+    declare games: Game[];
+
+    // Magic Methods
+    declare getGames: BelongsToManyGetAssociationsMixin<Game>;
+    declare getGamesCount: BelongsToManyCountAssociationsMixin;
+
+    // Custom  Methods
 
     toDTO(): UserDTO {
         return new UserDTO(this);
     }
+
+    static findByEmail = (email: string, options?: FindOptions) => {
+        const where = { email, ...(options?.where ?? {}) };
+        return User.findOne({ ...options, where });
+    };
+
+    static findByUsername = (username: string, options?: FindOptions) => {
+        const where = { username, ...(options?.where ?? {}) };
+        return User.findOne({ ...options, where });
+    };
+    static findById = async (id: number | string | undefined) => {
+        if (typeof id === "undefined")
+            throw new HttpException(400, "User ID is required");
+
+        if (typeof id === "string" && Number.isNaN(Number(id)))
+            throw new HttpException(400, "Invalid user ID");
+
+        const user = await User.findByPk(id);
+        if (!user) throw new HttpException(404, "User not found");
+
+        return user;
+    };
 }

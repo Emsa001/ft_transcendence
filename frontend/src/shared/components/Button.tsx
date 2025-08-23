@@ -1,12 +1,12 @@
 import React from "react";
 
 interface ButtonProps extends DOMAttributes {
-    color?: "default" | "error" | "success" | "warning" | "info";
+    color?: "default" | "error" | "success" | "warning" | "info" | "none";
     className?: string;
     children?: ReactNode;
     type?: "button" | "submit" | "reset";
     disabled?: boolean;
-    
+
     id?: string;
     name?: string;
     value?: string;
@@ -31,6 +31,7 @@ export const Button = ({
         success: "bg-green-500 hover:bg-green-600",
         warning: "bg-yellow-500 hover:bg-yellow-600",
         info: "bg-blue-500 hover:bg-blue-600",
+        none: "bg-transparent hover:bg-gray-200",
     };
 
     return (
