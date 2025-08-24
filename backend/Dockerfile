@@ -1,16 +1,14 @@
-FROM node:18
+FROM node:22
 
-# Install build tools on Debian-based image
-# RUN apt-get update && apt-get install -y python3 make g++ && rm -rf /var/lib/apt/lists/*
+WORKDIR /app/backend
 
-WORKDIR /app
-
-COPY package.json package-lock.json ./
+COPY backend/package*.json ./
 
 RUN npm install
-# RUN npm rebuild
 
-COPY . .
+# Copy backend and shared
+COPY backend ./
+COPY shared ../shared
 
 EXPOSE 8000
 
