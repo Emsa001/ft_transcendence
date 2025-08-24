@@ -29,31 +29,51 @@ export function useEffectHook(callback: TEffectCallback, deps?: TDependencyList)
     const cleanupRef = React.useRef<(() => void) | undefined>(undefined);
     const isFirstRender = React.useRef(true);
 
-    const runEffect = () => setTimeout(() => {
-        if (typeof cleanupRef.current === "function") {
-            try {
-                cleanupRef.current();
-            } catch (err) {
-                console.error("Error running cleanup:", err);
+    const runEffect = () => {
+        let isCancelled = false;
+        const cancelToken = () => { isCancelled = true; };
+        React.addCancelToken(cancelToken);
+
+        setTimeout(() => {
+            // Check if navigation has occurred before running effect
+            if (React.isNavigating || isCancelled) {
+                React.removeCancelToken(cancelToken);
+                return;
             }
-            component.queueFunctions.delete(cleanupRef.current);
-        }
 
-        let cleanup: void | (() => void);
-        try {
-            cleanup = callback();
-        } catch (err) {
-            console.error("useEffectHook callback threw:", err);
-            cleanup = undefined;
-        }
+            if (typeof cleanupRef.current === "function") {
+                try {
+                    cleanupRef.current();
+                } catch (err) {
+                    console.error("Error running cleanup:", err);
+                }
+                component.queueFunctions.delete(cleanupRef.current);
+            }
 
-        if (typeof cleanup === "function") {
-            cleanupRef.current = cleanup;
-            component.queueFunctions.add(cleanup);
-        } else {
-            cleanupRef.current = undefined;
-        }
-    }, 0);
+            let cleanup: void | (() => void);
+            try {
+                cleanup = callback();
+            } catch (err) {
+                console.error("useEffectHook callback threw:", err);
+                cleanup = undefined;
+            }
+
+            // Check again after callback execution in case navigation occurred during callback
+            if (React.isNavigating || isCancelled) {
+                React.removeCancelToken(cancelToken);
+                return;
+            }
+
+            if (typeof cleanup === "function") {
+                cleanupRef.current = cleanup;
+                component.queueFunctions.add(cleanup);
+            } else {
+                cleanupRef.current = undefined;
+            }
+
+            React.removeCancelToken(cancelToken);
+        }, 0);
+    };
 
     if (isFirstRender.current) {
         isFirstRender.current = false;
