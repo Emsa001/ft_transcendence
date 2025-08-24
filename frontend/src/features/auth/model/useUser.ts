@@ -12,7 +12,8 @@ export const useUser = () => {
             const data = await AuthApi.getAuthSession();
             if (!data) throw new Error("Failed to fetch user session");
 
-            setUser(data.user);
+            if (JSON.stringify(data.user) != JSON.stringify(user))
+                setUser(data.user);
             if (data.twoFA === "started") twoFactorAuthAlert();
         } catch (err: unknown) {
             if (err instanceof Error && err.message === "2FA_REQUIRED") {

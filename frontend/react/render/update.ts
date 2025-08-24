@@ -253,11 +253,12 @@ const updateElement = async (
 ) => {
     const oldProps = oldNode.props || {};
     const newProps = newNode.props || {};
-
+    
     for (const [key, value] of Object.entries(newProps)) {
-        if (oldProps[key] === value) continue;
+        if (oldProps[key] === value && typeof value != "function") continue;
         setProps({ ref: ref!, key, value });
     }
+    
 
     for (const key of Object.keys(oldProps)) {
         if (!(key in newProps)) {

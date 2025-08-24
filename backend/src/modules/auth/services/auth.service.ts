@@ -7,7 +7,6 @@ import { HttpException } from "@/utils/exceptions";
 import { Token } from "../auth.types";
 import jwtService from "./jwt.service";
 import { UserGenerate } from "@/database/models/User/UserGenerate";
-import { Op } from "sequelize";
 
 /*
 
@@ -46,15 +45,20 @@ class AuthService {
     async isAuthorized(
         token: Token
     ): Promise<{ status: boolean; user?: User }> {
-        const { id, twoFA } = jwtService.verify(token);
+        try {
+            const { id, twoFA } = jwtService.verify(token);
 
-        const user = await User.findByPk(id);
-        if (!user) return { status: false };
+            const user = await User.findByPk(id);
+            if (!user) return { status: false };
 
-        return {
-            status: twoFA == "disabled" || twoFA == "completed",
-            user,
-        };
+            return {
+                status: twoFA == "disabled" || twoFA == "completed",
+                user,
+            };
+        } catch (err) {
+            console.error("Authorization error:", err);
+            return { status: false };
+        }
     }
 
     /**

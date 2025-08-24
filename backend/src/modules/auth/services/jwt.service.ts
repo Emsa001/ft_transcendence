@@ -24,36 +24,28 @@ class JWTService {
     }
 
     sign(payload: JWTPayload, expiresIn: string = "1h"): string {
-        if (!payload)
+        try {
+            const token = jwt.sign(payload, this.secret, {
+                expiresIn,
+            } as jwt.SignOptions);
+
+            return token;
+        } catch (error) {
+            console.error("Error signing JWT:", error);
             throw new HttpException(
-                400,
-                "Payload is required for signing the token"
+                500,
+                "Internal Server Error: Unable to sign token"
             );
-
-        const token = jwt.sign(payload, this.secret, {
-            expiresIn,
-        } as jwt.SignOptions);
-
-        return token;
-    }
-
-    decode(token: Token): JWTPayload | null {
-        if (!token)
-            throw new HttpException(400, "Token is required for decoding");
-
-        const decoded = jwt.decode(token) as JWTPayload;
-        return decoded;
+        }
     }
 
     verify(token: Token): JWTPayload {
-        if (!token)
-            throw new HttpException(
-                401,
-                "Unauthorized: No session token provided"
-            );
-
-        const payload = jwt.verify(token, this.secret) as JWTPayload;
-        return payload;
+        try {
+            const payload = jwt.verify(token || "", this.secret) as JWTPayload;
+            return payload;
+        } catch (error) {
+            throw new HttpException(401, "Unauthorized: Invalid session token");
+        }
     }
 }
 

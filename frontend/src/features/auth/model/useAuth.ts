@@ -1,15 +1,18 @@
 import { useNavigate, useState } from "react";
 import { twoFactorAuthAlert, AuthApi } from "../";
 import { useUser } from "./useUser";
+import { useOnlineUsers } from "@features/user/model/useOnlineUsers";
 
 export const useAuth = () => {
     const { setUser, fetchUser } = useUser();
     const navigate = useNavigate();
     const [error, setError] = useState<string | null>(null);
+    const { unsubscribeFromOnline } = useOnlineUsers();
 
     const handleLogout = async () => {
         try {
             await AuthApi.logout();
+            unsubscribeFromOnline();
             navigate("/");
 
             /* 
@@ -76,8 +79,6 @@ export const useAuth = () => {
         }
 
         if (success === "true") {
-            await fetchUser();
-
             if (require2fa === "true") twoFactorAuthAlert();
 
             // Clean up URL

@@ -23,6 +23,7 @@ import { fileURLToPath } from "url";
 import { dirname } from "path";
 import path from "path";
 import { FriendsController } from "./modules/friends/friends.controller";
+import { TournamentController } from "./modules/tournament/tournament.controller";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -67,6 +68,7 @@ export default async function App() {
             AuthController,
             GameController,
             FriendsController,
+            TournamentController,
         ],
     });
 

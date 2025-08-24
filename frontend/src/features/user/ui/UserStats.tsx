@@ -52,11 +52,14 @@ export const UserStats = ({ userId }: { userId: string | number }) => {
                 Player Statistics
             </h2>
 
-            <div className="grid grid-cols-2 gap-8 w-full max-w-lg">
-                <StatCard label="Total Games" value={stats.totalGames} />
-                <StatCard label="Wins" value={stats.wins} />
-                <StatCard label="Losses" value={stats.losses} />
-                <StatCard label="Win Rate" value={`${stats.winRate.toFixed(1)}%`} />
+            <div className="grid grid-cols-2 gap-4">
+                <StatCard label="Total Games" value={stats.total.amount} />
+                <StatCard label="Wins" value={stats.total.wins} />
+                <StatCard label="Losses" value={stats.total.losses} />
+                <StatCard
+                    label="Win Rate"
+                    value={`${stats.total.winRate.toFixed(1)}%`}
+                />
             </div>
         </div>
     );

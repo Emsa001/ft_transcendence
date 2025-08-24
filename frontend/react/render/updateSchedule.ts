@@ -24,8 +24,18 @@ async function ensureRefExists(component: ReactComponentInstance) {
 }
 
 export async function updateSchedule(component: ReactComponentInstance, states: Hook[]) {
+    // Check if navigation is in progress before starting update
+    if (React.isNavigating) {
+        return;
+    }
+
     await ensureRefExists(component);
     await Promise.resolve().then(async () => {
+        // Check again after async operation
+        if (React.isNavigating) {
+            return;
+        }
+
         states.forEach((hook) => processQueue(hook));
 
         React.currentComponent = component;
@@ -40,6 +50,11 @@ export async function updateSchedule(component: ReactComponentInstance, states: 
         
         const newNode = component.jsx?.type(component.jsx.props, ...component.jsx.children);
         newNode.componentName = component.name;
+
+        // Check once more before applying updates
+        if (React.isNavigating) {
+            return;
+        }
 
         if (IS_DEVELOPMENT) {
             console.log("New VNode:", newNode);
