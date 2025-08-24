@@ -1,6 +1,7 @@
 import { UserDTOType } from "./user";
 
 export enum GameStatus {
+    LOCKED = "locked",
     WAITING = "waiting",
     IN_PROGRESS = "in_progress",
     FINISHED = "finished",
@@ -23,14 +24,6 @@ export interface GameDTOType {
     winner: number | null;
     createdAt: Date;
     updatedAt: Date;
-}
-
-
-export interface GetStatisticsResponse {
-    totalGames: number;
-    wins: number;
-    losses: number;
-    winRate: number;
 }
 
 export interface GameHistoryFilter {

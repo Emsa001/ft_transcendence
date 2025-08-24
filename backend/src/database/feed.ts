@@ -2,6 +2,7 @@ import { GameMode, GameStatus } from "shared";
 import { Game } from "./models/Game/Game";
 import { User } from "./models/User/User";
 import { UserGenerate } from "./models/User/UserGenerate";
+import { Tournament } from "./models/Tournaments/Tournament";
 
 interface FeedOptions {
     users?: number;
@@ -13,9 +14,10 @@ export class DatabaseExampleFeed {
         const { users = 10, games = 5 } = options;
 
         console.log("Feeding database with example data...");
-        await this.createExampleUsers(users);
-        await this.createExampleGames(games);
-        await this.assignGamesToUsers();
+        // await this.createExampleUsers(users);
+        // await this.createExampleGames(games);
+        // await this.assignGamesToUsers();
+        await this.createExampleTournament();
         console.log("Database example data created successfully.");
     }
 
@@ -58,4 +60,12 @@ export class DatabaseExampleFeed {
         const shuffled = users.sort(() => 0.5 - Math.random());
         return shuffled.slice(0, count);
     }
+
+    static createExampleTournament = async (): Promise<void> => {
+        const tournament = await Tournament.create({ maxPlayers: 4 });
+        const user1 = await UserGenerate.createExample();
+        const user2 = await UserGenerate.createExample();
+
+        await tournament.addPlayers([user1, user2]);
+    };
 }
