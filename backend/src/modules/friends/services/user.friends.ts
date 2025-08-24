@@ -3,8 +3,8 @@ import { HttpException } from "@/utils/exceptions";
 import { UserFriends } from "@/database/models/User/UserFriends";
 import { Op } from "sequelize";
 
-class FriendsService {
-    private async getFriendship(id1: number, id2: number) {
+export class FriendsService {
+    static async getFriendship(id1: number, id2: number) {
         if ((await User.findByPk(id2)) === null) {
             throw new HttpException(404, "User not found");
         }
@@ -20,7 +20,7 @@ class FriendsService {
         return friendship;
     }
 
-    async askFriendRequest(userId1: number, userId2: number) {
+    static async askFriendRequest(userId1: number, userId2: number) {
         if (userId1 === userId2) {
             throw new HttpException(
                 400,
@@ -36,7 +36,7 @@ class FriendsService {
         return friendship;
     }
 
-    async acceptFriendRequest(userId1: number, userId2: number) {
+    static async acceptFriendRequest(userId1: number, userId2: number) {
         if (await this.getFriendship(userId1, userId2)) {
             throw new HttpException(409, "You are already friends");
         }
@@ -51,7 +51,7 @@ class FriendsService {
         }
     }
 
-    async removeFriend(id1: number, id2: number) {
+    static async removeFriend(id1: number, id2: number) {
         if ((await User.findByPk(id2)) === null) {
             throw new HttpException(404, "User not found");
         }
@@ -69,7 +69,7 @@ class FriendsService {
         await friendship.destroy();
     }
 
-    async getFriends(id: number) {
+    static async getFriends(id: number) {
         try {
             const friendships = await UserFriends.findAll({
                 where: {
@@ -89,7 +89,7 @@ class FriendsService {
         }
     }
 
-    async getFriendRequests(id: number) {
+    static async getFriendRequests(id: number) {
         try {
             const friendRequests = await UserFriends.findAll({
                 where: {
@@ -107,7 +107,7 @@ class FriendsService {
         }
     }
 
-    async getAllSentRequests(id: number) {
+    static async getAllSentRequests(id: number) {
         try {
             const sentRequests = await UserFriends.findAll({
                 where: {
@@ -125,6 +125,3 @@ class FriendsService {
         }
     }
 }
-
-const friendsService = new FriendsService();
-export default friendsService;

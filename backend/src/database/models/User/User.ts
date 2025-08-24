@@ -23,7 +23,7 @@ import { Tournament } from "../Tournaments/Tournament";
 import { TournamentUser } from "../Tournaments/TournamentUser";
 import { HttpException } from "@/utils/exceptions";
 import { UserFriends } from "./UserFriends";
-import friendsService from "@/modules/friends/services/user.friends";
+import { FriendsService } from "@/modules/friends/services/user.friends";
 import { UserGamesService } from "@/modules/user/services/user.games";
 
 type CreationAttributes = {
@@ -128,18 +128,18 @@ export class User extends Model<InferAttributes<User>, CreationAttributes> {
     @BelongsToMany(() => User, () => UserFriends, "userId1", "userId2")
     declare friends: User[];
 
-    getFriends = async () => friendsService.getFriends(this.id);
+    getFriends = async () => FriendsService.getFriends(this.id);
 
     askFriendRequest = async (friendId: number) =>
-        friendsService.askFriendRequest(this.id, friendId);
+        FriendsService.askFriendRequest(this.id, friendId);
 
     acceptFriendRequest = async (friendId: number) =>
-        friendsService.acceptFriendRequest(friendId, this.id);
+        FriendsService.acceptFriendRequest(friendId, this.id);
 
     removeFriend = async (friendId: number) =>
-        friendsService.removeFriend(this.id, friendId);
+        FriendsService.removeFriend(this.id, friendId);
 
-    getFriendRequests = async () => friendsService.getFriendRequests(this.id);
-    getAllSentRequests = async () => friendsService.getAllSentRequests(this.id);
+    getFriendRequests = async () => FriendsService.getFriendRequests(this.id);
+    getAllSentRequests = async () => FriendsService.getAllSentRequests(this.id);
     getStatistics = async () => UserGamesService.getStatistics(this);
 }
