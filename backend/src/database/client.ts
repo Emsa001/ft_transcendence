@@ -4,10 +4,11 @@ import { User } from "./models/User/User";
 import { Game } from "./models/Game/Game";
 import { GameUser } from "./models/Game/GameUser";
 import { DatabaseExampleFeed } from "./feed";
+import { UserFriends } from "./models/User/UserFriends";
 import { Tournament } from "./models/Tournaments/Tournament";
 import { TournamentUser } from "./models/Tournaments/TournamentUser";
 
-const models = [User, Game, GameUser, Tournament, TournamentUser];
+const models = [User, Game, GameUser, UserFriends, Tournament, TournamentUser];
 
 export const registerDB = async (app: FastifyInstance) => {
     const sequelize = new Sequelize({

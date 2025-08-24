@@ -22,6 +22,8 @@ import { GameUser } from "../Game/GameUser";
 import { Tournament } from "../Tournaments/Tournament";
 import { TournamentUser } from "../Tournaments/TournamentUser";
 import { HttpException } from "@/utils/exceptions";
+import { UserFriends } from "./UserFriends";
+import { FriendsService } from "@/modules/friends/services/user.friends";
 import { UserGamesService } from "@/modules/user/services/user.games";
 
 type CreationAttributes = {
@@ -104,10 +106,12 @@ export class User extends Model<InferAttributes<User>, CreationAttributes> {
         return User.findOne({ ...options, where });
     };
 
-    static findByUsername = (username: string, options?: FindOptions) => {
+    static findByUsername = async (username: string, options?: FindOptions) => {
         const where = { username, ...(options?.where ?? {}) };
-        return User.findOne({ ...options, where });
+        const user = await User.findOne({ ...options, where });
+        return user;
     };
+
     static findById = async (id: number | string | undefined) => {
         if (typeof id === "undefined")
             throw new HttpException(400, "User ID is required");
@@ -121,5 +125,21 @@ export class User extends Model<InferAttributes<User>, CreationAttributes> {
         return user;
     };
 
+    @BelongsToMany(() => User, () => UserFriends, "userId1", "userId2")
+    declare friends: User[];
+
+    getFriends = async () => FriendsService.getFriends(this.id);
+
+    askFriendRequest = async (friendId: number) =>
+        FriendsService.askFriendRequest(this.id, friendId);
+
+    acceptFriendRequest = async (friendId: number) =>
+        FriendsService.acceptFriendRequest(friendId, this.id);
+
+    removeFriend = async (friendId: number) =>
+        FriendsService.removeFriend(this.id, friendId);
+
+    getFriendRequests = async () => FriendsService.getFriendRequests(this.id);
+    getAllSentRequests = async () => FriendsService.getAllSentRequests(this.id);
     getStatistics = async () => UserGamesService.getStatistics(this);
 }

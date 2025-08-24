@@ -5,6 +5,10 @@ import {
     TwoFactorAuthEnable,
 } from "@features/auth";
 import { useUser } from "@features/auth/model/useUser";
+import { FaEdit, FaUser, FaUsers } from "react-icons/fa";
+import Friends from "./friends";
+import { ProfileCard } from "./profile";
+
 import { UserStats } from "@features/user/ui/UserStats";
 import { GameHistory } from "@features/user/ui/GameHistory";
 import { UserPicture } from "@features/user/ui/UserPicture";
@@ -20,6 +24,7 @@ export const Profile = () => {
 
     const { user, loading, setUser } = useUser();
     const navigate = useNavigate();
+    const [activeTab, setActiveTab] = useState("profile");
 
     const handleSubmit = async (e: any) => {
         e.preventDefault();
@@ -39,77 +44,90 @@ export const Profile = () => {
     if (!user) return <div />;
 
     return (
-        <div className="min-h-screen w-full p-6 flex flex-col items-center justify-center">
-            {/* Profile Card */}
-            <div className="relative max-w-3xl w-full bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl shadow-lg p-6 mb-8 text-white">
+        <div className="min-h-screen w-full py-10 flex flex-col items-center justify-center">
+            {/* profile nav bar */}
+            <div className="flex flex-row text-white bg-white/5 rounded-xl p-2 border border-white/10 mb-8 space-between">
                 <button
-                    className="absolute top-6 right-4 text-white p-2 bg-white/20 hover:bg-white/30 rounded-lg transition-colors z-10"
-                    onClick={() => setEdit(!edit)}
+                    className={`px-6 py-3 rounded-lg transition-all duration-300 ${
+                activeTab === "profile"
+                    ? "bg-purple-600 text-white shadow-lg"
+                    : "text-gray-400 hover:text-white hover:bg-white/10"
+                }`}
+                    onClick={setActiveTab.bind(null, "profile")}
                 >
-                    {edit ? "Cancel" : "Edit"}
+                    Profile
                 </button>
 
-                <div className="flex flex-col md:flex-row items-start gap-6">
-                    <UserPicture />
-                    {!edit ? (
-                        <div className="space-y-1">
-                            <h2 className="text-2xl font-bold">
-                                {user.username}
-                            </h2>
-                            <p className="text-white/80">ID: {user.id}</p>
-                            <p className="text-white/80">{user.email}</p>
+                <button
+                    className={`px-6 py-3 rounded-lg transition-all duration-300 ${
+                    activeTab === "friends"
+                    ? "bg-purple-600 text-white shadow-lg"
+                    : "text-gray-400 hover:text-white hover:bg-white/10"
+                    }`}
+                    onClick={setActiveTab.bind(null, "friends")}
+                >
+                    Friends
+                </button>
+
+                <button
+                    className={`px-6 py-3 rounded-lg transition-all duration-300 ${
+                    activeTab === "stats"
+                    ? "bg-purple-600 text-white shadow-lg"
+                    : "text-gray-400 hover:text-white hover:bg-white/10" 
+                    }`}
+                    onClick={setActiveTab.bind(null, "stats")}
+                >
+                    Stats
+                </button>
+
+                <button
+                    className={`px-6 py-3 rounded-lg transition-all duration-300 ${
+                    activeTab === "users"
+                    ? "bg-purple-600 text-white shadow-lg"
+                    : "text-gray-400 hover:text-white hover:bg-white/10"
+                    }`}
+                    onClick={setActiveTab.bind(null, "users")}
+                >
+                    All Users
+                </button>
+            </div>
+
+            {/* cards */}
+            <div className="w-[900px] h-[600px] p-6 bg-black/40 rounded-2xl shadow-2xl border border-white/10">
+                <div className="w-full h-full flex items-center justify-center">
+                    {/* Profile Card */}
+                    {activeTab === "profile" && (
+                        <div className="w-full h-full">
+                            <ProfileCard />
                         </div>
-                    ) : (
-                        <form
-                            onSubmit={handleSubmit}
-                            className="w-full space-y-3 flex-1 pr-15"
-                        >
-                            <input
-                                type="text"
-                                name="username"
-                                value={user.username}
-                                defaultValue={user.username}
-                                className="w-full p-2 rounded bg-white/20 border border-white/30 text-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-                                placeholder="Username"
-                            />
-                            <button
-                                type="submit"
-                                className="w-full bg-gray-600 hover:bg-gray-700 text-white px-4 py-2 rounded transition-colors font-medium"
-                            >
-                                Save Changes
-                            </button>
-                        </form>
+                    )}
+                    
+                    {/* Friends page */}
+                    {activeTab === "friends" && (
+                        <div className="w-full h-full overflow-y-auto">
+                            <Friends />
+                        </div>
+                    )}
+                    
+                    {/* Stats */}
+                    {activeTab === "stats" && (
+                        <div className="w-full h-full flex flex-row items-center justify-center gap-8">
+                            <div className="flex-1">
+                                <UserStats userId={userId || user.id} />
+                            </div>
+                            <div className="flex-1">
+                                <GameHistory userId={userId || user.id} />
+                            </div>
+                        </div>
+                    )}
+
+                    {/* All Users */}
+                    {activeTab === "users" && (
+                        <div className="w-full h-full">
+                            <AllUsers />
+                        </div>
                     )}
                 </div>
-
-                {/* 2FA Toggle */}
-                <div className="mt-6">
-                    {user.is2FAEnabled ? (
-                        <TwoFactorAuthDisable />
-                    ) : (
-                        <TwoFactorAuthEnable />
-                    )}
-                </div>
-
-                {/* Logout */}
-                <div className="mt-4 flex gap-2 items-center">
-                    <LogoutButton />
-                    <DeleteButton />
-                </div>
-            </div>
-
-            <div className="max-w-3xl w-full mb-8">
-                <AllUsers />
-            </div>
-
-            {/* Stats */}
-            <div className="max-w-3xl w-full mb-8">
-                <UserStats userId={userId || user.id} />
-            </div>
-
-            {/* Game History */}
-            <div className="max-w-3xl w-full">
-                <GameHistory userId={userId || user.id} />
             </div>
         </div>
     );

@@ -22,6 +22,7 @@ import fastifyStatic from "@fastify/static";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import path from "path";
+import { FriendsController } from "./modules/friends/friends.controller";
 import { TournamentController } from "./modules/tournament/tournament.controller";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -66,6 +67,7 @@ export default async function App() {
             UserController,
             AuthController,
             GameController,
+            FriendsController,
             TournamentController,
         ],
     });
