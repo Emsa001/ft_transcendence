@@ -102,6 +102,7 @@ export class User extends Model<InferAttributes<User>, CreationAttributes> {
         const where = { username, ...(options?.where ?? {}) };
         return User.findOne({ ...options, where });
     };
+
     static findById = async (id: number | string | undefined) => {
         if (typeof id === "undefined")
             throw new HttpException(400, "User ID is required");

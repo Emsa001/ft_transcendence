@@ -60,7 +60,6 @@ export default function MainMenu() {
                 ))}
             </div>
 
-            {/* {condition ? <ButtonA /> : <ButtonB />} */}
             <div
                 className="flex w-full justify-end space-x-4 pr-2"
                 ref={menuRef}

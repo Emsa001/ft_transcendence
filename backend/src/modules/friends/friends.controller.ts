@@ -33,6 +33,14 @@ export class FriendsController extends BaseController {
         return reply.send(user.getFriendRequests());
     }
 
+    @GET("/requests/sent")
+    async getAllSentRequests(request: FastifyRequest, reply: FastifyReply) {
+        const token = request.cookies.session;
+        const { id } = jwtService.verify(token);
+        const sentRequests = await friendsService.getAllSentRequests(id);
+        return reply.send(sentRequests);
+    }
+
     @POST("/add")
     async addFriend(request: FastifyRequest, reply: FastifyReply) {
         const token = request.cookies.session;

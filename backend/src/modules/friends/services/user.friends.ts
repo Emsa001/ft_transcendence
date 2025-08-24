@@ -96,6 +96,24 @@ class FriendsService {
             return [];
         }
     }
+
+    async getAllSentRequests(id: number) {
+        try {
+            const sentRequests = await UserFriends.findAll({
+                where: {
+                    accepted: false,
+                    userId1: id,
+                },
+            });
+
+            const recipientIds = sentRequests.map((f) => f.userId2);
+            return User.findAll({
+                where: { id: recipientIds },
+            });
+        } catch (error) {
+            return [];
+        }
+    }
 }
 
 const friendsService = new FriendsService();
