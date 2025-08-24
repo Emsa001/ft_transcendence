@@ -33,27 +33,72 @@ export class UserGamesService {
     ): Promise<GetStatisticsResponse> {
         if (typeof user === "number") user = await User.findById(user);
 
-        const history = await user.getGames({
+        // Get game statistics
+        const gameHistory = await user.getGames({
+            attributes: ["winnerId"],
+            where: {
+                tournamentId: null, // Only casual games
+            },
+        });
+
+        let gameWins = 0;
+        let gameLosses = 0;
+
+        for (const game of gameHistory) {
+            if (game.winnerId === user.id) gameWins++;
+            else gameLosses++;
+        }
+
+        const gameWinRate = gameHistory.length
+            ? Number(((gameWins / gameHistory.length) * 100).toFixed(2))
+            : 0;
+
+        // Get tournament statistics
+        const tournamentHistory = await user.getTournaments({
             attributes: ["winnerId"],
         });
 
-        let wins = 0;
-        let losses = 0;
+        let tournamentWins = 0;
+        let tournamentLosses = 0;
 
-        for (const game of history) {
-            if (game.winnerId === user.id) wins++;
-            else losses++;
+        for (const tournament of tournamentHistory) {
+            if (tournament.winnerId === user.id) tournamentWins++;
+            else tournamentLosses++;
         }
 
-        const winRate = history.length
-            ? Number(((wins / history.length) * 100).toFixed(2))
+        const tournamentWinRate = tournamentHistory.length
+            ? Number(
+                  ((tournamentWins / tournamentHistory.length) * 100).toFixed(2)
+              )
+            : 0;
+
+        // Calculate total statistics
+        const totalAmount = gameHistory.length + tournamentHistory.length;
+        const totalWins = gameWins + tournamentWins;
+        const totalLosses = gameLosses + tournamentLosses;
+        const totalWinRate = totalAmount
+            ? Number(((totalWins / totalAmount) * 100).toFixed(2))
             : 0;
 
         const statistics: GetStatisticsResponse = {
-            totalGames: history.length,
-            wins,
-            losses,
-            winRate,
+            casual: {
+                amount: gameHistory.length,
+                wins: gameWins,
+                losses: gameLosses,
+                winRate: gameWinRate,
+            },
+            tournaments: {
+                amount: tournamentHistory.length,
+                wins: tournamentWins,
+                losses: tournamentLosses,
+                winRate: tournamentWinRate,
+            },
+            total: {
+                amount: totalAmount,
+                wins: totalWins,
+                losses: totalLosses,
+                winRate: totalWinRate,
+            },
         };
 
         return statistics;

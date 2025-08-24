@@ -19,7 +19,10 @@ import {
 import { UserDTO } from "./UserDTO";
 import { Game } from "../Game/Game";
 import { GameUser } from "../Game/GameUser";
+import { Tournament } from "../Tournaments/Tournament";
+import { TournamentUser } from "../Tournaments/TournamentUser";
 import { HttpException } from "@/utils/exceptions";
+import { UserGamesService } from "@/modules/user/services/user.games";
 
 type CreationAttributes = {
     email?: string | null;
@@ -81,9 +84,14 @@ export class User extends Model<InferAttributes<User>, CreationAttributes> {
     @BelongsToMany(() => Game, () => GameUser)
     declare games: Game[];
 
+    @BelongsToMany(() => Tournament, () => TournamentUser)
+    declare tournaments: Tournament[];
+
     // Magic Methods
     declare getGames: BelongsToManyGetAssociationsMixin<Game>;
     declare getGamesCount: BelongsToManyCountAssociationsMixin;
+    declare getTournaments: BelongsToManyGetAssociationsMixin<Tournament>;
+    declare getTournamentsCount: BelongsToManyCountAssociationsMixin;
 
     // Custom  Methods
 
@@ -112,4 +120,6 @@ export class User extends Model<InferAttributes<User>, CreationAttributes> {
 
         return user;
     };
+
+    getStatistics = async () => UserGamesService.getStatistics(this);
 }

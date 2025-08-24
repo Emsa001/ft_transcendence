@@ -21,3 +21,26 @@ export interface OAuth2Payload {
     code: string;
     action: TwoFaAction;
 }
+
+export interface GetStatisticsResponse {
+    tournaments: {
+        amount: number;
+        wins: number;
+        losses: number;
+        winRate: number;
+    };
+
+    casual: {
+        amount: number;
+        wins: number;
+        losses: number;
+        winRate: number;
+    };
+
+    total: {
+        amount: number;
+        wins: number;
+        losses: number;
+        winRate: number;
+    };
+}
