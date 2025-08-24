@@ -98,9 +98,10 @@ export class User extends Model<InferAttributes<User>, CreationAttributes> {
         return User.findOne({ ...options, where });
     };
 
-    static findByUsername = (username: string, options?: FindOptions) => {
+    static findByUsername = async (username: string, options?: FindOptions) => {
         const where = { username, ...(options?.where ?? {}) };
-        return User.findOne({ ...options, where });
+        const user = await User.findOne({ ...options, where });
+        return user;
     };
 
     static findById = async (id: number | string | undefined) => {
@@ -119,7 +120,7 @@ export class User extends Model<InferAttributes<User>, CreationAttributes> {
     @BelongsToMany(() => User, () => UserFriends, "userId1", "userId2")
     declare friends: User[];
 
-    declare getFriends: BelongsToManyGetAssociationsMixin<User>;
+    getFriends = async () => friendsService.getFriends(this.id);
 
     askFriendRequest = async (friendId: number) =>
         friendsService.askFriendRequest(this.id, friendId);
@@ -131,4 +132,5 @@ export class User extends Model<InferAttributes<User>, CreationAttributes> {
         friendsService.removeFriend(this.id, friendId);
 
     getFriendRequests = async () => friendsService.getFriendRequests(this.id);
+    getAllSentRequests = async () => friendsService.getAllSentRequests(this.id);
 }

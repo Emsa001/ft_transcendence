@@ -51,10 +51,20 @@ class FriendsService {
         }
     }
 
-    async removeFriend(userId1: number, userId2: number) {
-        const friendship = await this.getFriendship(userId1, userId2);
+    async removeFriend(id1: number, id2: number) {
+        if ((await User.findByPk(id2)) === null) {
+            throw new HttpException(404, "User not found");
+        }
+        const friendship = await UserFriends.findOne({
+            where: {
+                [Op.or]: [
+                    { userId1: id1, userId2: id2 },
+                    { userId1: id2, userId2: id1 },
+                ],
+            },
+        });
         if (!friendship) {
-            throw new HttpException(404, "You are not friends");
+            throw new HttpException(404, "Friendship not found");
         }
         await friendship.destroy();
     }

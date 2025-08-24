@@ -1,14 +1,7 @@
 import React, { useState, useNavigate, useEffect } from "react";
-import {
-    LogoutButton,
-    TwoFactorAuthDisable,
-    TwoFactorAuthEnable,
-} from "@features/auth";
 import { useUser } from "@features/auth/model/useUser";
 import FriendsApi from "@features/user/service/friendsApi";
 import { UserDTOType } from "shared";
-import { APIService } from "@shared/lib/api";
-
 
 export default function Friends() {
     const { user } = useUser();
@@ -16,6 +9,7 @@ export default function Friends() {
     const [friendRequests, setFriendRequests] = useState<UserDTOType[]>([]);
     const [sentRequests, setSentRequests] = useState<UserDTOType[]>([]);
     const [newFriend, setNewFriend] = useState<string>("");
+    const [userNotFound, setUserNotFound] = useState<boolean>(false);
 
     useEffect(() => {
         const fetchFriends = async () => {
@@ -70,16 +64,20 @@ export default function Friends() {
     const handleRemoveFriend = async (friendId: number) => {
         try {
             await FriendsApi.removeFriend(friendId.toString());
-            setFriends((prev) => prev.filter((friend) => friend.id !== friendId));
+            setFriends((prev) =>
+                prev.filter((friend) => friend.id !== friendId)
+            );
         } catch (error) {
             console.error("Error removing friend:", error);
         }
-    }
+    };
 
     const handleAcceptRequest = async (requestId: number) => {
         try {
             await FriendsApi.acceptFriendRequest(requestId.toString());
-            setFriendRequests((prev) => prev.filter((req) => req.id !== requestId));
+            setFriendRequests((prev) =>
+                prev.filter((req) => req.id !== requestId)
+            );
             setFriends((prev) => [...prev, { id: requestId } as UserDTOType]);
         } catch (error) {
             console.error("Error accepting friend request:", error);
@@ -91,9 +89,16 @@ export default function Friends() {
             const newFriend = await FriendsApi.getUserByIdOrUsername(username);
             if (newFriend) {
                 await FriendsApi.addFriend(newFriend.id.toString());
-                setSentRequests((prev) => [...prev, { username: newFriend.username, id: newFriend.id } as UserDTOType]);
+                setSentRequests((prev) => [
+                    ...prev,
+                    {
+                        username: newFriend.username,
+                        id: newFriend.id,
+                    } as UserDTOType,
+                ]);
             }
         } catch (error) {
+            setUserNotFound(true);
             console.error("Error adding friend by username:", error);
         }
     };
@@ -101,7 +106,9 @@ export default function Friends() {
     const handleCancelRequest = async (requestId: number) => {
         try {
             await FriendsApi.removeFriend(requestId.toString());
-            setSentRequests((prev) => prev.filter((req) => req.id !== requestId));
+            setSentRequests((prev) =>
+                prev.filter((req) => req.id !== requestId)
+            );
         } catch (error) {
             console.error("Error canceling friend request:", error);
         }
@@ -110,7 +117,9 @@ export default function Friends() {
     const handleDeclineRequest = async (requestId: number) => {
         try {
             await FriendsApi.removeFriend(requestId.toString());
-            setFriendRequests((prev) => prev.filter((req) => req.id !== requestId));
+            setFriendRequests((prev) =>
+                prev.filter((req) => req.id !== requestId)
+            );
         } catch (error) {
             console.error("Error declining friend request:", error);
         }
@@ -149,7 +158,9 @@ export default function Friends() {
                             </div>
                             <div className="flex gap-2 rounded bg-red-800 p-1">
                                 <button
-                                    onClick={() => handleRemoveFriend(friend.id)}
+                                    onClick={() =>
+                                        handleRemoveFriend(friend.id)
+                                    }
                                 >
                                     remove friend
                                 </button>
@@ -165,34 +176,38 @@ export default function Friends() {
                     <div>
                         {friendRequests.length > 0 ? (
                             friendRequests.map((request) => (
-                            <div
-                                key={request.id}
-                                className="bg-white/5 rounded-lg p-1 border border-white/10 hover:bg-white/10 transition-all duration-300"
+                                <div
+                                    key={request.id}
+                                    className="bg-white/5 rounded-lg p-1 border border-white/10 hover:bg-white/10 transition-all duration-300"
                                 >
-                                <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-1">
-                                        <img
-                                            src={request.avatar}
-                                            alt={request.username}
-                                            className="w-12 h-12 rounded-full ring-2 ring-purple-500/30"
+                                    <div className="flex items-center justify-between">
+                                        <div className="flex items-center gap-1">
+                                            <img
+                                                src={request.avatar}
+                                                alt={request.username}
+                                                className="w-12 h-12 rounded-full ring-2 ring-purple-500/30"
                                             />
-                                        <h3 className="text-lg font-semibold text-white">
-                                            {request.username}
-                                        </h3>
+                                            <h3 className="text-lg font-semibold text-white">
+                                                {request.username}
+                                            </h3>
+                                        </div>
+                                        <button
+                                            onClick={() =>
+                                                handleAcceptRequest(request.id)
+                                            }
+                                        >
+                                            Accept
+                                        </button>
+                                        <button
+                                            onClick={() =>
+                                                handleDeclineRequest(request.id)
+                                            }
+                                        >
+                                            Decline
+                                        </button>
                                     </div>
-                                    <button
-                                        onClick={() => handleAcceptRequest(request.id)}
-                                        >
-                                        Accept
-                                    </button>
-                                    <button
-                                        onClick={() => handleDeclineRequest(request.id)}
-                                        >
-                                        Decline
-                                    </button>
                                 </div>
-                            </div>
-                        ))
+                            ))
                         ) : (
                             <p>---</p>
                         )}
@@ -206,30 +221,30 @@ export default function Friends() {
                             <div
                                 key={request.id}
                                 className="bg-white/5 rounded-lg p-4 border border-white/10 hover:bg-white/10 transition-all duration-300"
-                                >
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-4">
-                                            <img
-                                                src={request.avatar}
-                                                alt={request.username}
-                                                className="w-12 h-12 rounded-full ring-2 ring-purple-500/30"
-                                                />
-                                            <h3 className=" text-lg font-semibold text-white">
-                                                {request.username}
-                                            </h3>
-                                        </div>
-                                        <button
-                                            onClick={() => handleCancelRequest(request.id)}
-                                            >
-                                            Cancel Request
-                                        </button>
+                            >
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-4">
+                                        <img
+                                            src={request.avatar}
+                                            alt={request.username}
+                                            className="w-12 h-12 rounded-full ring-2 ring-purple-500/30"
+                                        />
+                                        <h3 className=" text-lg font-semibold text-white">
+                                            {request.username}
+                                        </h3>
                                     </div>
+                                    <button
+                                        onClick={() =>
+                                            handleCancelRequest(request.id)
+                                        }
+                                    >
+                                        Cancel Request
+                                    </button>
                                 </div>
-                            ))
-                        }
+                            </div>
+                        ))}
                     </div>
                 </div>
-
             </div>
 
             <div className="flex flex-wrap flex-1 gap-4 justify-center">
@@ -239,15 +254,20 @@ export default function Friends() {
                     className="px-4 py-2 border border-white/10 rounded-lg bg-transparent"
                     value={newFriend}
                     onChange={(e) => {
-                        if (e.target) setNewFriend((e.target as HTMLInputElement).value);
+                        if (e.target)
+                            setNewFriend((e.target as HTMLInputElement).value);
                     }}
                 />
-                <button className="px-6 py-3 bg-green-600 hover:bg-green-700 rounded-lg transition-colors"
+                <button
+                    className="px-6 py-3 bg-green-600 hover:bg-green-700 rounded-lg transition-colors"
                     onClick={() => handleAddFriendByUsername(newFriend)}
                 >
                     Add Friend
                 </button>
             </div>
+            {userNotFound && (
+                <p className="text-red-500 mt-2 text-center">User not found</p>
+            )}
         </div>
     );
 }

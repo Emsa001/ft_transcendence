@@ -16,8 +16,7 @@ export class FriendsController extends BaseController {
         if (!user) {
             return reply.status(404).send({ error: "User not found" });
         }
-
-        return reply.send(user.getFriends());
+        return reply.send(await user.getFriends());
     }
 
     @GET("/requests")
@@ -30,15 +29,7 @@ export class FriendsController extends BaseController {
             return reply.status(404).send({ error: "User not found" });
         }
 
-        return reply.send(user.getFriendRequests());
-    }
-
-    @GET("/requests/sent")
-    async getAllSentRequests(request: FastifyRequest, reply: FastifyReply) {
-        const token = request.cookies.session;
-        const { id } = jwtService.verify(token);
-        const sentRequests = await friendsService.getAllSentRequests(id);
-        return reply.send(sentRequests);
+        return reply.send(await user.getFriendRequests());
     }
 
     @POST("/add")
@@ -52,7 +43,7 @@ export class FriendsController extends BaseController {
             return reply.status(404).send({ error: "User not found" });
         }
 
-        user.askFriendRequest(friendId);
+        await user.askFriendRequest(friendId);
 
         return reply.send({ success: true });
     }
@@ -68,7 +59,7 @@ export class FriendsController extends BaseController {
             return reply.status(404).send({ error: "User not found" });
         }
 
-        user.acceptFriendRequest(friendId);
+        await user.acceptFriendRequest(friendId);
 
         return reply.send({ success: true });
     }
@@ -84,8 +75,21 @@ export class FriendsController extends BaseController {
             return reply.status(404).send({ error: "User not found" });
         }
 
-        user.removeFriend(friendId);
+        await user.removeFriend(friendId);
 
         return reply.send({ success: true });
+    }
+
+    @GET("/requests/sent")
+    async getAllSentRequests(request: FastifyRequest, reply: FastifyReply) {
+        const token = request.cookies.session;
+        const { id } = jwtService.verify(token);
+
+        const user = await User.findByPk(id);
+        if (!user) {
+            return reply.status(404).send({ error: "User not found" });
+        }
+
+        return reply.send(await user.getAllSentRequests());
     }
 }
