@@ -4,7 +4,7 @@ import { useUser } from "./useUser";
 import { useOnlineUsers } from "@features/user/model/useOnlineUsers";
 
 export const useAuth = () => {
-    const { setUser, fetchUser } = useUser();
+    const { setUser } = useUser();
     const navigate = useNavigate();
     const [error, setError] = useState<string | null>(null);
     const { unsubscribeFromOnline } = useOnlineUsers();

@@ -5,7 +5,6 @@ import { AUTHORIZED } from "../auth/auth.middleware";
 
 @Controller("/friends")
 export class FriendsController extends BaseController {
-
     @GET("/all")
     @AUTHORIZED
     async getFriends(request: FastifyRequest, reply: FastifyReply) {

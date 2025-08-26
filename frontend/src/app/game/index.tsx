@@ -1,3 +1,4 @@
+import { LocalGameProvider } from "@features/game/model/useLocalGame";
 import { LocalGame } from "@features/game/ui/LocalGame";
 import React from "react";
 
@@ -7,9 +8,13 @@ interface GameProps {
 
 export default function Game({ type }: GameProps) {
     return (
-        <div className="flex items-center justify-center h-full text-white">
+        <div>
             {type === "local" ? (
-                <LocalGame />
+                <LocalGameProvider>
+                    <div className="flex items-center justify-center h-full w-full">
+                        <LocalGame />
+                    </div>
+                </LocalGameProvider>
             ) : (
                 <div>
                     <h1 className="text-2xl font-bold">
