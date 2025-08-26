@@ -1,6 +1,6 @@
 // src/app/game/GamePage.tsx
 import React from 'react';
-import { Game } from './index';
+import Game from './index';
 
 export const GamePage = () => {
   return (

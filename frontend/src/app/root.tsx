@@ -8,7 +8,7 @@ import { useUser } from "@features/auth/model/useUser";
 import { Profile } from "./profile";
 import { useOnlineUsers } from "@features/user/model/useOnlineUsers";
 import MainMenu from "@features/menu/ui/MainMenu";
-import Game from "./game";
+import Game from "./game/index";
 
 let mounted = false;
 let lastUserId = -1;
