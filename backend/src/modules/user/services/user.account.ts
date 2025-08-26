@@ -3,6 +3,7 @@ import { MultipartFile } from "@fastify/multipart";
 import fs from "fs";
 import path from "path";
 import sharp from "sharp";
+import bcrypt from "bcrypt";
 import { UserEditableData } from "shared";
 import { Op } from "sequelize";
 import { HttpException } from "@/utils/exceptions";
@@ -52,14 +53,36 @@ class UserAccountService {
     }
 
     async editProfile(user: User, data: UserEditableData) {
-        const existingUser = await User.findByUsername(data.username, {
-            where: { id: { [Op.ne]: user.id } },
-        });
+        if (data.username) {
+            const existingUser = await User.findByUsername(data.username, {
+                where: { id: { [Op.ne]: user.id } },
+            });
 
-        if (existingUser)
-            throw new HttpException(400, "Username already exists");
+            if (existingUser)
+                throw new HttpException(400, "Username already exists");
 
-        user.username = data.username || user.username;
+            user.username = data.username || user.username;
+        }
+        if (data.newPassword) {
+            if (!user.password)
+                throw new HttpException(400, "User does not have a password");
+
+            if (!data.oldPassword)
+                throw new HttpException(400, "Old password is required");
+
+            const isMatch = await bcrypt.compare(data.oldPassword, user.password);
+            if (!isMatch)
+                throw new HttpException(400, "Old password is incorrect");
+
+            const newPassword = await bcrypt.hash(data.newPassword, 10);
+
+            const samePassword = await bcrypt.compare(data.newPassword, user.password);
+            if (samePassword)
+                throw new HttpException(400, "New password must be different from old password");
+
+            user.password = newPassword;
+        }
+
         await user.save();
 
         return user;
