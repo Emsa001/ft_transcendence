@@ -7,6 +7,7 @@ import {
     GameUserDTOType,
     TournamentDTOType,
 } from "shared";
+import { v4 } from "uuid";
 
 export const useLocalTournament = (maxPlayers = 16) => {
     const [tournamentData, setTournamentData] =
@@ -15,10 +16,10 @@ export const useLocalTournament = (maxPlayers = 16) => {
     const [tournamentId, setTournamentId] = useState<number>(Date.now());
     const [status, setStatus] = useState<GameStatus>(GameStatus.WAITING);
     const [players, setPlayers] = useState<TournamentUserDTOType[]>([]);
-    const [games, setGames] = useState<GameDTOType[]>([]);
     const [round, setRound] = useState(1);
     const [winnerId, setWinnerId] = useState<number | null>(null);
 
+    const [games, setGames] = useState<GameDTOType[]>([]);
     const [currentGame, setCurrentGame] = useState<GameDTOType | null>(null);
 
     useEffect(() => {
@@ -92,9 +93,10 @@ export const useLocalTournament = (maxPlayers = 16) => {
         }
 
         const newPlayer = {
+            id: Date.now() + Math.floor(Math.random() * 10000),
             username,
             eliminated: false,
-        } as unknown as TournamentUserDTOType;
+        } as TournamentUserDTOType;
 
         setPlayers((prev) => [...prev, newPlayer]);
         return true;
@@ -115,9 +117,8 @@ export const useLocalTournament = (maxPlayers = 16) => {
             return [];
         }
 
-        // Check if there are any games currently in progress
         const gamesInProgress = games.filter(
-            (game) => game.status != GameStatus.FINISHED
+            (game) => game.status == GameStatus.IN_PROGRESS
         );
 
         if (gamesInProgress.length > 0) {
@@ -128,6 +129,11 @@ export const useLocalTournament = (maxPlayers = 16) => {
         }
 
         const activePlayers = getActivePlayers();
+
+        if (activePlayers.length <= 1) {
+            alert("Cannot create a new round. Tournament should be finished.");
+            return [];
+        }
         const roundGames: GameDTOType[] = [];
 
         // nearest lower power of two
@@ -190,6 +196,51 @@ export const useLocalTournament = (maxPlayers = 16) => {
         setCurrentGame(gameToPlay);
     };
 
+    const setWinner = (gameId: number, winnerUsername: string) => {
+        const gameIndex = games.findIndex((g) => g.id === gameId);
+        if (gameIndex === -1) return;
+
+        const game = games[gameIndex];
+        if (game.status === GameStatus.FINISHED) return;
+
+        const winner = game.players.find((p) => p.username === winnerUsername);
+        if (!winner) return;
+
+        game.winner = winner.id;
+        game.status = GameStatus.FINISHED;
+
+        setPlayers((prev) => {
+            return prev.map((p) => {
+                if (p.id === winner.id) return p;
+                if (game.players.find((gp) => gp.id === p.id)) {
+                    return { ...p, eliminated: true };
+                }
+                return p;
+            });
+        });
+
+        const updatedGames = games.map((g, i) => (i === gameIndex ? game : g));
+        const inProgressGames = updatedGames.filter(
+            (g) => g.status === GameStatus.IN_PROGRESS
+        );
+
+        if (inProgressGames.length === 0) {
+            // All games in current round are finished, check remaining active players
+            const activePlayers = players.filter(
+                (p) => !p.eliminated && p.id !== winner.id
+            );
+            activePlayers.push(players.find((p) => p.id === winner.id)!);
+
+            if (activePlayers.length === 1) {
+                // Tournament is over, set the winner
+                setWinnerId(winner.id);
+                setStatus(GameStatus.FINISHED);
+            }
+        }
+
+        setGames(updatedGames);
+    };
+
     return {
         status,
         players,
@@ -200,7 +251,7 @@ export const useLocalTournament = (maxPlayers = 16) => {
         setPlayers,
         setGames,
         setRound,
-        setWinnerId,
+        setWinner,
         startTournament,
         endTournament,
         addPlayer,

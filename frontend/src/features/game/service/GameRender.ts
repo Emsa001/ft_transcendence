@@ -1,16 +1,4 @@
-import { Ball, Paddle } from "../types";
-
-export interface GameCanvasProps {
-    paused: boolean;
-    started: boolean;
-    keys: Record<string, boolean>;
-    paddleL: Paddle;
-    paddleR: Paddle;
-    ball: Ball;
-    onScore: (scorer: "left" | "right") => void;
-    showMessage: string | null;
-    countdown: number | null;
-}
+import { Ball, GameData, PongPlayer } from "../types";
 
 // Drawing and Calculation Class
 export class GameRenderer {
@@ -73,9 +61,15 @@ export class GameRenderer {
         ctx.restore();
     }
 
-    drawPaddles(paddleL: Paddle, paddleR: Paddle) {
-        this.drawGlassRect(paddleL.x, paddleL.y, paddleL.w, paddleL.h);
-        this.drawGlassRect(paddleR.x, paddleR.y, paddleR.w, paddleR.h);
+    drawPaddles(players: PongPlayer[]) {
+        players.forEach((player) => {
+            this.drawGlassRect(
+                player.paddle.x,
+                player.paddle.y,
+                player.paddle.w,
+                player.paddle.h
+            );
+        });
     }
 
     drawGlassRect(x: number, y: number, w: number, h: number) {
@@ -181,12 +175,11 @@ export class GameRenderer {
         opts: {
             countdown: number | null;
             showMessage: string | null;
-            started: boolean;
-            paused: boolean;
+            state: GameData["state"];
         }
     ) {
         const ctx = this.ctx;
-        const { countdown, showMessage, started, paused } = opts;
+        const { countdown, showMessage, state } = opts;
         if (countdown !== null) {
             ctx.save();
             ctx.fillStyle = "rgba(15, 10, 40, 0.8)";
@@ -225,12 +218,14 @@ export class GameRenderer {
             );
             ctx.font = `${24 * this.sx}px ui-sans-serif, system-ui`;
             ctx.fillText(
-                "New round starting...",
+                state == "finished"
+                    ? "Press space to restart"
+                    : "New round starting...",
                 canvas.width / 2,
                 canvas.height / 2 + 30 * this.sy
             );
             ctx.restore();
-        } else if (!started) {
+        } else if (state === "created") {
             ctx.save();
             ctx.fillStyle = "rgba(15, 10, 40, 0.8)";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -244,7 +239,7 @@ export class GameRenderer {
                 canvas.height / 2
             );
             ctx.restore();
-        } else if (paused) {
+        } else if (state === "paused") {
             ctx.save();
             ctx.fillStyle = "rgba(15, 10, 40, 0.45)";
             ctx.fillRect(0, 0, canvas.width, canvas.height);

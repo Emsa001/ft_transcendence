@@ -1,20 +1,20 @@
-import { GameConfig, GameState } from "../types";
+import { GameConfig, GameData } from "../types";
 
 // Utility: clamp a value
 const clamp = (v: number, min: number, max: number) =>
     Math.max(min, Math.min(max, v));
 
 export class GameEngine {
-    private state: GameState;
+    private state: GameData;
     private config: GameConfig;
     private keys: Record<string, boolean>;
-    private onScore: (scorer: "left" | "right") => void;
+    private onScore: (scorerId: string) => void;
 
     constructor(
-        initialState: GameState,
+        initialState: GameData,
         config: GameConfig,
         keys: Record<string, boolean>,
-        onScore: (scorer: "left" | "right") => void
+        onScore: (scorerId: string) => void
     ) {
         this.state = initialState;
         this.config = config;
@@ -23,7 +23,7 @@ export class GameEngine {
     }
 
     // Update the game state reference
-    updateState(newState: GameState) {
+    updateState(newState: GameData) {
         this.state = newState;
     }
 
@@ -35,8 +35,7 @@ export class GameEngine {
     // Main update method - handles all game logic
     update(): void {
         if (
-            !this.state.started ||
-            this.state.paused ||
+            this.state.state !== "started" ||
             this.state.showMessage ||
             this.state.countdown
         ) {
@@ -52,38 +51,28 @@ export class GameEngine {
     private updatePaddles(): void {
         const { padding, baseH } = this.config;
 
-        // Update left paddle
-        if (this.keys["w"]) {
-            this.state.paddleL.y -= this.state.paddleL.speed;
-        }
-        if (this.keys["s"]) {
-            this.state.paddleL.y += this.state.paddleL.speed;
-        }
+        // Update all player paddles based on their controls
+        this.state.players.forEach((player) => {
+            const paddle = player.paddle;
+            const controls = player.controls;
 
-        // Update right paddle
-        if (this.keys["arrowup"]) {
-            this.state.paddleR.y -= this.state.paddleR.speed;
-        }
-        if (this.keys["arrowdown"]) {
-            this.state.paddleR.y += this.state.paddleR.speed;
-        }
+            // Check up/down movement for this player
+            if (this.keys[controls.up]) {
+                paddle.y -= paddle.speed;
+            }
+            if (this.keys[controls.down]) {
+                paddle.y += paddle.speed;
+            }
 
-        // Clamp paddles to screen bounds
-        this.state.paddleL.y = clamp(
-            this.state.paddleL.y,
-            padding,
-            baseH - this.state.paddleL.h - padding
-        );
-        this.state.paddleR.y = clamp(
-            this.state.paddleR.y,
-            padding,
-            baseH - this.state.paddleR.h - padding
-        );
+            // Clamp paddle to screen bounds
+            paddle.y = clamp(paddle.y, padding, baseH - paddle.h - padding);
+        });
     }
 
     private updateBall(): void {
-        this.state.ball.pos.x += this.state.ball.vel.x;
-        this.state.ball.pos.y += this.state.ball.vel.y;
+        const ball = this.state.ball;
+        ball.pos.x += ball.vel.x;
+        ball.pos.y += ball.vel.y;
     }
 
     private checkCollisions(): void {
@@ -99,22 +88,23 @@ export class GameEngine {
             ball.vel.y = -Math.abs(ball.vel.y);
         }
 
-        // Paddle collisions
-        this.checkPaddleCollision(
-            this.state.paddleL.x,
-            this.state.paddleL.y,
-            this.state.paddleL.w,
-            this.state.paddleL.h,
-            1 // direction: left paddle hits ball to the right
-        );
+        // Check collisions with all player paddles
+        this.state.players.forEach((player) => {
+            this.checkPaddleCollision(
+                player.paddle.x,
+                player.paddle.y,
+                player.paddle.w,
+                player.paddle.h,
+                this.calculateBounceDirection(player.paddle.x)
+            );
+        });
+    }
 
-        this.checkPaddleCollision(
-            this.state.paddleR.x,
-            this.state.paddleR.y,
-            this.state.paddleR.w,
-            this.state.paddleR.h,
-            -1 // direction: right paddle hits ball to the left
-        );
+    private calculateBounceDirection(paddleX: number): number {
+        const { baseW } = this.config;
+        // If paddle is on left side, ball bounces right (positive direction)
+        // If paddle is on right side, ball bounces left (negative direction)
+        return paddleX < baseW / 2 ? 1 : -1;
     }
 
     private checkPaddleCollision(
@@ -157,20 +147,30 @@ export class GameEngine {
         const { baseW } = this.config;
         const ball = this.state.ball;
 
-        if (ball.pos.x < -20) {
-            this.onScore("right");
-        } else if (ball.pos.x > baseW + 20) {
-            this.onScore("left");
+        // For 2 players, use traditional left/right scoring
+        if (this.state.players.length === 2) {
+            if (ball.pos.x < -20) {
+                this.onScore(this.state.players[1].id); // Right player scores
+            } else if (ball.pos.x > baseW + 20) {
+                this.onScore(this.state.players[0].id); // Left player scores
+            }
+        } else {
+            // For more players, find the nearest player to the ball position
+            if (ball.pos.x < -20 || ball.pos.x > baseW + 20) {
+                // Find the player whose paddle is closest to the ball when it goes out
+                let closestPlayer = this.state.players[0];
+                let minDistance = Math.abs(ball.pos.x - closestPlayer.paddle.x);
+
+                this.state.players.forEach((player) => {
+                    const distance = Math.abs(ball.pos.x - player.paddle.x);
+                    if (distance < minDistance) {
+                        minDistance = distance;
+                        closestPlayer = player;
+                    }
+                });
+
+                this.onScore(closestPlayer.id);
+            }
         }
-    }
-
-    // Get current game state (read-only)
-    getState(): Readonly<GameState> {
-        return this.state;
-    }
-
-    // Get current config (read-only)
-    getConfig(): Readonly<GameConfig> {
-        return this.config;
     }
 }

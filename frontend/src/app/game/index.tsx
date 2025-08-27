@@ -1,4 +1,3 @@
-import { LocalGameProvider } from "@features/game/model/useLocalGame";
 import { LocalGame } from "@features/game/ui/LocalGame";
 import React from "react";
 

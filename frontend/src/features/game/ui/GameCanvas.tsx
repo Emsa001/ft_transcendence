@@ -1,10 +1,16 @@
 import React, { useRef, useEffect } from "react";
-import { GameCanvasProps, GameRenderer } from "../service/GameCanvas";
-import { GameConfig, GameState } from "../types";
+import { GameRenderer } from "../service/GameRender";
+import { Ball, GameConfig, GameData, PongPlayer } from "../types";
 import { GameEngine } from "../service/GameEngine";
 
-// React element for rendering the canvas
-export interface GameCanvasElementProps extends GameCanvasProps {
+export interface GameCanvasElementProps {
+    state: GameData["state"];
+    keys: Record<string, boolean>;
+    players: PongPlayer[];
+    ball: Ball;
+    onScore: (scorerId: string) => void;
+    showMessage: string | null;
+    countdown: number | null;
     padding?: number; // logical units, default 0
 }
 
@@ -52,18 +58,16 @@ export function GameCanvasElement(props: GameCanvasElementProps) {
             padding,
         };
 
-        const gameState: GameState = {
-            paddleL: props.paddleL,
-            paddleR: props.paddleR,
+        const gameData: GameData = {
+            players: props.players,
             ball: props.ball,
-            started: props.started,
-            paused: props.paused,
+            state: props.state,
             showMessage: props.showMessage,
             countdown: props.countdown,
         };
 
         const gameEngine = new GameEngine(
-            gameState,
+            gameData,
             gameConfig,
             props.keys,
             props.onScore
@@ -80,17 +84,15 @@ export function GameCanvasElement(props: GameCanvasElementProps) {
             const renderer = new GameRenderer(ctx, dpr, sx, sy, baseW, baseH);
 
             // Update game state in engine
-            const currentState: GameState = {
-                paddleL: props.paddleL,
-                paddleR: props.paddleR,
+            const currentData: GameData = {
+                players: props.players,
                 ball: props.ball,
-                started: props.started,
-                paused: props.paused,
+                state: props.state,
                 showMessage: props.showMessage,
                 countdown: props.countdown,
             };
 
-            gameEngine.updateState(currentState);
+            gameEngine.updateState(currentData);
             gameEngine.updateKeys(props.keys);
 
             // Update game logic if running
@@ -101,14 +103,13 @@ export function GameCanvasElement(props: GameCanvasElementProps) {
             // Render everything
             renderer.clearBackground(canvas);
             renderer.drawMidline(canvas);
-            renderer.drawPaddles(props.paddleL, props.paddleR);
+            renderer.drawPaddles(props.players);
             renderer.drawBall(props.ball);
             renderer.drawSpeed(props.ball);
             renderer.drawOverlay(canvas, {
                 countdown: props.countdown,
                 showMessage: props.showMessage,
-                started: props.started,
-                paused: props.paused,
+                state: props.state,
             });
 
             rafRef.current = requestAnimationFrame(loop);
@@ -121,11 +122,9 @@ export function GameCanvasElement(props: GameCanvasElementProps) {
             if (rafRef.current) cancelAnimationFrame(rafRef.current);
         };
     }, [
-        props.started,
-        props.paused,
+        props.state,
         props.keys,
-        props.paddleL,
-        props.paddleR,
+        props.players,
         props.ball,
         props.onScore,
         props.showMessage,

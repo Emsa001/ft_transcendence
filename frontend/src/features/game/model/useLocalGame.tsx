@@ -1,41 +1,54 @@
-import React, {
-    createContext,
-    useContext,
-    useEffect,
-    useRef,
-    useState,
-} from "react";
+import { useRef, useState } from "react";
 import { useKeyboard } from "./useKeyboard";
 import { useGameState } from "./useGameState";
+import { GameData, PongPlayer, PongPlayerInitial } from "../types";
 
-interface LocalGameProviderProps {
-    children?: JSX.Element;
+interface UseLocalGameProps {
+    maxScore?: number;
+    players?: PongPlayerInitial[];
+    onScore?: (scorer: PongPlayer) => void;
+    onSpace?: () => boolean;
+    onEnd?: (winner: PongPlayer) => void;
 }
 
-export const LocalGameProvider = ({ children }: LocalGameProviderProps) => {
-    const gameState = useGameState();
+export const useLocalGame = (props?: UseLocalGameProps) => {
+    const {
+        maxScore = 1,
+        players: initialPlayers,
+        onScore,
+        onSpace,
+        onEnd,
+    } = props || {};
 
-    const [isStarted, setIsStarted] = useState(false);
-    const [scoreL, setScoreL] = useState(0);
-    const [scoreR, setScoreR] = useState(0);
-    const [paused, setPaused] = useState(false);
+    const gameState = useGameState(initialPlayers);
+
+    const [state, setState] = useState<GameData["state"]>("created");
+
     const [showMessage, setShowMessage] = useState<string | null>(null);
     const [countdown, setCountdown] = useState<number | null>(null);
     const messageTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const countdownTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-    const handleScore = (scorer: "left" | "right") => {
-        let newScoreL = scoreL;
-        let newScoreR = scoreR;
+    const handleScore = (scorerId: string) => {
+        // Find the player who scored
+        const scorer = gameState.players.find((p) => p.id === scorerId);
+        if (!scorer) return;
 
-        if (scorer === "left") {
-            newScoreL = scoreL + 1;
-            setScoreL(newScoreL);
-            setShowMessage("Left Player Scores!");
-        } else {
-            newScoreR = scoreR + 1;
-            setScoreR(newScoreR);
-            setShowMessage("Right Player Scores!");
+        // Update the scorer's score
+        const newScore = scorer.score + 1;
+
+        gameState.updatePlayerScore(scorerId, newScore);
+        setShowMessage(`${scorer.name} Scores!`);
+
+        // Call external onScore callback
+        onScore?.({ ...scorer, score: newScore });
+
+        // Check for winner
+        if (newScore >= maxScore) {
+            setShowMessage(`${scorer.name} Wins!`);
+            setState("finished");
+            onEnd?.({ ...scorer, score: newScore });
+            return;
         }
 
         // Clear any existing timeout
@@ -43,10 +56,17 @@ export const LocalGameProvider = ({ children }: LocalGameProviderProps) => {
             clearTimeout(messageTimeoutRef.current);
         }
 
-        // Show message for 3 seconds then start countdown
+        // Show message for 1 second then start countdown
         messageTimeoutRef.current = setTimeout(() => {
             setShowMessage(null);
-            startCountdown(scorer === "right"); // Ball goes to the player who didn't score
+            // Ball goes away from the player who scored
+            const otherPlayerId = gameState.players.find(
+                (p) => p.id !== scorerId
+            )?.id;
+            startCountdown().then(() => {
+                gameState.resetBall(otherPlayerId);
+                gameState.resetPaddles();
+            });
         }, 1000);
     };
 
@@ -63,8 +83,8 @@ export const LocalGameProvider = ({ children }: LocalGameProviderProps) => {
             setCountdown(null);
         }
 
-        setIsStarted(true);
-        startCountdown(Math.random() < 0.5);
+        setState("started");
+        startCountdown();
     };
 
     const handleReset = () => {
@@ -72,106 +92,68 @@ export const LocalGameProvider = ({ children }: LocalGameProviderProps) => {
         if (countdownTimeoutRef.current)
             clearTimeout(countdownTimeoutRef.current);
 
-        setScoreL(0);
-        setScoreR(0);
         setShowMessage(null);
         setCountdown(null);
-        setIsStarted(false);
+        setState("created");
         gameState.resetGame();
-        setPaused(false);
     };
 
     const handlePause = () => {
-        if (showMessage || countdown || !isStarted) return;
-        setPaused((p) => !p);
+        if (showMessage || countdown || state !== "started") return;
+        setState("paused");
     };
 
     const handleSpacePress = () => {
-        if (!isStarted) {
-            startGame();
-        } else {
-            handlePause();
+        if (onSpace?.() == false) return;
+
+        switch (state) {
+            case "finished":
+                handleReset();
+                break;
+            case "created":
+            case "paused":
+                startGame();
+                break;
+            case "started":
+                handlePause();
+                break;
         }
     };
 
     const keys = useKeyboard({ onSpacePress: handleSpacePress });
 
-    const startCountdown = (ballDirection: boolean) => {
-        setCountdown(3);
+    const startCountdown = (): Promise<void> => {
+        return new Promise((resolve) => {
+            setCountdown(3);
 
-        const runCountdown = (count: number) => {
-            if (count > 0) {
-                setCountdown(count);
-                countdownTimeoutRef.current = setTimeout(() => {
-                    runCountdown(count - 1);
-                }, 1000);
-            } else {
-                setCountdown(null);
-                gameState.resetBall(ballDirection);
-            }
-        };
+            const runCountdown = (count: number) => {
+                if (count > 0) {
+                    setCountdown(count);
+                    countdownTimeoutRef.current = setTimeout(() => {
+                        runCountdown(count - 1);
+                    }, 1000);
+                } else {
+                    setCountdown(null);
+                    resolve();
+                }
+            };
 
-        runCountdown(3);
+            runCountdown(3);
+        });
     };
 
-    return (
-        <div>
-            <LocalGameContext.Provider
-                value={{
-                    messageTimeoutRef,
-                    countdownTimeoutRef,
-
-                    isStarted,
-                    scoreL,
-                    scoreR,
-                    paused,
-                    showMessage,
-                    countdown,
-                    keys,
-                    startGame,
-                    handlePause,
-                    handleReset,
-                    handleScore,
-                    gameState,
-                }}
-            >
-                {children}
-            </LocalGameContext.Provider>
-        </div>
-    );
-};
-
-interface LocalGameContextType {
-    isStarted: boolean;
-    scoreL: number;
-    scoreR: number;
-    paused: boolean;
-    showMessage: string | null;
-    countdown: number | null;
-    keys: {
-        up: boolean;
-        down: boolean;
-        w: boolean;
-        s: boolean;
-        space: boolean;
+    return {
+        messageTimeoutRef,
+        countdownTimeoutRef,
+        state,
+        players: gameState.players,
+        showMessage,
+        countdown,
+        keys,
+        handleScore,
+        startGame,
+        handleReset,
+        handlePause,
+        gameState,
     };
-    startGame: () => void;
-    handlePause: () => void;
-    handleReset: () => void;
-    handleScore: (scorer: "left" | "right") => void;
-    gameState: ReturnType<typeof useGameState>;
-    messageTimeoutRef: { current: NodeJS.Timeout | null };
-    countdownTimeoutRef: { current: NodeJS.Timeout | null };
-}
-
-export const LocalGameContext = createContext<LocalGameContextType | null>(
-    null
-);
-
-export const useLocalGame = () => {
-    const context = useContext(LocalGameContext);
-    if (context === null) {
-        throw new Error("useLocalGame must be used within a LocalGameProvider");
-    }
-    return context;
 };

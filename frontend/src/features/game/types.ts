@@ -15,12 +15,24 @@ export interface Ball {
     speed: number;
 }
 
-export interface GameState {
-    paddleL: Paddle;
-    paddleR: Paddle;
+export interface PongPlayerInitial {
+    name: string;
+    controls: {
+        up: string;
+        down: string;
+    };
+}
+
+export interface PongPlayer extends PongPlayerInitial {
+    id: string;
+    score: number;
+    paddle: Paddle;
+}
+
+export interface GameData {
+    players: PongPlayer[];
     ball: Ball;
-    started: boolean;
-    paused: boolean;
+    state: "created" | "started" | "paused" | "finished";
     showMessage: string | null;
     countdown: number | null;
 }
@@ -29,4 +41,5 @@ export interface GameConfig {
     baseW: number;
     baseH: number;
     padding: number;
+    maxPlayers?: number;
 }
