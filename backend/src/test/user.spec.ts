@@ -91,7 +91,7 @@ describe("User Tests", () => {
 
         await user1.removeFriend(user2.id);
         await expect(user1.removeFriend(user2.id)).rejects.toThrow(
-            "You are not friends"
+            "Friendship not found"
         );
     });
 });

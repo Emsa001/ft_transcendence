@@ -28,8 +28,7 @@ export function GameHeader({ isTournament, setIsTournament }: GameHeaderProps) {
                         Exit Tournament
                     </button>
                 ) : isStarted ? (
-                    // Game started → Pause / Resume + Exit Game
-                    <>
+                    <div>
                         <button
                             onClick={handlePause}
                             className="px-4 py-2 rounded-2xl bg-white/10 shadow-lg hover:bg-white/15"
@@ -42,10 +41,9 @@ export function GameHeader({ isTournament, setIsTournament }: GameHeaderProps) {
                         >
                             Exit Game
                         </button>
-                    </>
+                    </div>
                 ) : (
-                    // No game started → Start Game + Start Tournament
-                    <>
+                    <div>
                         <button
                             onClick={startGame}
                             className="px-4 py-2 rounded-2xl bg-green-500/20 shadow-lg hover:bg-green-500/30"
@@ -58,7 +56,7 @@ export function GameHeader({ isTournament, setIsTournament }: GameHeaderProps) {
                         >
                             Start Tournament
                         </button>
-                    </>
+                    </div>
                 )}
             </div>
         </div>

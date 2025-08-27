@@ -22,6 +22,8 @@ const isDifferent = (oldNode: ReactElement, newNode: ReactElement): boolean => {
     const oldPropsKeys = Object.keys(oldProps);
     const newPropsKeys = Object.keys(newProps);
 
+    
+
     if (oldPropsKeys.length !== newPropsKeys.length) return true;
 
     for (const key of oldPropsKeys) {
@@ -178,12 +180,19 @@ const updateDifferentTypes = (
     return true;
 };
 
+
 const updateFunctionComponent = async (
     oldNode: ReactElement,
     newNode: ReactElement,
     ref: Element | null
 ) => {
     if (typeof newNode.type !== "function" || typeof oldNode.type !== "function") return false;
+
+    // ✅ identity check: if different function, replace entirely
+    if (oldNode.type !== newNode.type) {
+        if (IS_DEVELOPMENT) console.log("[ Function component change ]", oldNode, newNode);
+        return updateDifferentTypes(oldNode, newNode, ref?.parentElement!, newNode.type.name);
+    }
 
     const oldComponent = React.components.get(oldNode.componentName!);
 
@@ -192,12 +201,10 @@ const updateFunctionComponent = async (
         return true;
     }
 
-    if (isDifferent(oldNode, newNode))
-        oldComponent.isDirty = true;
+    if (isDifferent(oldNode, newNode)) oldComponent.isDirty = true;
 
     if (!oldComponent.isDirty) {
-        if (IS_DEVELOPMENT)
-            console.log("[ Function component ], no update necessary");
+        if (IS_DEVELOPMENT) console.log("[ Function component ], no update necessary");
         return true;
     }
 
@@ -228,6 +235,7 @@ const updateFunctionComponent = async (
 
     return true;
 };
+
 
 
 const updateDifferentObjectTypes = (

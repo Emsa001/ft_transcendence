@@ -1,9 +1,7 @@
 import React, { useRef, useEffect } from "react";
 import { GameCanvasProps, GameRenderer } from "../service/GameCanvas";
-
-// Utility: clamp a value
-const clamp = (v: number, min: number, max: number) =>
-    Math.max(min, Math.min(max, v));
+import { GameConfig, GameState } from "../types";
+import { GameEngine } from "../service/GameEngine";
 
 // React element for rendering the canvas
 export interface GameCanvasElementProps extends GameCanvasProps {
@@ -47,6 +45,30 @@ export function GameCanvasElement(props: GameCanvasElementProps) {
     }, []);
 
     useEffect(() => {
+        // Create game engine with configuration
+        const gameConfig: GameConfig = {
+            baseW,
+            baseH,
+            padding,
+        };
+
+        const gameState: GameState = {
+            paddleL: props.paddleL,
+            paddleR: props.paddleR,
+            ball: props.ball,
+            started: props.started,
+            paused: props.paused,
+            showMessage: props.showMessage,
+            countdown: props.countdown,
+        };
+
+        const gameEngine = new GameEngine(
+            gameState,
+            gameConfig,
+            props.keys,
+            props.onScore
+        );
+
         const loop = () => {
             const canvas = canvasRef.current;
             if (!canvas) return;
@@ -57,103 +79,28 @@ export function GameCanvasElement(props: GameCanvasElementProps) {
             const sy = canvas.height / baseH;
             const renderer = new GameRenderer(ctx, dpr, sx, sy, baseW, baseH);
 
-            renderer.clearBackground(canvas);
-            renderer.drawMidline(canvas);
+            // Update game state in engine
+            const currentState: GameState = {
+                paddleL: props.paddleL,
+                paddleR: props.paddleR,
+                ball: props.ball,
+                started: props.started,
+                paused: props.paused,
+                showMessage: props.showMessage,
+                countdown: props.countdown,
+            };
 
-            if (
-                props.started &&
-                !props.paused &&
-                !props.showMessage &&
-                !props.countdown &&
-                runningRef.current
-            ) {
-                if (props.keys["w"]) props.paddleL.y -= props.paddleL.speed;
-                if (props.keys["s"]) props.paddleL.y += props.paddleL.speed;
-                if (props.keys["arrowup"])
-                    props.paddleR.y -= props.paddleR.speed;
-                if (props.keys["arrowdown"])
-                    props.paddleR.y += props.paddleR.speed;
-                props.paddleL.y = clamp(
-                    props.paddleL.y,
-                    padding,
-                    baseH - props.paddleL.h - padding
-                );
-                props.paddleR.y = clamp(
-                    props.paddleR.y,
-                    padding,
-                    baseH - props.paddleR.h - padding
-                );
-                props.ball.pos.x += props.ball.vel.x;
-                props.ball.pos.y += props.ball.vel.y;
-                if (props.ball.pos.y <= padding) {
-                    props.ball.pos.y = padding;
-                    props.ball.vel.y = Math.abs(props.ball.vel.y);
-                } else if (
-                    props.ball.pos.y + props.ball.size >=
-                    baseH - padding
-                ) {
-                    props.ball.pos.y = baseH - padding - props.ball.size;
-                    props.ball.vel.y = -Math.abs(props.ball.vel.y);
-                }
-                const collidePaddle = (
-                    px: number,
-                    py: number,
-                    pw: number,
-                    ph: number,
-                    dir: number
-                ) => {
-                    const bx = props.ball.pos.x;
-                    const by = props.ball.pos.y;
-                    const bs = props.ball.size;
-                    if (
-                        bx < px + pw &&
-                        bx + bs > px &&
-                        by < py + ph &&
-                        by + bs > py
-                    ) {
-                        const rel = (by + bs / 2 - (py + ph / 2)) / (ph / 2);
-                        const maxBounce = Math.PI / 3;
-                        const angle = rel * maxBounce;
-                        const currentSpeed = Math.hypot(
-                            props.ball.vel.x,
-                            props.ball.vel.y
-                        );
-                        const baseBoost = 1.05;
-                        const edgeBoost = 1.18;
-                        const centerSlow = 0.92;
-                        const boost =
-                            centerSlow +
-                            (edgeBoost - centerSlow) * Math.abs(rel);
-                        const newSpeed = Math.max(
-                            Math.min(currentSpeed * boost, 28),
-                            5
-                        );
-                        props.ball.vel.x = Math.cos(angle) * newSpeed * dir;
-                        props.ball.vel.y = Math.sin(angle) * newSpeed;
-                        props.ball.pos.x += dir * 6;
-                    }
-                };
-                collidePaddle(
-                    props.paddleL.x,
-                    props.paddleL.y,
-                    props.paddleL.w,
-                    props.paddleL.h,
-                    1
-                );
-                collidePaddle(
-                    props.paddleR.x,
-                    props.paddleR.y,
-                    props.paddleR.w,
-                    props.paddleR.h,
-                    -1
-                );
-                if (props.ball.pos.x < -20) {
-                    props.onScore("right");
-                } else if (props.ball.pos.x > baseW + 20) {
-                    props.onScore("left");
-                }
+            gameEngine.updateState(currentState);
+            gameEngine.updateKeys(props.keys);
+
+            // Update game logic if running
+            if (runningRef.current) {
+                gameEngine.update();
             }
 
+            // Render everything
+            renderer.clearBackground(canvas);
+            renderer.drawMidline(canvas);
             renderer.drawPaddles(props.paddleL, props.paddleR);
             renderer.drawBall(props.ball);
             renderer.drawSpeed(props.ball);

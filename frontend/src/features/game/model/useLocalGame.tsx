@@ -8,11 +8,11 @@ import React, {
 import { useKeyboard } from "./useKeyboard";
 import { useGameState } from "./useGameState";
 
-export const LocalGameProvider = ({
-    children,
-}: {
-    children?: ReactElement;
-}) => {
+interface LocalGameProviderProps {
+    children?: JSX.Element;
+}
+
+export const LocalGameProvider = ({ children }: LocalGameProviderProps) => {
     const gameState = useGameState();
 
     const [isStarted, setIsStarted] = useState(false);
@@ -25,11 +25,16 @@ export const LocalGameProvider = ({
     const countdownTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     const handleScore = (scorer: "left" | "right") => {
+        let newScoreL = scoreL;
+        let newScoreR = scoreR;
+
         if (scorer === "left") {
-            setScoreL((s) => s + 1);
+            newScoreL = scoreL + 1;
+            setScoreL(newScoreL);
             setShowMessage("Left Player Scores!");
         } else {
-            setScoreR((s) => s + 1);
+            newScoreR = scoreR + 1;
+            setScoreR(newScoreR);
             setShowMessage("Right Player Scores!");
         }
 
@@ -155,6 +160,8 @@ interface LocalGameContextType {
     handleReset: () => void;
     handleScore: (scorer: "left" | "right") => void;
     gameState: ReturnType<typeof useGameState>;
+    messageTimeoutRef: { current: NodeJS.Timeout | null };
+    countdownTimeoutRef: { current: NodeJS.Timeout | null };
 }
 
 export const LocalGameContext = createContext<LocalGameContextType | null>(

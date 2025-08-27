@@ -1,20 +1,4 @@
-// Types for game state
-type Vec2 = { x: number; y: number };
-
-interface Paddle {
-    x: number;
-    y: number;
-    w: number;
-    h: number;
-    speed: number;
-}
-
-interface Ball {
-    pos: Vec2;
-    vel: Vec2;
-    size: number;
-    speed: number;
-}
+import { Ball, Paddle } from "../types";
 
 export interface GameCanvasProps {
     paused: boolean;
@@ -26,31 +10,6 @@ export interface GameCanvasProps {
     onScore: (scorer: "left" | "right") => void;
     showMessage: string | null;
     countdown: number | null;
-}
-
-// Main class component for the game canvas logic
-export class GameCanvas {
-    paused: boolean;
-    started: boolean;
-    keys: Record<string, boolean>;
-    paddleL: Paddle;
-    paddleR: Paddle;
-    ball: Ball;
-    onScore: (scorer: "left" | "right") => void;
-    showMessage: string | null;
-    countdown: number | null;
-
-    constructor(props: GameCanvasProps) {
-        this.paused = props.paused;
-        this.started = props.started;
-        this.keys = props.keys;
-        this.paddleL = props.paddleL;
-        this.paddleR = props.paddleR;
-        this.ball = props.ball;
-        this.onScore = props.onScore;
-        this.showMessage = props.showMessage;
-        this.countdown = props.countdown;
-    }
 }
 
 // Drawing and Calculation Class

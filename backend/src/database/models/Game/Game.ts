@@ -22,10 +22,8 @@ import {
     AllowNull,
     Scopes,
     Model,
-    BeforeUpdate,
     ForeignKey,
     AfterUpdate,
-    BelongsTo,
 } from "sequelize-typescript";
 import { User } from "../User/User";
 import { GameUser } from "./GameUser";

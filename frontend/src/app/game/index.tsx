@@ -10,11 +10,9 @@ export default function Game({ type }: GameProps) {
     return (
         <div>
             {type === "local" ? (
-                <LocalGameProvider>
-                    <div className="flex items-center justify-center h-full w-full">
-                        <LocalGame />
-                    </div>
-                </LocalGameProvider>
+                <div className="flex items-center justify-center h-full w-full">
+                    <LocalGame />
+                </div>
             ) : (
                 <div>
                     <h1 className="text-2xl font-bold">
