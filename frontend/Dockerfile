@@ -1,13 +1,16 @@
-FROM node:24-alpine
+FROM node:22-alpine
 
 WORKDIR /app
 
-COPY package.json ./
-RUN npm install
+COPY shared shared
+RUN npm install --prefix ./shared && \
+    npm run build --prefix ./shared
 
-COPY . .
+COPY frontend frontend
+RUN npm install --prefix frontend
 
-EXPOSE 3000
+
+EXPOSE 8000
 
 # Start the app at runtime, not build time
-CMD ["npm", "start"]
+CMD ["npm", "start", "--prefix", "frontend"]
