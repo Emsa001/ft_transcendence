@@ -41,4 +41,9 @@ export interface GameConfig {
     maxPlayers?: number;
 }
 
-export type WindowState = "menu" | "casual" | "tournament";
+export type GameWindowState =
+    | "menu"
+    | "local-casual"
+    | "local-tournament"
+    | "remote-casual"
+    | "remote-tournament";

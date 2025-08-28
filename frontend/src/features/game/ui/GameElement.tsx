@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { useLocalGame } from "../model/useLocalGame";
+import { useGame } from "../model/useGame";
 import { GameCanvasElement } from "./GameCanvas";
 import { GameScore } from "./GameScore";
 import { GameUserDTOType } from "shared";
@@ -8,6 +8,7 @@ import { GameFooter } from "./GameFooter";
 import { useGameState } from "../model/useGameState";
 
 interface GameElementProps {
+    maxScore?: number;
     players?: GameUserDTOType[];
     onSpace?: () => boolean;
     onEnd?: (winner: PongPlayer) => void;
@@ -24,6 +25,7 @@ export const GameElement = ({
     onSpace,
     onEnd,
     onScore,
+    maxScore,
 }: GameElementProps) => {
     const gameState = useGameState(externalPlayers || defaultPlayers);
 
@@ -35,7 +37,7 @@ export const GameElement = ({
         countdown,
         keys,
         handleScore,
-    } = useLocalGame({ onScore, onSpace, onEnd, gameState });
+    } = useGame({ maxScore, onScore, onSpace, onEnd, gameState });
 
     useEffect(() => {
         return () => {

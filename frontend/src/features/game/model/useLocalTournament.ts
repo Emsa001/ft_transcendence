@@ -206,7 +206,7 @@ export const useLocalTournament = (maxPlayers = 16) => {
         const winner = game.players.find((p) => p.username === winnerUsername);
         if (!winner) return;
 
-        game.winner = winner.id;
+        game.winner = winner.username;
         game.status = GameStatus.FINISHED;
 
         setPlayers((prev) => {

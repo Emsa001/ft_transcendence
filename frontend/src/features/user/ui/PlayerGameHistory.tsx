@@ -8,7 +8,7 @@ import { PlayerCard } from "./PlayerCard";
     usage: <GameHistory userId={1} /> // will fetch and display game history for user with ID 1
 */
 
-export const GameHistory = ({ userId }: { userId: string | number }) => {
+export const PlayerGameHistory = ({ userId }: { userId: string | number }) => {
     const { fetchGameHistory, loading, error } = useStats();
     const [gameHistory, setGameHistory] = useState<GameDTOType[]>([]);
 
@@ -51,7 +51,8 @@ export const GameHistory = ({ userId }: { userId: string | number }) => {
 
 const GameCard = ({ game }: { game: GameDTOType }) => {
     const winner =
-        game.players.find((p) => p.id === game.winner)?.username || "No Winner";
+        game.players.find((p) => p.username === game.winner)?.username ||
+        "No Winner";
 
     return (
         <div className="p-4 rounded-xl bg-white/10 backdrop-blur-md border border-white/10 text-white">

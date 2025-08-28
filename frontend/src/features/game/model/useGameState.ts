@@ -1,5 +1,5 @@
 import { useRef, useState } from "react";
-import { Vec2, Paddle, Ball, PongPlayer } from "../types";
+import { Paddle, Ball, PongPlayer } from "../types";
 import { GameUserDTOType } from "shared";
 import { GameRenderer } from "../service/GameRender";
 
@@ -14,15 +14,7 @@ export function useGameState(playersConfig: GameUserDTOType[]) {
             const h = 120;
             const y = baseH / 2 - h / 2;
 
-            let x: number;
-            if (playersConfig.length === 2) {
-                // Classic Pong: paddles on left and right sides
-                x = index === 0 ? 40 : baseW - (40 + w);
-            } else {
-                // More players: distribute evenly across the width
-                const spacing = baseW / (playersConfig.length + 1);
-                x = spacing * (index + 1) - w / 2;
-            }
+            let x = index === 0 ? 40 : baseW - (40 + w);
 
             // Assign controls (currently only for 2 players)
             let controls: { up: string; down: string };

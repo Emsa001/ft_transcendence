@@ -1,5 +1,5 @@
 import React from "react";
-import { GameDTOType, TournamentUserDTOType, GameStatus } from "shared";
+import { GameDTOType, TournamentUserDTOType } from "shared";
 
 interface TournamentViewerProps {
     players: TournamentUserDTOType[];
@@ -40,8 +40,9 @@ export const TournamentViewer = ({ players, games }: TournamentViewerProps) => {
                             <p className="text-sm text-green-400">
                                 Winner:{" "}
                                 {
-                                    g.players.find((pl) => pl.id === g.winner)
-                                        ?.username
+                                    g.players.find(
+                                        (pl) => pl.username === g.winner
+                                    )?.username
                                 }
                             </p>
                         )}

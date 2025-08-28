@@ -5,12 +5,9 @@ import {
     TwoFactorAuthEnable,
 } from "@features/auth";
 import { useUser } from "@features/auth/model/useUser";
-import { UserStats } from "@features/user/ui/UserStats";
-import { GameHistory } from "@features/user/ui/GameHistory";
 import { UserPicture } from "@features/user/ui/UserPicture";
 import ProfileApi from "@features/user/service/profileApi";
 import { DeleteButton } from "@features/user/ui/Delete";
-import { AllUsers } from "@features/user/ui/AllUsers";
 
 export const ProfileCard = () => {
     // Just for test - get user ID from URL query params to see their stats

@@ -128,7 +128,6 @@ export class GameEngine {
 
             // Calculate speed boost based on hit location
             const currentSpeed = Math.hypot(ball.vel.x, ball.vel.y);
-            const baseBoost = 1.05;
             const edgeBoost = 1.18;
             const centerSlow = 0.92;
             const boost = centerSlow + (edgeBoost - centerSlow) * Math.abs(rel);

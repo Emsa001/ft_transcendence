@@ -3,7 +3,7 @@ import { useKeyboard } from "./useKeyboard";
 import { useGameState } from "./useGameState";
 import { GameData, PongPlayer } from "../types";
 
-interface UseLocalGameProps {
+interface useGameProps {
     maxScore?: number;
     onScore?: (scorer: PongPlayer) => void;
     onSpace?: () => boolean;
@@ -11,8 +11,8 @@ interface UseLocalGameProps {
     gameState: ReturnType<typeof useGameState>;
 }
 
-export const useLocalGame = (props: UseLocalGameProps) => {
-    const { maxScore = 1, onScore, onSpace, onEnd, gameState } = props || {};
+export const useGame = (props: useGameProps) => {
+    const { maxScore = 10, onScore, onSpace, onEnd, gameState } = props || {};
 
     const [state, setState] = useState<GameData["state"]>("created");
 
@@ -39,7 +39,8 @@ export const useLocalGame = (props: UseLocalGameProps) => {
         if (newScore >= maxScore) {
             setShowMessage(`${scorer.username} Wins!`);
             setState("finished");
-            onEnd?.({ ...scorer, score: newScore });
+
+            onEnd?.(scorer);
             return;
         }
 
