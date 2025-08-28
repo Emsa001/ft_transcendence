@@ -4,6 +4,8 @@ import { GameCanvasElement } from "./GameCanvas";
 import { GameScore } from "./GameScore";
 import { GameUserDTOType } from "shared";
 import { PongPlayer } from "../types";
+import { GameFooter } from "./GameFooter";
+import { useGameState } from "../model/useGameState";
 
 interface GameElementProps {
     players?: GameUserDTOType[];
@@ -12,63 +14,53 @@ interface GameElementProps {
     onScore?: (scorer: PongPlayer) => void;
 }
 
+const defaultPlayers = [
+    { id: 1, username: "Player 1" },
+    { id: 2, username: "Player 2" },
+] as GameUserDTOType[];
+
 export const GameElement = ({
     players: externalPlayers,
     onSpace,
     onEnd,
     onScore,
 }: GameElementProps) => {
-    const gamePlayersConfig = externalPlayers?.map((player, i) => ({
-        name: player.username || `Player ${i + 1}`,
-        controls:
-            i === 0
-                ? { up: "w", down: "s" }
-                : { up: "arrowup", down: "arrowdown" },
-    }));
-
-    const data = useLocalGame({
-        players: gamePlayersConfig,
-        onScore,
-        onSpace,
-        onEnd,
-    });
+    const gameState = useGameState(externalPlayers || defaultPlayers);
 
     const {
         messageTimeoutRef,
         countdownTimeoutRef,
         state,
-        players,
         showMessage,
         countdown,
         keys,
         handleScore,
-        gameState: { ball },
-    } = data;
+    } = useLocalGame({ onScore, onSpace, onEnd, gameState });
 
-    // Cleanup timeouts on unmount
     useEffect(() => {
         return () => {
-            if (messageTimeoutRef.current) {
+            if (messageTimeoutRef.current)
                 clearTimeout(messageTimeoutRef.current);
-            }
-            if (countdownTimeoutRef.current) {
+            if (countdownTimeoutRef.current)
                 clearTimeout(countdownTimeoutRef.current);
-            }
         };
     }, [messageTimeoutRef, countdownTimeoutRef]);
 
     return (
-        <div className="relative aspect-video w-full max-h-[60vh]">
-            <GameCanvasElement
-                state={state}
-                keys={keys}
-                players={players}
-                ball={ball}
-                onScore={handleScore}
-                showMessage={showMessage}
-                countdown={countdown}
-            />
-            <GameScore players={players} />
+        <div className="w-full h-full">
+            <div className="relative aspect-video w-full max-h-[65vh] mb-4">
+                <GameCanvasElement
+                    state={state}
+                    keys={keys}
+                    players={gameState.players}
+                    ball={gameState.ball}
+                    onScore={handleScore}
+                    showMessage={showMessage}
+                    countdown={countdown}
+                />
+                <GameScore players={gameState.players} />
+            </div>
+            <GameFooter players={gameState.players} />
         </div>
     );
 };

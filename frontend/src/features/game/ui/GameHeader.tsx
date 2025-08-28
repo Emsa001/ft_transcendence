@@ -1,36 +1,27 @@
 import React from "react";
+import { WindowState } from "../types";
 
 interface GameHeaderProps {
-    isTournament: boolean;
-    setIsTournament: (value: boolean) => void;
+    window: WindowState;
+    setWindow: (window: WindowState) => void;
 }
 
-export function GameHeader({ isTournament, setIsTournament }: GameHeaderProps) {
+export function GameHeader({ window, setWindow }: GameHeaderProps) {
     return (
         <div className="absolute z-20 left-4 right-4 top-4 flex items-center justify-between">
             <div className="px-4 py-2 rounded-2xl bg-white/10 shadow-lg">
                 <h1 className="text-lg md:text-xl font-semibold tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-fuchsia-400 to-sky-300">
-                    {isTournament ? "Tournament" : "Local Game"}
+                    {window === "casual" && "Casual Mode"}
+                    {window === "tournament" && "Tournament Mode"}
+                    {window === "menu" && "Menu"}
                 </h1>
             </div>
-
-            <div className="flex gap-2">
-                {isTournament ? (
-                    <button
-                        onClick={() => setIsTournament(false)}
-                        className="px-4 py-2 rounded-2xl bg-red-500/20 shadow-lg hover:bg-red-500/30"
-                    >
-                        Exit Tournament
-                    </button>
-                ) : (
-                    <button
-                        onClick={() => setIsTournament(true)}
-                        className="px-4 py-2 rounded-2xl bg-green-500/20 shadow-lg hover:bg-green-500/30"
-                    >
-                        Play Tournament
-                    </button>
-                )}
-            </div>
+            <button
+                onClick={() => setWindow("menu")}
+                className="px-4 py-2 rounded-2xl bg-white/10 hover:bg-white/20 transition-all duration-200 shadow-lg text-sm md:text-base"
+            >
+                Back to Menu
+            </button>
         </div>
     );
 }

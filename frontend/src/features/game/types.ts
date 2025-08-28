@@ -15,18 +15,15 @@ export interface Ball {
     speed: number;
 }
 
-export interface PongPlayerInitial {
-    name: string;
+export interface PongPlayer {
+    username: string;
+    id: string;
+    score: number;
+    paddle: Paddle;
     controls: {
         up: string;
         down: string;
     };
-}
-
-export interface PongPlayer extends PongPlayerInitial {
-    id: string;
-    score: number;
-    paddle: Paddle;
 }
 
 export interface GameData {
@@ -43,3 +40,5 @@ export interface GameConfig {
     padding: number;
     maxPlayers?: number;
 }
+
+export type WindowState = "menu" | "casual" | "tournament";

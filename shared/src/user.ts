@@ -3,7 +3,7 @@ export interface UserDTOType {
     email?: string | null;
     username: string;
     avatar: string | null;
-    is2FAEnabled?: boolean;
+    is2FAEnabled?: boolean; // this is optional, because we set it only for logged user, not for others
 }
 export interface UserEditableData {
     username: string;

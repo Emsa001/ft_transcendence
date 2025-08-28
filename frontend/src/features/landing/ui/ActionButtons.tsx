@@ -30,22 +30,12 @@ export const ActionButtons = () => {
         >
             {/* Play Locally */}
             <button
-                onClick={() => navigate("/game/local")}
+                onClick={() => navigate("/game")}
                 className={`${btnClass}
                     bg-gradient-to-r from-indigo-500 via-purple-600 to-pink-500/70
                     bg-[length:200%_200%] hover:bg-[position:100%_0%]`}
             >
-                Play Locally
-            </button>
-
-            {/* Play Remotely */}
-            <button
-                onClick={() => navigate("/game/remote")}
-                className={`${btnClass} 
-                bg-gradient-to-r from-purple-700 via-violet-700 to-pink-700/70
-                bg-[length:200%_200%] hover:bg-[position:100%_0%]`}
-            >
-                Play Remotely
+                Play
             </button>
         </div>
     );

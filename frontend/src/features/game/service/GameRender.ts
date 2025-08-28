@@ -2,26 +2,23 @@ import { Ball, GameData, PongPlayer } from "../types";
 
 // Drawing and Calculation Class
 export class GameRenderer {
+    static baseW = 1280;
+    static baseH = 720;
+
     ctx: CanvasRenderingContext2D;
     dpr: number;
     sx: number;
     sy: number;
-    baseW: number;
-    baseH: number;
     constructor(
         ctx: CanvasRenderingContext2D,
         dpr: number,
         sx: number,
-        sy: number,
-        baseW: number,
-        baseH: number
+        sy: number
     ) {
         this.ctx = ctx;
         this.dpr = dpr;
         this.sx = sx;
         this.sy = sy;
-        this.baseW = baseW;
-        this.baseH = baseH;
     }
 
     clearBackground(canvas: HTMLCanvasElement) {

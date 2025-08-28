@@ -48,26 +48,17 @@ export const TournamentElement = () => {
 
         const onEnd = (winner: PongPlayer) => {
             console.log("game ended, winner:", winner);
-            setWinner(currentGame!.id, winner.name);
+            setWinner(currentGame!.id, winner.username);
         };
 
-        const firstPlayer = currentGame.players[0]!;
-
         return (
-            <div>
+            <div className="w-full h-full">
                 <GameElement
                     players={currentGame.players}
                     onScore={onScore}
                     onEnd={onEnd}
                     onSpace={onSpace}
                 />
-                <button
-                    onClick={() =>
-                        onEnd({ name: firstPlayer.username } as PongPlayer)
-                    }
-                >
-                    Instant win
-                </button>
             </div>
         );
     }

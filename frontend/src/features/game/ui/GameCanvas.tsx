@@ -19,9 +19,8 @@ export function GameCanvasElement(props: GameCanvasElementProps) {
     const rafRef = useRef<number | null>(null);
     const runningRef = useRef<boolean>(false);
 
-    // Logical game size independent of pixel density
-    const baseW = 1280; // 16:9
-    const baseH = 720;
+    const baseW = GameRenderer.baseW;
+    const baseH = GameRenderer.baseH;
     const padding = props.padding ?? 2;
 
     // Resize canvas to parent size and scale for HiDPI
@@ -81,7 +80,7 @@ export function GameCanvasElement(props: GameCanvasElementProps) {
             if (!ctx) return;
             const sx = canvas.width / baseW;
             const sy = canvas.height / baseH;
-            const renderer = new GameRenderer(ctx, dpr, sx, sy, baseW, baseH);
+            const renderer = new GameRenderer(ctx, dpr, sx, sy);
 
             // Update game state in engine
             const currentData: GameData = {

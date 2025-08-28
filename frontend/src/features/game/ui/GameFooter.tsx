@@ -2,49 +2,59 @@ import React from "react";
 import { PongPlayer } from "../types";
 
 interface GameFooterProps {
-    players?: PongPlayer[];
+    players: PongPlayer[];
 }
 
+const symbols: Record<string, string> = {
+    arrowup: "↑",
+    arrowdown: "↓",
+    w: "W",
+    s: "S",
+    space: "space",
+};
+
 export function GameFooter({ players }: GameFooterProps) {
-    // Default controls if no players provided
-    const defaultControls = [
-        { name: "Player 1", up: "W", down: "S" },
-        { name: "Player 2", up: "↑", down: "↓" },
-    ];
-
-    const displayControls = players
-        ? players.map((player) => ({
-              name: player.name,
-              up: player.controls.up.toUpperCase(),
-              down: player.controls.down.toUpperCase(),
-          }))
-        : defaultControls;
-
     return (
-        <div className="absolute z-20 left-4 right-4 bottom-4 flex flex-wrap items-center justify-between gap-2">
-            <div className="px-3 py-2 rounded-xl bg-white/8 border border-white/10 text-sm text-white/80 flex flex-wrap gap-4">
-                {displayControls.map((control, index) => (
-                    <div key={index} className="flex items-center">
-                        {control.name}:{" "}
-                        <kbd className="px-2 py-1 bg-white/10 rounded-md mx-1">
-                            {control.up}
+        <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-[800px] flex justify-between items-center px-6">
+            {/* Player 1 */}
+            {players[0] && (
+                <div className="flex flex-col items-center gap-2">
+                    <p>{players[0].username}:</p>
+                    <div className="flex items-center gap-2">
+                        <kbd className="px-2 py-1 bg-white/10 rounded-md">
+                            {symbols[players[0].controls.up.toLowerCase()]}
                         </kbd>
                         <kbd className="px-2 py-1 bg-white/10 rounded-md">
-                            {control.down}
+                            {symbols[players[0].controls.down.toLowerCase()]}
                         </kbd>
-                        {index < displayControls.length - 1 && (
-                            <span className="mx-2">•</span>
-                        )}
                     </div>
-                ))}
-                <div className="flex items-center">
-                    <span className="mx-2">•</span>
-                    Pause:{" "}
+                </div>
+            )}
+
+            {/* Pause */}
+            <div className="flex flex-col items-center gap-2">
+                <p>Pause:</p>
+                <div className="flex items-center gap-2">
                     <kbd className="px-2 py-1 bg-white/10 rounded-md">
-                        Space
+                        {symbols["space"]}
                     </kbd>
                 </div>
             </div>
+
+            {/* Player 2 */}
+            {players[1] && (
+                <div className="flex flex-col items-center gap-2">
+                    <p>{players[1].username}:</p>
+                    <div className="flex items-center gap-2">
+                        <kbd className="px-2 py-1 bg-white/10 rounded-md">
+                            {symbols[players[1].controls.up.toLowerCase()]}
+                        </kbd>
+                        <kbd className="px-2 py-1 bg-white/10 rounded-md">
+                            {symbols[players[1].controls.down.toLowerCase()]}
+                        </kbd>
+                    </div>
+                </div>
+            )}
         </div>
     );
 }

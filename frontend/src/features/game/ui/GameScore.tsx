@@ -17,7 +17,7 @@ export const GameScore = ({ players }: GameScoreProps) => {
                     className={`${scoreClass} text-center min-w-[80px]`}
                 >
                     <div className="text-xs text-white/70 mb-1">
-                        {player.name}
+                        {player.username}
                     </div>
                     <div className="text-3xl">{player.score}</div>
                 </div>

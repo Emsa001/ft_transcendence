@@ -1,26 +1,18 @@
 import { useRef, useState } from "react";
 import { useKeyboard } from "./useKeyboard";
 import { useGameState } from "./useGameState";
-import { GameData, PongPlayer, PongPlayerInitial } from "../types";
+import { GameData, PongPlayer } from "../types";
 
 interface UseLocalGameProps {
     maxScore?: number;
-    players?: PongPlayerInitial[];
     onScore?: (scorer: PongPlayer) => void;
     onSpace?: () => boolean;
     onEnd?: (winner: PongPlayer) => void;
+    gameState: ReturnType<typeof useGameState>;
 }
 
-export const useLocalGame = (props?: UseLocalGameProps) => {
-    const {
-        maxScore = 1,
-        players: initialPlayers,
-        onScore,
-        onSpace,
-        onEnd,
-    } = props || {};
-
-    const gameState = useGameState(initialPlayers);
+export const useLocalGame = (props: UseLocalGameProps) => {
+    const { maxScore = 1, onScore, onSpace, onEnd, gameState } = props || {};
 
     const [state, setState] = useState<GameData["state"]>("created");
 
@@ -38,14 +30,14 @@ export const useLocalGame = (props?: UseLocalGameProps) => {
         const newScore = scorer.score + 1;
 
         gameState.updatePlayerScore(scorerId, newScore);
-        setShowMessage(`${scorer.name} Scores!`);
+        setShowMessage(`${scorer.username} Scores!`);
 
         // Call external onScore callback
         onScore?.({ ...scorer, score: newScore });
 
         // Check for winner
         if (newScore >= maxScore) {
-            setShowMessage(`${scorer.name} Wins!`);
+            setShowMessage(`${scorer.username} Wins!`);
             setState("finished");
             onEnd?.({ ...scorer, score: newScore });
             return;
@@ -146,7 +138,6 @@ export const useLocalGame = (props?: UseLocalGameProps) => {
         messageTimeoutRef,
         countdownTimeoutRef,
         state,
-        players: gameState.players,
         showMessage,
         countdown,
         keys,
@@ -154,6 +145,5 @@ export const useLocalGame = (props?: UseLocalGameProps) => {
         startGame,
         handleReset,
         handlePause,
-        gameState,
     };
 };
