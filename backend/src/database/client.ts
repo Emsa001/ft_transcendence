@@ -7,8 +7,9 @@ import { DatabaseExampleFeed } from "./feed";
 import { UserFriends } from "./models/User/UserFriends";
 import { Tournament } from "./models/Tournaments/Tournament";
 import { TournamentUser } from "./models/Tournaments/TournamentUser";
+import { Message } from "./models/Message/Message";
 
-const models = [User, Game, GameUser, UserFriends, Tournament, TournamentUser];
+const models = [User, Message, Game, GameUser, UserFriends, Tournament, TournamentUser];
 
 export const registerDB = async (app: FastifyInstance) => {
     const sequelize = new Sequelize({
@@ -18,14 +19,14 @@ export const registerDB = async (app: FastifyInstance) => {
         models,
     });
 
-    await sequelize.sync({ force: true });
+    await sequelize.sync({ force: false });
     app.decorate("sequelize", sequelize);
 
     // Feed database with example data
-    await DatabaseExampleFeed.feed({
-        users: 4,
-        games: 1,
-    });
+    // await DatabaseExampleFeed.feed({
+    //     users: 4,
+    //     games: 1,
+    // });
 };
 
 export const startClean = async () => {

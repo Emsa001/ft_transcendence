@@ -10,7 +10,7 @@ import jwtService from "../auth/services/jwt.service";
 import cookieService from "../auth/services/cookie.service";
 import userAccountService from "./services/user.account";
 import { WebSocket } from "@fastify/websocket";
-import userStatusService from "./services/user.status";
+import { userStatusService } from "./services/user.status";
 import { AUTHORIZED, WS_AUTHORIZED } from "../auth/auth.middleware";
 import { randomUUID } from "crypto";
 
@@ -113,10 +113,10 @@ export class UserController extends BaseController {
             if (!token) userId = randomUUID();
             else userId = jwtService.verify(token).id.toString();
 
-            userStatusService.addUser(userId, connection);
+            userStatusService.addUser(Number(userId), connection);
 
             connection.on("close", () => {
-                userStatusService.removeUser(userId, connection);
+                userStatusService.removeUser(Number(userId), connection);
             });
         } catch (err) {
             console.error("WebSocket error:", err);

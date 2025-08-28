@@ -24,6 +24,7 @@ import { dirname } from "path";
 import path from "path";
 import { FriendsController } from "./modules/friends/friends.controller";
 import { TournamentController } from "./modules/tournament/tournament.controller";
+import { ChatController } from "./modules/chat/chat.controller";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -65,6 +66,7 @@ export default async function App() {
     await app.register(bootstrap, {
         controllers: [
             UserController,
+            ChatController,
             AuthController,
             GameController,
             FriendsController,

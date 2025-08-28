@@ -1,6 +1,7 @@
 import { WebSocket } from "@fastify/websocket";
+import { MessageDTOType } from "shared";
 
-class UserStatusService {
+class ChatWSService {
     private connections: Map<number, Set<WebSocket>> = new Map();
 
     public addUser(userId: number, socket: WebSocket) {
@@ -8,8 +9,6 @@ class UserStatusService {
             this.connections.set(userId, new Set<WebSocket>());
         }
         this.connections.get(userId)!.add(socket);
-
-        this.broadcastOnlineUsers();
     }
 
     public removeUser(userId: number, socket: WebSocket) {
@@ -20,21 +19,17 @@ class UserStatusService {
                 this.connections.delete(userId);
             }
         }
-
-        this.broadcastOnlineUsers();
     }
 
-    private getOnlineUsersPayload() {
-        return JSON.stringify({
-            type: "online_users",
-            onlineUsers: Array.from(this.connections.keys()),
+    public handleMessage(msg: MessageDTOType) {
+        const payload = JSON.stringify({
+            sender: msg.sender,
+            receiver: msg.receiver,
+            message: msg.message,
         });
-    }
 
-    private broadcastOnlineUsers() {
-        const payload = this.getOnlineUsersPayload();
-        for (const sockets of this.connections.values()) {
-            for (const socket of sockets) {
+        if (msg.receiver && this.connections.has(msg.receiver)) {
+            for (const socket of this.connections.get(msg.receiver)!) {
                 if (socket.readyState === 1) {
                     socket.send(payload);
                 }
@@ -43,5 +38,5 @@ class UserStatusService {
     }
 }
 
-const userStatusService = new UserStatusService();
-export { userStatusService };
+const chatWSService = new ChatWSService();
+export { chatWSService };

@@ -25,6 +25,8 @@ import { HttpException } from "@/utils/exceptions";
 import { UserFriends } from "./UserFriends";
 import { FriendsService } from "@/modules/friends/services/user.friends";
 import { UserGamesService } from "@/modules/user/services/user.games";
+import { chatDBService } from "@/modules/chat/service/db.service";
+import { ChatMessage } from "@/modules/chat/service/ws.service";
 
 type CreationAttributes = {
     email?: string | null;
@@ -124,6 +126,9 @@ export class User extends Model<InferAttributes<User>, CreationAttributes> {
 
         return user;
     };
+
+    findChat = async (userId: number, options: FindOptions) =>
+        chatDBService.findChat(this.id, userId, options);
 
     @BelongsToMany(() => User, () => UserFriends, "userId1", "userId2")
     declare friends: User[];

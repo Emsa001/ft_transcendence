@@ -5,7 +5,7 @@ import {
     TwoFactorAuthEnable,
 } from "@features/auth";
 import { useUser } from "@features/auth/model/useUser";
-import { UserPicture } from "@features/user/ui/UserPicture";
+import { MyPicture } from "@features/user/ui/UserPicture";
 import ProfileApi from "@features/user/service/profileApi";
 import { DeleteButton } from "@features/user/ui/Delete";
 import { ChangePassword } from "@features/user/ui/ChangePassword";
@@ -47,7 +47,7 @@ export const ProfileCard = () => {
         <div className="h-full w-full bg-white/10 backdrop-blur-lg border border-white/20 rounded-2xl shadow-lg p-6 mb-8 text-white">
             <div className="flex flex-row justify-between items-start">
                 <div className="flex flex-col md:flex-row items-start gap-6 flex-1">
-                    <UserPicture />
+                    <MyPicture />
                     {!edit ? (
                         <div className="space-y-1">
                             <h2 className="text-2xl font-bold">
