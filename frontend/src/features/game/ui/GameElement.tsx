@@ -1,34 +1,16 @@
 import React, { useEffect } from "react";
 import { useGame } from "../model/useGame";
 import { GameCanvasElement } from "./GameCanvas";
-import { GameScore } from "./GameScore";
-import { GameUserDTOType } from "shared";
+import { GameScore } from "./components/GameScore";
 import { PongPlayer } from "../types";
-import { GameFooter } from "./GameFooter";
-import { useGameState } from "../model/useGameState";
 
 interface GameElementProps {
-    maxScore?: number;
-    players?: GameUserDTOType[];
     onSpace?: () => boolean;
     onEnd?: (winner: PongPlayer) => void;
     onScore?: (scorer: PongPlayer) => void;
 }
 
-const defaultPlayers = [
-    { id: 1, username: "Player 1" },
-    { id: 2, username: "Player 2" },
-] as GameUserDTOType[];
-
-export const GameElement = ({
-    players: externalPlayers,
-    onSpace,
-    onEnd,
-    onScore,
-    maxScore,
-}: GameElementProps) => {
-    const gameState = useGameState(externalPlayers || defaultPlayers);
-
+export const GameElement = ({ onSpace, onEnd, onScore }: GameElementProps) => {
     const {
         messageTimeoutRef,
         countdownTimeoutRef,
@@ -37,7 +19,7 @@ export const GameElement = ({
         countdown,
         keys,
         handleScore,
-    } = useGame({ maxScore, onScore, onSpace, onEnd, gameState });
+    } = useGame({ onScore, onSpace, onEnd });
 
     useEffect(() => {
         return () => {
@@ -49,20 +31,15 @@ export const GameElement = ({
     }, [messageTimeoutRef, countdownTimeoutRef]);
 
     return (
-        <div className="w-full h-full">
-            <div className="relative aspect-video w-full max-h-[65vh] mb-4">
-                <GameCanvasElement
-                    state={state}
-                    keys={keys}
-                    players={gameState.players}
-                    ball={gameState.ball}
-                    onScore={handleScore}
-                    showMessage={showMessage}
-                    countdown={countdown}
-                />
-                <GameScore players={gameState.players} />
-            </div>
-            <GameFooter players={gameState.players} />
+        <div className="aspect-video w-full max-h-[65vh] mb-4">
+            <GameCanvasElement
+                state={state}
+                keys={keys}
+                onScore={handleScore}
+                showMessage={showMessage}
+                countdown={countdown}
+            />
+            <GameScore />
         </div>
     );
 };

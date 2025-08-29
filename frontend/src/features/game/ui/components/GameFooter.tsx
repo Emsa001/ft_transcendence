@@ -1,9 +1,5 @@
 import React from "react";
-import { PongPlayer } from "../types";
-
-interface GameFooterProps {
-    players: PongPlayer[];
-}
+import { useGameState } from "@features/game/model/useGameState";
 
 const symbols: Record<string, string> = {
     arrowup: "↑",
@@ -13,7 +9,9 @@ const symbols: Record<string, string> = {
     space: "space",
 };
 
-export function GameFooter({ players }: GameFooterProps) {
+export function GameFooter() {
+    const { players } = useGameState();
+
     return (
         <div className="absolute bottom-6 left-1/2 -translate-x-1/2 w-[90%] max-w-[800px] flex justify-between items-center px-6">
             {/* Player 1 */}

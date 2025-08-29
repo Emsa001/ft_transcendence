@@ -4,15 +4,22 @@ import { useGameState } from "./useGameState";
 import { GameData, PongPlayer } from "../types";
 
 interface useGameProps {
-    maxScore?: number;
     onScore?: (scorer: PongPlayer) => void;
     onSpace?: () => boolean;
     onEnd?: (winner: PongPlayer) => void;
-    gameState: ReturnType<typeof useGameState>;
 }
 
 export const useGame = (props: useGameProps) => {
-    const { maxScore = 10, onScore, onSpace, onEnd, gameState } = props || {};
+    const {
+        maxScore,
+        players,
+        updatePlayerScore,
+        resetBall,
+        resetGame,
+        resetPaddles,
+    } = useGameState();
+
+    const { onScore, onSpace, onEnd } = props || {};
 
     const [state, setState] = useState<GameData["state"]>("created");
 
@@ -23,13 +30,13 @@ export const useGame = (props: useGameProps) => {
 
     const handleScore = (scorerId: string) => {
         // Find the player who scored
-        const scorer = gameState.players.find((p) => p.id === scorerId);
+        const scorer = players.find((p) => p.id === scorerId);
         if (!scorer) return;
 
         // Update the scorer's score
         const newScore = scorer.score + 1;
 
-        gameState.updatePlayerScore(scorerId, newScore);
+        updatePlayerScore(scorerId, newScore);
         setShowMessage(`${scorer.username} Scores!`);
 
         // Call external onScore callback
@@ -53,12 +60,10 @@ export const useGame = (props: useGameProps) => {
         messageTimeoutRef.current = setTimeout(() => {
             setShowMessage(null);
             // Ball goes away from the player who scored
-            const otherPlayerId = gameState.players.find(
-                (p) => p.id !== scorerId
-            )?.id;
+            const otherPlayerId = players.find((p) => p.id !== scorerId)?.id;
             startCountdown().then(() => {
-                gameState.resetBall(otherPlayerId);
-                gameState.resetPaddles();
+                resetBall(otherPlayerId);
+                resetPaddles();
             });
         }, 1000);
     };
@@ -88,7 +93,7 @@ export const useGame = (props: useGameProps) => {
         setShowMessage(null);
         setCountdown(null);
         setState("created");
-        gameState.resetGame();
+        resetGame();
     };
 
     const handlePause = () => {

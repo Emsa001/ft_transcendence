@@ -1,13 +1,12 @@
 import React, { useRef, useEffect } from "react";
 import { GameRenderer } from "../service/GameRender";
-import { Ball, GameConfig, GameData, PongPlayer } from "../types";
+import { GameConfig, GameData } from "../types";
 import { GameEngine } from "../service/GameEngine";
+import { useGameState } from "../model/useGameState";
 
 export interface GameCanvasElementProps {
     state: GameData["state"];
     keys: Record<string, boolean>;
-    players: PongPlayer[];
-    ball: Ball;
     onScore: (scorerId: string) => void;
     showMessage: string | null;
     countdown: number | null;
@@ -15,6 +14,8 @@ export interface GameCanvasElementProps {
 }
 
 export function GameCanvasElement(props: GameCanvasElementProps) {
+    const { players, ball } = useGameState();
+
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const rafRef = useRef<number | null>(null);
     const runningRef = useRef<boolean>(false);
@@ -58,8 +59,8 @@ export function GameCanvasElement(props: GameCanvasElementProps) {
         };
 
         const gameData: GameData = {
-            players: props.players,
-            ball: props.ball,
+            players: players,
+            ball: ball,
             state: props.state,
             showMessage: props.showMessage,
             countdown: props.countdown,
@@ -84,8 +85,8 @@ export function GameCanvasElement(props: GameCanvasElementProps) {
 
             // Update game state in engine
             const currentData: GameData = {
-                players: props.players,
-                ball: props.ball,
+                players: players,
+                ball: ball,
                 state: props.state,
                 showMessage: props.showMessage,
                 countdown: props.countdown,
@@ -102,9 +103,9 @@ export function GameCanvasElement(props: GameCanvasElementProps) {
             // Render everything
             renderer.clearBackground(canvas);
             renderer.drawMidline(canvas);
-            renderer.drawPaddles(props.players);
-            renderer.drawBall(props.ball);
-            renderer.drawSpeed(props.ball);
+            renderer.drawPaddles(players);
+            renderer.drawBall(ball);
+            renderer.drawSpeed(ball);
             renderer.drawOverlay(canvas, {
                 countdown: props.countdown,
                 showMessage: props.showMessage,
@@ -123,8 +124,8 @@ export function GameCanvasElement(props: GameCanvasElementProps) {
     }, [
         props.state,
         props.keys,
-        props.players,
-        props.ball,
+        players,
+        ball,
         props.onScore,
         props.showMessage,
         props.countdown,

@@ -5,6 +5,7 @@ import { GameStatus } from "shared";
 import { TournamentViewer } from "./TournamentViewer";
 import { GameElement } from "../GameElement";
 import { PongPlayer } from "@features/game/types";
+import { GameStateProvider } from "@features/game/model/useGameState";
 
 export const TournamentElement = () => {
     const {
@@ -53,12 +54,18 @@ export const TournamentElement = () => {
 
         return (
             <div className="w-full h-full">
-                <GameElement
-                    players={currentGame.players}
-                    onScore={onScore}
-                    onEnd={onEnd}
-                    onSpace={onSpace}
-                />
+                <GameStateProvider
+                    playersConfig={currentGame.players}
+                    maxScore={1}
+                >
+                    <div className="w-full h-full flex items-center justify-center gap-6">
+                        <GameElement
+                            onScore={onScore}
+                            onEnd={onEnd}
+                            onSpace={onSpace}
+                        />
+                    </div>
+                </GameStateProvider>
             </div>
         );
     }

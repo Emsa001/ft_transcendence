@@ -1,7 +1,6 @@
 import { GameWindowState } from "@features/game/types";
-import { GameBackground } from "@features/game/ui/GameBackground";
-import { GameElement } from "@features/game/ui/GameElement";
-import { GameHeader } from "@features/game/ui/GameHeader";
+import { GameBackground } from "@features/game/ui/components/GameBackground";
+import { GameHeader } from "@features/game/ui/components/GameHeader";
 import { GameLocal } from "@features/game/ui/GameLocal";
 import { MenuScreen } from "@features/game/ui/MenuScreen";
 import { TournamentElement } from "@features/game/ui/tournament/TournamentElement";

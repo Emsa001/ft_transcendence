@@ -1,5 +1,6 @@
-import { BallField } from "@features/balls/ui/BallField";
 import React from "react";
+import { BallField } from "@features/balls/ui/BallField";
+import { ShinyText } from "@shared/components/Shiny";
 import { GameWindowState } from "../types";
 
 interface MenuScreenProps {
@@ -48,6 +49,11 @@ export const MenuScreen = ({ setWindow }: MenuScreenProps) => {
         <section className="w-screen h-screen">
             <div className="relative flex flex-col items-center justify-center h-full px-4 text-center gap-16">
                 {/* Game Mode Buttons as Grid */}
+                <ShinyText
+                    text="Game Selector"
+                    gradient="bg-logo-gradient"
+                    className="text-[clamp(3rem,6vw,10rem)] font-extrabold select-none text-white drop-shadow-xl"
+                />
                 <div className="grid grid-cols-2 gap-12 relative z-10">
                     {buttons.map(({ label, window, overlay, rotate }) => (
                         <button

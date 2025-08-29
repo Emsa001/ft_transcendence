@@ -1,5 +1,5 @@
 import React from "react";
-import { GameWindowState } from "../types";
+import { GameWindowState } from "../../types";
 
 interface GameHeaderProps {
     window: GameWindowState;

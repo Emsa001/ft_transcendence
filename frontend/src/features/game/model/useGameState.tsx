@@ -1,11 +1,39 @@
-import { useRef, useState } from "react";
+import React, { createContext, useContext, useRef, useState } from "react";
 import { Paddle, Ball, PongPlayer } from "../types";
 import { GameUserDTOType } from "shared";
 import { GameRenderer } from "../service/GameRender";
 
-export function useGameState(playersConfig: GameUserDTOType[]) {
+interface GameStateContextType {
+    players: PongPlayer[];
+    ball: Ball;
+    resetBall: (toPlayerId?: string) => void;
+    resetGame: () => void;
+    resetPaddles: () => void;
+    updatePlayerScore: (playerId: string, newScore: number) => void;
+    maxScore: number;
+    setMaxScore: (score: number | ((prev: number) => number)) => void;
+}
+
+const GameStateContext = createContext<GameStateContextType | undefined>(
+    undefined
+);
+
+/** --- Provider --- */
+interface GameStateProviderProps {
+    children?: ReactNode;
+    playersConfig: GameUserDTOType[];
+    maxScore?: number;
+}
+
+export const GameStateProvider = ({
+    children,
+    playersConfig,
+    maxScore = 5,
+}: GameStateProviderProps) => {
     const baseW = GameRenderer.baseW;
     const baseH = GameRenderer.baseH;
+
+    const [maxScoreValue, setMaxScore] = useState(maxScore);
 
     /** --- Full player Creation --- */
     const createPongPlayers = (): PongPlayer[] => {
@@ -92,12 +120,30 @@ export function useGameState(playersConfig: GameUserDTOType[]) {
         );
     };
 
-    return {
-        players,
-        ball: ball.current,
-        resetBall,
-        resetGame,
-        resetPaddles,
-        updatePlayerScore,
-    };
-}
+    return (
+        <div>
+            <GameStateContext.Provider
+                value={{
+                    players,
+                    ball: ball.current,
+                    resetBall,
+                    resetGame,
+                    resetPaddles,
+                    updatePlayerScore,
+                    maxScore: maxScoreValue,
+                    setMaxScore,
+                }}
+            >
+                {children}
+            </GameStateContext.Provider>
+        </div>
+    );
+};
+
+export const useGameState = (): GameStateContextType => {
+    const context = useContext(GameStateContext);
+    if (!context) {
+        throw new Error("useGameContext must be used inside GameStateProvider");
+    }
+    return context;
+};
