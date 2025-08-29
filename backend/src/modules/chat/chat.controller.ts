@@ -41,10 +41,15 @@ export class ChatController extends BaseController {
     @AUTHORIZED
     async getChat(request: FastifyRequest, reply: FastifyReply) {
         const { id } = request.params as { id: number };
+        const { offset } = request.query as { offset: number };
 
-        return reply.send(await request.user.findChat(id, {
-            limit: 20
-        }));
+        const data = await request.user.findChat(id, {
+            limit: 20,
+            offset,
+            order: [["createdAt", "DESC"]],
+        });
+
+        return reply.send(data.reverse());
     }
 
 }
