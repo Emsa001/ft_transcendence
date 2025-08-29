@@ -3,6 +3,7 @@ import { FaUserCircle, FaCamera } from "react-icons/fa";
 import { Icon } from "@shared/components/Icon";
 import ProfileApi from "@features/user/service/profileApi";
 import { useUser } from "@features/auth/model/useUser";
+import { useOnlineUsers } from "../model/useOnlineUsers";
 import { UserDTOType } from "shared";
 
 interface UserPictureProps {
