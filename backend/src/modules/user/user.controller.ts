@@ -155,11 +155,11 @@ export class UserController extends BaseController {
     @GET("/status", { websocket: true })
     async getStatus(connection: WebSocket, req: FastifyRequest) {
         try {
-            let userId: string;
+            let userId: number;
             const token = req.cookies.session;
 
-            if (!token) userId = randomUUID();
-            else userId = jwtService.verify(token).id.toString();
+            if (!token) userId = Number(randomUUID());
+            else userId = jwtService.verify(token).id;
 
             UserStatusService.addUser(Number(userId), connection);
 
