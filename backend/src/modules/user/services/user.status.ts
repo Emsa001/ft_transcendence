@@ -1,9 +1,9 @@
 import { WebSocket } from "@fastify/websocket";
 
 class UserStatusService {
-    private connections: Map<string, Set<WebSocket>> = new Map();
+    private connections: Map<number, Set<WebSocket>> = new Map();
 
-    public addUser(userId: string, socket: WebSocket) {
+    public addUser(userId: number, socket: WebSocket) {
         if (!this.connections.has(userId)) {
             this.connections.set(userId, new Set<WebSocket>());
         }
@@ -12,7 +12,7 @@ class UserStatusService {
         this.broadcastOnlineUsers();
     }
 
-    public removeUser(userId: string, socket: WebSocket) {
+    public removeUser(userId: number, socket: WebSocket) {
         if (this.connections.has(userId)) {
             this.connections.get(userId)!.delete(socket);
 

@@ -26,6 +26,22 @@ class ProfileApi extends APIService {
         }
     }
 
+    async getUserByIdOrUsername(
+            idOrUsername: string
+        ): Promise<UserDTOType | null> {
+            try {
+                
+                const response: AxiosResponse<UserDTOType> = await this.api.get(
+                    `/user/${idOrUsername}`
+                );
+                if (!response.data) return null;
+                return response.data;
+            } catch (error) {
+                console.error("Error fetching user by ID or username:", error);
+                return Promise.reject(error);
+            }
+        }
+
     async updateUserPicture(file: File): Promise<string | null> {
         const formData = new FormData();
         formData.append("file", file);

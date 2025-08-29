@@ -6,7 +6,7 @@ import {
 } from "@features/auth";
 import { useUser } from "@features/auth/model/useUser";
 import { FaEdit, FaUser, FaUsers } from "react-icons/fa";
-import Friends from "./friends";
+import Friends from "../../features/friends/friends";
 import { ProfileCard } from "./profile";
 
 import { UserStats } from "@features/user/ui/UserStats";
@@ -44,15 +44,15 @@ export const Profile = () => {
     if (!user) return <div />;
 
     return (
-        <div className="min-h-screen w-full py-10 flex flex-col items-center justify-center">
+        <div className="min-h-screen w-full p-10 flex flex-col items-center justify-center">
             {/* profile nav bar */}
             <div className="flex flex-row text-white bg-white/5 rounded-xl p-2 border border-white/10 mb-8 space-between">
                 <button
                     className={`px-6 py-3 rounded-lg transition-all duration-300 ${
-                activeTab === "profile"
-                    ? "bg-purple-600 text-white shadow-lg"
-                    : "text-gray-400 hover:text-white hover:bg-white/10"
-                }`}
+                        activeTab === "profile"
+                            ? "bg-purple-600 text-white shadow-lg"
+                            : "text-gray-400 hover:text-white hover:bg-white/10"
+                    }`}
                     onClick={setActiveTab.bind(null, "profile")}
                 >
                     Profile
@@ -60,9 +60,9 @@ export const Profile = () => {
 
                 <button
                     className={`px-6 py-3 rounded-lg transition-all duration-300 ${
-                    activeTab === "friends"
-                    ? "bg-purple-600 text-white shadow-lg"
-                    : "text-gray-400 hover:text-white hover:bg-white/10"
+                        activeTab === "friends"
+                            ? "bg-purple-600 text-white shadow-lg"
+                            : "text-gray-400 hover:text-white hover:bg-white/10"
                     }`}
                     onClick={setActiveTab.bind(null, "friends")}
                 >
@@ -71,9 +71,9 @@ export const Profile = () => {
 
                 <button
                     className={`px-6 py-3 rounded-lg transition-all duration-300 ${
-                    activeTab === "stats"
-                    ? "bg-purple-600 text-white shadow-lg"
-                    : "text-gray-400 hover:text-white hover:bg-white/10" 
+                        activeTab === "stats"
+                            ? "bg-purple-600 text-white shadow-lg"
+                            : "text-gray-400 hover:text-white hover:bg-white/10"
                     }`}
                     onClick={setActiveTab.bind(null, "stats")}
                 >
@@ -82,9 +82,9 @@ export const Profile = () => {
 
                 <button
                     className={`px-6 py-3 rounded-lg transition-all duration-300 ${
-                    activeTab === "users"
-                    ? "bg-purple-600 text-white shadow-lg"
-                    : "text-gray-400 hover:text-white hover:bg-white/10"
+                        activeTab === "users"
+                            ? "bg-purple-600 text-white shadow-lg"
+                            : "text-gray-400 hover:text-white hover:bg-white/10"
                     }`}
                     onClick={setActiveTab.bind(null, "users")}
                 >
@@ -93,22 +93,38 @@ export const Profile = () => {
             </div>
 
             {/* cards */}
-            <div className="w-[900px] h-[600px] p-6 bg-black/40 rounded-2xl shadow-2xl border border-white/10">
+            <div
+                className="w-full h-full max-w-vw p-7 backdrop-blur-2xl 
+            bg-gradient-to-br from-transparent to-black/50 rounded-3xl shadow-2xl"
+            >
                 <div className="w-full h-full flex items-center justify-center">
                     {/* Profile Card */}
                     {activeTab === "profile" && (
-                        <div className="w-full h-full">
-                            <ProfileCard />
+
+                        <div className="w-full h-full flex flex-row">
+                            <div className="w-full h-full flex flex-col flex-3">
+                                <ProfileCard />
+                                <Friends />
+                            </div>
+                            <div className="w-full h-full flex flex-col flex-1 items-center justify-center gap-8">
+                                <div className="flex-1">
+                                    <UserStats userId={userId || user.id} />
+                                </div>
+                                <div className="flex-1">
+                                    <GameHistory userId={userId || user.id} />
+                                </div>
+                            </div>
                         </div>
+
                     )}
-                    
+
                     {/* Friends page */}
                     {activeTab === "friends" && (
-                        <div className="w-full h-full overflow-y-auto">
+                        <div className="w-full h-full">
                             <Friends />
                         </div>
                     )}
-                    
+
                     {/* Stats */}
                     {activeTab === "stats" && (
                         <div className="w-full h-full flex flex-row items-center justify-center gap-8">

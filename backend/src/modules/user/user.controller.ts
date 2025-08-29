@@ -28,8 +28,7 @@ export class UserController extends BaseController {
 
         if (Number.isNaN(Number(id))) {
             const user = await User.findByUsername(id);
-            if (!user)
-                throw new HttpException(404, "User not found");
+            if (!user) throw new HttpException(404, "User not found");
             return reply.send(user.toDTO());
         }
         const user = await User.findById(Number(id));
@@ -107,11 +106,11 @@ export class UserController extends BaseController {
     @GET("/status", { websocket: true })
     async getStatus(connection: WebSocket, req: FastifyRequest) {
         try {
-            let userId: string;
+            let userId: number;
             const token = req.cookies.session;
 
-            if (!token) userId = randomUUID();
-            else userId = jwtService.verify(token).id.toString();
+            if (!token) userId = Number(randomUUID());
+            else userId = jwtService.verify(token).id;
 
             userStatusService.addUser(userId, connection);
 
