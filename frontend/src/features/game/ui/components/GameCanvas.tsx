@@ -1,19 +1,25 @@
 import React, { useRef, useEffect } from "react";
-import { GameRenderer } from "../service/GameRender";
-import { GameConfig, GameData } from "../types";
-import { GameEngine } from "../service/GameEngine";
-import { useGameState } from "../model/useGameState";
+import { GameRenderer } from "../../service/GameRender";
+import { GameConfig, GameData } from "../../types";
+import { GameEngine } from "../../service/GameEngine";
+import { useGameState } from "../../model/useGameState";
+import { useGame } from "../../model/useGame";
 
 export interface GameCanvasElementProps {
-    state: GameData["state"];
-    keys: Record<string, boolean>;
-    onScore: (scorerId: string) => void;
-    showMessage: string | null;
-    countdown: number | null;
-    padding?: number; // logical units, default 0
+    padding?: number;
 }
 
-export function GameCanvasElement(props: GameCanvasElementProps) {
+export function GameCanvasElement({ padding = 2 }: GameCanvasElementProps) {
+    const {
+        messageTimeoutRef,
+        countdownTimeoutRef,
+        state,
+        showMessage,
+        countdown,
+        keys,
+        handleScore,
+    } = useGame();
+
     const { players, ball } = useGameState();
 
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
@@ -22,7 +28,6 @@ export function GameCanvasElement(props: GameCanvasElementProps) {
 
     const baseW = GameRenderer.baseW;
     const baseH = GameRenderer.baseH;
-    const padding = props.padding ?? 2;
 
     // Resize canvas to parent size and scale for HiDPI
     const resize = () => {
@@ -30,11 +35,13 @@ export function GameCanvasElement(props: GameCanvasElementProps) {
         if (!canvas) return;
         const parent = canvas.parentElement as HTMLElement;
         const rect = parent.getBoundingClientRect();
-        let width = rect.width;
-        let height = (rect.width * 9) / 16;
-        if (height > rect.height) {
-            height = rect.height;
-            width = (rect.height * 16) / 9;
+        const parentW = rect.width;
+        const parentH = rect.height;
+        let width = parentW;
+        let height = (parentW * 9) / 16;
+        if (height > parentH) {
+            height = parentH;
+            width = (parentH * 16) / 9;
         }
         const dpr = window.devicePixelRatio || 1;
         canvas.width = Math.floor(width * dpr);
@@ -45,9 +52,8 @@ export function GameCanvasElement(props: GameCanvasElementProps) {
 
     useEffect(() => {
         resize();
-        const handler = () => resize();
-        window.addEventListener("resize", handler);
-        return () => window.removeEventListener("resize", handler);
+        window.addEventListener("resize", resize);
+        return () => window.removeEventListener("resize", resize);
     }, []);
 
     useEffect(() => {
@@ -61,16 +67,16 @@ export function GameCanvasElement(props: GameCanvasElementProps) {
         const gameData: GameData = {
             players: players,
             ball: ball,
-            state: props.state,
-            showMessage: props.showMessage,
-            countdown: props.countdown,
+            state: state,
+            showMessage: showMessage,
+            countdown: countdown,
         };
 
         const gameEngine = new GameEngine(
             gameData,
             gameConfig,
-            props.keys,
-            props.onScore
+            keys,
+            handleScore
         );
 
         const loop = () => {
@@ -87,13 +93,13 @@ export function GameCanvasElement(props: GameCanvasElementProps) {
             const currentData: GameData = {
                 players: players,
                 ball: ball,
-                state: props.state,
-                showMessage: props.showMessage,
-                countdown: props.countdown,
+                state: state,
+                showMessage: showMessage,
+                countdown: countdown,
             };
 
             gameEngine.updateState(currentData);
-            gameEngine.updateKeys(props.keys);
+            gameEngine.updateKeys(keys);
 
             // Update game logic if running
             if (runningRef.current) {
@@ -107,9 +113,9 @@ export function GameCanvasElement(props: GameCanvasElementProps) {
             renderer.drawBall(ball);
             renderer.drawSpeed(ball);
             renderer.drawOverlay(canvas, {
-                countdown: props.countdown,
-                showMessage: props.showMessage,
-                state: props.state,
+                countdown: countdown,
+                showMessage: showMessage,
+                state: state,
             });
 
             rafRef.current = requestAnimationFrame(loop);
@@ -121,17 +127,18 @@ export function GameCanvasElement(props: GameCanvasElementProps) {
             runningRef.current = false;
             if (rafRef.current) cancelAnimationFrame(rafRef.current);
         };
-    }, [
-        props.state,
-        props.keys,
-        players,
-        ball,
-        props.onScore,
-        props.showMessage,
-        props.countdown,
-    ]);
+    }, [state, keys, players, ball, showMessage, countdown]);
+
+    useEffect(() => {
+        return () => {
+            if (messageTimeoutRef.current)
+                clearTimeout(messageTimeoutRef.current);
+            if (countdownTimeoutRef.current)
+                clearTimeout(countdownTimeoutRef.current);
+        };
+    }, [messageTimeoutRef, countdownTimeoutRef]);
 
     return (
-        <canvas ref={canvasRef} className="rounded-2xl w-full h-full m-auto" />
+        <canvas ref={canvasRef} className="rounded-xl w-full h-full mx-auto" />
     );
 }

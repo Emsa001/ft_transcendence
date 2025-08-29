@@ -1,33 +1,45 @@
 import React from "react";
+import Swal from "sweetalert2";
 import { useGameState } from "@features/game/model/useGameState";
-import { Icon } from "@shared/components/Icon";
-import { FaMinus, FaPlus } from "react-icons/fa";
 
-export const GameSettings = () => {
+const MaxScoreSettings = () => {
     const { maxScore, setMaxScore } = useGameState();
 
-    const decrease = () => setMaxScore((prev) => Math.max(1, prev - 1));
-    const increase = () => setMaxScore((prev) => Math.min(21, prev + 1));
+    const setScoreViaSwal = async () => {
+        const { value: newScore } = await Swal.fire({
+            title: "Set Max Score",
+            theme: "dark",
+            input: "number",
+            inputLabel: "Max Score (1-21)",
+            inputValue: maxScore,
+            inputAttributes: {
+                min: "1",
+                max: "21",
+                step: "1",
+            },
+            showCancelButton: true,
+        });
+
+        if (newScore !== undefined) {
+            const parsed = Math.max(1, Math.min(21, Number(newScore)));
+            setMaxScore(parsed);
+        }
+    };
 
     return (
-        <div className="absolute z-10 left-0 flex flex-col items-center gap-4 p-2 rounded-2xl bg-purple-900/10 shadow-lg">
-            <button
-                onClick={decrease}
-                className={`p-2 rounded-xl bg-red-400/20 hover:bg-red-500/50 transition text-white shadow ${maxScore <= 1 && "cursor-not-allowed! bg-red-900/20 hover:bg-red-900/30"}`}
-            >
-                <Icon icon={FaMinus} size={20} />
-            </button>
+        <button
+            onClick={setScoreViaSwal}
+            className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 transition text-white font-bold shadow"
+        >
+            Max Score: {maxScore}
+        </button>
+    );
+};
 
-            <h1 className="text-2xl font-bold text-white flex items-center gap-2">
-                <span className="inline-block w-8 text-center">{maxScore}</span>
-            </h1>
-
-            <button
-                onClick={increase}
-                className={`p-2 rounded-xl bg-green-400/20 hover:bg-green-500/50 transition text-white shadow ${maxScore >= 21 && "cursor-not-allowed! bg-green-900/20 hover:bg-green-900/30"}`}
-            >
-                <Icon icon={FaPlus} size={20} />
-            </button>
+export const GameSettings = () => {
+    return (
+        <div className="">
+            <MaxScoreSettings />
         </div>
     );
 };

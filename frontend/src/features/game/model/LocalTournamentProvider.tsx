@@ -1,4 +1,10 @@
-import { useEffect, useLocalStorage, useState } from "react";
+import React, {
+    createContext,
+    useContext,
+    useEffect,
+    useLocalStorage,
+    useState,
+} from "react";
 import {
     GameDTOType,
     GameMode,
@@ -7,9 +13,54 @@ import {
     GameUserDTOType,
     TournamentDTOType,
 } from "shared";
-import { v4 } from "uuid";
 
-export const useLocalTournament = (maxPlayers = 16) => {
+type StatusMessage = {
+    message: string;
+    success: boolean;
+};
+
+type LocalTournamentContextType = {
+    status: GameStatus;
+    players: TournamentUserDTOType[];
+    games: GameDTOType[];
+    round: number;
+    winnerId: number | null;
+    maxPlayers: number;
+    setStatus: (status: GameStatus) => void;
+    setPlayers: (
+        players:
+            | TournamentUserDTOType[]
+            | ((prev: TournamentUserDTOType[]) => TournamentUserDTOType[])
+    ) => void;
+    setGames: (games: GameDTOType[]) => void;
+    setRound: (round: number | ((prev: number) => number)) => void;
+    setWinner: (gameId: number, winnerUsername: string) => void;
+    startTournament: () => void;
+    endTournament: () => void;
+    addPlayer: (username: string) => StatusMessage;
+    removePlayer: (username: string) => void;
+    createRound: () => GameDTOType[];
+    getActivePlayers: () => TournamentUserDTOType[];
+    currentGame: GameDTOType | null;
+    setCurrentGame: (game: GameDTOType | null) => void;
+    playGame: () => void;
+    deleteTournament: () => void;
+};
+
+// Create context with undefined as default (will throw error if used outside provider)
+const LocalTournamentContext = createContext<
+    LocalTournamentContextType | undefined
+>(undefined);
+
+interface LocalTournamentProviderProps {
+    children?: ReactNode;
+    maxPlayers?: number;
+}
+
+export const LocalTournamentProvider = ({
+    children,
+    maxPlayers = 16,
+}: LocalTournamentProviderProps) => {
     const [tournamentData, setTournamentData] =
         useLocalStorage<TournamentDTOType | null>("localTournament", null);
 
@@ -63,6 +114,31 @@ export const useLocalTournament = (maxPlayers = 16) => {
     // --- Utility functions ---
     const getActivePlayers = () => players.filter((p) => !p.eliminated);
 
+    // --- Game creation ---
+    const createAllGames = (playerCount: number): GameDTOType[] => {
+        const allGames: GameDTOType[] = [];
+        let gameIdCounter = Date.now();
+
+        // Calculate total number of games needed for a single elimination tournament
+        // For n players, we need n-1 games to eliminate all but one player
+        const totalGamesNeeded = playerCount - 1;
+
+        for (let i = 0; i < totalGamesNeeded; i++) {
+            const game: GameDTOType = {
+                id: gameIdCounter + i,
+                status: GameStatus.LOCKED,
+                mode: GameMode.NORMAL,
+                players: [],
+                winner: null,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+            };
+            allGames.push(game);
+        }
+
+        return allGames;
+    };
+
     // --- Tournament actions ---
     const startTournament = () => {
         console.log(players, round);
@@ -71,6 +147,10 @@ export const useLocalTournament = (maxPlayers = 16) => {
             alert("At least 2 players are required to start the tournament.");
             return;
         }
+
+        // Create all games for the tournament upfront
+        const totalGames = createAllGames(players.length);
+        setGames(totalGames);
         setStatus(GameStatus.IN_PROGRESS);
     };
 
@@ -86,10 +166,26 @@ export const useLocalTournament = (maxPlayers = 16) => {
         setStatus(GameStatus.FINISHED);
     };
 
-    const addPlayer = (username: string): boolean => {
+    const addPlayer = (username: string): StatusMessage => {
         if (players.length >= maxPlayers) {
-            alert("Maximum number of players reached.");
-            return false;
+            return {
+                message: "Maximum number of players reached.",
+                success: false,
+            };
+        }
+
+        if (status !== GameStatus.WAITING) {
+            return {
+                message: "Cannot add players after the tournament has started.",
+                success: false,
+            };
+        }
+
+        if (players.find((p) => p.username === username)) {
+            return {
+                message: "Player with this username already exists.",
+                success: false,
+            };
         }
 
         const newPlayer = {
@@ -99,7 +195,7 @@ export const useLocalTournament = (maxPlayers = 16) => {
         } as TournamentUserDTOType;
 
         setPlayers((prev) => [...prev, newPlayer]);
-        return true;
+        return { message: `${username} added successfully.`, success: true };
     };
 
     const removePlayer = (username: string) => {
@@ -134,7 +230,16 @@ export const useLocalTournament = (maxPlayers = 16) => {
             alert("Cannot create a new round. Tournament should be finished.");
             return [];
         }
-        const roundGames: GameDTOType[] = [];
+
+        // Get available locked games
+        const lockedGames = games.filter(
+            (game) => game.status === GameStatus.LOCKED
+        );
+
+        if (lockedGames.length === 0) {
+            alert("No more games available for this round.");
+            return [];
+        }
 
         // nearest lower power of two
         const nearestPowerOfTwo =
@@ -152,34 +257,43 @@ export const useLocalTournament = (maxPlayers = 16) => {
             playersInThisRound = activePlayers;
         }
 
+        const gamesForThisRound: GameDTOType[] = [];
+        let gameIndex = 0;
+
         for (let i = 0; i < playersInThisRound.length; i += 2) {
+            if (gameIndex >= lockedGames.length) {
+                alert("Not enough games available for all matches.");
+                break;
+            }
+
             const player1 = playersInThisRound[i];
             const player2 = playersInThisRound[i + 1];
+            const game = lockedGames[gameIndex];
 
-            const game: GameDTOType = {
-                id: Date.now() + i,
-                status: GameStatus.WAITING,
-                mode: GameMode.NORMAL,
-                players: [] as GameUserDTOType[],
-                winner: null,
-                createdAt: new Date(),
-                updatedAt: new Date(),
-            };
-
+            // Assign players to the game and unlock it
+            game.players = [];
             if (player1)
                 game.players.push({ ...player1, score: 0 } as GameUserDTOType);
             if (player2)
                 game.players.push({ ...player2, score: 0 } as GameUserDTOType);
 
             game.status = GameStatus.IN_PROGRESS;
+            game.updatedAt = new Date();
 
-            roundGames.push(game);
+            gamesForThisRound.push(game);
+            gameIndex++;
         }
 
-        setGames(roundGames);
+        // Update the games array with the modified games
+        const updatedGames = games.map((game) => {
+            const updatedGame = gamesForThisRound.find((g) => g.id === game.id);
+            return updatedGame || game;
+        });
+
+        setGames(updatedGames);
         setRound((prev) => prev + 1);
 
-        return roundGames;
+        return gamesForThisRound;
     };
 
     const playGame = () => {
@@ -241,12 +355,13 @@ export const useLocalTournament = (maxPlayers = 16) => {
         setGames(updatedGames);
     };
 
-    return {
+    const contextValue: LocalTournamentContextType = {
         status,
         players,
         games,
         round,
         winnerId,
+        maxPlayers,
         setStatus,
         setPlayers,
         setGames,
@@ -263,4 +378,28 @@ export const useLocalTournament = (maxPlayers = 16) => {
         playGame,
         deleteTournament,
     };
+
+    return (
+        <div>
+            <LocalTournamentContext.Provider value={contextValue}>
+                {children}
+            </LocalTournamentContext.Provider>
+        </div>
+    );
 };
+
+// Custom hook to use the tournament context - renamed to useLocalTournament
+export const useLocalTournament = (): LocalTournamentContextType => {
+    const context = useContext(LocalTournamentContext);
+
+    if (context === undefined) {
+        throw new Error(
+            "useLocalTournament must be used within a LocalTournamentProvider"
+        );
+    }
+
+    return context;
+};
+
+// Export the context for direct access if needed
+export { LocalTournamentContext };

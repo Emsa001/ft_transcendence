@@ -22,8 +22,6 @@ const isDifferent = (oldNode: ReactElement, newNode: ReactElement): boolean => {
     const oldPropsKeys = Object.keys(oldProps);
     const newPropsKeys = Object.keys(newProps);
 
-    
-
     if (oldPropsKeys.length !== newPropsKeys.length) return true;
 
     for (const key of oldPropsKeys) {

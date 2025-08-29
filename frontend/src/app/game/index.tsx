@@ -7,7 +7,7 @@ import { TournamentElement } from "@features/game/ui/tournament/TournamentElemen
 import React, { useState } from "react";
 
 export default function Game() {
-    const [window, setWindow] = useState<GameWindowState>("local-casual");
+    const [window, setWindow] = useState<GameWindowState>("local-tournament");
 
     if (window === "menu") {
         return (
@@ -19,10 +19,16 @@ export default function Game() {
 
     return (
         <div className="select-none h-screen w-screen flex items-center justify-center p-12">
-            <div className="w-full min-h-[60vh] max-h-[80vh] rounded-2xl shadow-2xl bg-white/5 backdrop-blur-xl p-24 relative z-10 flex flex-col items-center justify-center">
+            <div className="w-full min-h-[80vh] rounded-2xl shadow-2xl bg-fuchsia-900/5 backdrop-blur-xl flex flex-col">
+                {/* Header stays at the top */}
                 <GameHeader window={window} setWindow={setWindow} />
-                {window === "local-casual" && <GameLocal />}
-                {window === "local-tournament" && <TournamentElement />}
+
+                {/* Content fills remaining space and centers vertically */}
+                <div className="flex-1 flex items-center justify-center">
+                    {window === "local-casual" && <GameLocal />}
+                    {window === "local-tournament" && <TournamentElement />}
+                </div>
+
                 <GameBackground />
             </div>
         </div>

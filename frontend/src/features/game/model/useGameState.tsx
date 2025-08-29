@@ -12,6 +12,11 @@ interface GameStateContextType {
     updatePlayerScore: (playerId: string, newScore: number) => void;
     maxScore: number;
     setMaxScore: (score: number | ((prev: number) => number)) => void;
+
+    // Event Callbacks
+    onScore?: (scorer: PongPlayer) => void;
+    onEnd?: (winner: PongPlayer) => void;
+    onSpace?: () => boolean;
 }
 
 const GameStateContext = createContext<GameStateContextType | undefined>(
@@ -21,14 +26,28 @@ const GameStateContext = createContext<GameStateContextType | undefined>(
 /** --- Provider --- */
 interface GameStateProviderProps {
     children?: ReactNode;
-    playersConfig: GameUserDTOType[];
+    playersConfig?: GameUserDTOType[];
     maxScore?: number;
+
+    // Event Callbacks
+    onScore?: (scorer: PongPlayer) => void;
+    onEnd?: (winner: PongPlayer) => void;
+    onSpace?: () => boolean;
 }
+
+const defaultPlayers = [
+    { id: 1, username: "Player 1" },
+    { id: 2, username: "Player 2" },
+];
 
 export const GameStateProvider = ({
     children,
-    playersConfig,
+    playersConfig = defaultPlayers as any,
     maxScore = 5,
+
+    onScore,
+    onEnd,
+    onSpace,
 }: GameStateProviderProps) => {
     const baseW = GameRenderer.baseW;
     const baseH = GameRenderer.baseH;
@@ -121,7 +140,7 @@ export const GameStateProvider = ({
     };
 
     return (
-        <div>
+        <div className="w-full h-full">
             <GameStateContext.Provider
                 value={{
                     players,
@@ -132,6 +151,11 @@ export const GameStateProvider = ({
                     updatePlayerScore,
                     maxScore: maxScoreValue,
                     setMaxScore,
+
+                    // Callbacks
+                    onScore,
+                    onEnd,
+                    onSpace,
                 }}
             >
                 {children}

@@ -1,15 +1,9 @@
 import { useRef, useState } from "react";
 import { useKeyboard } from "./useKeyboard";
 import { useGameState } from "./useGameState";
-import { GameData, PongPlayer } from "../types";
+import { GameData } from "../types";
 
-interface useGameProps {
-    onScore?: (scorer: PongPlayer) => void;
-    onSpace?: () => boolean;
-    onEnd?: (winner: PongPlayer) => void;
-}
-
-export const useGame = (props: useGameProps) => {
+export const useGame = () => {
     const {
         maxScore,
         players,
@@ -17,9 +11,11 @@ export const useGame = (props: useGameProps) => {
         resetBall,
         resetGame,
         resetPaddles,
-    } = useGameState();
 
-    const { onScore, onSpace, onEnd } = props || {};
+        onScore,
+        onEnd,
+        onSpace,
+    } = useGameState();
 
     const [state, setState] = useState<GameData["state"]>("created");
 

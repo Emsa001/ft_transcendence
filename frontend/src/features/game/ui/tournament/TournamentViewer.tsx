@@ -1,54 +1,146 @@
+import { useLocalTournament } from "@features/game/model/LocalTournamentProvider";
+import { ShinyText } from "@shared/components/Shiny";
 import React from "react";
-import { GameDTOType, TournamentUserDTOType } from "shared";
 
-interface TournamentViewerProps {
-    players: TournamentUserDTOType[];
-    games: GameDTOType[];
-}
+export const TournamentViewer = () => {
+    const { createRound, playGame, deleteTournament } = useLocalTournament();
 
-export const TournamentViewer = ({ players, games }: TournamentViewerProps) => {
     return (
-        <div className="w-full overflow-x-auto py-4 text-white">
-            <h2 className="text-xl font-bold mb-2">Players</h2>
-            <ul className="space-y-1 mb-4">
-                {players.map((p) => (
-                    <li
-                        key={p.id}
-                        className={`px-3 py-2 rounded-lg ${
-                            p.eliminated ? "bg-red-500/30" : "bg-green-500/30"
-                        }`}
-                    >
-                        {p.username} {p.eliminated && "(eliminated)"}
-                    </li>
-                ))}
-            </ul>
+        <div className="flex flex-col gap-12 items-center">
+            <ShinyText
+                text="Tournament Viewer"
+                gradient="bg-logo-gradient"
+                className="text-5xl font-extrabold text-center mb-6"
+            />
+            <div className="w-full h-full grid grid-cols-1 lg:grid-cols-3 gap-6 p-6 max-w-[1600px]">
+                {/* Players */}
+                <PlayerList />
 
-            <h2 className="text-xl font-bold mb-2">Games</h2>
-            <ul className="space-y-2">
+                {/* Games */}
+                <GameList />
+            </div>
+
+            <button
+                className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                onClick={createRound}
+            >
+                Next Round
+            </button>
+            <button
+                className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                onClick={playGame}
+            >
+                Play
+            </button>
+            <button
+                className="mt-4 px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
+                onClick={deleteTournament}
+            >
+                Delete Tournament
+            </button>
+        </div>
+    );
+};
+
+const PlayerList = () => {
+    const { players, games } = useLocalTournament();
+
+    const getWins = (playerUsername: string) => {
+        return games.filter((game) => game.winner === playerUsername).length;
+    };
+
+    const playerWins = players
+        .map((player) => ({
+            ...player,
+            wins: getWins(player.username),
+        }))
+        .sort((a, b) => {
+            if (a.eliminated === b.eliminated) {
+                return b.wins - a.wins;
+            }
+            return a.eliminated ? 1 : -1;
+        });
+
+    return (
+        <section className="w-full h-full bg-white/10 p-4 rounded-2xl flex flex-col">
+            <h3 className="text-xl font-bold text-gray-200 mb-2 text-center">
+                Players
+            </h3>
+            <ul className="max-h-[300px] overflow-y-auto scrollbar-minimal space-y-2 p-3">
+                {players.length === 0 && (
+                    <li className="text-gray-400 text-center">
+                        No players registered yet.
+                    </li>
+                )}
+                {playerWins.map((p) => {
+                    return (
+                        <li
+                            key={p.username}
+                            className={`flex justify-between items-center p-2 rounded-xl bg-white/10 backdrop-blur-sm transition`}
+                        >
+                            <span className="text-gray-200">{p.username}</span>
+                            <span className="text-gray-300 text-sm">
+                                Wins: {p.wins}
+                            </span>
+                            <span
+                                className={`text-sm font-medium px-2 py-1 rounded-full ${
+                                    p.eliminated
+                                        ? "bg-red-500/30 text-red-300"
+                                        : "bg-green-500/30 text-green-200"
+                                }`}
+                            >
+                                {p.eliminated ? "Eliminated" : "Active"}
+                            </span>
+                        </li>
+                    );
+                })}
+            </ul>
+        </section>
+    );
+};
+
+const GameList = () => {
+    const { games } = useLocalTournament();
+
+    return (
+        <section className="w-full col-span-2 h-full bg-white/10 p-4 rounded-2xl flex flex-col">
+            <h3 className="text-xl font-bold text-gray-200 mb-2 text-center">
+                Games
+            </h3>
+
+            {games.length === 0 && (
+                <div className="w-full h-full flex items-center justify-center text-gray-400">
+                    No games played yet.
+                </div>
+            )}
+
+            <ul className="max-h-[300px] overflow-y-auto scrollbar-minimal space-y-2 p-3">
                 {games.map((g) => (
                     <li
                         key={g.id}
-                        className="px-3 py-2 rounded-lg bg-gray-700/40"
+                        className="p-3 rounded-xl bg-white/10 backdrop-blur-sm flex flex-col gap-1"
                     >
-                        <p className="font-semibold">
-                            Game #{g.id} – {g.status.replace("_", " ")}
-                        </p>
-                        <p className="text-sm">
+                        <div className="flex justify-between items-center">
+                            <span className="font-semibold text-gray-200">
+                                Game #{g.id} - {g.status.replace("_", " ")}
+                            </span>
+                            {g.winner && (
+                                <span className="text-green-400 font-medium text-sm">
+                                    Winner:{" "}
+                                    {
+                                        g.players.find(
+                                            (pl) => pl.username === g.winner
+                                        )?.username
+                                    }
+                                </span>
+                            )}
+                        </div>
+                        <span className="text-gray-300 text-sm">
                             {g.players.map((pl) => pl.username).join(" vs ")}
-                        </p>
-                        {g.winner && (
-                            <p className="text-sm text-green-400">
-                                Winner:{" "}
-                                {
-                                    g.players.find(
-                                        (pl) => pl.username === g.winner
-                                    )?.username
-                                }
-                            </p>
-                        )}
+                        </span>
                     </li>
                 ))}
             </ul>
-        </div>
+        </section>
     );
 };
