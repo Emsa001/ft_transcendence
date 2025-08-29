@@ -91,3 +91,48 @@ export function MyPicture() {
         </div>
     );
 }
+
+
+export function OtherUserPicture({ userId }: { userId: number }) {
+    const [ user, setUser] = useState<UserDTOType | null>(null);
+    const { onlineUsers } = useOnlineUsers();
+    console.log("Online Users:", onlineUsers);
+
+    
+    useEffect(() => {
+        const fetchUser = async () => {
+            const fetchedUser = await ProfileApi.getUserByIdOrUsername(userId.toString());
+            console.log("FETCHED USER ", fetchedUser);
+            if (fetchedUser) {
+                setUser(fetchedUser);
+                console.log("Fetched User:", fetchedUser);
+            }
+        };
+
+
+        fetchUser();
+    }, [userId]);
+    
+    if (!userId) return <div />;
+    if (!user) return <div />;
+
+    return (
+        <div className="relative group w-8 h-8 sm:w-15 sm:h-15">
+            {user.avatar ? (
+            <img
+                src={`${user.avatar}?ver=${Date.now()}`}
+                alt="Profile"
+                className="w-full h-full rounded-full object-cover border-2 border-blue-400"
+            />
+            ) : (
+            <Icon icon={FaUserCircle} className="text-gray-400 w-full h-full" />
+            )}
+            {/* online status icon */}
+            {onlineUsers.includes(userId) ? (
+            <div className="absolute top-0.5 right-0.5 bg-green-500 rounded-full w-3 h-3 border border-white" />
+            ) : (
+            <div className="absolute top-0.5 right-0.5 bg-red-500 rounded-full w-3 h-3 border border-white" />
+            )}
+        </div>
+    );
+}
