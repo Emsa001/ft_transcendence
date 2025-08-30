@@ -7,7 +7,7 @@ import { TournamentElement } from "@features/game/ui/tournament/TournamentElemen
 import React, { useState } from "react";
 
 export default function Game() {
-    const [window, setWindow] = useState<GameWindowState>("local-casual");
+    const [window, setWindow] = useState<GameWindowState>("local-tournament");
 
     if (window === "menu") {
         return (

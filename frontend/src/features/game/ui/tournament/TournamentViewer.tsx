@@ -6,18 +6,18 @@ export const TournamentViewer = () => {
     const { createRound, playGame, deleteTournament } = useLocalTournament();
 
     return (
-        <div className="flex flex-col items-center h-full w-full overflow-hidden">
+        <div className="flex flex-col items-center h-full w-full overflow-hidden py-12">
             {/* Title */}
             <ShinyText
                 text="Tournament Viewer"
                 gradient="bg-logo-gradient"
-                className="text-5xl font-extrabold text-center mb-6 shrink-0"
+                className="text-5xl font-extrabold text-center mb-6"
             />
 
             {/* Main content area */}
-            <div className="w-full max-w-[1600px] grid grid-cols-1 lg:grid-cols-3 gap-6 p-6 flex-1 overflow-hidden">
+            <div className="relative w-full max-h-[50vh] max-w-6xl grid grid-cols-1 lg:grid-cols-3 gap-6 p-6 flex-1 overflow-hidden">
                 <PlayerList />
-                <GameList />
+                <GameBrackets />
             </div>
 
             {/* Buttons area pinned at bottom */}
@@ -65,11 +65,11 @@ const PlayerList = () => {
         });
 
     return (
-        <section className="w-full h-full bg-white/10 p-4 rounded-2xl flex flex-col">
+        <section className="overflow-y-auto w-full h-full bg-white/10 p-4 rounded-2xl flex flex-col">
             <h3 className="text-xl font-bold text-gray-200 mb-2 text-center">
                 Players
             </h3>
-            <ul className="max-h-[300px] overflow-y-auto scrollbar-minimal space-y-2 p-3">
+            <ul className="overflow-y-auto scrollbar-minimal space-y-2 p-3">
                 {players.length === 0 && (
                     <li className="text-gray-400 text-center">
                         No players registered yet.
@@ -102,11 +102,11 @@ const PlayerList = () => {
     );
 };
 
-const GameList = () => {
+const GameBrackets = () => {
     const { games } = useLocalTournament();
 
     return (
-        <section className="w-full col-span-2 h-full bg-white/10 p-4 rounded-2xl flex flex-col">
+        <section className="overflow-y-auto w-full col-span-2 h-full bg-white/10 p-4 rounded-2xl flex flex-col">
             <h3 className="text-xl font-bold text-gray-200 mb-2 text-center">
                 Games
             </h3>
@@ -117,7 +117,7 @@ const GameList = () => {
                 </div>
             )}
 
-            <ul className="max-h-[300px] overflow-y-auto scrollbar-minimal space-y-2 p-3">
+            <ul className="overflow-y-auto scrollbar-minimal space-y-2 p-3">
                 {games.map((g) => (
                     <li
                         key={g.id}
@@ -125,7 +125,8 @@ const GameList = () => {
                     >
                         <div className="flex justify-between items-center">
                             <span className="font-semibold text-gray-200">
-                                Game #{g.id} - {g.status.replace("_", " ")}
+                                Game #{g.id} - {g.status.replace("_", " ")}{" "}
+                                {g.round}
                             </span>
                             {g.winner && (
                                 <span className="text-green-400 font-medium text-sm">

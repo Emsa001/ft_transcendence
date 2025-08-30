@@ -15,7 +15,9 @@ export const TournamentElement = () => {
     return (
         <div className="w-full h-full pt-16">
             <LocalTournamentProvider maxPlayers={1000}>
-                <div><TournamentView /></div>
+                <div>
+                    <TournamentView />
+                </div>
             </LocalTournamentProvider>
         </div>
     );
@@ -27,7 +29,7 @@ const TournamentView = () => {
 
     if (status === GameStatus.WAITING) {
         return (
-            <div className="w-full h-full flex items-center justify-center p-4">
+            <div className="w-full h-full flex items-center justify-center py-16">
                 <TournamentRegister />
             </div>
         );
