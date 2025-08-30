@@ -9,9 +9,10 @@ interface MenuScreenProps {
 
 export const MenuScreen = ({ setWindow }: MenuScreenProps) => {
     const baseButtonClasses =
-        "group relative flex items-center justify-center w-64 aspect-square rounded-2xl " +
+        "group relative flex items-center justify-center " +
+        "aspect-square min-w-[6rem] max-w-[16rem] rounded-2xl " +
         "bg-purple-500/10 backdrop-blur-xl shadow-2xl " +
-        "text-2xl font-bold text-white " +
+        "text-[clamp(0.8rem,3vw,1.5rem)] font-bold text-white " +
         "transition-all duration-500 hover:scale-110";
 
     const overlayBaseClasses =
@@ -20,25 +21,25 @@ export const MenuScreen = ({ setWindow }: MenuScreenProps) => {
 
     const buttons = [
         {
-            label: "Play Local Casual",
+            label: "Local Casual",
             window: "local-casual",
             overlay: "bg-gradient-to-tr from-purple-500/40 to-blue-500/40",
             rotate: "hover:rotate-3",
         },
         {
-            label: "Play Local Tournament",
+            label: "Local Tournament",
             window: "local-tournament",
             overlay: "bg-gradient-to-tr from-pink-500/40 to-orange-500/40",
             rotate: "hover:-rotate-3",
         },
         {
-            label: "Play Remote",
+            label: "Remote",
             window: "remote-casual",
             overlay: "bg-gradient-to-tr from-indigo-500/40 to-blue-500/40",
             rotate: "hover:-rotate-3",
         },
         {
-            label: "Play Remote Tournament",
+            label: "Remote Tournament",
             window: "remote-tournament",
             overlay: "bg-gradient-to-tr from-fuchsia-500/40 to-pink-500/40",
             rotate: "hover:rotate-3",
@@ -46,28 +47,24 @@ export const MenuScreen = ({ setWindow }: MenuScreenProps) => {
     ];
 
     return (
-        <section className="w-screen h-screen">
-            <div className="relative flex flex-col items-center justify-center h-full px-4 text-center gap-16">
-                {/* Game Mode Buttons as Grid */}
-                <ShinyText
-                    text="Game Selector"
-                    gradient="bg-logo-gradient"
-                    className="text-[clamp(3rem,6vw,10rem)] font-extrabold select-none text-white drop-shadow-xl"
-                />
-                <div className="grid grid-cols-2 gap-12 relative z-10">
-                    {buttons.map(({ label, window, overlay, rotate }) => (
-                        <button
-                            key={window}
-                            onClick={() => setWindow(window as GameWindowState)}
-                            className={`${baseButtonClasses} ${rotate}`}
-                        >
-                            <span className="relative z-10">{label}</span>
-                            <div
-                                className={`${overlayBaseClasses} ${overlay}`}
-                            />
-                        </button>
-                    ))}
-                </div>
+        <section className="w-full h-full text-center flex flex-col items-center justify-center">
+            <ShinyText
+                text="Game Selector"
+                gradient="bg-logo-gradient"
+                className="text-[clamp(3rem,6vw,10rem)] font-extrabold select-none text-white drop-shadow-xl"
+            />
+            {/* Game Mode Buttons as Grid */}
+            <div className="grid grid-cols-2 gap-6 md:gap-12 z-10 mt-8">
+                {buttons.map(({ label, window, overlay, rotate }) => (
+                    <button
+                        key={window}
+                        onClick={() => setWindow(window as GameWindowState)}
+                        className={`${baseButtonClasses} ${rotate}`}
+                    >
+                        <span className="relative z-10 px-12">{label}</span>
+                        <div className={`${overlayBaseClasses} ${overlay}`} />
+                    </button>
+                ))}
             </div>
             <BallField />
         </section>

@@ -7,19 +7,19 @@ import { TournamentElement } from "@features/game/ui/tournament/TournamentElemen
 import React, { useState } from "react";
 
 export default function Game() {
-    const [window, setWindow] = useState<GameWindowState>("local-tournament");
+    const [window, setWindow] = useState<GameWindowState>("local-casual");
 
     if (window === "menu") {
         return (
-            <div>
+            <div className="p-16 h-full">
                 <MenuScreen setWindow={setWindow} />
             </div>
         );
     }
 
     return (
-        <div className="select-none h-screen w-screen flex items-center justify-center p-12">
-            <div className="w-full min-h-[80vh] rounded-2xl shadow-2xl bg-fuchsia-900/5 backdrop-blur-xl flex flex-col">
+        <div className="select-none h-full w-full flex items-center justify-center p-16">
+            <div className="w-full rounded-2xl shadow-2xl bg-fuchsia-900/5 backdrop-blur-xl flex flex-col">
                 {/* Header stays at the top */}
                 <GameHeader window={window} setWindow={setWindow} />
 

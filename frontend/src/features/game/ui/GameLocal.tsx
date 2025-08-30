@@ -8,15 +8,21 @@ export const GameLocal = () => {
     return (
         <div className="w-full h-full">
             <GameStateProvider>
-                <div className="flex flex-col items-center gap-6 px-2">
+                <div className="flex flex-col items-center gap-6 h-full">
                     {/* Settings stays at top */}
-                    <GameSettings />
+                    <div className="shrink-0 w-full flex justify-center">
+                        <GameSettings />
+                    </div>
 
                     {/* GameElement takes all remaining space */}
-                    <GameElement />
+                    <div className="flex-1 w-full flex justify-center items-center overflow-hidden">
+                        <GameElement />
+                    </div>
 
                     {/* Footer stays at bottom */}
-                    <GameFooter />
+                    <div className="shrink-0 w-full flex justify-center">
+                        <GameFooter />
+                    </div>
                 </div>
             </GameStateProvider>
         </div>

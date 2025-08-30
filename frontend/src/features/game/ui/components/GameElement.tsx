@@ -4,7 +4,7 @@ import { GameScore } from "./GameScore";
 
 export const GameElement = () => {
     return (
-        <div className="relative w-full h-full aspect-video max-h-[65vh]">
+        <div className="relative w-full max-h-[30rem] aspect-video flex-1">
             <GameCanvasElement />
             <GameScore />
         </div>

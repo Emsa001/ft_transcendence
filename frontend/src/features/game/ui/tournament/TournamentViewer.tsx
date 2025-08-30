@@ -1,43 +1,46 @@
+import React from "react";
 import { useLocalTournament } from "@features/game/model/LocalTournamentProvider";
 import { ShinyText } from "@shared/components/Shiny";
-import React from "react";
 
 export const TournamentViewer = () => {
     const { createRound, playGame, deleteTournament } = useLocalTournament();
 
     return (
-        <div className="flex flex-col gap-12 items-center">
+        <div className="flex flex-col items-center h-full w-full overflow-hidden">
+            {/* Title */}
             <ShinyText
                 text="Tournament Viewer"
                 gradient="bg-logo-gradient"
-                className="text-5xl font-extrabold text-center mb-6"
+                className="text-5xl font-extrabold text-center mb-6 shrink-0"
             />
-            <div className="w-full h-full grid grid-cols-1 lg:grid-cols-3 gap-6 p-6 max-w-[1600px]">
-                {/* Players */}
-                <PlayerList />
 
-                {/* Games */}
+            {/* Main content area */}
+            <div className="w-full max-w-[1600px] grid grid-cols-1 lg:grid-cols-3 gap-6 p-6 flex-1 overflow-hidden">
+                <PlayerList />
                 <GameList />
             </div>
 
-            <button
-                className="mt-4 px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                onClick={createRound}
-            >
-                Next Round
-            </button>
-            <button
-                className="mt-4 px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-                onClick={playGame}
-            >
-                Play
-            </button>
-            <button
-                className="mt-4 px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
-                onClick={deleteTournament}
-            >
-                Delete Tournament
-            </button>
+            {/* Buttons area pinned at bottom */}
+            <div className="flex gap-4 flex-wrap justify-center p-4 shrink-0">
+                <button
+                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
+                    onClick={createRound}
+                >
+                    Next Round
+                </button>
+                <button
+                    className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
+                    onClick={playGame}
+                >
+                    Play
+                </button>
+                <button
+                    className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
+                    onClick={deleteTournament}
+                >
+                    Delete Tournament
+                </button>
+            </div>
         </div>
     );
 };

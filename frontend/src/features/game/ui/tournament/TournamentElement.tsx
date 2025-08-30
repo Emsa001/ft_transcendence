@@ -13,11 +13,9 @@ import {
 
 export const TournamentElement = () => {
     return (
-        <div className="w-full h-full">
+        <div className="w-full h-full pt-16">
             <LocalTournamentProvider maxPlayers={1000}>
-                <div>
-                    <TournamentView />
-                </div>
+                <div><TournamentView /></div>
             </LocalTournamentProvider>
         </div>
     );
