@@ -37,7 +37,7 @@ export const TournamentRegister = () => {
                 className="text-5xl font-extrabold text-center mb-6"
             />
 
-            <div className="w-full max-w-xl p-6 rounded-3xl bg-white/5 backdrop-blur-lg shadow-xl text-white flex flex-col gap-6">
+            <div className="h-full w-full max-w-xl p-6 rounded-3xl bg-white/5 backdrop-blur-lg shadow-xl text-white flex flex-col gap-6">
                 <AddPlayerInput onAddPlayer={handleAddPlayer} />
                 <StatusMessageComponent status={status} />
                 <PlayerList
@@ -84,7 +84,7 @@ const StatusMessageComponent = ({
 }: {
     status: StatusMessage | null;
 }) => (
-    <div className="min-h-[1.25rem] text-center">
+    <div className="h-[1.25rem] text-center">
         <p
             className={`${
                 status?.success ? "text-green-400" : "text-red-400"
@@ -113,7 +113,7 @@ const PlayerList = ({
 
     return (
         <ul
-            className="h-[300px] overflow-y-auto scrollbar-minimal space-y-2 p-3"
+            className="h-[25vh] overflow-y-auto scrollbar-minimal space-y-2 p-3"
             ref={listRef}
         >
             {players.length === 0 && (

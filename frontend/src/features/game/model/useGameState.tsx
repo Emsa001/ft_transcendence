@@ -158,7 +158,9 @@ export const GameStateProvider = ({
                     onSpace,
                 }}
             >
-                {children}
+                <div className="flex flex-col items-center gap-6 h-full">
+                    {children}
+                </div>
             </GameStateContext.Provider>
         </div>
     );

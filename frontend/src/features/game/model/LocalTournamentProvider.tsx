@@ -91,7 +91,7 @@ export const LocalTournamentProvider = ({
     };
 
     return (
-        <div>
+        <div className="w-full h-full">
             <LocalTournamentContext.Provider value={contextValue}>
                 {children}
             </LocalTournamentContext.Provider>

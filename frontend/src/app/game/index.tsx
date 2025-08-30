@@ -11,23 +11,20 @@ export default function Game() {
 
     if (window === "menu") {
         return (
-            <div className="p-16 h-full">
+            <div className="p-16 pt-24 h-full">
                 <MenuScreen setWindow={setWindow} />
             </div>
         );
     }
 
     return (
-        <div className="select-none h-full w-full flex items-center justify-center p-16">
-            <div className="w-full rounded-2xl shadow-2xl bg-fuchsia-900/5 backdrop-blur-xl flex flex-col">
+        <div className="select-none h-full w-full flex items-center justify-center p-16 pt-24">
+            <div className="w-full h-full rounded-2xl shadow-2xl bg-fuchsia-900/5 backdrop-blur-xl">
                 {/* Header stays at the top */}
                 <GameHeader window={window} setWindow={setWindow} />
 
-                {/* Content fills remaining space and centers vertically */}
-                <div className="flex-1 flex items-center justify-center">
-                    {window === "local-casual" && <GameLocal />}
-                    {window === "local-tournament" && <TournamentElement />}
-                </div>
+                {window === "local-casual" && <GameLocal />}
+                {window === "local-tournament" && <TournamentElement />}
 
                 <GameBackground />
             </div>

@@ -13,9 +13,9 @@ import {
 
 export const TournamentElement = () => {
     return (
-        <div className="w-full h-full pt-16">
+        <div className="w-full h-full">
             <LocalTournamentProvider maxPlayers={1000}>
-                <div>
+                <div className="w-full h-full">
                     <TournamentView />
                 </div>
             </LocalTournamentProvider>
@@ -29,7 +29,7 @@ const TournamentView = () => {
 
     if (status === GameStatus.WAITING) {
         return (
-            <div className="w-full h-full flex items-center justify-center py-16">
+            <div className="w-full h-full flex items-center justify-center">
                 <TournamentRegister />
             </div>
         );
@@ -52,7 +52,7 @@ const TournamentView = () => {
         };
 
         return (
-            <div className="w-full h-full flex items-center justify-center gap-6 px-2">
+            <div className="w-full h-full">
                 <GameStateProvider
                     playersConfig={currentGame.players}
                     maxScore={1}
@@ -60,11 +60,14 @@ const TournamentView = () => {
                     onEnd={onEnd}
                     onSpace={onSpace}
                 >
-                    <div className="flex flex-col items-center gap-6 px-2">
-                        {/* GameElement takes all remaining space */}
-                        <GameElement />
 
-                        {/* Footer stays at bottom */}
+                    {/* GameElement takes all remaining space */}
+                    <div className="mt-16 flex-1 w-full flex justify-center items-center overflow-hidden">
+                        <GameElement />
+                    </div>
+
+                    {/* Footer stays at bottom */}
+                    <div className="shrink-0 w-full flex justify-center">
                         <GameFooter />
                     </div>
                 </GameStateProvider>
@@ -74,7 +77,7 @@ const TournamentView = () => {
 
     if (status === GameStatus.IN_PROGRESS) {
         return (
-            <div className="w-full h-full p-8">
+            <div className="w-full h-full">
                 <TournamentViewer />
             </div>
         );
