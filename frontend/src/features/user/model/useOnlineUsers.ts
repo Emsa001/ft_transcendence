@@ -9,11 +9,10 @@ export const useOnlineUsers = () => {
     );
 
     const subscribeToOnline = () => {
-        if (ws) {
-            // ws.close();
-            return ws;
-        }
+        if (ws) return ws;
         ws = new WebSocket(`ws://localhost:8000/user/status`);
+        console.log("Subscribing to online users WebSocket");
+
         ws.onmessage = (event) => {
             const msg = JSON.parse(event.data);
             if (msg.type === "online_users") {

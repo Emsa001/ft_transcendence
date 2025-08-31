@@ -1,13 +1,17 @@
 import { useEffect, useRef, useState } from "react";
 
-export const useWebSocket = (url: string) => {
+export const useWebSocket = (url: string | null) => {
     const wsRef = useRef<WebSocket | null>(null);
     const [messages, setMessages] = useState<any[]>([]);
     const [isConnected, setIsConnected] = useState(false);
 
     // Connect to WebSocket
     useEffect(() => {
-        wsRef.current = new WebSocket(url);
+        if (!url) return;
+
+        wsRef.current = new WebSocket(
+            process.env.FT_REACT_PUBLIC_API_HOST + url
+        );
 
         wsRef.current.onopen = () => setIsConnected(true);
         wsRef.current.onclose = () => setIsConnected(false);
@@ -23,6 +27,7 @@ export const useWebSocket = (url: string) => {
         // Cleanup on unmount
         return () => {
             wsRef.current?.close();
+            console.log("WebSocket disconnected");
         };
     }, [url]);
 
