@@ -1,74 +1,97 @@
 import { useWebSocket } from "@shared/hooks/websocket";
 import React, { useState, useEffect } from "react";
 import GameApi from "../service/api";
+import { GameInvite } from "./components/GameInvite";
 
-export const GameRemote = () => {
-    const [code, setCode] = useState<string | null>(null);
+interface GameRemoteProps {
+    code?: string; // Optional code for joining existing game
+}
 
-    // 1️⃣ Create game when component mounts
+export const GameRemote = ({ code }: GameRemoteProps) => {
+    const [gameCode, setGameCode] = useState<string | null>(code || null);
+    const [players, setPlayers] = useState<string[]>([]);
+    const [gameStarted, setGameStarted] = useState(false);
+
+    const { messages, sendMessage, isConnected } = useWebSocket(
+        gameCode ? `/game/play/${gameCode}` : null
+    );
+
     useEffect(() => {
+        if (gameCode) return;
+
         const createGame = async () => {
             try {
                 const res = await GameApi.createGame();
-                setCode(res.data.code); // assume server returns { code: 'ABC123' }
+                setGameCode(res.data.code);
+                console.log("Created game with code", res.data.code);
             } catch (err) {
                 console.error("Failed to create game", err);
             }
         };
+
         createGame();
     }, []);
 
-    // 2️⃣ Only connect WebSocket once we have a code
-    const { messages, sendMessage, isConnected } = useWebSocket(
-        code ? `ws://localhost:3000/game/${code}` : ""
-    );
-
-    // 3️⃣ Notify server that we joined the game
     useEffect(() => {
-        if (isConnected && code) {
-            sendMessage({ type: "JOIN_GAME", code });
+        if (isConnected && gameCode) {
+            console.log("WebSocket connected, joining game", gameCode);
+            sendMessage({
+                type: "JOIN_GAME",
+                code: gameCode,
+            });
         }
-    }, [isConnected, code, sendMessage]);
+    }, [isConnected, gameCode, sendMessage]);
 
-    // 4️⃣ Handle incoming WebSocket messages
     useEffect(() => {
         const last = messages[messages.length - 1];
         if (!last) return;
 
-        if (last.type === "PLAYER_JOINED") {
-            console.log("Friend joined:", last.player);
-            // trigger UI state change to start the game
+        switch (last.type) {
+            case "PLAYER_JOINED":
+                setPlayers((prev) => {
+                    if (!prev.includes(last.player))
+                        return [...prev, last.player];
+                    return prev;
+                });
+                break;
+            case "PLAYER_DISCONNECTED":
+                setPlayers((prev) => {
+                    if (prev.includes(last.player))
+                        return prev.filter((p) => p !== last.player);
+                    return prev;
+                });
+                break;
+
+            case "GAME_STARTED":
+                console.log("Game started!", last.game);
+                setGameStarted(true);
+                break;
+
+            case "ERROR":
+                console.error(last.message);
+                break;
+
+            default:
+                break;
         }
     }, [messages]);
 
-    if (!code) return <div>Creating game...</div>;
+    if (!gameCode) return <div>Creating game...</div>;
+    if (gameStarted) return <div>Game Started! Ready to play.</div>;
+
+    const startGame = () => {
+        sendMessage({ type: "START_GAME" });
+    };
 
     return (
-        <div className="w-full h-full">
-            <GameInvite code={code} />
-        </div>
-    );
-};
-
-export const GameInvite = ({ code }: { code: string }) => {
-    return (
-        <div className="w-full h-full flex items-center justify-center">
-            <div className="text-center">
-                <h2 className="text-2xl font-bold mb-4">Invite a Friend</h2>
-                <p className="mb-4">
-                    Share the link below to invite a friend to join your game:
-                </p>
-                <input
-                    type="text"
-                    readOnly
-                    value={`${window.location.origin}/join/${code}`}
-                    className="w-full p-2 border border-gray-300 rounded"
-                    onFocus={(e: any) => e.target.select()}
-                />
-                <p className="mt-4 text-sm text-gray-500">
-                    Waiting for your friend to join...
-                </p>
-            </div>
+        <div className="w-full h-full flex flex-col items-center justify-center">
+            <GameInvite code={gameCode} players={players} />
+            <button
+                onClick={startGame}
+                className="mt-4 px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+            >
+                Start Game
+            </button>
         </div>
     );
 };
