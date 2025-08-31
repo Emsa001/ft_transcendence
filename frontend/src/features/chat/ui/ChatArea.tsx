@@ -3,20 +3,27 @@ import { MessageDTOType, UserDTOType } from "shared";
 import { ChatInput } from "@features/chat/ui/ChatInput";
 import ChatApi from "@features/chat/service/api";
 import { useUser } from "@features/auth/model/useUser";
-import { UserPicture } from "@features/user/ui/UserPicture";
+import { UserInfo } from "./UserInfo";
 
 interface ChatAreaProps {
     selectedUser: UserDTOType;
+    users: UserDTOType[];
+    setUsers: (users: UserDTOType[]) => void;
+    setSelectedUser: (user: UserDTOType | null) => void;
 }
 
 let ws: WebSocket | null;
-export function ChatArea({ selectedUser }: ChatAreaProps) {
+export function ChatArea({
+    selectedUser,
+    users,
+    setUsers,
+    setSelectedUser,
+}: ChatAreaProps) {
     const [messages, setMessages] = useState<MessageDTOType[]>([]);
     const [input, setInput] = useState("");
     const messageBoxRef = useRef<HTMLDivElement | null>(null);
     const offset = useRef(0);
     const { user } = useUser();
-    const navigate = useNavigate();
 
     if (!user) return <div />;
 
@@ -87,18 +94,13 @@ export function ChatArea({ selectedUser }: ChatAreaProps) {
     return (
         <div className="flex flex-col h-full">
             {/* User Info */}
-            <div
-                onClick={() => navigate(`/users/${selectedUser.id}`)}
-                className="h-18 border-b gap-2 border-gray-800 flex items-center px-4 cursor-pointer shadow-[0_0_10px_rgba(0,255,255,0.3)]"
-            >
-                <UserPicture
-                    userId={user.id.toString()}
-                    className="w-10 h-10 rounded-full shadow-[0_0_8px_rgba(0,255,255,0.7)]"
-                />
-                <h3 className="font-semibold text-cyan-300 drop-shadow-[0_0_8px_rgba(0,255,255,0.8)]">
-                    {selectedUser.username}
-                </h3>
-            </div>
+            <UserInfo
+                user={user}
+                selectedUser={selectedUser}
+                users={users}
+                setUsers={setUsers}
+                setSelectedUser={setSelectedUser}
+            />
 
             {/* Messages */}
             <div

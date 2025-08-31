@@ -26,7 +26,8 @@ import { UserFriends } from "./UserFriends";
 import { FriendsService } from "@/modules/friends/services/user.friends";
 import { UserGamesService } from "@/modules/user/services/user.games";
 import { chatDBService } from "@/modules/chat/service/db.service";
-import { ChatMessage } from "@/modules/chat/service/ws.service";
+import { BlockedUsers } from "./BlockedUsers";
+import { BlockUserService } from "@/modules/user/services/user.block";
 
 type CreationAttributes = {
     email?: string | null;
@@ -127,9 +128,12 @@ export class User extends Model<InferAttributes<User>, CreationAttributes> {
         return user;
     };
 
+    getStatistics = async () => UserGamesService.getStatistics(this);
+
     findChat = async (userId: number, options: FindOptions) =>
         chatDBService.findChat(this.id, userId, options);
 
+    // friends
     @BelongsToMany(() => User, () => UserFriends, "userId1", "userId2")
     declare friends: User[];
 
@@ -146,5 +150,14 @@ export class User extends Model<InferAttributes<User>, CreationAttributes> {
 
     getFriendRequests = async () => FriendsService.getFriendRequests(this.id);
     getAllSentRequests = async () => FriendsService.getAllSentRequests(this.id);
-    getStatistics = async () => UserGamesService.getStatistics(this);
+
+    // block user
+    @BelongsToMany(() => User, () => BlockedUsers, "userId", "blockedUserId")
+    declare blockedUsers: User[];
+
+    getBlockedUsers = async () => BlockUserService.getBlockedUsers(this);
+    blockUser = async (userId: number) => BlockUserService.blockUser(this, userId);
+    unblockUser = async (userId: number) => BlockUserService.unblockUser(this, userId);
+    isBlocked = async (userId: number) => BlockUserService.isBlocked(this.id, userId);
+
 }

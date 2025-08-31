@@ -1,11 +1,9 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { Controller, GET } from "fastify-decorators";
-
 import { BaseController } from "../base";
 import jwtService from "../auth/services/jwt.service";
 import { WebSocket } from "@fastify/websocket";
 import { chatWSService } from "./service/ws.service";
-import { chatDBService } from "./service/db.service";
 import { AUTHORIZED } from "../auth/auth.middleware";
 
 @Controller("/chat")
@@ -22,7 +20,6 @@ export class ChatController extends BaseController {
                 try {
                     const msg = JSON.parse(raw.toString());
                     chatWSService.handleMessage(msg);
-                    chatDBService.saveMessage(msg);
                 } catch (err) {
                     console.error("Invalid message format:", err);
                 }

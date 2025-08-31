@@ -2,6 +2,8 @@ import { User } from "@/database/models/User/User";
 import { HttpException } from "@/utils/exceptions";
 import { UserFriends } from "@/database/models/User/UserFriends";
 import { Op } from "sequelize";
+import { BlockedUsers } from "@/database/models/User/BlockedUsers";
+import { BlockUserService } from "@/modules/user/services/user.block";
 
 export class FriendsService {
     static async getFriendship(id1: number, id2: number) {
@@ -26,6 +28,10 @@ export class FriendsService {
                 400,
                 "Cannot send friend request to yourself"
             );
+        }
+
+        if (await BlockUserService.isBlocked(userId1, userId2)) {
+            throw new HttpException(403, "You cannot send friend requests to blocked users");
         }
 
         if (await this.getFriendship(userId1, userId2)) {
@@ -64,7 +70,7 @@ export class FriendsService {
             },
         });
         if (!friendship) {
-            throw new HttpException(404, "Friendship not found");
+            throw new HttpException(404, "You are not friends");
         }
         await friendship.destroy();
     }

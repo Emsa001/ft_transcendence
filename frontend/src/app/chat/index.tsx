@@ -28,7 +28,12 @@ export default function Chat() {
             {/* Chat Area */}
             <div className="flex flex-col w-2/3 bg-black/50 ">
                 {selectedUser ? (
-                    <ChatArea selectedUser={selectedUser} />
+                    <ChatArea
+                        selectedUser={selectedUser}
+                        users={users}
+                        setUsers={setUsers}
+                        setSelectedUser={setSelectedUser}
+                    />
                 ) : (
                     <div className="flex items-center justify-center h-full">
                         Please choose a user to start chatting

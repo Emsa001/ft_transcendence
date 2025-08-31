@@ -1,8 +1,11 @@
 import { WebSocket } from "@fastify/websocket";
 import { MessageDTOType } from "shared";
+import { chatDBService } from "./db.service";
+import { BlockUserService } from "@/modules/user/services/user.block";
 
 class ChatWSService {
     private connections: Map<number, Set<WebSocket>> = new Map();
+    private lastMessageTime: Map<number, number> = new Map();
 
     public addUser(userId: number, socket: WebSocket) {
         if (!this.connections.has(userId)) {
@@ -21,12 +24,31 @@ class ChatWSService {
         }
     }
 
-    public handleMessage(msg: MessageDTOType) {
+    public async handleMessage(msg: MessageDTOType) {
+        const now = Date.now();
+
+        if (await BlockUserService.isBlocked(msg.sender, msg.receiver)) {
+            return;
+        }
+
+        if (!msg.message || msg.message.length > 500) {
+            return;
+        }
+
+        const last = this.lastMessageTime.get(msg.sender) || 0;
+        if (now - last < 1000) {
+            return;
+        }
+
+        this.lastMessageTime.set(msg.sender, now);
+
         const payload = JSON.stringify({
             sender: msg.sender,
             receiver: msg.receiver,
             message: msg.message,
         });
+
+        chatDBService.saveMessage(msg);
 
         if (msg.receiver && this.connections.has(msg.receiver)) {
             for (const socket of this.connections.get(msg.receiver)!) {
