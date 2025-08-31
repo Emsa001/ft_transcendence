@@ -55,4 +55,17 @@ export class GameHooks {
 
         await instance.save();
     }
+
+    static async generateGameCode(instance: Game) {
+        if (instance.code) return;
+
+        let unique = false;
+        while (!unique) {
+            instance.code = Math.random()
+                .toString(36)
+                .substring(2, 8)
+                .toUpperCase();
+            unique = !(await Game.findOne({ where: { code: instance.code } }));
+        }
+    }
 }

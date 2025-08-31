@@ -2,12 +2,13 @@ import { GameWindowState } from "@features/game/types";
 import { GameBackground } from "@features/game/ui/components/GameBackground";
 import { GameHeader } from "@features/game/ui/components/GameHeader";
 import { GameLocal } from "@features/game/ui/GameLocal";
+import { GameRemote } from "@features/game/ui/GameRemote";
 import { MenuScreen } from "@features/game/ui/MenuScreen";
 import { TournamentElement } from "@features/game/ui/tournament/TournamentElement";
 import React, { useState } from "react";
 
 export default function Game() {
-    const [window, setWindow] = useState<GameWindowState>("local-tournament");
+    const [window, setWindow] = useState<GameWindowState>("remote-casual");
 
     if (window === "menu") {
         return (
@@ -25,6 +26,9 @@ export default function Game() {
 
                 {window === "local-casual" && <GameLocal />}
                 {window === "local-tournament" && <TournamentElement />}
+
+                {window === "remote-casual" && <GameRemote />}
+                {window === "remote-tournament" && <TournamentElement />}
 
                 <GameBackground />
             </div>

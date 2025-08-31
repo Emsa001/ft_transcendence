@@ -22,7 +22,7 @@ export interface GameDTOType {
     mode: GameMode;
     players: GameUserDTOType[];
     winner: string | null;
-    round?: number;
+    round?: number | null;
     createdAt: Date;
     updatedAt: Date;
 }

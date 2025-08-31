@@ -64,7 +64,5 @@ class ProfileApi extends APIService {
     }
 }
 
-const service = new ProfileApi(
-    process.env.FT_REACT_PUBLIC_API_HOST || "http://localhost:3000"
-);
+const service = new ProfileApi({});
 export default service;

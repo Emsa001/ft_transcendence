@@ -18,14 +18,14 @@ export const registerDB = async (app: FastifyInstance) => {
         models,
     });
 
-    await sequelize.sync({ force: true });
+    await sequelize.sync({ force: false });
     app.decorate("sequelize", sequelize);
 
     // Feed database with example data
-    await DatabaseExampleFeed.feed({
-        users: 4,
-        games: 1,
-    });
+    // await DatabaseExampleFeed.feed({
+    //     users: 4,
+    //     games: 1,
+    // });
 };
 
 export const startClean = async () => {

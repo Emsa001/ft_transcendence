@@ -1,9 +1,10 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { Controller, GET } from "fastify-decorators";
+import { Controller, GET, POST } from "fastify-decorators";
 
 import { BaseController } from "../base";
 import { Game } from "@/database/models/Game/Game";
 import { HttpException } from "@/utils/exceptions";
+import { AUTHORIZED } from "../auth/auth.middleware";
 
 @Controller("/game")
 export class GameController extends BaseController {
@@ -20,5 +21,12 @@ export class GameController extends BaseController {
         if (!game) throw new HttpException(404, "Game not found");
 
         return reply.send(game.toDTO());
+    }
+
+    @POST("/create")
+    @AUTHORIZED
+    async createGame(request: FastifyRequest, reply: FastifyReply) {
+        const newGame = await Game.create();
+        return reply.send(newGame.toDTO());
     }
 }

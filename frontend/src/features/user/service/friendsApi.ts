@@ -82,7 +82,5 @@ class FriendsApi extends APIService {
     }
 }
 
-const service = new FriendsApi(
-    process.env.FT_REACT_PUBLIC_API_HOST || "http://localhost:3000"
-);
+const service = new FriendsApi({ path: "/" });
 export default service;

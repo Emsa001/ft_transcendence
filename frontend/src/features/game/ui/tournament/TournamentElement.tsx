@@ -60,16 +60,8 @@ const TournamentView = () => {
                     onEnd={onEnd}
                     onSpace={onSpace}
                 >
-
-                    {/* GameElement takes all remaining space */}
-                    <div className="mt-16 flex-1 w-full flex justify-center items-center overflow-hidden">
-                        <GameElement />
-                    </div>
-
-                    {/* Footer stays at bottom */}
-                    <div className="shrink-0 w-full flex justify-center">
-                        <GameFooter />
-                    </div>
+                    <GameElement />
+                    <GameFooter />
                 </GameStateProvider>
             </div>
         );

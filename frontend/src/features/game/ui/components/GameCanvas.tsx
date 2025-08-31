@@ -4,6 +4,7 @@ import { GameConfig, GameData } from "../../types";
 import { GameEngine } from "../../service/GameEngine";
 import { useGameState } from "../../model/useGameState";
 import { useGame } from "../../model/useGame";
+import { GameScore } from "./GameScore";
 
 export interface GameCanvasElementProps {
     padding?: number;
@@ -138,7 +139,5 @@ export function GameCanvasElement({ padding = 2 }: GameCanvasElementProps) {
         };
     }, [messageTimeoutRef, countdownTimeoutRef]);
 
-    return (
-        <canvas ref={canvasRef} className="rounded-xl w-full h-full mx-auto" />
-    );
+    return <canvas ref={canvasRef} className="rounded-xl m-auto" />;
 }

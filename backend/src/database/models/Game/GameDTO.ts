@@ -8,6 +8,8 @@ export class GameDTO implements GameDTOType {
     mode: GameMode;
     players: GameUserDTOType[];
     winner: string | null;
+    code: string | null;
+    round?: number | null;
     updatedAt: Date;
     createdAt: Date;
 
@@ -26,13 +28,17 @@ export class GameDTO implements GameDTOType {
         this.id = game.id;
         this.status = game.status;
         this.mode = game.mode;
-        this.players = game.players.map((player) => ({
-            ...player.toDTO(),
-            score: player.GameUser.score,
-        }));
+        this.players = game.players
+            ? game.players.map((player) => ({
+                  ...player.toDTO(),
+                  score: player.GameUser.score,
+              }))
+            : [];
         this.winner = game.winnerId
             ? game.players.find((p) => p.id === game.winnerId)?.username || null
             : null;
+        this.code = game.code;
+        this.round = game.round;
         this.createdAt = game.createdAt;
         this.updatedAt = game.updatedAt;
     }
