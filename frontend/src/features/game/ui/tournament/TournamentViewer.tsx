@@ -1,6 +1,6 @@
 import React from "react";
-import { useLocalTournament } from "@features/game/model/LocalTournamentProvider";
 import { ShinyText } from "@shared/components/Shiny";
+import { useLocalTournament } from "@features/game/context/LocalTournamentProvider";
 
 export const TournamentViewer = () => {
     const { createRound, playGame, deleteTournament } = useLocalTournament();

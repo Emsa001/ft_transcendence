@@ -1,6 +1,6 @@
 import { useRef, useState } from "react";
-import { useKeyboard } from "./useKeyboard";
-import { useGameState } from "./useGameState";
+import { useKeyboard } from "@shared/hooks/useKeyboard";
+import { useGameState } from "../context/useGameState";
 import { GameData } from "../types";
 
 export const useGame = () => {

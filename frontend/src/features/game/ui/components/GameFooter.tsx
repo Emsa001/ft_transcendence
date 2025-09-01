@@ -1,5 +1,5 @@
+import { useGameState } from "@features/game/context/useGameState";
 import React from "react";
-import { useGameState } from "@features/game/model/useGameState";
 
 const symbols: Record<string, string> = {
     arrowup: "↑",

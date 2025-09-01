@@ -6,7 +6,7 @@ import {
     TournamentUserDTOType,
 } from "shared";
 
-export class TournamentLogic {
+export class LocalTournament {
     static getActivePlayers(
         players: TournamentUserDTOType[]
     ): TournamentUserDTOType[] {

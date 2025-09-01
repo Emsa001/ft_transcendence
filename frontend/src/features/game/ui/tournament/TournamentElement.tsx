@@ -3,13 +3,13 @@ import { TournamentRegister } from "./TournamentRegister";
 import { GameStatus } from "shared";
 import { TournamentViewer } from "./TournamentViewer";
 import { PongPlayer } from "@features/game/types";
-import { GameStateProvider } from "@features/game/model/useGameState";
 import { GameElement } from "../components/GameElement";
 import { GameFooter } from "../components/GameFooter";
 import {
     LocalTournamentProvider,
     useLocalTournament,
-} from "@features/game/model/LocalTournamentProvider";
+} from "@features/game/context/LocalTournamentProvider";
+import { GameStateProvider } from "@features/game/context/useGameState";
 
 export const TournamentElement = () => {
     return (

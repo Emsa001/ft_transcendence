@@ -1,8 +1,8 @@
 import React from "react";
 import { GameElement } from "./components/GameElement";
 import { GameFooter } from "./components/GameFooter";
-import { GameStateProvider } from "../model/useGameState";
 import { GameSettings } from "./components/GameSettings";
+import { GameStateProvider } from "../context/useGameState";
 
 export const GameLocal = () => {
     return (

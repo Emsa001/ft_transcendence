@@ -6,8 +6,8 @@ import React, {
 } from "react";
 import { TournamentDTOType } from "shared";
 import { LocalTournamentContextType } from "../types";
-import { TournamentLogic } from "./tournamentLogic";
-import { useLocalTournamentState } from "./useLocalTournamentState";
+import { useLocalTournamentState } from "../model/useLocalTournamentState";
+import { LocalTournament } from "../service/LocalTournament";
 
 const LocalTournamentContext = createContext<
     LocalTournamentContextType | undefined
@@ -69,7 +69,7 @@ export const LocalTournamentProvider = ({
     const contextValue: LocalTournamentContextType = {
         ...state,
         maxPlayers,
-        getActivePlayers: () => TournamentLogic.getActivePlayers(state.players),
+        getActivePlayers: () => LocalTournament.getActivePlayers(state.players),
         setStatus: (status) => actions.updateState({ status }),
         setPlayers: (players) => {
             const newPlayers =

@@ -1,6 +1,6 @@
+import { useGameState } from "@features/game/context/useGameState";
 import React from "react";
 import Swal from "sweetalert2";
-import { useGameState } from "@features/game/model/useGameState";
 
 const MaxScoreSettings = () => {
     const { maxScore, setMaxScore } = useGameState();

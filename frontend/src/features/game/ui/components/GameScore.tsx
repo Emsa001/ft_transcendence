@@ -1,5 +1,5 @@
+import { useGameState } from "@features/game/context/useGameState";
 import React from "react";
-import { useGameState } from "@features/game/model/useGameState";
 
 const scoreClass =
     "px-4 py-2 bg-white/5 backdrop-blur-lg rounded-2xl shadow-2xl";

@@ -2,9 +2,8 @@ import React, { useRef, useEffect } from "react";
 import { GameRenderer } from "../../service/GameRender";
 import { GameConfig, GameData } from "../../types";
 import { GameEngine } from "../../service/GameEngine";
-import { useGameState } from "../../model/useGameState";
-import { useGame } from "../../model/useGame";
-import { GameScore } from "./GameScore";
+import { useGame } from "@features/game/model/useGame";
+import { useGameState } from "@features/game/context/useGameState";
 
 export interface GameCanvasElementProps {
     padding?: number;
