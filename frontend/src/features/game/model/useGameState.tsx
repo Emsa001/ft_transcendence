@@ -140,7 +140,7 @@ export const GameStateProvider = ({
     };
 
     return (
-        <div className="w-full h-full p-4">
+        <div className="w-full h-full p-8">
             <GameStateContext.Provider
                 value={{
                     players,
@@ -158,7 +158,7 @@ export const GameStateProvider = ({
                     onSpace,
                 }}
             >
-                <div className="w-full h-full flex flex-col items-center justify-center gap-6">
+                <div className="w-full h-full flex flex-col items-center justify-center gap-4">
                     {children}
                 </div>
             </GameStateContext.Provider>
