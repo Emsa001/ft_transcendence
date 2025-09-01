@@ -1,13 +1,36 @@
-import { useWebSocket } from "@shared/hooks/websocket";
 import React, { useState, useEffect } from "react";
 import GameApi from "../service/api";
 import { GameInvite } from "./components/GameInvite";
+import { useWebSocket } from "@shared/hooks/useWebSocket";
 
 interface GameRemoteProps {
     code?: string; // Optional code for joining existing game
 }
 
-export const GameRemote = ({ code }: GameRemoteProps) => {
+export const GameRemoteElement = ({ code }: GameRemoteProps) => {
+    const [window, setWindow] = useState<"lobby" | "create-join">("lobby");
+
+    if (window === "lobby") {
+        return (
+            <div>
+                <button onClick={() => setWindow("create-join")}>
+                    Create or Join Game
+                </button>
+            </div>
+        );
+    }
+
+    return (
+        <div className="w-full h-full flex items-center justify-center">
+            <button>Play Random</button>
+            <button>Host Game</button>
+            <input type="text" placeholder="Enter Game Code" />
+            <button>Join Game</button>
+        </div>
+    );
+};
+
+const GameRemote = ({ code }: GameRemoteProps) => {
     const [gameCode, setGameCode] = useState<string | null>(code || null);
     const [players, setPlayers] = useState<string[]>([]);
     const [gameStarted, setGameStarted] = useState(false);

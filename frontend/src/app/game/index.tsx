@@ -2,7 +2,7 @@ import { GameWindowState } from "@features/game/types";
 import { GameBackground } from "@features/game/ui/components/GameBackground";
 import { GameHeader } from "@features/game/ui/components/GameHeader";
 import { GameLocal } from "@features/game/ui/GameLocal";
-import { GameRemote } from "@features/game/ui/GameRemote";
+import { GameRemoteElement } from "@features/game/ui/GameRemote";
 import { MenuScreen } from "@features/game/ui/MenuScreen";
 import { TournamentElement } from "@features/tournament/ui/TournamentElement";
 import React, { useState } from "react";
@@ -27,7 +27,9 @@ export default function Game({ code }: { code?: string }) {
                 {window === "local-casual" && <GameLocal />}
                 {window === "local-tournament" && <TournamentElement />}
 
-                {window === "remote-casual" && <GameRemote code={code} />}
+                {window === "remote-casual" && (
+                    <GameRemoteElement code={code} />
+                )}
                 {window === "remote-tournament" && <TournamentElement />}
 
                 <GameBackground />

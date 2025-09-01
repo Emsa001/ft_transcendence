@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { GameDTOType, GameStatus, TournamentUserDTOType } from "shared";
-import { TournamentLogic } from "./tournamentLogic";
 import { LocalTournamentState } from "../types";
+import { LocalTournament } from "@features/game/service/LocalTournament";
 
 export const useLocalTournamentState = (maxPlayers: number) => {
     const [state, setState] = useState<LocalTournamentState>({
@@ -19,7 +19,7 @@ export const useLocalTournamentState = (maxPlayers: number) => {
     };
 
     const addPlayer = (username: string): StatusMessage => {
-        const error = TournamentLogic.validatePlayerAddition(
+        const error = LocalTournament.validatePlayerAddition(
             state.players,
             username,
             maxPlayers,
@@ -57,13 +57,13 @@ export const useLocalTournamentState = (maxPlayers: number) => {
     };
 
     const startTournament = () => {
-        const error = TournamentLogic.validateTournamentStart(state.players);
+        const error = LocalTournament.validateTournamentStart(state.players);
         if (error) {
             alert(error);
             return;
         }
 
-        const totalGames = TournamentLogic.createAllGames(state.players.length);
+        const totalGames = LocalTournament.createAllGames(state.players.length);
         setState((prev) => ({
             ...prev,
             games: totalGames,
@@ -72,7 +72,7 @@ export const useLocalTournamentState = (maxPlayers: number) => {
     };
 
     const endTournament = () => {
-        const activePlayers = TournamentLogic.getActivePlayers(state.players);
+        const activePlayers = LocalTournament.getActivePlayers(state.players);
         if (activePlayers.length !== 1) {
             alert(
                 "Tournament cannot be ended. There should be exactly one winner."
@@ -92,21 +92,21 @@ export const useLocalTournamentState = (maxPlayers: number) => {
             return [];
         }
 
-        if (!TournamentLogic.canAdvanceToNextRound(state.games)) {
+        if (!LocalTournament.canAdvanceToNextRound(state.games)) {
             alert(
                 "Cannot create a new round while there are games in progress."
             );
             return [];
         }
 
-        const activePlayers = TournamentLogic.getActivePlayers(state.players);
-        if (TournamentLogic.shouldTournamentEnd(activePlayers)) {
+        const activePlayers = LocalTournament.getActivePlayers(state.players);
+        if (LocalTournament.shouldTournamentEnd(activePlayers)) {
             alert("Cannot create a new round. Tournament should be finished.");
             return [];
         }
 
         const { updatedGames, gamesForRound } =
-            TournamentLogic.assignPlayersToGames(
+            LocalTournament.assignPlayersToGames(
                 state.games,
                 state.round,
                 activePlayers
@@ -156,7 +156,7 @@ export const useLocalTournamentState = (maxPlayers: number) => {
 
         if (currentRoundInProgress.length === 0) {
             const activePlayers =
-                TournamentLogic.getActivePlayers(updatedPlayers);
+                LocalTournament.getActivePlayers(updatedPlayers);
             if (activePlayers.length === 1) {
                 updates.winnerId = activePlayers[0].id;
                 updates.status = GameStatus.FINISHED;
