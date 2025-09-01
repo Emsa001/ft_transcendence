@@ -38,6 +38,8 @@ export class LocalTournament {
                     players: [],
                     winner: null,
                     round: currentRound,
+                    isPrivate: false,
+                    code: null,
                     createdAt: new Date(),
                     updatedAt: new Date(),
                 });

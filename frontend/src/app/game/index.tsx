@@ -20,7 +20,7 @@ export default function Game({ code }: { code?: string }) {
 
     return (
         <div className="select-none h-full w-full flex items-center justify-center p-16 pt-24">
-            <div className="w-full h-full rounded-2xl shadow-2xl bg-fuchsia-900/5 backdrop-blur-xl">
+            <div className="w-full h-full rounded-2xl shadow-2xl bg-fuchsia-900/5 relative">
                 {/* Header stays at the top */}
                 <GameHeader window={window} setWindow={setWindow} />
 

@@ -1,9 +1,19 @@
 import { useEffect, useRef, useState } from "react";
 
-export const useWebSocket = (url: string | null) => {
-    const wsRef = useRef<WebSocket | null>(null);
-    const [messages, setMessages] = useState<any[]>([]);
+interface Hook {
+    type: "onMessage" | "onConnect" | "onDisconnect";
+    callback: Function;
+}
+
+export const useWebSocket = (url: string) => {
     const [isConnected, setIsConnected] = useState(false);
+    const wsRef = useRef<WebSocket | null>(null);
+    const hooksRef = useRef<Hook[]>([]);
+
+    const addHook = (hook: Hook) => {
+        hooksRef.current.push(hook);
+        console.log("Hook added:", hook);
+    };
 
     // Connect to WebSocket
     useEffect(() => {
@@ -13,21 +23,35 @@ export const useWebSocket = (url: string | null) => {
             process.env.FT_REACT_PUBLIC_API_HOST + url
         );
 
-        wsRef.current.onopen = () => setIsConnected(true);
-        wsRef.current.onclose = () => setIsConnected(false);
+        wsRef.current.onopen = () => {
+            setIsConnected(true);
+            hooksRef.current.forEach((hook) => {
+                if (hook.type === "onConnect") {
+                    hook.callback();
+                }
+            });
+        };
+        wsRef.current.onclose = () => {
+            setIsConnected(false);
+            hooksRef.current.forEach((hook) => {
+                if (hook.type === "onDisconnect") {
+                    hook.callback();
+                }
+            });
+        };
         wsRef.current.onmessage = (event) => {
-            try {
-                const data = JSON.parse(event.data);
-                setMessages((prev) => [...prev, data]);
-            } catch (e) {
-                console.error("Invalid message received:", event.data);
-            }
+            hooksRef.current.forEach((hook) => {
+                if (hook.type === "onMessage") {
+                    hook.callback(event);
+                }
+            });
         };
 
         // Cleanup on unmount
         return () => {
             wsRef.current?.close();
-            console.log("WebSocket disconnected");
+            wsRef.current = null;
+            hooksRef.current = [];
         };
     }, [url]);
 
@@ -38,5 +62,5 @@ export const useWebSocket = (url: string | null) => {
         }
     };
 
-    return { messages, sendMessage, isConnected };
+    return { addHook, sendMessage, isConnected };
 };

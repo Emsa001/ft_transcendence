@@ -14,15 +14,18 @@ export enum GameMode {
 
 export type GameUserDTOType = UserDTOType & {
     score: number;
-}
+};
 
 export interface GameDTOType {
     id: number;
+    code: string | null;
     status: GameStatus;
     mode: GameMode;
+    isPrivate: boolean;
+    round?: number | null;
+    maxScore?: number | null;
     players: GameUserDTOType[];
     winner: string | null;
-    round?: number | null;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -32,3 +35,14 @@ export interface GameHistoryFilter {
     end?: Date;
     limit?: number;
 }
+
+export type GameCreationAttributes = {
+    status?: GameStatus;
+    mode?: GameMode;
+    isPrivate?: boolean;
+    round?: number | null;
+    maxScore?: number;
+    maxPlayers?: number;
+    tournamentId?: number;
+    winnerId?: number | null;
+};

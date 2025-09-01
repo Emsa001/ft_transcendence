@@ -17,12 +17,16 @@ interface ButtonProps extends DOMAttributes {
     formMethod?: string;
     formNoValidate?: boolean;
     formTarget?: string;
+
+    onClick?: (e: Event) => void;
 }
 
 export const Button = ({
     color = "default",
     className = "",
     children,
+    onClick,
+    disabled,
     ...rest
 }: ButtonProps) => {
     const colorClasses = {
@@ -34,9 +38,18 @@ export const Button = ({
         none: "bg-transparent hover:bg-gray-200",
     };
 
+    const handleClick = (e: Event) => {
+        if (disabled) {
+            e.preventDefault();
+            return;
+        }
+        onClick?.(e);
+    };
+
     return (
         <button
-            className={`px-2 py-1 text-white rounded ${colorClasses[color]} ${className}`}
+            className={`px-2 py-1 text-white rounded ${colorClasses[color]} ${className} ${disabled ? "opacity-50" : ""}`}
+            onClick={handleClick}
             {...rest}
         >
             {children}
