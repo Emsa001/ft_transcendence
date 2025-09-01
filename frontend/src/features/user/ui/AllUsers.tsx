@@ -131,7 +131,7 @@ export function AllUsers() {
                                 {user.username}
                             </span>
                             <button
-                                className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded"
+                                className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded z-10"
                                 onClick={() => handleUnblockUser(user.id)}
                             >
                                 unblock

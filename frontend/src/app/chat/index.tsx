@@ -1,45 +1,25 @@
-import React, { useEffect, useState } from "react";
-import { UserDTOType } from "shared";
+import React, { useEffect, useNavigate } from "react";
 import { Sidebar } from "@features/chat/ui/Sidebar";
-import FriendsApi from "@features/user/service/friendsApi";
 import { ChatArea } from "@features/chat/ui/ChatArea";
+import { ChatProvider } from "@features/chat/model/ChatContext";
+import { useUser } from "@features/auth/model/useUser";
 
 export default function Chat() {
-    const [selectedUser, setSelectedUser] = useState<UserDTOType | null>(null);
-    const [users, setUsers] = useState<UserDTOType[]>([]);
+    const navigate = useNavigate();
+    const { user, loading } = useUser();
 
     useEffect(() => {
-        const fetchUsers = async () => {
-            const allUsers = await FriendsApi.getAllFriends();
-            setUsers(allUsers);
-        };
-        fetchUsers();
-    }, []);
+        if (!user && !loading) navigate("/auth");
+    }, [user, loading]);
+
+    if (!user) return <div />;
 
     return (
-        <div className="flex h-full text-white pt-16 ">
-            {/* Left Sidebar */}
-            <Sidebar
-                users={users}
-                selectedUser={selectedUser}
-                onSelectUser={setSelectedUser}
-            />
-
-            {/* Chat Area */}
-            <div className="flex flex-col w-2/3 bg-black/50 ">
-                {selectedUser ? (
-                    <ChatArea
-                        selectedUser={selectedUser}
-                        users={users}
-                        setUsers={setUsers}
-                        setSelectedUser={setSelectedUser}
-                    />
-                ) : (
-                    <div className="flex items-center justify-center h-full">
-                        Please choose a user to start chatting
-                    </div>
-                )}
-            </div>
+        <div className="w-full h-full">
+            <ChatProvider>
+                <Sidebar />
+                <ChatArea />
+            </ChatProvider>
         </div>
     );
 }

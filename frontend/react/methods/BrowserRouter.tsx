@@ -100,11 +100,6 @@ export const LinkMethod = ({
             return;
         }
 
-        if (to === window.location.pathname) {
-            e.preventDefault();
-            return;
-        }
-
         e.preventDefault();
         navigate(to, { ...state });
     };

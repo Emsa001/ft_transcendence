@@ -10,20 +10,40 @@ export interface FindOptions {
 }
 
 class ChatDBService {
-    public async findChat(id1: number, id2: number, options: FindOptions): Promise<Message[]> {
-        const chat = await Message.findAll({
-            where: {
-                [Op.or]: [
-                    { sender: id1, receiver: id2 },
-                    { sender: id2, receiver: id1 },
-                ],
-            },
-            ...options,
-        });
-        if (!chat) {
-            return [];
+    public async findChat(
+        id1: number,
+        id2: number,
+        options: FindOptions
+    ): Promise<{ messages: MessageDTOType[]; hasMore: boolean }> {
+        const limit = options.limit ?? 20;
+        const offset = options.offset ?? 0;
+
+        const where: any = {
+            [Op.or]: [
+                { sender: id1, receiver: id2 },
+                { sender: id2, receiver: id1 },
+            ],
+        };
+
+        if (options.startDate) {
+            where.createdAt = { ...(where.createdAt || {}), [Op.gte]: options.startDate };
         }
-        return chat;
+        if (options.endDate) {
+            where.createdAt = { ...(where.createdAt || {}), [Op.lte]: options.endDate };
+        }
+
+        const messages = await Message.findAll({
+            where,
+            order: [['createdAt', 'DESC']],
+            limit: limit + 1,
+            offset,
+        });
+
+        const hasMore = messages.length > limit;
+        return {
+            messages: messages.reverse(),
+            hasMore,
+        };
     }
 
     public async saveMessage(msg: MessageDTOType) {

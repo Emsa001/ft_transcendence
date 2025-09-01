@@ -33,4 +33,7 @@ export class Message extends Model<
 
     @Column(DataType.TEXT)
     declare message: string;
+
+    @Column(DataType.DATE)
+    declare createdAt: Date;
 }

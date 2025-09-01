@@ -15,7 +15,6 @@ export class ChatController extends BaseController {
             let userId = jwtService.verify(token).id;
 
             chatWSService.addUser(userId, connection);
-
             connection.on("message", (raw: Buffer) => {
                 try {
                     const msg = JSON.parse(raw.toString());
@@ -46,7 +45,6 @@ export class ChatController extends BaseController {
             order: [["createdAt", "DESC"]],
         });
 
-        return reply.send(data.reverse());
+        return reply.send(data);
     }
-
 }

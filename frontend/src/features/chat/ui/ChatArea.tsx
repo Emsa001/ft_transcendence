@@ -1,64 +1,26 @@
-import React, { useEffect, useNavigate, useRef, useState } from "react";
-import { MessageDTOType, UserDTOType } from "shared";
+import React, { useRef, useEffect, useState } from "react";
 import { ChatInput } from "@features/chat/ui/ChatInput";
-import ChatApi from "@features/chat/service/api";
-import { useUser } from "@features/auth/model/useUser";
 import { UserInfo } from "./UserInfo";
+import { usechat } from "../model/ChatContext";
+import { useUser } from "@features/auth/model/useUser";
+import { MessageCard } from "./MessageCard";
+import ChatApi from "@features/chat/service/api";
 
-interface ChatAreaProps {
-    selectedUser: UserDTOType;
-    users: UserDTOType[];
-    setUsers: (users: UserDTOType[]) => void;
-    setSelectedUser: (user: UserDTOType | null) => void;
-}
-
-let ws: WebSocket | null;
-export function ChatArea({
-    selectedUser,
-    users,
-    setUsers,
-    setSelectedUser,
-}: ChatAreaProps) {
-    const [messages, setMessages] = useState<MessageDTOType[]>([]);
-    const [input, setInput] = useState("");
+export function ChatArea() {
+    const blockScroll = useRef(false);
+    const { setMessages, setIsBlocked, selectedUser, messages } = usechat();
+    const [offset, setOffset] = useState(0);
+    const [hasMore, setHasMore] = useState(false);
     const messageBoxRef = useRef<HTMLDivElement | null>(null);
-    const offset = useRef(0);
     const { user } = useUser();
-
     if (!user) return <div />;
 
-    const handleSend = () => {
-        if (!input.trim()) return;
-
-        if (ws) {
-            ws.send(
-                JSON.stringify({
-                    sender: user.id,
-                    receiver: selectedUser.id,
-                    message: input,
-                })
-            );
+    const scrollToBottom = () => {
+        if (blockScroll.current) {
+            blockScroll.current = false;
+            return;
         }
 
-        setMessages([
-            ...messages,
-            { sender: user.id, receiver: selectedUser.id, message: input },
-        ]);
-        scrollToBottom();
-        setInput("");
-    };
-
-    async function getMessages() {
-        const oldMessages = await ChatApi.getChatWith(
-            selectedUser.id,
-            offset.current
-        );
-        setMessages((prev) => [...oldMessages, ...prev]);
-        if (offset.current == 0) scrollToBottom();
-        offset.current += oldMessages.length;
-    }
-
-    const scrollToBottom = () => {
         setTimeout(() => {
             if (messageBoxRef.current) {
                 messageBoxRef.current.scrollTop =
@@ -67,74 +29,77 @@ export function ChatArea({
         }, 0);
     };
 
+    const handleLoadMore = async () => {
+        blockScroll.current = true;
+        getMessages();
+    };
+
     useEffect(() => {
-        setMessages([]);
-        offset.current = 0;
-        setTimeout(() => {
-            getMessages();
-        }, 0);
+        scrollToBottom();
+    }, [messages]);
+
+    const getMessages = async (init?: boolean) => {
+        if (!selectedUser) return;
+
+        const data = await ChatApi.getChatWith(
+            selectedUser.id,
+            init ? 0 : offset
+        );
+        if (init) {
+            setMessages(data.messages);
+            setOffset(data.messages.length);
+        } else {
+            setMessages([...data.messages, ...messages]);
+            setOffset(offset + data.messages.length);
+        }
+        setHasMore(data.hasMore);
+    };
+
+    useEffect(() => {
+        setIsBlocked(false);
+
+        if (selectedUser) {
+            getMessages(true);
+        }
     }, [selectedUser]);
 
-    useEffect(() => {
-        ws = new WebSocket(`ws://localhost:8000/chat`);
-
-        ws.onmessage = (event) => {
-            const data = JSON.parse(event.data);
-            setMessages((prev) => [...prev, data]);
-            scrollToBottom();
-        };
-
-        return () => {
-            if (ws) {
-                ws.close();
-            }
-        };
-    }, []);
-
     return (
-        <div className="flex flex-col h-full">
-            {/* User Info */}
-            <UserInfo
-                user={user}
-                selectedUser={selectedUser}
-                users={users}
-                setUsers={setUsers}
-                setSelectedUser={setSelectedUser}
-            />
+        <div className="flex flex-col w-2/3 bg-black/50 relative z-10">
+            {selectedUser ? (
+                <div className="flex flex-col h-full">
+                    {/* User Info */}
+                    <UserInfo />
 
-            {/* Messages */}
-            <div
-                ref={messageBoxRef}
-                className="flex-1 overflow-y-auto p-4 space-y-3"
-            >
-                <div className="flex justify-center">
-                    <button
-                        onClick={getMessages}
-                        className="px-4 py-1 text-sm rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-800 text-cyan-300 shadow-[0_0_8px_rgba(0,255,255,0.5)] transition"
-                    >
-                        Load more
-                    </button>
-                </div>
-                {messages.map((msg, i) => (
+                    {/* Messages */}
                     <div
-                        key={msg.id || i}
-                        className={`flex ${msg.sender === user.id ? "justify-end" : "justify-start"}`}
+                        ref={messageBoxRef}
+                        className="flex-1 overflow-y-auto p-4 space-y-3"
                     >
-                        <div
-                            className={`px-4 py-2 rounded-2xl max-w-xs border border-cyan-800 shadow-[0_0_8px_rgba(0,255,255,0.5)] ${
-                                msg.sender === user.id
-                                    ? "bg-cyan-500 text-black"
-                                    : "bg-gray-800 text-cyan-200"
-                            }`}
-                        >
-                            {msg.message}
-                        </div>
+                        {hasMore && (
+                            <div className="flex justify-center">
+                                <button
+                                    onClick={handleLoadMore}
+                                    className="px-4 py-1 text-sm rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-800 text-cyan-300 shadow-[0_0_8px_rgba(0,255,255,0.5)] transition"
+                                >
+                                    Load more
+                                </button>
+                            </div>
+                        )}
+                        {messages.map((msg, i) => (
+                            <div key={i}>
+                                <MessageCard msg={msg} user={user} />
+                            </div>
+                        ))}
                     </div>
-                ))}
-            </div>
 
-            {/* Input */}
-            <ChatInput input={input} setInput={setInput} onSend={handleSend} />
+                    {/* Input */}
+                    <ChatInput />
+                </div>
+            ) : (
+                <div className="flex items-center justify-center h-full">
+                    Please choose a user to start chatting
+                </div>
+            )}
         </div>
     );
 }

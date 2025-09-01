@@ -1,25 +1,13 @@
-import { UserPicture } from "@features/user/ui/UserPicture";
 import React, { useNavigate } from "react";
-import { UserDTOType } from "shared";
-
+import { UserPicture } from "@features/user/ui/UserPicture";
 import blockUserApi from "@features/user/service/blockUserApi";
+import { usechat } from "../model/ChatContext";
 
-interface UserInfoProps {
-    user: UserDTOType;
-    selectedUser: UserDTOType;
-    users: UserDTOType[];
-    setUsers: (users: UserDTOType[]) => void;
-    setSelectedUser: (user: UserDTOType | null) => void;
-}
-
-export function UserInfo({
-    user,
-    selectedUser,
-    users,
-    setUsers,
-    setSelectedUser,
-}: UserInfoProps) {
+export function UserInfo() {
     const navigate = useNavigate();
+    const { selectedUser, users, setUsers, setSelectedUser } = usechat();
+
+    if (!selectedUser) return <div />;
 
     const handleBlockUser = async () => {
         await blockUserApi.blockUser(selectedUser.id);
@@ -33,7 +21,7 @@ export function UserInfo({
             className="h-18 border-b gap-2 border-gray-800 flex items-center px-4 cursor-pointer shadow-[0_0_10px_rgba(0,255,255,0.3)] relative"
         >
             <UserPicture
-                userId={user.id.toString()}
+                userId={selectedUser.id.toString()}
                 className="w-10 h-10 rounded-full shadow-[0_0_8px_rgba(0,255,255,0.7)]"
             />
             <h3 className="font-semibold text-cyan-300 drop-shadow-[0_0_8px_rgba(0,255,255,0.8)]">

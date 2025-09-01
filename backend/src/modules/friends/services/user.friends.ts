@@ -23,7 +23,7 @@ export class FriendsService {
     }
 
     static async askFriendRequest(userId1: number, userId2: number) {
-        if (userId1 === userId2) {
+        if (userId1 == userId2) {
             throw new HttpException(
                 400,
                 "Cannot send friend request to yourself"

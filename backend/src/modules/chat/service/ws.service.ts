@@ -28,6 +28,20 @@ class ChatWSService {
         const now = Date.now();
 
         if (await BlockUserService.isBlocked(msg.sender, msg.receiver)) {
+            const errorPayload = JSON.stringify({
+                type: "error",
+                code: "BLOCKED_USER",
+                message: "Cannot send message to this user",
+                originalMessage: msg.message
+            });
+
+            if (this.connections.has(msg.sender)) {
+                for (const socket of this.connections.get(msg.sender)!) {
+                    if (socket.readyState === 1) {
+                        socket.send(errorPayload);
+                    }
+                }
+            }
             return;
         }
 
@@ -36,16 +50,18 @@ class ChatWSService {
         }
 
         const last = this.lastMessageTime.get(msg.sender) || 0;
-        if (now - last < 1000) {
+        if (now - last < 100) {
             return;
         }
 
         this.lastMessageTime.set(msg.sender, now);
 
         const payload = JSON.stringify({
+            type: "message",
             sender: msg.sender,
             receiver: msg.receiver,
             message: msg.message,
+            createdAt: msg.createdAt,
         });
 
         chatDBService.saveMessage(msg);
