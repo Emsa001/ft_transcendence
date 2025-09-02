@@ -19,12 +19,14 @@ export type GameUserDTOType = UserDTOType & {
 export interface GameDTOType {
     id: number;
     code: string | null;
+    hostId: number;
     status: GameStatus;
     mode: GameMode;
     isPrivate: boolean;
     round?: number | null;
     maxScore?: number | null;
     players: GameUserDTOType[];
+    maxPlayers: number;
     winner: string | null;
     createdAt: Date;
     updatedAt: Date;
@@ -36,13 +38,17 @@ export interface GameHistoryFilter {
     limit?: number;
 }
 
-export type GameCreationAttributes = {
+export interface GameCreationRequest {
     status?: GameStatus;
     mode?: GameMode;
     isPrivate?: boolean;
-    round?: number | null;
     maxScore?: number;
     maxPlayers?: number;
+};
+
+export interface GameCreationAttributes extends GameCreationRequest{
+    hostId: number;
+    round?: number | null;
     tournamentId?: number;
     winnerId?: number | null;
 };

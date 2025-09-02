@@ -33,9 +33,11 @@ export class LocalTournament {
             for (let i = 0; i < gamesInRound; i++) {
                 allGames.push({
                     id: gameIdCounter + gameIndex,
+                    hostId: 0,
                     status: GameStatus.LOCKED,
                     mode: GameMode.NORMAL,
                     players: [],
+                    maxPlayers: 2,
                     winner: null,
                     round: currentRound,
                     isPrivate: false,

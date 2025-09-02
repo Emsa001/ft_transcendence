@@ -1,39 +1,54 @@
 import { WebSocket } from "@fastify/websocket";
 import { WebSocketService } from "@/lib/WebSocketService";
-import GameStoreInstance from "./storage.service";
+import { GameRooms } from "./registry.service";
 
 class GameLobbyService extends WebSocketService {
     constructor() {
         super();
-        GameStoreInstance.addHook("onGameCreate", this.updateLobby.bind(this));
-        GameStoreInstance.addHook("onGameDelete", this.updateLobby.bind(this));
+        GameRooms.addHook("onGameCreate", this.updateLobby.bind(this));
+        GameRooms.addHook("onGameDelete", this.updateLobby.bind(this));
+        GameRooms.addHook(
+            "onGameAvailabilityChange",
+            this.updateLobby.bind(this)
+        );
     }
 
-    private updateClient(client: WebSocket) {
-        const publicGames = GameStoreInstance.getPublicGames();
+    private updatePlayer(client: WebSocket) {
+        const publicRooms = GameRooms.getPublicWaitingRooms();
         this.sendToClient(client, {
             type: "lobby_update",
-            games: publicGames.length,
+            games: publicRooms.length,
         });
     }
 
-    addClient(userId: number, connection: WebSocket) {
+    addPlayer(userId: number, connection: WebSocket) {
         super.addClient(userId, connection);
-        this.updateClient(connection);
+        this.updatePlayer(connection);
     }
 
     updateLobby() {
-        const publicGames = GameStoreInstance.getPublicGames();
-        this.broadcast({ type: "lobby_update", games: publicGames.length });
+        const publicRooms = GameRooms.getPublicWaitingRooms();
+        this.broadcast({ type: "lobby_update", games: publicRooms.length });
     }
 
-    protected onRemoveClient(connection: WebSocket): void {
-        console.log("A player disconnected from the game lobby");
+    protected onMessage(connection: WebSocket, message: any): void {
+        const user = this.getUserId(connection);
+        if (!user) return;
+
+        const payload = JSON.parse(message);
+        switch (payload.type) {
+            case "GET_LOBBY":
+                this.updatePlayer(connection);
+                break;
+
+            default:
+                console.warn("Unknown message type in lobby:", payload.type);
+        }
     }
 
-    protected onAddClient(connection: WebSocket): void {
-        console.log("A player connected to the game lobby");
-    }
+    protected onClientDisconnect(connection: WebSocket): void {}
+
+    protected onClientConnect(connection: WebSocket): void {}
 }
 
 export const GameLobbyServiceInstance = new GameLobbyService();

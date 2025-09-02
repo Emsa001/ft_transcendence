@@ -2,18 +2,19 @@ import React, { useNavigate } from "react";
 import { ShinyText } from "@shared/components/Shiny";
 import { GameCreationModal } from "../remote/GameCreation";
 import { GameJoiningModal } from "../remote/GameJoin";
-import { GameCreationAttributes } from "shared";
+import { GameCreationRequest } from "shared";
 import { useGameLobby } from "@features/game/model/useGameLobby";
 import GameApi from "../../service/GameAPI";
 
 export const GameLobby = () => {
     const navigate = useNavigate();
-    const { games, modal, setModal, sendMessage } = useGameLobby();
+    const { isConnected, isLoading, games, modal, setModal, sendMessage } =
+        useGameLobby();
 
-    const handleCreateGame = async (data: GameCreationAttributes) => {
+    const handleCreateGame = async (data: GameCreationRequest) => {
         try {
             const res = await GameApi.createGame(data);
-            navigate(`/game/${res.data}`);
+            navigate(`/game/${res.data.code}`);
         } catch (err) {
             console.error("Failed to create game", err);
         }
@@ -21,7 +22,10 @@ export const GameLobby = () => {
 
     const handleJoinRandom = async () => {
         if (games <= 0) return;
-        sendMessage({ type: "join_random" });
+        const data = await GameApi.joinRandom();
+        if (data == null)
+            return alert("Failed to join a random game. Please try again.");
+        navigate(`/game/${data.code}`);
     };
 
     const handleJoinWithCode = (code: string) => {
@@ -35,6 +39,14 @@ export const GameLobby = () => {
                 gradient="bg-logo-gradient"
                 className="text-6xl font-extrabold text-center mb-6"
             />
+
+            {!isLoading && !isConnected && (
+                <div className="text-red-500 font-semibold">
+                    Disconnected from server.
+                    <br />
+                    Trying to reconnect...
+                </div>
+            )}
 
             <div className="w-full max-w-5xl grid place-items-center grid-cols-1 md:grid-cols-3 gap-6 px-6">
                 {/* Play Random */}

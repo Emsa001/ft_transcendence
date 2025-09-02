@@ -21,7 +21,7 @@ export const GameJoiningModal = ({
 
         // TODO: api request to check if game exists
         const game = await GameAPI.getGameByCode(code);
-        if (!game || !game.data) {
+        if (!game) {
             setError("Game not found. Please check the code and try again.");
             return;
         }

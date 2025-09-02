@@ -6,8 +6,8 @@ type ModalState = "creating" | "joining" | null;
 export const useGameLobby = (code?: string) => {
     const [modal, setModal] = useState<ModalState>(null);
     const [games, setGames] = useState<number>(0);
-
-    const { addHook, sendMessage, isConnected } = useWebSocket("/game/lobby");
+    const { addHook, sendMessage, isConnected, isLoading, reconnect } =
+        useWebSocket("/game/lobby");
 
     const handleSocketMessage = (msg: MessageEvent) => {
         const payload = JSON.parse(msg.data);
@@ -22,9 +22,27 @@ export const useGameLobby = (code?: string) => {
         addHook({ type: "onMessage", callback: handleSocketMessage });
     }, []);
 
+    // TODO: reconnect
+    // useEffect(() => {
+    //     let reconnectInterval: NodeJS.Timeout;
+
+    //     if (!isConnected && !isLoading) {
+    //         reconnectInterval = setInterval(() => {
+    //             reconnect();
+    //         }, 2000);
+    //     }
+
+    //     return () => {
+    //         if (reconnectInterval) {
+    //             clearInterval(reconnectInterval);
+    //         }
+    //     };
+    // }, [isConnected, isLoading, reconnect]);
+
     return {
-        sendMessage,
         isConnected,
+        isLoading,
+        sendMessage,
         games,
         modal,
         setModal,

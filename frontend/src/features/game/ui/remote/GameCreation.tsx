@@ -4,7 +4,7 @@ import { Modal } from "@shared/components/Modal";
 
 type GameModalProps = {
     onClose?: () => void;
-    onCreate?: (data: GameCreationAttributes) => void;
+    onCreate?: (data: Omit<GameCreationAttributes, "hostId">) => void;
 };
 
 export const GameCreationModal = ({ onClose, onCreate }: GameModalProps) => {

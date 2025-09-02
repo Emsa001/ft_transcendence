@@ -56,6 +56,11 @@ export class Game extends Model<InferAttributes<Game>, GameCreationAttributes> {
     @Column(DataType.INTEGER)
     declare id: number;
 
+    @ForeignKey(() => User)
+    @AllowNull(false)
+    @Column(DataType.INTEGER)
+    declare hostId: number;
+
     @Unique
     @AllowNull(true)
     @Column(DataType.STRING)
@@ -123,6 +128,8 @@ export class Game extends Model<InferAttributes<Game>, GameCreationAttributes> {
     toDTO(): GameDTO {
         return new GameDTO(this);
     }
+
+    static findByCode = (code: string) => Game.findOne({ where: { code } });
 
     async playerScore(userId: number, score: number) {
         if (this.status !== GameStatus.IN_PROGRESS)

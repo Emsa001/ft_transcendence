@@ -4,6 +4,7 @@ import { HttpException } from "@/utils/exceptions";
 
 export class GameDTO implements GameDTOType {
     id: number;
+    hostId: number;
     code: string | null;
     status: GameStatus;
     mode: GameMode;
@@ -11,6 +12,7 @@ export class GameDTO implements GameDTOType {
     round?: number | null;
     maxScore: number | null;
     players: GameUserDTOType[];
+    maxPlayers: number;
     winner: string | null;
     createdAt: Date;
     updatedAt: Date;
@@ -28,12 +30,14 @@ export class GameDTO implements GameDTOType {
             );
 
         this.id = game.id;
+        this.hostId = game.hostId;
         this.code = game.code;
         this.status = game.status;
         this.mode = game.mode;
         this.isPrivate = game.isPrivate;
         this.round = game.round;
         this.maxScore = game.maxScore;
+        this.maxPlayers = game.maxPlayers;
         this.players = game.players
             ? game.players.map((player) => ({
                   ...player.toDTO(),

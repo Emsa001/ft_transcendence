@@ -18,11 +18,15 @@ export class WebSocketService {
     }
 
     addClient(userId: number, connection: WebSocket) {
-        if (!this.clients.has(userId)) {
-            this.clients.set(userId, []);
-        }
+        this.onClientConnect(connection);
+
+        if (!this.clients.has(userId)) this.clients.set(userId, []);
+
         this.clients.get(userId)!.push(connection);
-        this.onAddClient(connection);
+
+        connection.on("message", (data) => {
+            this.onMessage(connection, data);
+        });
 
         connection.on("close", () => {
             this.removeClient(userId, connection);
@@ -30,20 +34,36 @@ export class WebSocketService {
     }
 
     removeClient(userId: number, connection: WebSocket) {
+        this.onClientDisconnect(connection);
+
         const userConnections = this.clients.get(userId);
         if (userConnections) {
-            this.clients.set(
-                userId,
-                userConnections.filter((conn) => conn !== connection)
+            const filteredConnections = userConnections.filter(
+                (conn) => conn !== connection
             );
+            if (filteredConnections.length === 0) this.clients.delete(userId);
+            else this.clients.set(userId, filteredConnections);
         }
-        this.onRemoveClient(connection);
     }
 
-    getClients(userId: number): WebSocket[] {
+    getClient(userId: number): WebSocket[] {
         return this.clients.get(userId) || [];
     }
 
-    protected onRemoveClient(connection: WebSocket) {}
-    protected onAddClient(connection: WebSocket) {}
+    getClients() {
+        return this.clients;
+    }
+
+    getUserId(connection: WebSocket): number | null {
+        for (const [userId, sockets] of this.clients) {
+            if (sockets.includes(connection)) {
+                return userId;
+            }
+        }
+        return null;
+    }
+
+    protected onClientConnect(connection: WebSocket) {}
+    protected onClientDisconnect(connection: WebSocket) {}
+    protected onMessage(connection: WebSocket, message: any) {}
 }

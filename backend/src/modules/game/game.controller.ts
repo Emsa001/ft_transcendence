@@ -3,14 +3,13 @@ import { Controller, GET, POST } from "fastify-decorators";
 
 import { BaseController } from "../base";
 import { Game } from "@/database/models/Game/Game";
-import { HttpException } from "@/utils/exceptions";
 import { AUTHORIZED, WS_AUTHORIZED } from "../auth/auth.middleware";
 import { WebSocket } from "@fastify/websocket";
 import { GameCreationAttributes } from "shared";
 
-import GameStore from "./services/storage.service";
-import GameRoomService from "./services/room.service";
 import GameLobbyService from "./services/lobby.service";
+import { GameRooms } from "./services/registry.service";
+import { HttpException } from "@/utils/exceptions";
 
 @Controller("/game")
 export class GameController extends BaseController {
@@ -25,27 +24,34 @@ export class GameController extends BaseController {
     @AUTHORIZED
     async getGameByCode(request: FastifyRequest, reply: FastifyReply) {
         const { code } = request.params as { code: string };
-        const game = GameStore.getGame(code);
-        if (!game) throw new HttpException(404, "Game not found");
-
-        return reply.send(game);
+        const game = await Game.findByCode(code);
+        return reply.send(game?.toDTO());
     }
 
     @POST("/create")
     @AUTHORIZED
     async createGame(request: FastifyRequest, reply: FastifyReply) {
         const data = request.body as GameCreationAttributes;
-        const tempGame = GameStore.createTempGame(request.user.id, data);
+        const room = await Game.create({
+            hostId: request.user.id,
+            isPrivate: data.isPrivate || false,
+            maxScore: data.maxScore || 7,
+        });
 
-        return reply.send(tempGame.code);
+        await room.reload({ include: ["players"] });
+
+        console.log(room.players);
+        GameRooms.create(room);
+        console.log(`Game created with code: ${room.code}`);
+
+        return reply.send(room.toDTO());
     }
 
     @GET("/lobby", { websocket: true })
     @WS_AUTHORIZED
     async joinLobby(connection: WebSocket, request: FastifyRequest) {
         const user = request.user;
-
-        GameLobbyService.addClient(user.id, connection);
+        GameLobbyService.addPlayer(user.id, connection);
     }
 
     @GET("/play/:code", { websocket: true })
@@ -54,6 +60,23 @@ export class GameController extends BaseController {
         const { code } = request.params as { code: string };
         const user = request.user;
 
-        GameRoomService.addPlayer(connection, code, user);
+        const room = GameRooms.get(code);
+        if (!room) {
+            connection.close();
+            return;
+        }
+        room.addPlayer(connection, user);
+    }
+
+    @GET("/random")
+    @AUTHORIZED
+    async joinRandom(request: FastifyRequest, reply: FastifyReply) {
+        const publicRooms = GameRooms.getPublicWaitingRooms();
+        if (publicRooms.length === 0) {
+            return reply.status(404).send({ message: "No available games" });
+        }
+        const room =
+            publicRooms[Math.floor(Math.random() * publicRooms.length)];
+        return reply.send(room.game.toDTO());
     }
 }
