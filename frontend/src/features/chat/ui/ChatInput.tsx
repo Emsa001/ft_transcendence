@@ -1,5 +1,6 @@
 import React, { useState, useRef } from "react";
 import { usechat } from "../model/ChatContext";
+import { useLanguage } from "@features/language/model/useLanguage";
 
 let errorTimeout: NodeJS.Timeout;
 
@@ -8,6 +9,9 @@ export function ChatInput() {
     const [error, setError] = useState("");
     const [lobbyCode, setLobbyCode] = useState("");
     const [showInvite, setShowInvite] = useState(false);
+
+    const { getText } = useLanguage();
+    const texts = getText("chat");
 
     const lastSentTime = useRef<number>(0);
     const { sendMessage, isBlocked } = usechat();
@@ -22,20 +26,20 @@ export function ChatInput() {
         const now = Date.now();
         if (!input.trim()) return false;
         if (isBlocked) {
-            showError("❌ User has blocked you");
+            showError(texts.blockUserError);
             return false;
         }
         if (now - lastSentTime.current < 100) {
-            showError("⏳ You're sending messages too quickly!");
+            showError(texts.fastMessage);
             return false;
         }
         lastSentTime.current = now;
         if (!input.trim()) {
-            showError("❌ Message cannot be empty!");
+            showError(texts.emptyMessage);
             return false;
         }
         if (input.length > 500) {
-            showError("❌ Message too long!");
+            showError(texts.longMessage);
             return false;
         }
         return true;
@@ -69,19 +73,19 @@ export function ChatInput() {
                     onChange={(e: any) => setInput(e.target.value as any)}
                     onKeyDown={(e) => e.key === "Enter" && handleSend()}
                     className="flex-1 border border-cyan-500 bg-black/50 text-cyan-200 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400 shadow-[0_0_6px_rgba(0,255,255,0.6)]"
-                    placeholder="Type a message..."
+                    placeholder={texts.sendPlaceholder}
                 />
                 <button
                     onClick={handleSend}
                     className="bg-cyan-500 hover:bg-cyan-400 text-black rounded-lg px-4 py-2 shadow-[0_0_6px_rgba(0,255,255,0.6)] transition"
                 >
-                    Send
+                    {texts.send}
                 </button>
                 <button
                     onClick={() => setShowInvite(!showInvite)}
                     className="bg-purple-500 hover:bg-purple-400 text-black rounded-lg px-4 py-2 shadow-[0_0_6px_rgba(200,0,255,0.6)] transition"
                 >
-                    Invite
+                    {texts.invite}
                 </button>
             </div>
 
@@ -95,13 +99,13 @@ export function ChatInput() {
                         }
                         onKeyDown={(e) => e.key === "Enter" && handleInvite()}
                         className="flex-1 border border-purple-500 bg-black/50 text-purple-200 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400 shadow-[0_0_6px_rgba(200,0,255,0.6)]"
-                        placeholder="Enter lobby code..."
+                        placeholder={texts.sendInvitePlaceholder}
                     />
                     <button
                         onClick={handleInvite}
                         className="bg-purple-500 hover:bg-purple-400 text-black rounded-lg px-4 py-2 shadow-[0_0_6px_rgba(200,0,255,0.6)] transition"
                     >
-                        Send Invite
+                        {texts.sendInvite}
                     </button>
                 </div>
             )}

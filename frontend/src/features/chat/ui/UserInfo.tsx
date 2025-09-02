@@ -2,11 +2,14 @@ import React, { useNavigate } from "react";
 import { UserPicture } from "@features/user/ui/UserPicture";
 import blockUserApi from "@features/user/service/blockUserApi";
 import { usechat } from "../model/ChatContext";
+import { useLanguage } from "@features/language/model/useLanguage";
 
 export function UserInfo() {
     const navigate = useNavigate();
     const { selectedUser, users, setUsers, setSelectedUser } = usechat();
 
+    const { getText } = useLanguage();
+    const text = getText("chat.blockUserButton");
     if (!selectedUser) return <div />;
 
     const handleBlockUser = async () => {
@@ -34,7 +37,7 @@ export function UserInfo() {
                 }}
                 className="ml-auto px-4 py-1 text-sm rounded-xl bg-red-500/20 hover:bg-red-500/30 border border-red-800 text-red-300 shadow-[0_0_8px_rgba(255,0,0,0.5)] transition"
             >
-                Block user
+                {text}
             </button>
         </div>
     );

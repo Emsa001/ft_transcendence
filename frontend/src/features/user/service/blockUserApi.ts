@@ -1,7 +1,6 @@
 import { AxiosResponse } from "axios";
 import { APIService } from "@shared/lib/api";
 import { UserDTOType } from "shared";
-import { Alert } from "@shared/components/Alert";
 
 class BlockUserApi extends APIService {
     async getAll(): Promise<UserDTOType[]> {
