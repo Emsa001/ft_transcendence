@@ -3,6 +3,7 @@ import { UserPicture } from "@features/user/ui/UserPicture";
 import { useOnlineUsers } from "@features/user/model/useOnlineUsers";
 import { usechat } from "../model/ChatContext";
 import { UserDTOType } from "shared";
+import { useLanguage } from "@features/language/model/useLanguage";
 
 interface UserCardProps {
     user: UserDTOType;
@@ -41,10 +42,13 @@ export function Sidebar() {
     const { users, selectedUser, setSelectedUser } = usechat();
     const { onlineUsers } = useOnlineUsers();
 
+    const { getText } = useLanguage();
+    const text = getText("friends");
+
     return (
         <div className="w-1/3 border-r border-gray-800 bg-black/50 p-4 z-[10]">
             <h2 className="text-lg p-2 font-semibold mb-3 text-cyan-400 drop-shadow-[0_0_6px_rgba(0,255,255,0.8)]">
-                Friends
+                {text}
             </h2>
             <div className="border-b-2 border-cyan-600 mb-2 shadow-[0_0_12px_rgba(0,255,255,0.8)]" />
 
