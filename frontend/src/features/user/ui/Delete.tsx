@@ -1,9 +1,13 @@
-import React, { useNavigate } from "react";
+import React from "react";
 import { Button } from "@shared/components/Button";
 import ProfileApi from "@features/user/service/profileApi";
 import { useUser } from "@features/auth/model/useUser";
 
-export const DeleteButton = () => {
+interface DeleteButtonProps {
+    className?: string;
+}
+
+export const DeleteButton = ({ className }: DeleteButtonProps) => {
     const { setUser } = useUser();
     const handleDelete = async () => {
         const isConfirmed = window.confirm(
@@ -18,7 +22,7 @@ export const DeleteButton = () => {
 
     return (
         <div>
-            <Button onClick={handleDelete} color="error">
+            <Button onClick={handleDelete} color="error" className={className}>
                 Delete Account
             </Button>
         </div>

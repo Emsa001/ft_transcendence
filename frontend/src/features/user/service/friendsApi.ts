@@ -37,7 +37,7 @@ class FriendsApi extends APIService {
         }
     }
 
-    async addFriend(friendId: string): Promise<void> {
+    async addFriend(friendId: number): Promise<void> {
         try {
             return await this.api.post(`/friends/add`, { friendId });
         } catch (error) {
@@ -46,7 +46,7 @@ class FriendsApi extends APIService {
         }
     }
 
-    async acceptFriendRequest(friendId: string): Promise<void> {
+    async acceptFriendRequest(friendId: number): Promise<void> {
         try {
             await this.api.post(`/friends/accept`, { friendId });
         } catch (error) {
@@ -55,7 +55,7 @@ class FriendsApi extends APIService {
         }
     }
 
-    async removeFriend(friendId: string): Promise<void> {
+    async removeFriend(friendId: number): Promise<void> {
         try {
             await this.api.post(`/friends/remove`, { friendId });
         } catch (error) {

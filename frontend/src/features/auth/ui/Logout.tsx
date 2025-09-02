@@ -2,12 +2,16 @@ import React from "react";
 import { Button } from "@shared/components/Button";
 import { useAuth } from "../model/useAuth";
 
-export const LogoutButton = () => {
+type LogoutButtonProps = {
+    className?: string;
+};
+
+export const LogoutButton = ({ className }: LogoutButtonProps) => {
     const { handleLogout } = useAuth();
 
     return (
         <div>
-            <Button onClick={handleLogout} color="error">
+            <Button className={className} onClick={handleLogout} color="error">
                 Logout
             </Button>
         </div>
