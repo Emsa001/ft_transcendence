@@ -1,131 +1,35 @@
-import React, { useEffect, useNavigate, useState } from "react";
-import {
-    LogoutButton,
-    TwoFactorAuthDisable,
-    TwoFactorAuthEnable,
-} from "@features/auth";
-import { useUser } from "@features/auth/model/useUser";
-import { FaEdit, FaUser, FaUsers } from "react-icons/fa";
-import Friends from "./friends";
-import { ProfileCard } from "./profile";
-
-import { UserStats } from "@features/user/ui/UserStats";
-import { GameHistory } from "@features/user/ui/GameHistory";
-import ProfileApi from "@features/user/service/profileApi";
-import { DeleteButton } from "@features/user/ui/Delete";
-import { AllUsers } from "@features/user/ui/AllUsers";
+import React from "react";
+import { ContactInfo } from "@features/profile/ui/ContactInfo";
+import { UserInfo } from "@features/profile/ui/UserInfo";
+import { Stats } from "@features/profile/ui/Stats";
+import { Friends } from "@features/profile/ui/Friends";
+import { AllUsers } from "@features/profile/ui/AllUsers";
 
 export const Profile = () => {
-    // Just for test - get user ID from URL query params to see their stats
-    const query = new URLSearchParams(window.location.search);
-    const userId = query.get("id");
-    const [edit, setEdit] = useState(false);
-
-    const { user, loading, setUser } = useUser();
-    const navigate = useNavigate();
-    const [activeTab, setActiveTab] = useState("profile");
-
-    const handleSubmit = async (e: any) => {
-        e.preventDefault();
-        const data = {
-            username: e.target[0].value,
-        };
-        const newUser = await ProfileApi.updateUser(data);
-        if (newUser == null) return;
-        setEdit(false);
-        setUser(newUser);
-    };
-
-    useEffect(() => {
-        if (!user && !loading) navigate("/auth");
-    }, [user, loading]);
-
-    if (!user) return <div />;
-
     return (
-        <div className="min-h-screen w-full py-10 flex flex-col items-center justify-center">
-            {/* profile nav bar */}
-            <div className="flex flex-row text-white bg-white/5 rounded-xl p-2 border border-white/10 mb-8 space-between">
-                <button
-                    className={`px-6 py-3 rounded-lg transition-all duration-300 ${
-                        activeTab === "profile"
-                            ? "bg-purple-600 text-white shadow-lg"
-                            : "text-gray-400 hover:text-white hover:bg-white/10"
-                    }`}
-                    onClick={setActiveTab.bind(null, "profile")}
-                >
-                    Profile
-                </button>
+        <div className="w-full h-full flex flex-col lg:items-center lg:justify-center pt-20 pb-10 z-10 relative overflow-y-auto ">
+            <div className=" text-gray-100 px-4  w-full max-w-7xl">
+                <div className="flex flex-col md:flex-row gap-6 mb-6">
+                    <div className="bg-gray-800 rounded-lg p-6 shadow-lg w-full md:w-1/3 flex items-center justify-center">
+                        <UserInfo />
+                    </div>
+                    <div className="bg-gray-800 rounded-lg p-6 shadow-lg w-full md:w-2/3 flex items-center justify-center">
+                        <ContactInfo />
+                    </div>
+                </div>
 
-                <button
-                    className={`px-6 py-3 rounded-lg transition-all duration-300 ${
-                        activeTab === "friends"
-                            ? "bg-purple-600 text-white shadow-lg"
-                            : "text-gray-400 hover:text-white hover:bg-white/10"
-                    }`}
-                    onClick={setActiveTab.bind(null, "friends")}
-                >
-                    Friends
-                </button>
-
-                <button
-                    className={`px-6 py-3 rounded-lg transition-all duration-300 ${
-                        activeTab === "stats"
-                            ? "bg-purple-600 text-white shadow-lg"
-                            : "text-gray-400 hover:text-white hover:bg-white/10"
-                    }`}
-                    onClick={setActiveTab.bind(null, "stats")}
-                >
-                    Stats
-                </button>
-
-                <button
-                    className={`px-6 py-3 rounded-lg transition-all duration-300 ${
-                        activeTab === "users"
-                            ? "bg-purple-600 text-white shadow-lg"
-                            : "text-gray-400 hover:text-white hover:bg-white/10"
-                    }`}
-                    onClick={setActiveTab.bind(null, "users")}
-                >
-                    All Users
-                </button>
-            </div>
-
-            {/* cards */}
-            <div className="w-[900px] h-[600px] p-6 bg-black/40 rounded-2xl shadow-2xl border border-white/10">
-                <div className="w-full h-full flex items-center justify-center">
-                    {/* Profile Card */}
-                    {activeTab === "profile" && (
-                        <div className="w-full h-full">
-                            <ProfileCard />
-                        </div>
-                    )}
-
-                    {/* Friends page */}
-                    {activeTab === "friends" && (
-                        <div className="w-full h-full overflow-y-auto">
+                <div className="flex flex-col md:flex-row gap-6">
+                    <div className="bg-gray-800 rounded-lg p-6 shadow-lg w-full md:w-1/3 flex items-center justify-center">
+                        <Stats />
+                    </div>
+                    <div className="flex flex-col md:flex-row gap-6 w-full md:w-2/3">
+                        <div className="bg-gray-800 rounded-lg p-6 shadow-lg w-full md:w-1/2 flex flex-col">
                             <Friends />
                         </div>
-                    )}
-
-                    {/* Stats */}
-                    {activeTab === "stats" && (
-                        <div className="w-full h-full flex flex-row items-center justify-center gap-8">
-                            <div className="flex-1">
-                                <UserStats userId={userId || user.id} />
-                            </div>
-                            <div className="flex-1">
-                                <GameHistory userId={userId || user.id} />
-                            </div>
-                        </div>
-                    )}
-
-                    {/* All Users */}
-                    {activeTab === "users" && (
-                        <div className="w-full h-full">
+                        <div className="bg-gray-800 rounded-lg p-6 shadow-lg w-full md:w-1/2 flex flex-col">
                             <AllUsers />
                         </div>
-                    )}
+                    </div>
                 </div>
             </div>
         </div>
