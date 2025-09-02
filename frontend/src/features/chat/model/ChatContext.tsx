@@ -1,5 +1,3 @@
-"use client";
-
 import { useUser } from "@features/auth/model/useUser";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { MessageDTOType, UserDTOType } from "shared";
