@@ -1,6 +1,36 @@
-import React from "react";
+import { useUser } from "@features/auth/model/useUser";
+import { useStats } from "@features/user/model/useStats";
+import React, { useEffect, useState } from "react";
+import { GetStatisticsResponse } from "shared";
 
 export function Stats() {
+    const { fetchUserStats } = useStats();
+    const [stats, setStats] = useState<GetStatisticsResponse | null>(null);
+    const { user } = useUser();
+
+    if (!user) return <div />;
+
+    useEffect(() => {
+        if (user.id) {
+            fetchUserStats(user.id).then((data) => {
+                if (data) {
+                    setStats(data);
+                } else {
+                    console.error("Failed to fetch user stats");
+                }
+            });
+        }
+    }, [user.id]);
+    if (!stats) {
+        return (
+            <div className="w-full h-full flex items-center justify-center">
+                <div className="text-gray-300 text-center">
+                    No stats available for this user.
+                </div>
+            </div>
+        );
+    }
+
     return (
         <div className="w-full">
             <h2 className="text-xl font-bold mb-4 border-b border-gray-700 pb-2">
@@ -8,24 +38,28 @@ export function Stats() {
             </h2>
             <div className="space-y-3">
                 <div className="flex items-center justify-between p-3 bg-gray-700 rounded-lg">
-                    <span className="font-semibold">Games Played</span>
-                    <span className="text-indigo-400 font-bold">42</span>
+                    <span className="font-semibold">Total Games</span>
+                    <span className="text-indigo-400 font-bold">
+                        {stats.total.amount}
+                    </span>
                 </div>
                 <div className="flex items-center justify-between p-3 bg-gray-700 rounded-lg">
                     <span className="font-semibold">Wins</span>
-                    <span className="text-green-400 font-bold">27</span>
+                    <span className="text-green-400 font-bold">
+                        {stats.total.wins}
+                    </span>
                 </div>
                 <div className="flex items-center justify-between p-3 bg-gray-700 rounded-lg">
                     <span className="font-semibold">Losses</span>
-                    <span className="text-red-400 font-bold">15</span>
+                    <span className="text-red-400 font-bold">
+                        {stats.total.losses}
+                    </span>
                 </div>
                 <div className="flex items-center justify-between p-3 bg-gray-700 rounded-lg">
                     <span className="font-semibold">Win Rate</span>
-                    <span className="text-yellow-400 font-bold">64%</span>
-                </div>
-                <div className="flex items-center justify-between p-3 bg-gray-700 rounded-lg">
-                    <span className="font-semibold">Longest Win Streak</span>
-                    <span className="text-indigo-300 font-bold">8</span>
+                    <span className="text-yellow-400 font-bold">
+                        {stats.total.winRate.toFixed(1)}%
+                    </span>
                 </div>
             </div>
         </div>

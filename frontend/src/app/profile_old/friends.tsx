@@ -55,7 +55,7 @@ export default function Friends() {
 
     const handleAddFriend = async (friendId: number) => {
         try {
-            await FriendsApi.addFriend(friendId.toString());
+            await FriendsApi.addFriend(friendId);
             setFriends((prev) => [...prev, { id: friendId } as UserDTOType]);
         } catch (error) {
             console.error("Error adding friend:", error);
@@ -64,7 +64,7 @@ export default function Friends() {
 
     const handleRemoveFriend = async (friendId: number) => {
         try {
-            await FriendsApi.removeFriend(friendId.toString());
+            await FriendsApi.removeFriend(friendId);
             setFriends((prev) =>
                 prev.filter((friend) => friend.id !== friendId)
             );
@@ -75,7 +75,7 @@ export default function Friends() {
 
     const handleAcceptRequest = async (requestId: number) => {
         try {
-            await FriendsApi.acceptFriendRequest(requestId.toString());
+            await FriendsApi.acceptFriendRequest(requestId);
             setFriendRequests((prev) =>
                 prev.filter((req) => req.id !== requestId)
             );
@@ -89,7 +89,7 @@ export default function Friends() {
         try {
             const newFriend = await ProfileApi.getUserByIdOrUsername(username);
             if (newFriend) {
-                await FriendsApi.addFriend(newFriend.id.toString());
+                await FriendsApi.addFriend(newFriend.id);
                 setSentRequests((prev) => [
                     ...prev,
                     {
@@ -106,7 +106,7 @@ export default function Friends() {
 
     const handleCancelRequest = async (requestId: number) => {
         try {
-            await FriendsApi.removeFriend(requestId.toString());
+            await FriendsApi.removeFriend(requestId);
             setSentRequests((prev) =>
                 prev.filter((req) => req.id !== requestId)
             );
@@ -117,7 +117,7 @@ export default function Friends() {
 
     const handleDeclineRequest = async (requestId: number) => {
         try {
-            await FriendsApi.removeFriend(requestId.toString());
+            await FriendsApi.removeFriend(requestId);
             setFriendRequests((prev) =>
                 prev.filter((req) => req.id !== requestId)
             );
