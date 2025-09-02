@@ -1,9 +1,9 @@
 import { WebSocket } from "@fastify/websocket";
 
-class UserStatusService {
-    private connections: Map<string, Set<WebSocket>> = new Map();
+export class UserStatusService {
+    static connections: Map<number, Set<WebSocket>> = new Map();
 
-    public addUser(userId: string, socket: WebSocket) {
+    static addUser(userId: number, socket: WebSocket) {
         if (!this.connections.has(userId)) {
             this.connections.set(userId, new Set<WebSocket>());
         }
@@ -12,7 +12,7 @@ class UserStatusService {
         this.broadcastOnlineUsers();
     }
 
-    public removeUser(userId: string, socket: WebSocket) {
+    static removeUser(userId: number, socket: WebSocket) {
         if (this.connections.has(userId)) {
             this.connections.get(userId)!.delete(socket);
 
@@ -24,14 +24,14 @@ class UserStatusService {
         this.broadcastOnlineUsers();
     }
 
-    private getOnlineUsersPayload() {
+    static getOnlineUsersPayload() {
         return JSON.stringify({
             type: "online_users",
             onlineUsers: Array.from(this.connections.keys()),
         });
     }
 
-    private broadcastOnlineUsers() {
+    static broadcastOnlineUsers() {
         const payload = this.getOnlineUsersPayload();
         for (const sockets of this.connections.values()) {
             for (const socket of sockets) {
@@ -42,6 +42,3 @@ class UserStatusService {
         }
     }
 }
-
-const userStatusService = new UserStatusService();
-export default userStatusService;

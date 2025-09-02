@@ -11,7 +11,6 @@ import { ProfileCard } from "./profile";
 
 import { UserStats } from "@features/user/ui/UserStats";
 import { GameHistory } from "@features/user/ui/GameHistory";
-import { UserPicture } from "@features/user/ui/UserPicture";
 import ProfileApi from "@features/user/service/profileApi";
 import { DeleteButton } from "@features/user/ui/Delete";
 import { AllUsers } from "@features/user/ui/AllUsers";
@@ -49,10 +48,10 @@ export const Profile = () => {
             <div className="flex flex-row text-white bg-white/5 rounded-xl p-2 border border-white/10 mb-8 space-between">
                 <button
                     className={`px-6 py-3 rounded-lg transition-all duration-300 ${
-                activeTab === "profile"
-                    ? "bg-purple-600 text-white shadow-lg"
-                    : "text-gray-400 hover:text-white hover:bg-white/10"
-                }`}
+                        activeTab === "profile"
+                            ? "bg-purple-600 text-white shadow-lg"
+                            : "text-gray-400 hover:text-white hover:bg-white/10"
+                    }`}
                     onClick={setActiveTab.bind(null, "profile")}
                 >
                     Profile
@@ -60,9 +59,9 @@ export const Profile = () => {
 
                 <button
                     className={`px-6 py-3 rounded-lg transition-all duration-300 ${
-                    activeTab === "friends"
-                    ? "bg-purple-600 text-white shadow-lg"
-                    : "text-gray-400 hover:text-white hover:bg-white/10"
+                        activeTab === "friends"
+                            ? "bg-purple-600 text-white shadow-lg"
+                            : "text-gray-400 hover:text-white hover:bg-white/10"
                     }`}
                     onClick={setActiveTab.bind(null, "friends")}
                 >
@@ -71,9 +70,9 @@ export const Profile = () => {
 
                 <button
                     className={`px-6 py-3 rounded-lg transition-all duration-300 ${
-                    activeTab === "stats"
-                    ? "bg-purple-600 text-white shadow-lg"
-                    : "text-gray-400 hover:text-white hover:bg-white/10" 
+                        activeTab === "stats"
+                            ? "bg-purple-600 text-white shadow-lg"
+                            : "text-gray-400 hover:text-white hover:bg-white/10"
                     }`}
                     onClick={setActiveTab.bind(null, "stats")}
                 >
@@ -82,9 +81,9 @@ export const Profile = () => {
 
                 <button
                     className={`px-6 py-3 rounded-lg transition-all duration-300 ${
-                    activeTab === "users"
-                    ? "bg-purple-600 text-white shadow-lg"
-                    : "text-gray-400 hover:text-white hover:bg-white/10"
+                        activeTab === "users"
+                            ? "bg-purple-600 text-white shadow-lg"
+                            : "text-gray-400 hover:text-white hover:bg-white/10"
                     }`}
                     onClick={setActiveTab.bind(null, "users")}
                 >
@@ -101,14 +100,14 @@ export const Profile = () => {
                             <ProfileCard />
                         </div>
                     )}
-                    
+
                     {/* Friends page */}
                     {activeTab === "friends" && (
                         <div className="w-full h-full overflow-y-auto">
                             <Friends />
                         </div>
                     )}
-                    
+
                     {/* Stats */}
                     {activeTab === "stats" && (
                         <div className="w-full h-full flex flex-row items-center justify-center gap-8">

@@ -10,7 +10,7 @@ import jwtService from "../auth/services/jwt.service";
 import cookieService from "../auth/services/cookie.service";
 import userAccountService from "./services/user.account";
 import { WebSocket } from "@fastify/websocket";
-import userStatusService from "./services/user.status";
+import { UserStatusService } from "./services/user.status";
 import { AUTHORIZED, WS_AUTHORIZED } from "../auth/auth.middleware";
 import { randomUUID } from "crypto";
 
@@ -104,6 +104,31 @@ export class UserController extends BaseController {
         return reply.send({ success: true });
     }
 
+    @GET("/blocked/all")
+    @AUTHORIZED
+    async getBlockedUsers(request: FastifyRequest, reply: FastifyReply) {
+        const blockedUsers = await request.user.getBlockedUsers();
+        return reply.send(blockedUsers);
+    }
+
+    @POST("/block/:id")
+    @AUTHORIZED
+    async blockUser(request: FastifyRequest, reply: FastifyReply) {
+        const { id } = request.params as { id: number };
+
+        await request.user.blockUser(id);
+        return reply.send({ success: true });
+    }
+
+    @POST("/unblock/:id")
+    @AUTHORIZED
+    async unblockUser(request: FastifyRequest, reply: FastifyReply) {
+        const { id } = request.params as { id: string };
+
+        await request.user.unblockUser(Number(id));
+        return reply.send({ success: true });
+    }
+
     @GET("/status", { websocket: true })
     async getStatus(connection: WebSocket, req: FastifyRequest) {
         try {
@@ -113,10 +138,10 @@ export class UserController extends BaseController {
             if (!token) userId = randomUUID();
             else userId = jwtService.verify(token).id.toString();
 
-            userStatusService.addUser(userId, connection);
+            UserStatusService.addUser(Number(userId), connection);
 
             connection.on("close", () => {
-                userStatusService.removeUser(userId, connection);
+                UserStatusService.removeUser(Number(userId), connection);
             });
         } catch (err) {
             console.error("WebSocket error:", err);

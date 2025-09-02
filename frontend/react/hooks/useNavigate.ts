@@ -2,7 +2,6 @@ import React from "..";
 
 export const useNavigateHook = () => {
     const navigate = async (path: string, ...states: any): Promise<void> => {
-        if (window.location.pathname === path && states.length === 0) return;
         React.setNavigating(true);
 
         setTimeout(() => {

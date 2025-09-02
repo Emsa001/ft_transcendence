@@ -2,6 +2,7 @@ import React, { useState, useNavigate, useEffect } from "react";
 import { useUser } from "@features/auth/model/useUser";
 import FriendsApi from "@features/user/service/friendsApi";
 import { UserDTOType } from "shared";
+import ProfileApi from "@features/user/service/profileApi";
 
 export default function Friends() {
     const { user } = useUser();
@@ -86,7 +87,7 @@ export default function Friends() {
 
     const handleAddFriendByUsername = async (username: string) => {
         try {
-            const newFriend = await FriendsApi.getUserByIdOrUsername(username);
+            const newFriend = await ProfileApi.getUserByIdOrUsername(username);
             if (newFriend) {
                 await FriendsApi.addFriend(newFriend.id.toString());
                 setSentRequests((prev) => [

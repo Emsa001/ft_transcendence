@@ -74,7 +74,7 @@ class FtReact {
         subscribe: (onStoreChange: () => void) => () => void,
         getSnapshot: () => T
     ) => useSyncExternalStoreMethod(subscribe, getSnapshot);
-    useLocalStorage = (key: string, initialValue?: any) => useLocalStorageHook(key, initialValue);
+    useLocalStorage = <T>(key: string, initialValue?: T) => useLocalStorageHook(key, initialValue);
 
     /*
      * Custom Methods

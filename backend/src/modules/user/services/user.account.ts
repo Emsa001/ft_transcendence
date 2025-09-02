@@ -63,7 +63,7 @@ class UserAccountService {
 
             user.username = data.username || user.username;
         }
-        if (data.newPassword) {
+        if (data.password) {
             if (!user.password)
                 throw new HttpException(400, "User does not have a password");
 
@@ -74,9 +74,9 @@ class UserAccountService {
             if (!isMatch)
                 throw new HttpException(400, "Old password is incorrect");
 
-            const newPassword = await bcrypt.hash(data.newPassword, 10);
+            const newPassword = await bcrypt.hash(data.password, 10);
 
-            const samePassword = await bcrypt.compare(data.newPassword, user.password);
+            const samePassword = await bcrypt.compare(data.password, user.password);
             if (samePassword)
                 throw new HttpException(400, "New password must be different from old password");
 
