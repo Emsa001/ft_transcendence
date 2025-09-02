@@ -2,8 +2,6 @@ import { AxiosResponse } from "axios";
 import { APIService } from "@shared/lib/api";
 import { MessageDTOType } from "shared";
 
-process.env.FT_REACT_PUBLIC_API_HOST || "http://localhost:3000"
-
 interface ChatData {
     messages: MessageDTOType[];
     hasMore: boolean;
