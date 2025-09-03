@@ -1,4 +1,3 @@
-
 export default {
     transcendence: "transcendence",
     friends: "Friends",
@@ -15,5 +14,5 @@ export default {
         sendInvite: "Send Invite",
         sendPlaceholder: "Type a message...",
         sendInvitePlaceholder: "Type an invite code...",
-    }
+    },
 };

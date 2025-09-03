@@ -79,7 +79,10 @@ class UserAccountService {
 
             const newPassword = await bcrypt.hash(data.newPassword, 10);
 
-            const samePassword = await bcrypt.compare(data.newPassword, user.password);
+            const samePassword = await bcrypt.compare(
+                data.newPassword,
+                user.password
+            );
             if (samePassword)
                 throw new HttpException(
                     400,

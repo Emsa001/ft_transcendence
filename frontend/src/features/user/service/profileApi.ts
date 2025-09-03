@@ -18,8 +18,10 @@ class ProfileApi extends APIService {
 
     async searchUsers(query: string): Promise<UserDTOType[]> {
         try {
-            const response: AxiosResponse<UserDTOType[]> =
-                await this.api.get("/user/search", { params: { query } });
+            const response: AxiosResponse<UserDTOType[]> = await this.api.get(
+                "/user/search",
+                { params: { query } }
+            );
             return response.data;
         } catch (error) {
             console.error("Error searching users:", error);
