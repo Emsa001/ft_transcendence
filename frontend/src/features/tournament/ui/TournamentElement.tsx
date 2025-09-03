@@ -74,7 +74,7 @@ const TournamentView = () => {
         );
     }
 
-    if (status != GameStatus.IN_PROGRESS) {
+    if (status != GameStatus.FINISHED) {
         return (
             <div className="w-full h-full">
                 <TournamentViewer />
