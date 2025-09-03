@@ -13,6 +13,7 @@ import { WebSocket } from "@fastify/websocket";
 import { UserStatusService } from "./services/user.status";
 import { AUTHORIZED, WS_AUTHORIZED } from "../auth/auth.middleware";
 import { randomUUID } from "crypto";
+import { friendsWSService } from "../friends/services/ws.friends";
 
 // async searchUsers(query: string): Promise<UserDTOType[]> {
 //     try {
@@ -137,6 +138,8 @@ export class UserController extends BaseController {
         const { id } = request.params as { id: number };
 
         await request.user.blockUser(id);
+        friendsWSService.notifyUser(Number(id), "FRIEND_REMOVED");
+
         return reply.send({ success: true });
     }
 
