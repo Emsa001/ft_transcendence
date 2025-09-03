@@ -48,7 +48,6 @@ export const useWebSocket = (url: string) => {
                 }
             });
         };
-
         wsRef.current.onmessage = (event) => {
             hooksRef.current.forEach((hook) => {
                 if (hook.type === "onMessage") {

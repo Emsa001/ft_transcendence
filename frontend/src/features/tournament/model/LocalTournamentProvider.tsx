@@ -6,7 +6,8 @@ import React, {
 } from "react";
 import { TournamentDTOType } from "shared";
 import { LocalTournamentContextType } from "../types";
-import { useLocalTournamentState } from "./useLocalTournamentState";
+
+import { useLocalTournamentState } from "../model/useLocalTournamentState";
 import { LocalTournament } from "./LocalTournament";
 
 const LocalTournamentContext = createContext<

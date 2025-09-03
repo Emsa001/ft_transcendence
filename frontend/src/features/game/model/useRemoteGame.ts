@@ -1,6 +1,6 @@
 import { useUser } from "@features/auth/model/useUser";
 import { useWebSocket } from "@shared/hooks/useWebSocket";
-import { useEffect, useNavigate, useState } from "react";
+import { useEffect, useState } from "react";
 import { GameDTOType, GameMode, GameStatus, GameUserDTOType } from "shared";
 
 // User should always exist when using this hook
