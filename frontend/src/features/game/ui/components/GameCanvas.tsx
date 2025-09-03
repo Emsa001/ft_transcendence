@@ -1,5 +1,4 @@
 import React, { useRef, useEffect } from "react";
-import { useGameState } from "../../model/useGameState";
 import { useGame } from "../../model/useGame";
 import { GameRenderer, renderer } from "@features/game/service/GameRender";
 import { gameEngine } from "@features/game/service/GameEngine";
@@ -11,10 +10,9 @@ export function GameCanvasElement() {
         state,
         message,
         countdown,
-        keys,
     } = useGame();
 
-    const { players } = useGameState();
+    const { players } = useGame();
 
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const rafRef = useRef<number | null>(null);
@@ -61,8 +59,6 @@ export function GameCanvasElement() {
             const sy = canvas.height / baseH;
             renderer.init(ctx, dpr, sx, sy);
 
-            gameEngine.initKeys(keys);
-
             // Update game logic if running
             if (runningRef.current) {
                 gameEngine.update();
@@ -86,7 +82,7 @@ export function GameCanvasElement() {
             runningRef.current = false;
             if (rafRef.current) cancelAnimationFrame(rafRef.current);
         };
-    }, [state, keys, players, message, countdown]);
+    }, [state, players, message, countdown]);
 
     useEffect(() => {
         return () => {

@@ -2,13 +2,13 @@ import React from "react";
 import { TournamentRegister } from "./TournamentRegister";
 import { GameStatus, GameUserDTOType } from "shared";
 import { TournamentViewer } from "./TournamentViewer";
-import { GameStateProvider } from "@features/game/model/useGameState";
 import {
     LocalTournamentProvider,
     useLocalTournament,
 } from "../model/LocalTournamentProvider";
 import { GameElement } from "@features/game/ui/components/GameElement";
 import { GameFooter } from "@features/game/ui/components/GameFooter";
+import { GameProvider } from "@features/game/model/useGame";
 
 export const TournamentElement = () => {
     return (
@@ -52,8 +52,8 @@ const TournamentView = () => {
 
         return (
             <div className="w-full h-full">
-                <GameStateProvider
-                    playersConfig={currentGame.players}
+                <GameProvider
+                    players={currentGame.players}
                     maxScore={1}
                     onScore={onScore}
                     onEnd={onEnd}
@@ -61,7 +61,7 @@ const TournamentView = () => {
                 >
                     <GameElement />
                     <GameFooter />
-                </GameStateProvider>
+                </GameProvider>
             </div>
         );
     }

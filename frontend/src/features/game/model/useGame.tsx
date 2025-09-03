@@ -1,99 +1,111 @@
-import { useEffect, useRef, useState } from "react";
-import { useKeyboard } from "./useKeyboard";
-import { useGameState } from "./useGameState";
-import { CanvasMessage, GameState } from "../types";
+import React, {
+    createContext,
+    useContext,
+    useEffect,
+    useRef,
+    useState,
+} from "react";
+import { GameUserDTOType } from "shared";
 import { gameEngine } from "../service/GameEngine";
+import { CanvasMessage, GameState } from "../types";
+import { useGameKeys } from "./useGameKeys";
+import { GameContextType, GameProviderProps } from "./useGameTypes";
+import { useGameMessages } from "./useGameMessages";
 
-export const useGame = () => {
-    const {
-        maxScore,
-        players,
-        addPoint,
-        resetGame,
+const GameContext = createContext<GameContextType | undefined>(undefined);
 
-        onScore,
-        onEnd,
-        onSpace,
-    } = useGameState();
+export const useGame = (): GameContextType => {
+    const context = useContext(GameContext);
+    if (!context) {
+        throw new Error("useGame must be used inside GameStateProvider");
+    }
+    return context;
+};
 
+export const GameProvider = ({
+    children,
+    players,
+    maxScore = 5,
+    onScore,
+    onEnd,
+    onSpace,
+}: GameProviderProps) => {
+    const [playersValue, setPlayers] = useState<GameUserDTOType[]>([]);
+    const [maxScoreValue, setMaxScore] = useState(maxScore);
     const [state, setState] = useState<GameState>("created");
 
-    const [message, setMessage] = useState<CanvasMessage[]>([]);
-    const [countdown, setCountdown] = useState<number | null>(null);
-    const messageTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-    const countdownTimeoutRef = useRef<NodeJS.Timeout | null>(null);
-
     useEffect(() => {
-        gameEngine.onScore = handleScore;
-    }, [players, maxScore]);
+        setPlayers(gameEngine.createPlayers(players));
+    }, []);
 
+    const {
+        message,
+        setMessage,
+        countdown,
+        setCountdown,
+        messageTimeoutRef,
+        countdownTimeoutRef,
+        showMessage,
+        startCountdown,
+    } = useGameMessages();
+
+    // --- Game Flow ---
     const handleScore = (scorerId: number) => {
-        const scorer = players.find((p) => p.id === scorerId);
+        const scorer = playersValue.find((p) => p.id === scorerId);
         if (!scorer) return;
 
         gameEngine.stopped = true;
         const newScore = scorer.score + 1;
 
-        setMessage([
-            {
-                text: `${scorer.username} Scores!`,
-                shadow: {
-                    color: "#7a5cff",
-                    blur: 20,
-                },
-                size: 50,
-            },
-        ]);
-
-        addPoint(scorerId);
+        setPlayers((prev) =>
+            prev.map((p) => (p.id === scorerId ? { ...p, score: newScore } : p))
+        );
         onScore?.({ ...scorer, score: newScore });
 
-        if (newScore >= maxScore) {
+        if (newScore >= maxScoreValue) {
+            setState("finished");
+            onEnd?.(scorer);
             setMessage([
                 {
                     text: `${scorer.username} Wins!`,
-                    shadow: {
-                        color: "#7a5cff",
-                        blur: 20,
-                    },
+                    shadow: { color: "#7a5cff", blur: 20 },
                     size: 60,
                 },
-                {
-                    text: `Press Space to Restart`,
-                    size: 30,
-                },
+                { text: `Press Space to Restart`, size: 30 },
             ]);
-            setState("finished");
-            onEnd?.(scorer);
             return;
         }
 
-        messageTimeoutRef.current = setTimeout(() => {
-            setMessage([]);
-            startCountdown().then(() => {
-                gameEngine.stopped = false;
-            });
-        }, 1000);
+        showMessage(
+            [
+                {
+                    text: `${scorer.username} Scores!`,
+                    shadow: { color: "#7a5cff", blur: 20 },
+                    size: 50,
+                },
+            ],
+            1000,
+            () =>
+                startCountdown().then(() => {
+                    gameEngine.resetPositions();
+                    gameEngine.stopped = false;
+                })
+        );
     };
 
-    // Start or reset helpers
     const startGame = () => {
         if (countdown) return;
 
-        if (messageTimeoutRef.current) clearTimeout(messageTimeoutRef.current);
-        if (countdownTimeoutRef.current)
-            clearTimeout(countdownTimeoutRef.current);
+        clearTimeout(messageTimeoutRef.current!);
+        clearTimeout(countdownTimeoutRef.current!);
 
         setMessage([]);
         setCountdown(null);
-
-        resetGame();
-        gameEngine.reset();
-
+        setPlayers((prev) => prev.map((p) => ({ ...p, score: 0 })));
         setState("started");
-        startCountdown().then(() => {
-            gameEngine.stopped = false;
-        });
+        startCountdown().then(() => (gameEngine.stopped = false));
+
+        gameEngine.resetPositions();
     };
 
     const togglePause = () => {
@@ -103,49 +115,42 @@ export const useGame = () => {
     };
 
     const handleSpacePress = () => {
-        if (onSpace?.() == false) return;
-
-        switch (state) {
-            case "created":
-            case "finished":
-                startGame();
-                break;
-            case "started":
-            case "paused":
-                togglePause();
-                break;
-        }
+        if (onSpace?.() === false) return;
+        if (state === "created" || state === "finished") startGame();
+        else togglePause();
     };
 
-    const keys = useKeyboard({ onSpacePress: handleSpacePress });
+    // --- Hooks ---
+    useEffect(() => {
+        gameEngine.onScore = handleScore;
+    }, [playersValue, maxScoreValue]);
 
-    const startCountdown = (): Promise<void> => {
-        return new Promise((resolve) => {
-            setCountdown(3);
+    useGameKeys({ onSpacePress: handleSpacePress });
 
-            const runCountdown = (count: number) => {
-                if (count > 0) {
-                    setCountdown(count);
-                    countdownTimeoutRef.current = setTimeout(() => {
-                        runCountdown(count - 1);
-                    }, 1000);
-                } else {
-                    setCountdown(null);
-                    resolve();
-                }
-            };
-
-            runCountdown(3);
-        });
-    };
-
-    return {
+    // --- Context Value ---
+    const value: GameContextType = {
+        players: playersValue,
+        setPlayers,
+        maxScore: maxScoreValue,
+        setMaxScore,
         messageTimeoutRef,
         countdownTimeoutRef,
         state,
         message,
         countdown,
-        keys,
-        startGame,
+        setMessage,
+        setState,
+        setCountdown,
+        startCountdown,
     };
+
+    return (
+        <div className="w-full h-full p-4">
+            <GameContext.Provider value={value}>
+                <div className="w-full h-full flex flex-col items-center justify-center gap-6">
+                    {children}
+                </div>
+            </GameContext.Provider>
+        </div>
+    );
 };

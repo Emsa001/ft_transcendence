@@ -1,10 +1,8 @@
 export type Vec2 = { x: number; y: number };
 
 export interface Paddle {
-    x: number;
-    y: number;
-    w: number;
-    h: number;
+    pos: Vec2;
+    size: Vec2;
     speed: number;
     controls: { up: string; down: string };
     playerId: number;

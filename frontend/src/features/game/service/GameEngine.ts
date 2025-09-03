@@ -1,190 +1,162 @@
 import { clamp } from "lodash";
-import { Ball, GameState, Paddle } from "../types";
+import { Ball, Paddle } from "../types";
 import { GameRenderer } from "./GameRender";
 import { GameUserDTOType } from "shared";
 
 class GameEngine {
-    private keys: Record<string, boolean>;
-
-    onScore?: (scorerId: number) => void;
-
     ball: Ball;
     paddles: Paddle[];
+    keys: Record<string, boolean> = {};
     stopped = true;
+    onScore?: (scorerId: number) => void;
+
+    private readonly defaultBallSpeed = 7.5;
+    private readonly paddleWidth = 14;
+    private readonly paddleHeight = 120;
+    private readonly paddleSpeed = 9;
+    private readonly paddlePadding = 40;
 
     constructor() {
-        this.paddles = [];
-        this.keys = {};
         this.ball = {
             pos: { x: -10, y: -10 },
             vel: { x: 6, y: 3 },
             size: 14,
-            speed: 7.5,
+            speed: this.defaultBallSpeed,
         };
-
+        this.paddles = [];
         console.log("GameEngine created");
     }
 
-    initPlayers(players: GameUserDTOType[]) {
-        this.initPaddles(players);
+    // Initialization
+
+    createPlayers(players?: GameUserDTOType[]): GameUserDTOType[] {
+        const defaultPlayers = [
+            { id: 0, username: "Player 1", score: 0 },
+            { id: 1, username: "Player 2", score: 0 },
+        ];
+        const initialized = players ?? defaultPlayers;
+        this.initPaddles(initialized);
+        return initialized;
     }
 
-    initKeys(keys: Record<string, boolean>) {
-        this.keys = keys;
-    }
+    initPaddles(players: GameUserDTOType[]): void {
+        this.paddles = players.map((player, index) => {
+            const y = GameRenderer.baseH / 2 - this.paddleHeight / 2;
+            const x =
+                index === 0
+                    ? this.paddlePadding
+                    : GameRenderer.baseW -
+                      (this.paddlePadding + this.paddleWidth);
 
-    initPaddles(players: GameUserDTOType[]) {
-        this.paddles = players.map((_, index) => {
-            const w = 14;
-            const h = 120;
-            const y = GameRenderer.baseH / 2 - h / 2;
-            const x = index === 0 ? 40 : GameRenderer.baseW - (40 + w);
             const controls =
                 index === 0
                     ? { up: "w", down: "s" }
                     : { up: "arrowup", down: "arrowdown" };
 
-            return { x, y, w, h, speed: 9, controls, playerId: _.id };
+            return {
+                pos: { x, y },
+                size: { x: this.paddleWidth, y: this.paddleHeight },
+                speed: this.paddleSpeed,
+                controls,
+                playerId: player.id,
+            };
         });
     }
 
-    // Main update method - handles all game logic
+    // Resetting
+
+    resetPositions(): void {
+        this.resetPaddles();
+        this.resetBall();
+    }
+
+    private resetPaddles(): void {
+        const centerY = GameRenderer.baseH / 2;
+        this.paddles.forEach((p) => (p.pos.y = centerY - p.size.y / 2));
+    }
+
+    private resetBall(): void {
+        const { baseW, baseH } = GameRenderer;
+        const angle = (Math.random() * Math.PI) / 3 - Math.PI / 6;
+        const dir = Math.random() < 0.5 ? -1 : 1;
+
+        this.ball.pos = { x: baseW / 2, y: baseH / 2 };
+        this.ball.vel = {
+            x: Math.cos(angle) * this.defaultBallSpeed * dir,
+            y: Math.sin(angle) * this.defaultBallSpeed,
+        };
+        this.ball.speed = this.defaultBallSpeed;
+    }
+
+    // Update loop
+
     update(): void {
         if (this.stopped) return;
 
         this.updatePaddles();
         this.updateBall();
-        this.checkCollisions();
-        this.checkScoring();
-    }
-
-    private handleScore(scorerId: number): void {
-        this.onScore?.(scorerId);
-        this.reset();
+        this.handleCollisions();
+        this.handleScoring();
     }
 
     private updatePaddles(): void {
         const { baseH, padding } = GameRenderer;
-
-        this.paddles.forEach((paddle) => {
-            if (this.keys[paddle.controls.up]) paddle.y -= paddle.speed;
-            if (this.keys[paddle.controls.down]) paddle.y += paddle.speed;
-            paddle.y = clamp(paddle.y, padding, baseH - paddle.h - padding);
+        this.paddles.forEach((p) => {
+            if (this.keys[p.controls.up]) p.pos.y -= p.speed;
+            if (this.keys[p.controls.down]) p.pos.y += p.speed;
+            p.pos.y = clamp(p.pos.y, padding, baseH - p.size.y - padding);
         });
-    }
-
-    private resetPaddles(): void {
-        const { baseH } = GameRenderer;
-        this.paddles.forEach((paddle) => {
-            paddle.y = baseH / 2 - paddle.h / 2;
-        });
-    }
-
-    private resetBall(): void {
-        const { baseW, baseH } = GameRenderer;
-
-        this.ball.pos = { x: baseW / 2, y: baseH / 2 };
-        const angle = (Math.random() * Math.PI) / 3 - Math.PI / 6; // -30°..+30°
-
-        let dir = Math.random() < 0.5 ? -1 : 1;
-
-        const speed = this.ball.speed;
-        this.ball.vel = {
-            x: Math.cos(angle) * speed * dir,
-            y: Math.sin(angle) * speed,
-        };
-        this.ball.speed = 7.5;
-    }
-
-    reset(): void {
-        this.resetBall();
-        this.resetPaddles();
     }
 
     private updateBall(): void {
-        const ball = this.ball;
-        ball.pos.x += ball.vel.x;
-        ball.pos.y += ball.vel.y;
+        this.ball.pos.x += this.ball.vel.x;
+        this.ball.pos.y += this.ball.vel.y;
     }
 
-    private checkCollisions(): void {
+    private handleCollisions(): void {
+        this.handleWallCollision();
+        this.paddles.forEach((p, i) =>
+            this.handlePaddleCollision(p, i === 0 ? 1 : -1)
+        );
+    }
+
+    private handleWallCollision(): void {
         const { baseH, padding } = GameRenderer;
-        const ball = this.ball;
-
-        // top/bottom walls
-        if (ball.pos.y <= padding) {
-            ball.pos.y = padding;
-            ball.vel.y = Math.abs(ball.vel.y);
-        } else if (ball.pos.y + ball.size >= baseH - padding) {
-            ball.pos.y = baseH - padding - ball.size;
-            ball.vel.y = -Math.abs(ball.vel.y);
+        const b = this.ball;
+        if (b.pos.y <= padding) {
+            b.pos.y = padding;
+            b.vel.y = Math.abs(b.vel.y);
+        } else if (b.pos.y + b.size >= baseH - padding) {
+            b.pos.y = baseH - padding - b.size;
+            b.vel.y = -Math.abs(b.vel.y);
         }
-
-        // paddle collisions
-        this.paddles.forEach((paddle, index) => {
-            this.checkPaddleCollision(
-                paddle.x,
-                paddle.y,
-                paddle.w,
-                paddle.h,
-                index === 0 ? 1 : -1
-            );
-        });
     }
 
-    private calculateBounceDirection(paddleX: number): number {
+    private handlePaddleCollision(paddle: Paddle, dir: number): void {
+        const b = this.ball;
+        if (
+            b.pos.x < paddle.pos.x + paddle.size.x &&
+            b.pos.x + b.size > paddle.pos.x &&
+            b.pos.y < paddle.pos.y + paddle.size.y &&
+            b.pos.y + b.size > paddle.pos.y
+        ) {
+            const rel =
+                (b.pos.y + b.size / 2 - (paddle.pos.y + paddle.size.y / 2)) /
+                (paddle.size.y / 2);
+            const angle = rel * (Math.PI / 3);
+            const boost = 0.92 + (1.18 - 0.92) * Math.abs(rel);
+            const speed = clamp(Math.hypot(b.vel.x, b.vel.y) * boost, 5, 28);
+            b.vel.x = Math.cos(angle) * speed * dir;
+            b.vel.y = Math.sin(angle) * speed;
+            b.pos.x += dir * 6;
+        }
+    }
+
+    private handleScoring(): void {
         const { baseW } = GameRenderer;
-        // If paddle is on left side, ball bounces right (positive direction)
-        // If paddle is on right side, ball bounces left (negative direction)
-        return paddleX < baseW / 2 ? 1 : -1;
-    }
-
-    private checkPaddleCollision(
-        px: number,
-        py: number,
-        pw: number,
-        ph: number,
-        dir: number
-    ): void {
-        const ball = this.ball;
-        const bx = ball.pos.x;
-        const by = ball.pos.y;
-        const bs = ball.size;
-
-        // Check if ball intersects with paddle
-        if (bx < px + pw && bx + bs > px && by < py + ph && by + bs > py) {
-            // Calculate bounce angle based on where ball hits paddle
-            const rel = (by + bs / 2 - (py + ph / 2)) / (ph / 2);
-            const maxBounce = Math.PI / 3;
-            const angle = rel * maxBounce;
-
-            // Calculate speed boost based on hit location
-            const currentSpeed = Math.hypot(ball.vel.x, ball.vel.y);
-            const edgeBoost = 1.18;
-            const centerSlow = 0.92;
-            const boost = centerSlow + (edgeBoost - centerSlow) * Math.abs(rel);
-            const newSpeed = Math.max(Math.min(currentSpeed * boost, 28), 5);
-
-            // Apply new velocity
-            ball.vel.x = Math.cos(angle) * newSpeed * dir;
-            ball.vel.y = Math.sin(angle) * newSpeed;
-
-            // Move ball away from paddle to prevent stuck collision
-            ball.pos.x += dir * 6;
-        }
-    }
-
-    private checkScoring(): void {
-        const { baseW } = GameRenderer;
-        const ball = this.ball;
-
-        // NOTE: works only for 2 players
-
-        if (ball.pos.x < -20) {
-            this.handleScore?.(this.paddles[1].playerId); // Right player scores
-        } else if (ball.pos.x > baseW + 20) {
-            this.handleScore?.(this.paddles[0].playerId); // Left player scores
-        }
+        if (this.ball.pos.x < -20) this.onScore?.(this.paddles[1].playerId);
+        else if (this.ball.pos.x > baseW + 20)
+            this.onScore?.(this.paddles[0].playerId);
     }
 }
 

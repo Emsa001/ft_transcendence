@@ -1,9 +1,9 @@
 import React from "react";
 import Swal from "sweetalert2";
-import { useGameState } from "@features/game/model/useGameState";
+import { useGame } from "@features/game/model/useGame";
 
 const MaxScoreSettings = () => {
-    const { maxScore, setMaxScore } = useGameState();
+    const { maxScore, setMaxScore } = useGame();
 
     const setScoreViaSwal = async () => {
         const { value: newScore } = await Swal.fire({

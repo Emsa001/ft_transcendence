@@ -55,3 +55,6 @@ interface IEffectCallback {
 type TEffectCallback = IEffectCallback | (() => void);
 type TDependencyList = any[];
 
+type RefObject<T> = {
+    current: T;
+};

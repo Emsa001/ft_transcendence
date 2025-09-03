@@ -1,5 +1,5 @@
 import React from "react";
-import { useGameState } from "@features/game/model/useGameState";
+import { useGame } from "@features/game/model/useGame";
 import { gameEngine } from "@features/game/service/GameEngine";
 
 const symbols: Record<string, string> = {
@@ -11,7 +11,7 @@ const symbols: Record<string, string> = {
 };
 
 export function GameFooter() {
-    const { players } = useGameState();
+    const { players } = useGame();
     const paddles = gameEngine.paddles;
 
     return (

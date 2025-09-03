@@ -72,7 +72,12 @@ export class GameRenderer {
 
     drawPaddles() {
         gameEngine.paddles.forEach((paddle) => {
-            this.drawGlassRect(paddle.x, paddle.y, paddle.w, paddle.h);
+            this.drawGlassRect(
+                paddle.pos.x,
+                paddle.pos.y,
+                paddle.size.x,
+                paddle.size.y
+            );
         });
     }
 

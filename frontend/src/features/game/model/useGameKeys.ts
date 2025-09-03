@@ -1,10 +1,11 @@
 import { useEffect, useRef } from "react";
+import { gameEngine } from "../service/GameEngine";
 
-interface UseKeyboardProps {
+interface UseGameKeysProps {
     onSpacePress: () => void;
 }
 
-export function useKeyboard({ onSpacePress }: UseKeyboardProps) {
+export function useGameKeys({ onSpacePress }: UseGameKeysProps) {
     const keysRef = useRef<Record<string, boolean>>({});
 
     useEffect(() => {
@@ -25,6 +26,10 @@ export function useKeyboard({ onSpacePress }: UseKeyboardProps) {
             window.removeEventListener("keyup", up);
         };
     }, [onSpacePress]);
+
+    useEffect(() => {
+        gameEngine.keys = keysRef.current;
+    }, [keysRef]);
 
     return keysRef.current;
 }
