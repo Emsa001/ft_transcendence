@@ -22,7 +22,7 @@ function UserCard({ user, isOnline, selectedUser, onClick }: UserCardProps) {
         >
             <div className="relative">
                 <UserPicture
-                    userId={user.id.toString()}
+                    userId={user.id}
                     className="w-10 h-10 rounded-full shadow-[0_0_8px_rgba(0,255,255,0.7)]"
                 />
                 <span

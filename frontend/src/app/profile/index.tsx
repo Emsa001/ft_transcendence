@@ -2,7 +2,7 @@ import React, { useEffect, useNavigate } from "react";
 import { ContactInfo } from "@features/profile/ui/ContactInfo";
 import { UserInfo } from "@features/profile/ui/UserInfo";
 import { Stats } from "@features/profile/ui/Stats";
-import { Friends } from "@features/profile/ui/Friends";
+import { Friends } from "@features/profile/ui/friends/Friends";
 import { BlockedUsers } from "@features/profile/ui/BlockedUsers";
 import { useUser } from "@features/auth/model/useUser";
 

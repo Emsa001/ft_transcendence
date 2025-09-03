@@ -11,7 +11,7 @@ export function ContactInfo() {
     return (
         <div className="w-full">
             <div className="flex items-center justify-between mb-4 border-b border-gray-700 pb-2">
-                <h2 className="text-xl font-bold">Contact Information</h2>
+                <h2 className="text-xl font-bold">User Info</h2>
                 <button
                     type="button"
                     className="px-3 py-1 rounded bg-gray-700 text-white hover:bg-gray-600 transition"

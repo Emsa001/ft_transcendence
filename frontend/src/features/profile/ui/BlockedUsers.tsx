@@ -32,7 +32,7 @@ export function BlockedUsers() {
                     >
                         <div className="flex items-center gap-3">
                             <UserPicture
-                                userId={user.id.toString()}
+                                userId={user.id}
                                 className="w-9 h-9 rounded-full object-cover"
                             />
                             <span className="font-medium text-gray-200">

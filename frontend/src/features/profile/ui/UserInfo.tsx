@@ -4,13 +4,13 @@ import React from "react";
 
 export function UserInfo() {
     const { user } = useUser();
-    if (!user) return <div />;
+    if (!user || !user.id) return <div />;
 
     return (
         <div className="text-center">
             <div className="flex justify-center">
                 <UserPicture
-                    userId={user.id.toString()}
+                    userId={user.id}
                     className="w-28 h-28 rounded-full object-cover border-4 border-blue-400"
                 />
             </div>

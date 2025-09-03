@@ -24,7 +24,7 @@ export function UserInfo() {
             className="h-18 border-b gap-2 border-gray-800 flex items-center px-4 cursor-pointer shadow-[0_0_10px_rgba(0,255,255,0.3)] relative"
         >
             <UserPicture
-                userId={selectedUser.id.toString()}
+                userId={selectedUser.id}
                 className="w-10 h-10 rounded-full shadow-[0_0_8px_rgba(0,255,255,0.7)]"
             />
             <h3 className="font-semibold text-cyan-300 drop-shadow-[0_0_8px_rgba(0,255,255,0.8)]">
