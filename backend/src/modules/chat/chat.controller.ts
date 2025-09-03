@@ -24,7 +24,6 @@ export class ChatController extends BaseController {
                 }
             });
 
-
             connection.on("close", () => {
                 chatWSService.removeUser(userId, connection);
             });

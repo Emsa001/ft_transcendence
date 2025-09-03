@@ -1,19 +1,10 @@
 import React, { useEffect, useNavigate, useState } from "react";
-import {
-    LogoutButton,
-    TwoFactorAuthDisable,
-    TwoFactorAuthEnable,
-} from "@features/auth";
 import { useUser } from "@features/auth/model/useUser";
-import { FaEdit, FaUser, FaUsers } from "react-icons/fa";
 import Friends from "./friends";
 import { ProfileCard } from "./profile";
 
 import { UserStats } from "@features/user/ui/UserStats";
-import { UserPicture } from "@features/user/ui/UserPicture";
-import { GameHistory } from "@features/user/ui/GameHistory";
 import ProfileApi from "@features/user/service/profileApi";
-import { DeleteButton } from "@features/user/ui/Delete";
 import { AllUsers } from "@features/user/ui/AllUsers";
 import { PlayerGameHistory } from "@features/user/ui/PlayerGameHistory";
 

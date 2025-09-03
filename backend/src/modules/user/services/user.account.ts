@@ -70,15 +70,24 @@ class UserAccountService {
             if (!data.oldPassword)
                 throw new HttpException(400, "Old password is required");
 
-            const isMatch = await bcrypt.compare(data.oldPassword, user.password);
+            const isMatch = await bcrypt.compare(
+                data.oldPassword,
+                user.password
+            );
             if (!isMatch)
                 throw new HttpException(400, "Old password is incorrect");
 
             const newPassword = await bcrypt.hash(data.password, 10);
 
-            const samePassword = await bcrypt.compare(data.password, user.password);
+            const samePassword = await bcrypt.compare(
+                data.password,
+                user.password
+            );
             if (samePassword)
-                throw new HttpException(400, "New password must be different from old password");
+                throw new HttpException(
+                    400,
+                    "New password must be different from old password"
+                );
 
             user.password = newPassword;
         }

@@ -31,7 +31,10 @@ export class FriendsService {
         }
 
         if (await BlockUserService.isBlocked(userId1, userId2)) {
-            throw new HttpException(403, "You cannot send friend requests to blocked users");
+            throw new HttpException(
+                403,
+                "You cannot send friend requests to blocked users"
+            );
         }
 
         if (await this.getFriendship(userId1, userId2)) {
