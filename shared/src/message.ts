@@ -3,4 +3,5 @@ export interface MessageDTOType {
     sender: number;
     receiver: number;
     message: string;
+    createdAt: Date;
 }

@@ -13,6 +13,7 @@ export function MyFriends({ friends, setFriends }: MyFriendsProps) {
         await FriendsApi.removeFriend(friend.id);
         setFriends(friends.filter((f) => f.id !== friend.id));
     };
+
     return (
         <div>
             {friends.map((user: UserDTOType) => (
