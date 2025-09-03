@@ -1,10 +1,44 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { FaUserCircle, FaCamera } from "react-icons/fa";
 import { Icon } from "@shared/components/Icon";
 import ProfileApi from "@features/user/service/profileApi";
 import { useUser } from "@features/auth/model/useUser";
+import { UserDTOType } from "shared";
 
-export function UserPicture() {
+interface UserPictureProps {
+    userId: string;
+    className?: string;
+}
+
+export function UserPicture({ userId, className }: UserPictureProps) {
+    const [user, setUser] = useState<UserDTOType | null>(null);
+    useEffect(() => {
+        const fetchUserData = async () => {
+            const userData = await ProfileApi.getUserByIdOrUsername(userId);
+            if (userData) {
+                setUser(userData);
+            }
+        };
+
+        fetchUserData();
+    }, [userId]);
+
+    return (
+        <div>
+            {user && user.avatar ? (
+                <img
+                    src={`${user.avatar}?ver=${Date.now()}`}
+                    alt="Profile"
+                    className={className}
+                />
+            ) : (
+                <Icon icon={FaUserCircle} className={className} />
+            )}
+        </div>
+    );
+}
+
+export function MyPicture() {
     const { user, setUser } = useUser();
 
     if (!user) return <div />;

@@ -9,6 +9,7 @@ import { Profile } from "./profile";
 import { useOnlineUsers } from "@features/user/model/useOnlineUsers";
 import MainMenu from "@features/menu/ui/MainMenu";
 import Game from "./game";
+import Chat from "./chat";
 
 let mounted = false;
 let lastUserId = -1;
@@ -46,6 +47,7 @@ export default function Root() {
                 <Router src="/auth" component={<Auth />} />
                 <Router src="/profile" component={<Profile />} />
                 <Router src="/game" component={<Game />} />
+                <Router src="/chat" component={<Chat />} />
             </BrowserRouter>
         </div>
     );

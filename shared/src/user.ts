@@ -6,7 +6,9 @@ export interface UserDTOType {
     is2FAEnabled?: boolean; // this is optional, because we set it only for logged user, not for others
 }
 export interface UserEditableData {
-    username: string;
+    username?: string;
+    password?: string;
+    oldPassword?: string;
 }
 
 export type TwoFaStatus = "disabled" | "started" | "completed";

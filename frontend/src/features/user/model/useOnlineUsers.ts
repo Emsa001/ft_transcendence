@@ -14,7 +14,6 @@ export const useOnlineUsers = () => {
             return ws;
         }
         ws = new WebSocket(`ws://localhost:8000/user/status`);
-
         ws.onmessage = (event) => {
             const msg = JSON.parse(event.data);
             if (msg.type === "online_users") {

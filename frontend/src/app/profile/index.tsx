@@ -11,6 +11,7 @@ import { ProfileCard } from "./profile";
 
 import { UserStats } from "@features/user/ui/UserStats";
 import { UserPicture } from "@features/user/ui/UserPicture";
+import { GameHistory } from "@features/user/ui/GameHistory";
 import ProfileApi from "@features/user/service/profileApi";
 import { DeleteButton } from "@features/user/ui/Delete";
 import { AllUsers } from "@features/user/ui/AllUsers";
