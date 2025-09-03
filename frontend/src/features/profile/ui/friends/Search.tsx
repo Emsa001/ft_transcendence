@@ -93,7 +93,7 @@ export function SearchModal({ onClose, isOpen }: SearchModalProps) {
                                             <div className="flex items-center gap-3">
                                                 <UserPicture
                                                     userId={user.id}
-                                                    className="w-9 h-9 rounded-full object-cover"
+                                                    className="w-9 h-9 rounded-full"
                                                 />
                                                 <span className="font-medium text-gray-200">
                                                     {user.username}

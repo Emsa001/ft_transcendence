@@ -31,7 +31,7 @@ export function UserPicture({ userId, className }: UserPictureProps) {
                 <img
                     src={`${user.avatar}?ver=${Date.now()}`}
                     alt="Profile"
-                    className={className}
+                    className={`object-cover ${className}`}
                 />
             ) : (
                 <Icon icon={FaUserCircle} className={className} />
