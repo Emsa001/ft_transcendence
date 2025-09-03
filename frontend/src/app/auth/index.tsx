@@ -37,8 +37,8 @@ export default function Auth() {
     }, [isRegister]);
 
     return (
-        <div className="w-screen h-screen flex items-center justify-center px-4">
-            <section className="max-w-lg w-full backdrop-blur-2xl bg-gradient-to-br from-transparent to-black/30 rounded-3xl p-10 shadow-2xl relative z-10">
+        <div className="w-screen h-screen flex items-center justify-center px-4 pt-16">
+            <section className="w-lg backdrop-blur-2xl bg-gradient-to-br from-transparent to-black/30 rounded-3xl p-8 shadow-2xl relative z-10">
                 <h1
                     className="text-center text-4xl font-extrabold text-transparent bg-clip-text
                     bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-500 mb-2"
