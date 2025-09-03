@@ -1,6 +1,7 @@
 import { AxiosResponse } from "axios";
 import { APIService } from "@shared/lib/api";
 import { UserDTOType } from "shared";
+import { Alert } from "@shared/components/Alert";
 
 class FriendsApi extends APIService {
     async getAllFriends(): Promise<UserDTOType[]> {
@@ -37,30 +38,28 @@ class FriendsApi extends APIService {
         }
     }
 
-    async addFriend(friendId: number): Promise<void> {
+    async addFriend(friendId: number) {
         try {
-            return await this.api.post(`/friends/add`, { friendId });
-        } catch (error) {
-            console.error("Error adding friend:", error);
-            return Promise.reject(error);
+            await this.api.post(`/friends/add`, { friendId });
+            Alert.success("Friend request sent successfully.");
+        } catch (error: any) {
+            Alert.error(error.response.data.message);
         }
     }
 
-    async acceptFriendRequest(friendId: number): Promise<void> {
+    async acceptFriendRequest(friendId: number) {
         try {
             await this.api.post(`/friends/accept`, { friendId });
-        } catch (error) {
-            console.error("Error accepting friend request:", error);
-            return Promise.reject(error);
+        } catch (error: any) {
+            Alert.error(error.response.data.message);
         }
     }
 
-    async removeFriend(friendId: number): Promise<void> {
+    async removeFriend(friendId: number) {
         try {
             await this.api.post(`/friends/remove`, { friendId });
-        } catch (error) {
-            console.error("Error removing friend:", error);
-            return Promise.reject(error);
+        } catch (error: any) {
+            Alert.error(error.response.data.message);
         }
     }
 
