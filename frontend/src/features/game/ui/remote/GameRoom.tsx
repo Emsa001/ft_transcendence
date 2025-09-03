@@ -1,8 +1,8 @@
 import React from "react";
 import { useRemoteGame } from "@features/game/model/useRemoteGame";
 import { GameStatus } from "shared";
-import { GameStateProvider } from "@features/game/context/useGameState";
 import { GameElement } from "../components/GameElement";
+import { GameProvider } from "@features/game/model/useGame";
 
 interface GameRemoteRoomProps {
     code: string;
@@ -42,9 +42,9 @@ export const GameRemoteRoom = ({ code }: GameRemoteRoomProps) => {
     if (status === GameStatus.IN_PROGRESS) {
         return (
             <div className="w-full h-full">
-                <GameStateProvider playersConfig={players} maxScore={maxScore}>
+                <GameProvider players={players} maxScore={maxScore}>
                     <GameElement />
-                </GameStateProvider>
+                </GameProvider>
             </div>
         );
     }

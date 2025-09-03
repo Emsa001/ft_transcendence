@@ -5,15 +5,9 @@ import React, {
     useLocalStorage,
 } from "react";
 import { TournamentDTOType } from "shared";
-<<<<<<<< HEAD:frontend/src/features/tournament/model/LocalTournamentProvider.tsx
-import { TournamentLogic } from "./tournamentLogic";
+import { LocalTournamentContextType } from "../types";
 import { useLocalTournamentState } from "./useLocalTournamentState";
-import { LocalTournamentContextType } from "../types";
-========
-import { LocalTournamentContextType } from "../types";
-import { useLocalTournamentState } from "../model/useLocalTournamentState";
-import { LocalTournament } from "../service/LocalTournament";
->>>>>>>> 091f6b0 (file and name cleanup):frontend/src/features/game/context/LocalTournamentProvider.tsx
+import { LocalTournament } from "./LocalTournament";
 
 const LocalTournamentContext = createContext<
     LocalTournamentContextType | undefined

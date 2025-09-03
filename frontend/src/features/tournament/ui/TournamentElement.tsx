@@ -2,13 +2,14 @@ import React from "react";
 import { TournamentRegister } from "./TournamentRegister";
 import { GameStatus, GameUserDTOType } from "shared";
 import { TournamentViewer } from "./TournamentViewer";
+
+import { GameElement } from "@features/game/ui/components/GameElement";
+import { GameFooter } from "@features/game/ui/components/GameFooter";
+import { GameProvider } from "@features/game/model/useGame";
 import {
     LocalTournamentProvider,
     useLocalTournament,
 } from "../model/LocalTournamentProvider";
-import { GameElement } from "@features/game/ui/components/GameElement";
-import { GameFooter } from "@features/game/ui/components/GameFooter";
-import { GameProvider } from "@features/game/model/useGame";
 
 export const TournamentElement = () => {
     return (

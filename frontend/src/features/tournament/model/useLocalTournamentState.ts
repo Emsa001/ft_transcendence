@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { GameDTOType, GameStatus, TournamentUserDTOType } from "shared";
 import { LocalTournamentState } from "../types";
-import { LocalTournament } from "@features/game/service/LocalTournament";
+import { LocalTournament } from "./LocalTournament";
 
 export const useLocalTournamentState = (maxPlayers: number) => {
     const [state, setState] = useState<LocalTournamentState>({
