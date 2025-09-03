@@ -4,12 +4,12 @@ import { GameStatus } from "shared";
 import { TournamentViewer } from "./TournamentViewer";
 import { PongPlayer } from "@features/game/types";
 import { GameStateProvider } from "@features/game/model/useGameState";
-import { GameElement } from "../components/GameElement";
-import { GameFooter } from "../components/GameFooter";
 import {
     LocalTournamentProvider,
     useLocalTournament,
-} from "@features/game/model/LocalTournamentProvider";
+} from "../model/LocalTournamentProvider";
+import { GameElement } from "@features/game/ui/components/GameElement";
+import { GameFooter } from "@features/game/ui/components/GameFooter";
 
 export const TournamentElement = () => {
     return (

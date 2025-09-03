@@ -5,9 +5,9 @@ import React, {
     useLocalStorage,
 } from "react";
 import { TournamentDTOType } from "shared";
-import { LocalTournamentContextType } from "../types";
 import { TournamentLogic } from "./tournamentLogic";
 import { useLocalTournamentState } from "./useLocalTournamentState";
+import { LocalTournamentContextType } from "../types";
 
 const LocalTournamentContext = createContext<
     LocalTournamentContextType | undefined

@@ -1,29 +1,38 @@
-import { Ball, GameData, PongPlayer } from "../types";
+import { Ball, CanvasMessage, GameData, PongPlayer } from "../types";
+import { gameEngine } from "./GameEngine";
 
 // Drawing and Calculation Class
 export class GameRenderer {
     static baseW = 1280;
     static baseH = 720;
+    static padding = 2;
 
-    ctx: CanvasRenderingContext2D;
+    ctx: CanvasRenderingContext2D | null;
     dpr: number;
     sx: number;
     sy: number;
-    constructor(
-        ctx: CanvasRenderingContext2D,
-        dpr: number,
-        sx: number,
-        sy: number
-    ) {
+
+    constructor() {
+        this.ctx = null;
+        this.dpr = 1;
+        this.sx = 1;
+        this.sy = 1;
+
+        console.log("GameRenderer initialized");
+    }
+
+    init(ctx: CanvasRenderingContext2D, dpr: number, sx: number, sy: number) {
         this.ctx = ctx;
         this.dpr = dpr;
         this.sx = sx;
         this.sy = sy;
     }
 
-    clearBackground(canvas: HTMLCanvasElement) {
+    clearBackground() {
         const ctx = this.ctx;
-        // Clear with dark gradient
+        if (!ctx) return;
+        const canvas = ctx.canvas;
+
         const grad = ctx.createLinearGradient(
             0,
             0,
@@ -34,7 +43,7 @@ export class GameRenderer {
         grad.addColorStop(1, "#0a0620");
         ctx.fillStyle = grad;
         ctx.fillRect(0, 0, canvas.width, canvas.height);
-        // Subtle starry noise / vignette
+
         ctx.globalAlpha = 0.08;
         for (let i = 0; i < 40; i++) {
             const x = Math.random() * canvas.width;
@@ -45,8 +54,11 @@ export class GameRenderer {
         ctx.globalAlpha = 1;
     }
 
-    drawMidline(canvas: HTMLCanvasElement) {
+    drawMidline() {
         const ctx = this.ctx;
+        if (!ctx) return;
+        const canvas = ctx.canvas;
+
         ctx.save();
         ctx.strokeStyle = "rgba(191, 128, 255, 0.35)";
         ctx.lineWidth = 4 * this.sx;
@@ -71,6 +83,8 @@ export class GameRenderer {
 
     drawGlassRect(x: number, y: number, w: number, h: number) {
         const ctx = this.ctx;
+        if (!ctx) return;
+
         ctx.save();
         ctx.shadowColor = "#7a5cff";
         ctx.shadowBlur = 18 * this.dpr;
@@ -94,8 +108,12 @@ export class GameRenderer {
         ctx.restore();
     }
 
-    drawBall(ball: Ball) {
+    drawBall() {
         const ctx = this.ctx;
+        if (!ctx) return;
+
+        const ball = gameEngine.ball;
+
         ctx.save();
         ctx.shadowColor = "#4cc9f0";
         ctx.shadowBlur = 20 * this.dpr;
@@ -119,8 +137,12 @@ export class GameRenderer {
         ctx.restore();
     }
 
-    drawSpeed(ball: Ball) {
+    drawSpeed() {
         const ctx = this.ctx;
+        if (!ctx) return;
+
+        const ball = gameEngine.ball;
+
         ctx.save();
         ctx.font = `${22 * this.sx}px ui-sans-serif, system-ui`;
         ctx.fillStyle = "#a0f";
@@ -131,53 +153,12 @@ export class GameRenderer {
         ctx.restore();
     }
 
-    drawScoreChip(text: string, cx: number) {
+    drawStateOverlay(state: GameData["state"], countDown: number | null) {
         const ctx = this.ctx;
-        const pad = 16 * this.sx;
-        ctx.save();
-        ctx.font = `${48 * this.sx}px ui-sans-serif, system-ui, -apple-system`;
-        const metrics = ctx.measureText(text);
-        const w = metrics.width + pad * 2;
-        const h = 64 * this.sy;
-        const x = cx - w / 2;
-        const y = 24 * this.sy;
-        ctx.shadowColor = "#7a5cff";
-        ctx.shadowBlur = 22 * this.dpr;
-        ctx.fillStyle = "rgba(255,255,255,0.08)";
-        ctx.strokeStyle = "rgba(255,255,255,0.16)";
-        const r = 14 * this.sx;
-        ctx.beginPath();
-        ctx.moveTo(x + r, y);
-        ctx.lineTo(x + w - r, y);
-        ctx.quadraticCurveTo(x + w, y, x + w, y + r);
-        ctx.lineTo(x + w, y + h - r);
-        ctx.quadraticCurveTo(x + w, y + h, x + w - r, y + h);
-        ctx.lineTo(x + r, y + h);
-        ctx.quadraticCurveTo(x, y + h, x, y + h - r);
-        ctx.lineTo(x, y + r);
-        ctx.quadraticCurveTo(x, y, x + r, y);
-        ctx.closePath();
-        ctx.fill();
-        ctx.lineWidth = 2 * this.sx;
-        ctx.stroke();
-        ctx.fillStyle = "#d6ccff";
-        ctx.textAlign = "center";
-        ctx.textBaseline = "middle";
-        ctx.fillText(text, cx, y + h / 2 + 2 * this.sy);
-        ctx.restore();
-    }
+        if (!ctx) return;
+        const canvas = ctx.canvas;
 
-    drawOverlay(
-        canvas: HTMLCanvasElement,
-        opts: {
-            countdown: number | null;
-            showMessage: string | null;
-            state: GameData["state"];
-        }
-    ) {
-        const ctx = this.ctx;
-        const { countdown, showMessage, state } = opts;
-        if (countdown !== null) {
+        if (countDown) {
             ctx.save();
             ctx.fillStyle = "rgba(15, 10, 40, 0.8)";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
@@ -188,7 +169,7 @@ export class GameRenderer {
             ctx.shadowColor = "#7a5cff";
             ctx.shadowBlur = 30 * this.dpr;
             ctx.fillText(
-                String(countdown),
+                String(countDown),
                 canvas.width / 2,
                 canvas.height / 2
             );
@@ -198,28 +179,6 @@ export class GameRenderer {
                 "Get Ready!",
                 canvas.width / 2,
                 canvas.height / 2 + 80 * this.sy
-            );
-            ctx.restore();
-        } else if (showMessage) {
-            ctx.save();
-            ctx.fillStyle = "rgba(15, 10, 40, 0.7)";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "#c4b5fd";
-            ctx.textAlign = "center";
-            ctx.textBaseline = "middle";
-            ctx.font = `${48 * this.sx}px ui-sans-serif, system-ui`;
-            ctx.fillText(
-                showMessage,
-                canvas.width / 2,
-                canvas.height / 2 - 30 * this.sy
-            );
-            ctx.font = `${24 * this.sx}px ui-sans-serif, system-ui`;
-            ctx.fillText(
-                state == "finished"
-                    ? "Press space to restart"
-                    : "New round starting...",
-                canvas.width / 2,
-                canvas.height / 2 + 30 * this.sy
             );
             ctx.restore();
         } else if (state === "created") {
@@ -258,4 +217,122 @@ export class GameRenderer {
             ctx.restore();
         }
     }
+
+    drawMessages(message: CanvasMessage[]) {
+        if (message.length === 0) return;
+
+        const ctx = this.ctx;
+        if (!ctx) return;
+        const canvas = ctx.canvas;
+
+        ctx.save();
+        ctx.fillStyle = "rgba(15, 10, 40, 0.8)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.restore();
+
+        let currentY = canvas.height / 2;
+        message.forEach((msg, index) => {
+            const size = msg.size ?? 48;
+            const color = msg.color ?? "#c4b5fd";
+            const marginTop = msg.marginTop ?? 0;
+
+            ctx.save();
+            ctx.fillStyle = color;
+            ctx.textAlign = "center";
+            ctx.textBaseline = "middle";
+            ctx.font = `${size * this.sx}px ui-sans-serif, system-ui`;
+            if (msg.shadow) {
+                ctx.shadowColor = msg.shadow.color;
+                ctx.shadowBlur = msg.shadow.blur * this.dpr;
+            }
+            currentY += marginTop * this.sy;
+            ctx.fillText(msg.text, canvas.width / 2, currentY);
+            currentY += (size + 10) * this.sy;
+            ctx.restore();
+        });
+
+        // const { countdown, showMessage, state } = opts;
+        // if (countdown !== null) {
+        //     ctx.save();
+        //     ctx.fillStyle = "rgba(15, 10, 40, 0.8)";
+        //     ctx.fillRect(0, 0, canvas.width, canvas.height);
+        //     ctx.fillStyle = "#c4b5fd";
+        //     ctx.textAlign = "center";
+        //     ctx.textBaseline = "middle";
+        //     ctx.font = `${120 * this.sx}px ui-sans-serif, system-ui`;
+        //     ctx.shadowColor = "#7a5cff";
+        //     ctx.shadowBlur = 30 * this.dpr;
+        //     ctx.fillText(
+        //         String(countdown),
+        //         canvas.width / 2,
+        //         canvas.height / 2
+        //     );
+        //     ctx.font = `${24 * this.sx}px ui-sans-serif, system-ui`;
+        //     ctx.shadowBlur = 10 * this.dpr;
+        //     ctx.fillText(
+        //         "Get Ready!",
+        //         canvas.width / 2,
+        //         canvas.height / 2 + 80 * this.sy
+        //     );
+        //     ctx.restore();
+        // } else if (showMessage) {
+        //     ctx.save();
+        //     ctx.fillStyle = "rgba(15, 10, 40, 0.7)";
+        //     ctx.fillRect(0, 0, canvas.width, canvas.height);
+        //     ctx.fillStyle = "#c4b5fd";
+        //     ctx.textAlign = "center";
+        //     ctx.textBaseline = "middle";
+        //     ctx.font = `${48 * this.sx}px ui-sans-serif, system-ui`;
+        //     ctx.fillText(
+        //         showMessage,
+        //         canvas.width / 2,
+        //         canvas.height / 2 - 30 * this.sy
+        //     );
+        //     ctx.font = `${24 * this.sx}px ui-sans-serif, system-ui`;
+        //     ctx.fillText(
+        //         state == "finished"
+        //             ? "Press space to restart"
+        //             : "New round starting...",
+        //         canvas.width / 2,
+        //         canvas.height / 2 + 30 * this.sy
+        //     );
+        //     ctx.restore();
+        // } else if (state === "created") {
+        //     ctx.save();
+        //     ctx.fillStyle = "rgba(15, 10, 40, 0.8)";
+        //     ctx.fillRect(0, 0, canvas.width, canvas.height);
+        //     ctx.fillStyle = "#c4b5fd";
+        //     ctx.textAlign = "center";
+        //     ctx.textBaseline = "middle";
+        //     ctx.font = `${48 * this.sx}px ui-sans-serif, system-ui`;
+        //     ctx.fillText(
+        //         "Press Space to Start",
+        //         canvas.width / 2,
+        //         canvas.height / 2
+        //     );
+        //     ctx.restore();
+        // } else if (state === "paused") {
+        //     ctx.save();
+        //     ctx.fillStyle = "rgba(15, 10, 40, 0.45)";
+        //     ctx.fillRect(0, 0, canvas.width, canvas.height);
+        //     ctx.fillStyle = "#c4b5fd";
+        //     ctx.textAlign = "center";
+        //     ctx.textBaseline = "middle";
+        //     ctx.font = `${34 * this.sx}px ui-sans-serif, system-ui`;
+        //     ctx.fillText(
+        //         "Press Space to Play/Pause",
+        //         canvas.width / 2,
+        //         canvas.height / 2 - 20 * this.sy
+        //     );
+        //     ctx.font = `${22 * this.sx}px ui-sans-serif, system-ui`;
+        //     ctx.fillText(
+        //         "Left: W/S     Right: ↑/↓",
+        //         canvas.width / 2,
+        //         canvas.height / 2 + 18 * this.sy
+        //     );
+        //     ctx.restore();
+        // }
+    }
 }
+
+export const renderer = new GameRenderer();

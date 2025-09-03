@@ -1,5 +1,3 @@
-import { GameDTOType, GameStatus, TournamentUserDTOType } from "shared";
-
 export type Vec2 = { x: number; y: number };
 
 export interface Paddle {
@@ -8,6 +6,10 @@ export interface Paddle {
     w: number;
     h: number;
     speed: number;
+    controls: {
+        up: string;
+        down: string;
+    };
 }
 
 export interface Ball {
@@ -22,25 +24,12 @@ export interface PongPlayer {
     id: string;
     score: number;
     paddle: Paddle;
-    controls: {
-        up: string;
-        down: string;
-    };
 }
 
 export interface GameData {
     players: PongPlayer[];
-    ball: Ball;
     state: "created" | "started" | "paused" | "finished";
-    showMessage: string | null;
     countdown: number | null;
-}
-
-export interface GameConfig {
-    baseW: number;
-    baseH: number;
-    padding: number;
-    maxPlayers?: number;
 }
 
 export type GameWindowState =
@@ -50,44 +39,18 @@ export type GameWindowState =
     | "remote-casual"
     | "remote-tournament";
 
-export type StatusMessage = {
+export interface StatusMessage {
     message: string;
     success: boolean;
-};
-
-export interface LocalTournamentState {
-    tournamentId: number;
-    status: GameStatus;
-    players: TournamentUserDTOType[];
-    games: GameDTOType[];
-    round: number;
-    winnerId: number | null;
-    currentGame: GameDTOType | null;
 }
 
-export interface LocalTournamentActions {
-    setStatus: (status: GameStatus) => void;
-    setPlayers: (
-        players:
-            | TournamentUserDTOType[]
-            | ((prev: TournamentUserDTOType[]) => TournamentUserDTOType[])
-    ) => void;
-    setGames: (games: GameDTOType[]) => void;
-    setRound: (round: number | ((prev: number) => number)) => void;
-    setCurrentGame: (game: GameDTOType | null) => void;
-    addPlayer: (username: string) => StatusMessage;
-    removePlayer: (username: string) => void;
-    startTournament: () => void;
-    endTournament: () => void;
-    createRound: () => GameDTOType[];
-    nextRound: () => GameDTOType[]; // Alias for createRound
-    setWinner: (gameId: number, winnerUsername: string) => void;
-    playGame: () => void;
-    deleteTournament: () => void;
-}
-
-export type LocalTournamentContextType = LocalTournamentState &
-    LocalTournamentActions & {
-        maxPlayers: number;
-        getActivePlayers: () => TournamentUserDTOType[];
+export interface CanvasMessage {
+    size?: number;
+    color?: string;
+    shadow?: {
+        color: string;
+        blur: number;
     };
+    marginTop?: number;
+    text: string;
+}

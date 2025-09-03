@@ -1,25 +1,38 @@
-import { GameConfig, GameData } from "../types";
+import { clamp } from "lodash";
+import { Ball, GameData } from "../types";
+import { GameRenderer } from "./GameRender";
 
-// Utility: clamp a value
-const clamp = (v: number, min: number, max: number) =>
-    Math.max(min, Math.min(max, v));
-
-export class GameEngine {
+class GameEngine {
     private state: GameData;
-    private config: GameConfig;
     private keys: Record<string, boolean>;
-    private onScore: (scorerId: string) => void;
 
-    constructor(
-        initialState: GameData,
-        config: GameConfig,
-        keys: Record<string, boolean>,
-        onScore: (scorerId: string) => void
-    ) {
+    onScore?: (scorerId: string) => void;
+    onEnd?: (winnerId: string) => void;
+
+    ball: Ball;
+    stopped: boolean = true;
+
+    constructor() {
+        this.state = {
+            state: "created",
+            players: [],
+            countdown: null,
+        };
+
+        this.keys = {};
+        this.ball = {
+            pos: { x: -10, y: -10 },
+            vel: { x: 6, y: 3 },
+            size: 14,
+            speed: 7.5,
+        };
+
+        console.log("GameEngine created");
+    }
+
+    init(initialState: GameData, keys: Record<string, boolean>) {
         this.state = initialState;
-        this.config = config;
         this.keys = keys;
-        this.onScore = onScore;
     }
 
     // Update the game state reference
@@ -34,13 +47,7 @@ export class GameEngine {
 
     // Main update method - handles all game logic
     update(): void {
-        if (
-            this.state.state !== "started" ||
-            this.state.showMessage ||
-            this.state.countdown
-        ) {
-            return;
-        }
+        if (this.stopped) return;
 
         this.updatePaddles();
         this.updateBall();
@@ -48,36 +55,65 @@ export class GameEngine {
         this.checkScoring();
     }
 
+    private handleScore(scorerId: string): void {
+        this.onScore?.(scorerId);
+        this.reset();
+    }
+
     private updatePaddles(): void {
-        const { padding, baseH } = this.config;
+        const { baseH, padding } = GameRenderer;
 
         // Update all player paddles based on their controls
         this.state.players.forEach((player) => {
             const paddle = player.paddle;
-            const controls = player.controls;
+            const controls = player.paddle.controls;
 
-            // Check up/down movement for this player
-            if (this.keys[controls.up]) {
-                paddle.y -= paddle.speed;
-            }
-            if (this.keys[controls.down]) {
-                paddle.y += paddle.speed;
-            }
+            if (this.keys[controls.up]) paddle.y -= paddle.speed;
+            if (this.keys[controls.down]) paddle.y += paddle.speed;
 
             // Clamp paddle to screen bounds
             paddle.y = clamp(paddle.y, padding, baseH - paddle.h - padding);
         });
     }
 
+    private resetPaddles(): void {
+        const { baseH } = GameRenderer;
+        this.state.players.forEach((player) => {
+            const paddle = player.paddle;
+            paddle.y = baseH / 2 - paddle.h / 2;
+        });
+    }
+
+    private resetBall(): void {
+        const { baseW, baseH } = GameRenderer;
+
+        this.ball.pos = { x: baseW / 2, y: baseH / 2 };
+        const angle = (Math.random() * Math.PI) / 3 - Math.PI / 6; // -30°..+30°
+
+        let dir = Math.random() < 0.5 ? -1 : 1;
+
+        const speed = this.ball.speed;
+        this.ball.vel = {
+            x: Math.cos(angle) * speed * dir,
+            y: Math.sin(angle) * speed,
+        };
+        this.ball.speed = 7.5;
+    }
+
+    reset(): void {
+        this.resetBall();
+        this.resetPaddles();
+    }
+
     private updateBall(): void {
-        const ball = this.state.ball;
+        const ball = this.ball;
         ball.pos.x += ball.vel.x;
         ball.pos.y += ball.vel.y;
     }
 
     private checkCollisions(): void {
-        const { padding, baseH } = this.config;
-        const ball = this.state.ball;
+        const { baseH, padding } = GameRenderer;
+        const ball = this.ball;
 
         // Top and bottom wall collisions
         if (ball.pos.y <= padding) {
@@ -101,7 +137,7 @@ export class GameEngine {
     }
 
     private calculateBounceDirection(paddleX: number): number {
-        const { baseW } = this.config;
+        const { baseW } = GameRenderer;
         // If paddle is on left side, ball bounces right (positive direction)
         // If paddle is on right side, ball bounces left (negative direction)
         return paddleX < baseW / 2 ? 1 : -1;
@@ -114,7 +150,7 @@ export class GameEngine {
         ph: number,
         dir: number
     ): void {
-        const ball = this.state.ball;
+        const ball = this.ball;
         const bx = ball.pos.x;
         const by = ball.pos.y;
         const bs = ball.size;
@@ -143,33 +179,17 @@ export class GameEngine {
     }
 
     private checkScoring(): void {
-        const { baseW } = this.config;
-        const ball = this.state.ball;
+        const { baseW } = GameRenderer;
+        const ball = this.ball;
 
-        // For 2 players, use traditional left/right scoring
-        if (this.state.players.length === 2) {
-            if (ball.pos.x < -20) {
-                this.onScore(this.state.players[1].id); // Right player scores
-            } else if (ball.pos.x > baseW + 20) {
-                this.onScore(this.state.players[0].id); // Left player scores
-            }
-        } else {
-            // For more players, find the nearest player to the ball position
-            if (ball.pos.x < -20 || ball.pos.x > baseW + 20) {
-                // Find the player whose paddle is closest to the ball when it goes out
-                let closestPlayer = this.state.players[0];
-                let minDistance = Math.abs(ball.pos.x - closestPlayer.paddle.x);
+        // NOTE: works only for 2 players
 
-                this.state.players.forEach((player) => {
-                    const distance = Math.abs(ball.pos.x - player.paddle.x);
-                    if (distance < minDistance) {
-                        minDistance = distance;
-                        closestPlayer = player;
-                    }
-                });
-
-                this.onScore(closestPlayer.id);
-            }
+        if (ball.pos.x < -20) {
+            this.handleScore?.(this.state.players[1].id); // Right player scores
+        } else if (ball.pos.x > baseW + 20) {
+            this.handleScore?.(this.state.players[0].id); // Left player scores
         }
     }
 }
+
+export const gameEngine = new GameEngine();

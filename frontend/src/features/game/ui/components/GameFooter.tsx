@@ -20,10 +20,18 @@ export function GameFooter() {
                     <p>{players[0].username}:</p>
                     <div className="flex items-center gap-2">
                         <kbd className="px-2 py-1 bg-white/10 rounded-md">
-                            {symbols[players[0].controls.up.toLowerCase()]}
+                            {
+                                symbols[
+                                    players[0].paddle.controls.up.toLowerCase()
+                                ]
+                            }
                         </kbd>
                         <kbd className="px-2 py-1 bg-white/10 rounded-md">
-                            {symbols[players[0].controls.down.toLowerCase()]}
+                            {
+                                symbols[
+                                    players[0].paddle.controls.down.toLowerCase()
+                                ]
+                            }
                         </kbd>
                     </div>
                 </div>
@@ -45,10 +53,18 @@ export function GameFooter() {
                     <p>{players[1].username}:</p>
                     <div className="flex items-center gap-2">
                         <kbd className="px-2 py-1 bg-white/10 rounded-md">
-                            {symbols[players[1].controls.up.toLowerCase()]}
+                            {
+                                symbols[
+                                    players[1].paddle.controls.up.toLowerCase()
+                                ]
+                            }
                         </kbd>
                         <kbd className="px-2 py-1 bg-white/10 rounded-md">
-                            {symbols[players[1].controls.down.toLowerCase()]}
+                            {
+                                symbols[
+                                    players[1].paddle.controls.down.toLowerCase()
+                                ]
+                            }
                         </kbd>
                     </div>
                 </div>

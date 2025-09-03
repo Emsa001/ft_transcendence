@@ -4,11 +4,11 @@ import { GameHeader } from "@features/game/ui/components/GameHeader";
 import { GameLocal } from "@features/game/ui/GameLocal";
 import { GameRemote } from "@features/game/ui/GameRemote";
 import { MenuScreen } from "@features/game/ui/MenuScreen";
-import { TournamentElement } from "@features/game/ui/tournament/TournamentElement";
+import { TournamentElement } from "@features/tournament/ui/TournamentElement";
 import React, { useState } from "react";
 
 export default function Game() {
-    const [window, setWindow] = useState<GameWindowState>("remote-casual");
+    const [window, setWindow] = useState<GameWindowState>("local-casual");
 
     if (window === "menu") {
         return (

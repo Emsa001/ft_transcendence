@@ -1,7 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import { ShinyText } from "@shared/components/Shiny";
 import { TournamentUserDTOType } from "shared";
-import { useLocalTournament } from "@features/game/model/LocalTournamentProvider";
+import { useLocalTournament } from "../model/LocalTournamentProvider";
 
 export const TournamentRegister = () => {
     const { players, maxPlayers, addPlayer, removePlayer, startTournament } =

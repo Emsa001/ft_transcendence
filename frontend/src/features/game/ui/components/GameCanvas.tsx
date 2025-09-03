@@ -1,27 +1,21 @@
 import React, { useRef, useEffect } from "react";
-import { GameRenderer } from "../../service/GameRender";
-import { GameConfig, GameData } from "../../types";
-import { GameEngine } from "../../service/GameEngine";
+import { GameData } from "../../types";
 import { useGameState } from "../../model/useGameState";
 import { useGame } from "../../model/useGame";
-import { GameScore } from "./GameScore";
+import { GameRenderer, renderer } from "@features/game/service/GameRender";
+import { gameEngine } from "@features/game/service/GameEngine";
 
-export interface GameCanvasElementProps {
-    padding?: number;
-}
-
-export function GameCanvasElement({ padding = 2 }: GameCanvasElementProps) {
+export function GameCanvasElement() {
     const {
         messageTimeoutRef,
         countdownTimeoutRef,
         state,
-        showMessage,
+        message,
         countdown,
         keys,
-        handleScore,
     } = useGame();
 
-    const { players, ball } = useGameState();
+    const { players } = useGameState();
 
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const rafRef = useRef<number | null>(null);
@@ -58,28 +52,6 @@ export function GameCanvasElement({ padding = 2 }: GameCanvasElementProps) {
     }, []);
 
     useEffect(() => {
-        // Create game engine with configuration
-        const gameConfig: GameConfig = {
-            baseW,
-            baseH,
-            padding,
-        };
-
-        const gameData: GameData = {
-            players: players,
-            ball: ball,
-            state: state,
-            showMessage: showMessage,
-            countdown: countdown,
-        };
-
-        const gameEngine = new GameEngine(
-            gameData,
-            gameConfig,
-            keys,
-            handleScore
-        );
-
         const loop = () => {
             const canvas = canvasRef.current;
             if (!canvas) return;
@@ -88,14 +60,12 @@ export function GameCanvasElement({ padding = 2 }: GameCanvasElementProps) {
             if (!ctx) return;
             const sx = canvas.width / baseW;
             const sy = canvas.height / baseH;
-            const renderer = new GameRenderer(ctx, dpr, sx, sy);
+            renderer.init(ctx, dpr, sx, sy);
 
             // Update game state in engine
             const currentData: GameData = {
                 players: players,
-                ball: ball,
                 state: state,
-                showMessage: showMessage,
                 countdown: countdown,
             };
 
@@ -108,16 +78,13 @@ export function GameCanvasElement({ padding = 2 }: GameCanvasElementProps) {
             }
 
             // Render everything
-            renderer.clearBackground(canvas);
-            renderer.drawMidline(canvas);
+            renderer.clearBackground();
+            renderer.drawMidline();
+            renderer.drawBall();
+            renderer.drawSpeed();
             renderer.drawPaddles(players);
-            renderer.drawBall(ball);
-            renderer.drawSpeed(ball);
-            renderer.drawOverlay(canvas, {
-                countdown: countdown,
-                showMessage: showMessage,
-                state: state,
-            });
+            renderer.drawStateOverlay(state, countdown);
+            renderer.drawMessages(message);
 
             rafRef.current = requestAnimationFrame(loop);
         };
@@ -128,7 +95,7 @@ export function GameCanvasElement({ padding = 2 }: GameCanvasElementProps) {
             runningRef.current = false;
             if (rafRef.current) cancelAnimationFrame(rafRef.current);
         };
-    }, [state, keys, players, ball, showMessage, countdown]);
+    }, [state, keys, players, message, countdown]);
 
     useEffect(() => {
         return () => {
@@ -138,6 +105,8 @@ export function GameCanvasElement({ padding = 2 }: GameCanvasElementProps) {
                 clearTimeout(countdownTimeoutRef.current);
         };
     }, [messageTimeoutRef, countdownTimeoutRef]);
+
+    console.log("tset");
 
     return <canvas ref={canvasRef} className="rounded-xl m-auto" />;
 }

@@ -1,16 +1,15 @@
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useKeyboard } from "./useKeyboard";
 import { useGameState } from "./useGameState";
-import { GameData } from "../types";
+import { CanvasMessage, GameData } from "../types";
+import { gameEngine } from "../service/GameEngine";
 
 export const useGame = () => {
     const {
         maxScore,
         players,
-        updatePlayerScore,
-        resetBall,
+        addPoint,
         resetGame,
-        resetPaddles,
 
         onScore,
         onEnd,
@@ -19,82 +18,78 @@ export const useGame = () => {
 
     const [state, setState] = useState<GameData["state"]>("created");
 
-    const [showMessage, setShowMessage] = useState<string | null>(null);
+    const [message, setMessage] = useState<CanvasMessage[]>([]);
     const [countdown, setCountdown] = useState<number | null>(null);
     const messageTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const countdownTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
+    useEffect(() => {
+        gameEngine.onScore = handleScore;
+    }, [players]);
+
     const handleScore = (scorerId: string) => {
-        // Find the player who scored
         const scorer = players.find((p) => p.id === scorerId);
         if (!scorer) return;
 
-        // Update the scorer's score
+        gameEngine.stopped = true;
         const newScore = scorer.score + 1;
 
-        updatePlayerScore(scorerId, newScore);
-        setShowMessage(`${scorer.username} Scores!`);
+        setMessage([
+            {
+                text: `${scorer.username} Scores!`,
+            },
+        ]);
 
-        // Call external onScore callback
+        addPoint(scorerId);
         onScore?.({ ...scorer, score: newScore });
 
-        // Check for winner
         if (newScore >= maxScore) {
-            setShowMessage(`${scorer.username} Wins!`);
+            setMessage([
+                {
+                    text: `${scorer.username} Wins!`,
+                },
+            ]);
             setState("finished");
-
             onEnd?.(scorer);
             return;
         }
 
-        // Clear any existing timeout
-        if (messageTimeoutRef.current) {
-            clearTimeout(messageTimeoutRef.current);
-        }
-
-        // Show message for 1 second then start countdown
         messageTimeoutRef.current = setTimeout(() => {
-            setShowMessage(null);
-            // Ball goes away from the player who scored
-            const otherPlayerId = players.find((p) => p.id !== scorerId)?.id;
+            setMessage([]);
             startCountdown().then(() => {
-                resetBall(otherPlayerId);
-                resetPaddles();
+                gameEngine.stopped = false;
             });
         }, 1000);
     };
 
     // Start or reset helpers
     const startGame = () => {
-        if (showMessage || countdown) {
-            // Clear any ongoing message or countdown
-            if (messageTimeoutRef.current)
-                clearTimeout(messageTimeoutRef.current);
-            if (countdownTimeoutRef.current)
-                clearTimeout(countdownTimeoutRef.current);
+        if (countdown) return;
 
-            setShowMessage(null);
-            setCountdown(null);
-        }
+        gameEngine.reset();
 
         setState("started");
-        startCountdown();
+        startCountdown().then(() => {
+            gameEngine.stopped = false;
+        });
     };
 
     const handleReset = () => {
+        // TODO: check if need clearing here
         if (messageTimeoutRef.current) clearTimeout(messageTimeoutRef.current);
         if (countdownTimeoutRef.current)
             clearTimeout(countdownTimeoutRef.current);
 
-        setShowMessage(null);
+        setMessage([]);
         setCountdown(null);
         setState("created");
         resetGame();
     };
 
-    const handlePause = () => {
-        if (showMessage || countdown || state !== "started") return;
-        setState("paused");
+    const togglePause = () => {
+        if (countdown) return;
+        setState((prev) => (prev === "started" ? "paused" : "started"));
+        gameEngine.stopped = !gameEngine.stopped;
     };
 
     const handleSpacePress = () => {
@@ -105,11 +100,11 @@ export const useGame = () => {
                 handleReset();
                 break;
             case "created":
-            case "paused":
                 startGame();
                 break;
             case "started":
-                handlePause();
+            case "paused":
+                togglePause();
                 break;
         }
     };
@@ -140,12 +135,10 @@ export const useGame = () => {
         messageTimeoutRef,
         countdownTimeoutRef,
         state,
-        showMessage,
+        message,
         countdown,
         keys,
-        handleScore,
         startGame,
         handleReset,
-        handlePause,
     };
 };
