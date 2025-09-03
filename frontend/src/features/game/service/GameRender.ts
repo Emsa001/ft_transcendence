@@ -1,4 +1,4 @@
-import { Ball, CanvasMessage, GameData, PongPlayer } from "../types";
+import { CanvasMessage, GameState } from "../types";
 import { gameEngine } from "./GameEngine";
 
 // Drawing and Calculation Class
@@ -70,14 +70,9 @@ export class GameRenderer {
         ctx.restore();
     }
 
-    drawPaddles(players: PongPlayer[]) {
-        players.forEach((player) => {
-            this.drawGlassRect(
-                player.paddle.x,
-                player.paddle.y,
-                player.paddle.w,
-                player.paddle.h
-            );
+    drawPaddles() {
+        gameEngine.paddles.forEach((paddle) => {
+            this.drawGlassRect(paddle.x, paddle.y, paddle.w, paddle.h);
         });
     }
 
@@ -153,7 +148,7 @@ export class GameRenderer {
         ctx.restore();
     }
 
-    drawStateOverlay(state: GameData["state"], countDown: number | null) {
+    drawStateOverlay(state: GameState, countDown: number | null) {
         const ctx = this.ctx;
         if (!ctx) return;
         const canvas = ctx.canvas;
@@ -243,95 +238,13 @@ export class GameRenderer {
             ctx.font = `${size * this.sx}px ui-sans-serif, system-ui`;
             if (msg.shadow) {
                 ctx.shadowColor = msg.shadow.color;
-                ctx.shadowBlur = msg.shadow.blur * this.dpr;
+                ctx.shadowBlur = (msg.shadow.blur || 30) * this.dpr;
             }
             currentY += marginTop * this.sy;
             ctx.fillText(msg.text, canvas.width / 2, currentY);
             currentY += (size + 10) * this.sy;
             ctx.restore();
         });
-
-        // const { countdown, showMessage, state } = opts;
-        // if (countdown !== null) {
-        //     ctx.save();
-        //     ctx.fillStyle = "rgba(15, 10, 40, 0.8)";
-        //     ctx.fillRect(0, 0, canvas.width, canvas.height);
-        //     ctx.fillStyle = "#c4b5fd";
-        //     ctx.textAlign = "center";
-        //     ctx.textBaseline = "middle";
-        //     ctx.font = `${120 * this.sx}px ui-sans-serif, system-ui`;
-        //     ctx.shadowColor = "#7a5cff";
-        //     ctx.shadowBlur = 30 * this.dpr;
-        //     ctx.fillText(
-        //         String(countdown),
-        //         canvas.width / 2,
-        //         canvas.height / 2
-        //     );
-        //     ctx.font = `${24 * this.sx}px ui-sans-serif, system-ui`;
-        //     ctx.shadowBlur = 10 * this.dpr;
-        //     ctx.fillText(
-        //         "Get Ready!",
-        //         canvas.width / 2,
-        //         canvas.height / 2 + 80 * this.sy
-        //     );
-        //     ctx.restore();
-        // } else if (showMessage) {
-        //     ctx.save();
-        //     ctx.fillStyle = "rgba(15, 10, 40, 0.7)";
-        //     ctx.fillRect(0, 0, canvas.width, canvas.height);
-        //     ctx.fillStyle = "#c4b5fd";
-        //     ctx.textAlign = "center";
-        //     ctx.textBaseline = "middle";
-        //     ctx.font = `${48 * this.sx}px ui-sans-serif, system-ui`;
-        //     ctx.fillText(
-        //         showMessage,
-        //         canvas.width / 2,
-        //         canvas.height / 2 - 30 * this.sy
-        //     );
-        //     ctx.font = `${24 * this.sx}px ui-sans-serif, system-ui`;
-        //     ctx.fillText(
-        //         state == "finished"
-        //             ? "Press space to restart"
-        //             : "New round starting...",
-        //         canvas.width / 2,
-        //         canvas.height / 2 + 30 * this.sy
-        //     );
-        //     ctx.restore();
-        // } else if (state === "created") {
-        //     ctx.save();
-        //     ctx.fillStyle = "rgba(15, 10, 40, 0.8)";
-        //     ctx.fillRect(0, 0, canvas.width, canvas.height);
-        //     ctx.fillStyle = "#c4b5fd";
-        //     ctx.textAlign = "center";
-        //     ctx.textBaseline = "middle";
-        //     ctx.font = `${48 * this.sx}px ui-sans-serif, system-ui`;
-        //     ctx.fillText(
-        //         "Press Space to Start",
-        //         canvas.width / 2,
-        //         canvas.height / 2
-        //     );
-        //     ctx.restore();
-        // } else if (state === "paused") {
-        //     ctx.save();
-        //     ctx.fillStyle = "rgba(15, 10, 40, 0.45)";
-        //     ctx.fillRect(0, 0, canvas.width, canvas.height);
-        //     ctx.fillStyle = "#c4b5fd";
-        //     ctx.textAlign = "center";
-        //     ctx.textBaseline = "middle";
-        //     ctx.font = `${34 * this.sx}px ui-sans-serif, system-ui`;
-        //     ctx.fillText(
-        //         "Press Space to Play/Pause",
-        //         canvas.width / 2,
-        //         canvas.height / 2 - 20 * this.sy
-        //     );
-        //     ctx.font = `${22 * this.sx}px ui-sans-serif, system-ui`;
-        //     ctx.fillText(
-        //         "Left: W/S     Right: ↑/↓",
-        //         canvas.width / 2,
-        //         canvas.height / 2 + 18 * this.sy
-        //     );
-        //     ctx.restore();
-        // }
     }
 }
 

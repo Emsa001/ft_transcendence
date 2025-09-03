@@ -6,10 +6,8 @@ export interface Paddle {
     w: number;
     h: number;
     speed: number;
-    controls: {
-        up: string;
-        down: string;
-    };
+    controls: { up: string; down: string };
+    playerId: number;
 }
 
 export interface Ball {
@@ -19,18 +17,7 @@ export interface Ball {
     speed: number;
 }
 
-export interface PongPlayer {
-    username: string;
-    id: string;
-    score: number;
-    paddle: Paddle;
-}
-
-export interface GameData {
-    players: PongPlayer[];
-    state: "created" | "started" | "paused" | "finished";
-    countdown: number | null;
-}
+export type GameState = "created" | "started" | "paused" | "finished";
 
 export type GameWindowState =
     | "menu"
@@ -49,7 +36,7 @@ export interface CanvasMessage {
     color?: string;
     shadow?: {
         color: string;
-        blur: number;
+        blur?: number;
     };
     marginTop?: number;
     text: string;

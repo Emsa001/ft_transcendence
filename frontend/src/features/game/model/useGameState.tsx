@@ -1,18 +1,23 @@
-import React, { createContext, useContext, useRef, useState } from "react";
-import { PongPlayer } from "../types";
+import React, {
+    createContext,
+    useContext,
+    useEffect,
+    useRef,
+    useState,
+} from "react";
 import { GameUserDTOType } from "shared";
-import { createPongPlayers } from "../service/GameUitls";
+import { gameEngine } from "../service/GameEngine";
 
 interface GameStateContextType {
-    players: PongPlayer[];
+    players: GameUserDTOType[];
     resetGame: () => void;
-    addPoint: (playerId: string) => void;
+    addPoint: (playerId: number) => void;
     maxScore: number;
     setMaxScore: (score: number | ((prev: number) => number)) => void;
 
     // Event Callbacks
-    onScore?: (scorer: PongPlayer) => void;
-    onEnd?: (winner: PongPlayer) => void;
+    onScore?: (scorer: GameUserDTOType) => void;
+    onEnd?: (winner: GameUserDTOType) => void;
     onSpace?: () => boolean;
 }
 
@@ -27,10 +32,21 @@ interface GameStateProviderProps {
     maxScore?: number;
 
     // Event Callbacks
-    onScore?: (scorer: PongPlayer) => void;
-    onEnd?: (winner: PongPlayer) => void;
+    onScore?: (scorer: GameUserDTOType) => void;
+    onEnd?: (winner: GameUserDTOType) => void;
     onSpace?: () => boolean;
 }
+
+const createPlayers = (players?: GameUserDTOType[]) => {
+    if (!players)
+        players = [
+            { id: 0, username: "Player 1", score: 0 },
+            { id: 1, username: "Player 2", score: 0 },
+        ];
+    gameEngine.initPlayers(players);
+
+    return players;
+};
 
 export const GameStateProvider = ({
     children,
@@ -44,8 +60,8 @@ export const GameStateProvider = ({
     const [maxScoreValue, setMaxScore] = useState(maxScore);
 
     /** --- State --- */
-    const [players, setPlayers] = useState<PongPlayer[]>(
-        createPongPlayers(playersConfig)
+    const [players, setPlayers] = useState<GameUserDTOType[]>(
+        createPlayers(playersConfig)
     );
 
     const resetGame = () => {
@@ -57,7 +73,7 @@ export const GameStateProvider = ({
         );
     };
 
-    const addPoint = (playerId: string) => {
+    const addPoint = (playerId: number) => {
         setPlayers((prev) =>
             prev.map((p) =>
                 p.id === playerId ? { ...p, score: p.score + 1 } : p

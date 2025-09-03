@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useKeyboard } from "./useKeyboard";
 import { useGameState } from "./useGameState";
-import { CanvasMessage, GameData } from "../types";
+import { CanvasMessage, GameState } from "../types";
 import { gameEngine } from "../service/GameEngine";
 
 export const useGame = () => {
@@ -16,7 +16,7 @@ export const useGame = () => {
         onSpace,
     } = useGameState();
 
-    const [state, setState] = useState<GameData["state"]>("created");
+    const [state, setState] = useState<GameState>("created");
 
     const [message, setMessage] = useState<CanvasMessage[]>([]);
     const [countdown, setCountdown] = useState<number | null>(null);
@@ -25,9 +25,9 @@ export const useGame = () => {
 
     useEffect(() => {
         gameEngine.onScore = handleScore;
-    }, [players]);
+    }, [players, maxScore]);
 
-    const handleScore = (scorerId: string) => {
+    const handleScore = (scorerId: number) => {
         const scorer = players.find((p) => p.id === scorerId);
         if (!scorer) return;
 
@@ -37,6 +37,11 @@ export const useGame = () => {
         setMessage([
             {
                 text: `${scorer.username} Scores!`,
+                shadow: {
+                    color: "#7a5cff",
+                    blur: 20,
+                },
+                size: 50,
             },
         ]);
 
@@ -47,6 +52,15 @@ export const useGame = () => {
             setMessage([
                 {
                     text: `${scorer.username} Wins!`,
+                    shadow: {
+                        color: "#7a5cff",
+                        blur: 20,
+                    },
+                    size: 60,
+                },
+                {
+                    text: `Press Space to Restart`,
+                    size: 30,
                 },
             ]);
             setState("finished");
@@ -66,6 +80,14 @@ export const useGame = () => {
     const startGame = () => {
         if (countdown) return;
 
+        if (messageTimeoutRef.current) clearTimeout(messageTimeoutRef.current);
+        if (countdownTimeoutRef.current)
+            clearTimeout(countdownTimeoutRef.current);
+
+        setMessage([]);
+        setCountdown(null);
+
+        resetGame();
         gameEngine.reset();
 
         setState("started");
@@ -74,20 +96,8 @@ export const useGame = () => {
         });
     };
 
-    const handleReset = () => {
-        // TODO: check if need clearing here
-        if (messageTimeoutRef.current) clearTimeout(messageTimeoutRef.current);
-        if (countdownTimeoutRef.current)
-            clearTimeout(countdownTimeoutRef.current);
-
-        setMessage([]);
-        setCountdown(null);
-        setState("created");
-        resetGame();
-    };
-
     const togglePause = () => {
-        if (countdown) return;
+        if (countdown || message.length > 0) return;
         setState((prev) => (prev === "started" ? "paused" : "started"));
         gameEngine.stopped = !gameEngine.stopped;
     };
@@ -96,10 +106,8 @@ export const useGame = () => {
         if (onSpace?.() == false) return;
 
         switch (state) {
-            case "finished":
-                handleReset();
-                break;
             case "created":
+            case "finished":
                 startGame();
                 break;
             case "started":
@@ -139,6 +147,5 @@ export const useGame = () => {
         countdown,
         keys,
         startGame,
-        handleReset,
     };
 };

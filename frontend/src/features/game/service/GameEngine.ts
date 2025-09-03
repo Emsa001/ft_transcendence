@@ -1,24 +1,19 @@
 import { clamp } from "lodash";
-import { Ball, GameData } from "../types";
+import { Ball, GameState, Paddle } from "../types";
 import { GameRenderer } from "./GameRender";
+import { GameUserDTOType } from "shared";
 
 class GameEngine {
-    private state: GameData;
     private keys: Record<string, boolean>;
 
-    onScore?: (scorerId: string) => void;
-    onEnd?: (winnerId: string) => void;
+    onScore?: (scorerId: number) => void;
 
     ball: Ball;
-    stopped: boolean = true;
+    paddles: Paddle[];
+    stopped = true;
 
     constructor() {
-        this.state = {
-            state: "created",
-            players: [],
-            countdown: null,
-        };
-
+        this.paddles = [];
         this.keys = {};
         this.ball = {
             pos: { x: -10, y: -10 },
@@ -30,19 +25,27 @@ class GameEngine {
         console.log("GameEngine created");
     }
 
-    init(initialState: GameData, keys: Record<string, boolean>) {
-        this.state = initialState;
+    initPlayers(players: GameUserDTOType[]) {
+        this.initPaddles(players);
+    }
+
+    initKeys(keys: Record<string, boolean>) {
         this.keys = keys;
     }
 
-    // Update the game state reference
-    updateState(newState: GameData) {
-        this.state = newState;
-    }
+    initPaddles(players: GameUserDTOType[]) {
+        this.paddles = players.map((_, index) => {
+            const w = 14;
+            const h = 120;
+            const y = GameRenderer.baseH / 2 - h / 2;
+            const x = index === 0 ? 40 : GameRenderer.baseW - (40 + w);
+            const controls =
+                index === 0
+                    ? { up: "w", down: "s" }
+                    : { up: "arrowup", down: "arrowdown" };
 
-    // Update keys reference
-    updateKeys(keys: Record<string, boolean>) {
-        this.keys = keys;
+            return { x, y, w, h, speed: 9, controls, playerId: _.id };
+        });
     }
 
     // Main update method - handles all game logic
@@ -55,7 +58,7 @@ class GameEngine {
         this.checkScoring();
     }
 
-    private handleScore(scorerId: string): void {
+    private handleScore(scorerId: number): void {
         this.onScore?.(scorerId);
         this.reset();
     }
@@ -63,23 +66,16 @@ class GameEngine {
     private updatePaddles(): void {
         const { baseH, padding } = GameRenderer;
 
-        // Update all player paddles based on their controls
-        this.state.players.forEach((player) => {
-            const paddle = player.paddle;
-            const controls = player.paddle.controls;
-
-            if (this.keys[controls.up]) paddle.y -= paddle.speed;
-            if (this.keys[controls.down]) paddle.y += paddle.speed;
-
-            // Clamp paddle to screen bounds
+        this.paddles.forEach((paddle) => {
+            if (this.keys[paddle.controls.up]) paddle.y -= paddle.speed;
+            if (this.keys[paddle.controls.down]) paddle.y += paddle.speed;
             paddle.y = clamp(paddle.y, padding, baseH - paddle.h - padding);
         });
     }
 
     private resetPaddles(): void {
         const { baseH } = GameRenderer;
-        this.state.players.forEach((player) => {
-            const paddle = player.paddle;
+        this.paddles.forEach((paddle) => {
             paddle.y = baseH / 2 - paddle.h / 2;
         });
     }
@@ -115,7 +111,7 @@ class GameEngine {
         const { baseH, padding } = GameRenderer;
         const ball = this.ball;
 
-        // Top and bottom wall collisions
+        // top/bottom walls
         if (ball.pos.y <= padding) {
             ball.pos.y = padding;
             ball.vel.y = Math.abs(ball.vel.y);
@@ -124,14 +120,14 @@ class GameEngine {
             ball.vel.y = -Math.abs(ball.vel.y);
         }
 
-        // Check collisions with all player paddles
-        this.state.players.forEach((player) => {
+        // paddle collisions
+        this.paddles.forEach((paddle, index) => {
             this.checkPaddleCollision(
-                player.paddle.x,
-                player.paddle.y,
-                player.paddle.w,
-                player.paddle.h,
-                this.calculateBounceDirection(player.paddle.x)
+                paddle.x,
+                paddle.y,
+                paddle.w,
+                paddle.h,
+                index === 0 ? 1 : -1
             );
         });
     }
@@ -185,9 +181,9 @@ class GameEngine {
         // NOTE: works only for 2 players
 
         if (ball.pos.x < -20) {
-            this.handleScore?.(this.state.players[1].id); // Right player scores
+            this.handleScore?.(this.paddles[1].playerId); // Right player scores
         } else if (ball.pos.x > baseW + 20) {
-            this.handleScore?.(this.state.players[0].id); // Left player scores
+            this.handleScore?.(this.paddles[0].playerId); // Left player scores
         }
     }
 }

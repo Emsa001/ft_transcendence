@@ -1,5 +1,6 @@
 import React from "react";
 import { useGameState } from "@features/game/model/useGameState";
+import { gameEngine } from "@features/game/service/GameEngine";
 
 const symbols: Record<string, string> = {
     arrowup: "↑",
@@ -11,27 +12,20 @@ const symbols: Record<string, string> = {
 
 export function GameFooter() {
     const { players } = useGameState();
+    const paddles = gameEngine.paddles;
 
     return (
-        <div className="w-full max-w-[800px] flex justify-between items-center px-6 ">
+        <div className="w-full max-w-[800px] flex justify-between items-center px-6">
             {/* Player 1 */}
-            {players[0] && (
+            {players[0] && paddles[0] && (
                 <div className="flex flex-col items-center gap-2">
                     <p>{players[0].username}:</p>
                     <div className="flex items-center gap-2">
                         <kbd className="px-2 py-1 bg-white/10 rounded-md">
-                            {
-                                symbols[
-                                    players[0].paddle.controls.up.toLowerCase()
-                                ]
-                            }
+                            {symbols[paddles[0].controls.up.toLowerCase()]}
                         </kbd>
                         <kbd className="px-2 py-1 bg-white/10 rounded-md">
-                            {
-                                symbols[
-                                    players[0].paddle.controls.down.toLowerCase()
-                                ]
-                            }
+                            {symbols[paddles[0].controls.down.toLowerCase()]}
                         </kbd>
                     </div>
                 </div>
@@ -48,23 +42,15 @@ export function GameFooter() {
             </div>
 
             {/* Player 2 */}
-            {players[1] && (
+            {players[1] && paddles[1] && (
                 <div className="flex flex-col items-center gap-2">
                     <p>{players[1].username}:</p>
                     <div className="flex items-center gap-2">
                         <kbd className="px-2 py-1 bg-white/10 rounded-md">
-                            {
-                                symbols[
-                                    players[1].paddle.controls.up.toLowerCase()
-                                ]
-                            }
+                            {symbols[paddles[1].controls.up.toLowerCase()]}
                         </kbd>
                         <kbd className="px-2 py-1 bg-white/10 rounded-md">
-                            {
-                                symbols[
-                                    players[1].paddle.controls.down.toLowerCase()
-                                ]
-                            }
+                            {symbols[paddles[1].controls.down.toLowerCase()]}
                         </kbd>
                     </div>
                 </div>

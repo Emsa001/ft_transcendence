@@ -1,5 +1,4 @@
 import React, { useRef, useEffect } from "react";
-import { GameData } from "../../types";
 import { useGameState } from "../../model/useGameState";
 import { useGame } from "../../model/useGame";
 import { GameRenderer, renderer } from "@features/game/service/GameRender";
@@ -25,7 +24,7 @@ export function GameCanvasElement() {
     const baseH = GameRenderer.baseH;
 
     // Resize canvas to parent size and scale for HiDPI
-    const resize = () => {
+    const setCanvasSize = () => {
         const canvas = canvasRef.current;
         if (!canvas) return;
         const parent = canvas.parentElement as HTMLElement;
@@ -46,9 +45,9 @@ export function GameCanvasElement() {
     };
 
     useEffect(() => {
-        resize();
-        window.addEventListener("resize", resize);
-        return () => window.removeEventListener("resize", resize);
+        setCanvasSize();
+        window.addEventListener("resize", setCanvasSize);
+        return () => window.removeEventListener("resize", setCanvasSize);
     }, []);
 
     useEffect(() => {
@@ -62,15 +61,7 @@ export function GameCanvasElement() {
             const sy = canvas.height / baseH;
             renderer.init(ctx, dpr, sx, sy);
 
-            // Update game state in engine
-            const currentData: GameData = {
-                players: players,
-                state: state,
-                countdown: countdown,
-            };
-
-            gameEngine.updateState(currentData);
-            gameEngine.updateKeys(keys);
+            gameEngine.initKeys(keys);
 
             // Update game logic if running
             if (runningRef.current) {
@@ -82,7 +73,7 @@ export function GameCanvasElement() {
             renderer.drawMidline();
             renderer.drawBall();
             renderer.drawSpeed();
-            renderer.drawPaddles(players);
+            renderer.drawPaddles();
             renderer.drawStateOverlay(state, countdown);
             renderer.drawMessages(message);
 
@@ -105,8 +96,6 @@ export function GameCanvasElement() {
                 clearTimeout(countdownTimeoutRef.current);
         };
     }, [messageTimeoutRef, countdownTimeoutRef]);
-
-    console.log("tset");
 
     return <canvas ref={canvasRef} className="rounded-xl m-auto" />;
 }

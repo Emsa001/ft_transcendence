@@ -2,6 +2,8 @@ import React from "react";
 import { ShinyText } from "@shared/components/Shiny";
 import { useLocalTournament } from "../model/LocalTournamentProvider";
 
+// TODO: Make game list better, show some message when finished
+
 export const TournamentViewer = () => {
     const { createRound, playGame, deleteTournament } = useLocalTournament();
 

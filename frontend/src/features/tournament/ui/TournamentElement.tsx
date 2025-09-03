@@ -1,8 +1,7 @@
 import React from "react";
 import { TournamentRegister } from "./TournamentRegister";
-import { GameStatus } from "shared";
+import { GameStatus, GameUserDTOType } from "shared";
 import { TournamentViewer } from "./TournamentViewer";
-import { PongPlayer } from "@features/game/types";
 import { GameStateProvider } from "@features/game/model/useGameState";
 import {
     LocalTournamentProvider,
@@ -36,7 +35,7 @@ const TournamentView = () => {
     }
 
     if (currentGame) {
-        const onScore = (scorer: PongPlayer) => {
+        const onScore = (scorer: GameUserDTOType) => {
             console.log("scored", scorer);
         };
 
@@ -46,7 +45,7 @@ const TournamentView = () => {
             return false;
         };
 
-        const onEnd = (winner: PongPlayer) => {
+        const onEnd = (winner: GameUserDTOType) => {
             console.log("game ended, winner:", winner);
             setWinner(currentGame!.id, winner.username);
         };
@@ -67,7 +66,7 @@ const TournamentView = () => {
         );
     }
 
-    if (status === GameStatus.IN_PROGRESS) {
+    if (status != GameStatus.IN_PROGRESS) {
         return (
             <div className="w-full h-full">
                 <TournamentViewer />
@@ -75,5 +74,5 @@ const TournamentView = () => {
         );
     }
 
-    return <div>Whats going on?</div>;
+    return <div>Whats going on? {JSON.stringify({ status, currentGame })}</div>;
 };
