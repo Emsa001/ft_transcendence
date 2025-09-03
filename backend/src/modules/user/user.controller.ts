@@ -14,12 +14,33 @@ import { UserStatusService } from "./services/user.status";
 import { AUTHORIZED, WS_AUTHORIZED } from "../auth/auth.middleware";
 import { randomUUID } from "crypto";
 
+// async searchUsers(query: string): Promise<UserDTOType[]> {
+//     try {
+//         const response: AxiosResponse<UserDTOType[]> =
+//             await this.api.get("/user/search", { params: { query } });
+//         return response.data;
+//     } catch (error) {
+//         console.error("Error searching users:", error);
+//         return Promise.reject(error);
+//     }
+// }
+
 @Controller("/user")
 export class UserController extends BaseController {
     @GET("/all")
     async getUsers(_: FastifyRequest, reply: FastifyReply) {
         const users = await User.findAll();
         return reply.send(users.map((user) => user.toDTO()));
+    }
+
+    @GET("/search")
+    async searchUsers(request: FastifyRequest, reply: FastifyReply) {
+        const { query } = request.query as { query: string };
+        const allUsers = await User.findAll();
+        const filtered = allUsers.filter((user) =>
+            user.username.toLowerCase().includes(query.toLowerCase())
+        );
+        return reply.send(filtered.map((user) => user.toDTO()));
     }
 
     @GET("/:id")
