@@ -74,13 +74,9 @@ const TournamentView = () => {
         );
     }
 
-    if (status != GameStatus.FINISHED) {
-        return (
-            <div className="w-full h-full">
-                <TournamentViewer />
-            </div>
-        );
-    }
-
-    return <div>Whats going on? {JSON.stringify({ status, currentGame })}</div>;
+    return (
+        <div className="w-full h-full">
+            <TournamentViewer />
+        </div>
+    );
 };
