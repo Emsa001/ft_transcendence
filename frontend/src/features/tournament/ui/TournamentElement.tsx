@@ -11,7 +11,7 @@ import {
     useLocalTournament,
 } from "../model/LocalTournamentProvider";
 
-export const TournamentElement = () => {
+export const TournamentElement = ({ code }: { code?: string }) => {
     return (
         <div className="w-full h-full">
             <LocalTournamentProvider maxPlayers={1000}>

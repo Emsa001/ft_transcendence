@@ -1,10 +1,17 @@
-import { useStatic } from "react";
+import { useEffect, useNavigate, useStatic } from "react";
 import { AuthApi, twoFactorAuthAlert } from "..";
 import { User } from "../types";
 
-export const useUser = () => {
+export const useUser = (force?: boolean) => {
+    const navigate = useNavigate();
     const [user, setUser] = useStatic<User | null>("user", null);
     const [loading, setLoading] = useStatic<boolean>("user_loading", true); // TODO: is needed?
+
+    useEffect(() => {
+        if (force && !user && !loading) {
+            navigate("/auth");
+        }
+    }, [user, loading]);
 
     const fetchUser = async () => {
         setLoading(true);

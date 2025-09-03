@@ -14,7 +14,7 @@ export const GameLobby = () => {
     const handleCreateGame = async (data: GameCreationRequest) => {
         try {
             const res = await GameApi.createGame(data);
-            navigate(`/game/${res.data.code}`);
+            navigate(`/game/remote/casual/${res.data.code}`);
         } catch (err) {
             console.error("Failed to create game", err);
         }
@@ -25,11 +25,11 @@ export const GameLobby = () => {
         const data = await GameApi.joinRandom();
         if (data == null)
             return alert("Failed to join a random game. Please try again.");
-        navigate(`/game/${data.code}`);
+        navigate(`/game/remote/casual/${data.code}`);
     };
 
     const handleJoinWithCode = (code: string) => {
-        navigate(`/game/${code}`);
+        navigate(`/game/remote/casual/${code}`);
     };
 
     return (

@@ -9,20 +9,14 @@ interface GameRemoteElementProps {
 }
 
 export const GameRemoteElement = ({ code }: GameRemoteElementProps) => {
-    const { user, loading } = useUser();
+    const { user } = useUser(true);
     const navigate = useNavigate();
-
-    useEffect(() => {
-        if (!loading && !user) {
-            navigate("/auth/login");
-        }
-    }, [loading, user]);
 
     useEffect(() => {
         if (!code) return;
 
         GameApi.getGameByCode(code).then((game) => {
-            if (!game) navigate("/game");
+            if (!game) navigate("/game/remote");
         });
     }, [code]);
 
