@@ -25,7 +25,7 @@ export class BlockUserService {
         }
         const blockedUser = await BlockedUsers.create({
             userId: user.id,
-            blockedUserId: userId
+            blockedUserId: userId,
         });
 
         if (!blockedUser) {
@@ -39,8 +39,8 @@ export class BlockUserService {
         const unblockedUser = await BlockedUsers.destroy({
             where: {
                 userId: user.id,
-                blockedUserId: userId
-            }
+                blockedUserId: userId,
+            },
         });
 
         if (!unblockedUser) {
@@ -52,14 +52,16 @@ export class BlockUserService {
     static async getBlockedUsers(user: User) {
         const blockedUsers = await BlockedUsers.findAll({
             where: {
-                userId: user.id
-            }
+                userId: user.id,
+            },
         });
 
-        const users = await Promise.all(blockedUsers.map(async (blockedUser) => {
-            const user = await User.findById(blockedUser.blockedUserId);
-            return user ? user.toDTO() : null;
-        }));
+        const users = await Promise.all(
+            blockedUsers.map(async (blockedUser) => {
+                const user = await User.findById(blockedUser.blockedUserId);
+                return user ? user.toDTO() : null;
+            })
+        );
         return users;
     }
 }

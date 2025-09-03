@@ -44,6 +44,14 @@ export class TournamentCreationService {
             throw new HttpException(400, "Tournament is not in progress");
         }
 
+        // Check if there are any games currently in progress
+        const gamesInProgress = await tournament.getGames({
+            where: { status: GameStatus.IN_PROGRESS },
+        });
+
+        if (gamesInProgress.length > 0)
+            throw new HttpException(400, "Current round is not finished yet");
+
         const players = await tournament.getActivePlayers();
         const games: Game[] = [];
 

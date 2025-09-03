@@ -22,10 +22,10 @@ import {
     AllowNull,
     Scopes,
     Model,
-    BeforeUpdate,
     ForeignKey,
     AfterUpdate,
-    BelongsTo,
+    Unique,
+    BeforeCreate,
 } from "sequelize-typescript";
 import { User } from "../User/User";
 import { GameUser } from "./GameUser";
@@ -41,6 +41,7 @@ export type GameCreationAttributes = {
     maxPlayers?: number;
     tournamentId?: number;
     winnerId?: number | null;
+    round?: number | null;
 };
 
 type UserWithGameData = User & {
@@ -64,6 +65,11 @@ export class Game extends Model<InferAttributes<Game>, GameCreationAttributes> {
     @Column(DataType.INTEGER)
     declare id: number;
 
+    @Unique
+    @AllowNull(true)
+    @Column(DataType.STRING)
+    declare code: string | null;
+
     @Default(GameStatus.WAITING)
     @Column(DataType.STRING)
     declare status: GameStatus;
@@ -85,6 +91,10 @@ export class Game extends Model<InferAttributes<Game>, GameCreationAttributes> {
     @Default(null)
     @Column(DataType.INTEGER)
     declare winnerId?: number;
+
+    @AllowNull(true)
+    @Column(DataType.INTEGER)
+    declare round?: number;
 
     @ForeignKey(() => Tournament)
     @Column(DataType.INTEGER)
@@ -127,5 +137,10 @@ export class Game extends Model<InferAttributes<Game>, GameCreationAttributes> {
     @AfterUpdate
     static async setGameWinner(instance: Game) {
         await GameHooks.setGameWinner(instance);
+    }
+
+    @BeforeCreate
+    static async generateGameCode(instance: Game) {
+        await GameHooks.generateGameCode(instance);
     }
 }

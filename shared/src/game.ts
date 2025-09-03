@@ -21,7 +21,8 @@ export interface GameDTOType {
     status: GameStatus;
     mode: GameMode;
     players: GameUserDTOType[];
-    winner: number | null;
+    winner: string | null;
+    round?: number | null;
     createdAt: Date;
     updatedAt: Date;
 }

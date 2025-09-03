@@ -26,15 +26,21 @@ class ChatDBService {
         };
 
         if (options.startDate) {
-            where.createdAt = { ...(where.createdAt || {}), [Op.gte]: options.startDate };
+            where.createdAt = {
+                ...(where.createdAt || {}),
+                [Op.gte]: options.startDate,
+            };
         }
         if (options.endDate) {
-            where.createdAt = { ...(where.createdAt || {}), [Op.lte]: options.endDate };
+            where.createdAt = {
+                ...(where.createdAt || {}),
+                [Op.lte]: options.endDate,
+            };
         }
 
         const messages = await Message.findAll({
             where,
-            order: [['createdAt', 'DESC']],
+            order: [["createdAt", "DESC"]],
             limit: limit + 1,
             offset,
         });
@@ -50,7 +56,6 @@ class ChatDBService {
         const message = await Message.create(msg);
         await message.save();
     }
-
 }
 
 const chatDBService = new ChatDBService();

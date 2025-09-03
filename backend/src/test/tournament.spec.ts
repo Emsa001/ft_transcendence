@@ -149,4 +149,18 @@ describe("Tournament Tests", () => {
         expect(tournament.status).toBe(GameStatus.FINISHED);
         expect(tournament.winnerId).not.toBeNull();
     });
+
+    it("should prevent creating round when current round not finished", async () => {
+        const tournament = await Tournament.create({ maxPlayers: 8 });
+        for (let i = 0; i < 8; i++) {
+            const user = await UserGenerate.createExample();
+            await tournament.addPlayer(user);
+        }
+
+        await tournament.start();
+        await tournament.createRound();
+        await expect(tournament.createRound()).rejects.toThrow(
+            "Current round is not finished yet"
+        );
+    });
 });

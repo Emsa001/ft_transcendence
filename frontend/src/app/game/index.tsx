@@ -1,23 +1,37 @@
-import { LocalGame } from "@features/game/ui/LocalGame";
-import React from "react";
+import { GameWindowState } from "@features/game/types";
+import { GameBackground } from "@features/game/ui/components/GameBackground";
+import { GameHeader } from "@features/game/ui/components/GameHeader";
+import { GameLocal } from "@features/game/ui/GameLocal";
+import { GameRemote } from "@features/game/ui/GameRemote";
+import { MenuScreen } from "@features/game/ui/MenuScreen";
+import { TournamentElement } from "@features/tournament/ui/TournamentElement";
+import React, { useState } from "react";
 
-interface GameProps {
-    type?: "local" | "remote";
-}
+export default function Game() {
+    const [window, setWindow] = useState<GameWindowState>("menu");
 
-export default function Game({ type }: GameProps) {
+    if (window === "menu") {
+        return (
+            <div className="p-16 pt-24 h-full">
+                <MenuScreen setWindow={setWindow} />
+            </div>
+        );
+    }
+
     return (
-        <div className="flex items-center justify-center h-full text-white">
-            {type === "local" ? (
-                <LocalGame />
-            ) : (
-                <div>
-                    <h1 className="text-2xl font-bold">
-                        Remote Game Mode Coming Soon!
-                    </h1>
-                    <p className="mt-4">Stay tuned for multiplayer features.</p>
-                </div>
-            )}
+        <div className="select-none h-full w-full flex items-center justify-center p-16 pt-24">
+            <div className="w-full h-full rounded-2xl shadow-2xl bg-fuchsia-900/5 backdrop-blur-xl">
+                {/* Header stays at the top */}
+                <GameHeader window={window} setWindow={setWindow} />
+
+                {window === "local-casual" && <GameLocal />}
+                {window === "local-tournament" && <TournamentElement />}
+
+                {window === "remote-casual" && <GameRemote />}
+                {window === "remote-tournament" && <TournamentElement />}
+
+                <GameBackground />
+            </div>
         </div>
     );
 }

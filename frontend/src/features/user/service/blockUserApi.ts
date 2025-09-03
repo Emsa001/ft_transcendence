@@ -6,7 +6,7 @@ class BlockUserApi extends APIService {
     async getAll(): Promise<UserDTOType[]> {
         try {
             const response: AxiosResponse<UserDTOType[]> =
-                await this.api.get("/user/blocked/all");
+                await this.api.get("/blocked/all");
             return response.data;
         } catch (error) {
             console.error("Error fetching all blocked users:", error);
@@ -16,7 +16,7 @@ class BlockUserApi extends APIService {
 
     async blockUser(userId: number): Promise<void> {
         try {
-            await this.api.post(`/user/block/${userId}`);
+            await this.api.post(`/block/${userId}`);
         } catch (error) {
             console.error("Error blocking user:", error);
             return Promise.reject(error);
@@ -25,7 +25,7 @@ class BlockUserApi extends APIService {
 
     async unblockUser(userId: number): Promise<void> {
         try {
-            await this.api.post(`/user/unblock/${userId}`);
+            await this.api.post(`/unblock/${userId}`);
         } catch (error) {
             console.error("Error unblocking user:", error);
             return Promise.reject(error);
@@ -33,7 +33,5 @@ class BlockUserApi extends APIService {
     }
 }
 
-const service = new BlockUserApi(
-    process.env.FT_REACT_PUBLIC_API_HOST || "http://localhost:3000"
-);
+const service = new BlockUserApi({ path: "/user" });
 export default service;

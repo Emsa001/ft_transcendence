@@ -32,7 +32,7 @@ class ChatWSService {
                 type: "error",
                 code: "BLOCKED_USER",
                 message: "Cannot send message to this user",
-                originalMessage: msg.message
+                originalMessage: msg.message,
             });
 
             if (this.connections.has(msg.sender)) {

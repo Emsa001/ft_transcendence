@@ -1,19 +1,12 @@
 import React, { useEffect, useNavigate, useState } from "react";
-import {
-    LogoutButton,
-    TwoFactorAuthDisable,
-    TwoFactorAuthEnable,
-} from "@features/auth";
 import { useUser } from "@features/auth/model/useUser";
-import { FaEdit, FaUser, FaUsers } from "react-icons/fa";
 import Friends from "./friends";
 import { ProfileCard } from "./profile";
 
 import { UserStats } from "@features/user/ui/UserStats";
-import { GameHistory } from "@features/user/ui/GameHistory";
 import ProfileApi from "@features/user/service/profileApi";
-import { DeleteButton } from "@features/user/ui/Delete";
 import { AllUsers } from "@features/user/ui/AllUsers";
+import { PlayerGameHistory } from "@features/user/ui/PlayerGameHistory";
 
 export const Profile = () => {
     // Just for test - get user ID from URL query params to see their stats
@@ -115,7 +108,7 @@ export const Profile = () => {
                                 <UserStats userId={userId || user.id} />
                             </div>
                             <div className="flex-1">
-                                <GameHistory userId={userId || user.id} />
+                                <PlayerGameHistory userId={userId || user.id} />
                             </div>
                         </div>
                     )}

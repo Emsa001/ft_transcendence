@@ -27,8 +27,9 @@ class FriendsApi extends APIService {
 
     async getAllSentRequests(): Promise<UserDTOType[]> {
         try {
-            const response: AxiosResponse<UserDTOType[]> =
-                await this.api.get("/friends/requests/sent");
+            const response: AxiosResponse<UserDTOType[]> = await this.api.get(
+                "/friends/requests/sent"
+            );
             return response.data;
         } catch (error) {
             console.error("Error fetching all sent friend requests:", error);
@@ -62,9 +63,22 @@ class FriendsApi extends APIService {
             return Promise.reject(error);
         }
     }
+
+    async getUserByIdOrUsername(
+        idOrUsername: string
+    ): Promise<UserDTOType | null> {
+        try {
+            const response: AxiosResponse<UserDTOType> = await this.api.get(
+                `/user/${idOrUsername}`
+            );
+            if (!response.data) return null;
+            return response.data;
+        } catch (error) {
+            console.error("Error fetching user by ID or username:", error);
+            return Promise.reject(error);
+        }
+    }
 }
 
-const service = new FriendsApi(
-    process.env.FT_REACT_PUBLIC_API_HOST || "http://localhost:3000"
-);
+const service = new FriendsApi({ path: "/" });
 export default service;

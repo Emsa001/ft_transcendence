@@ -65,9 +65,13 @@ class ProfileApi extends APIService {
         }
     }
 
-    async getUserByIdOrUsername(idOrUsername: string): Promise<UserDTOType | null> {
+    async getUserByIdOrUsername(
+        idOrUsername: string
+    ): Promise<UserDTOType | null> {
         try {
-            const response: AxiosResponse<UserDTOType> = await this.api.get(`/user/${idOrUsername}`);
+            const response: AxiosResponse<UserDTOType> = await this.api.get(
+                `/user/${idOrUsername}`
+            );
             return response.data;
         } catch (error) {
             console.error("Error fetching user by ID or username:", error);
@@ -76,7 +80,5 @@ class ProfileApi extends APIService {
     }
 }
 
-const service = new ProfileApi(
-    process.env.FT_REACT_PUBLIC_API_HOST || "http://localhost:3000"
-);
+const service = new ProfileApi({});
 export default service;

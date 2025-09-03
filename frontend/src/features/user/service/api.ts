@@ -12,7 +12,7 @@ class StatsApiService extends APIService {
         userId: string | number
     ): Promise<GetStatisticsResponse> {
         const response: AxiosResponse<GetStatisticsResponse> =
-            await this.api.get(`/user/${userId}/stats`);
+            await this.api.get(`/${userId}/stats`);
         return response.data;
     }
 
@@ -21,12 +21,12 @@ class StatsApiService extends APIService {
         options?: GameHistoryFilter
     ): Promise<GameDTOType[]> {
         const response: AxiosResponse<GameDTOType[]> = await this.api.get(
-            `/user/${userId}/history`,
+            `/${userId}/history`,
             { params: options }
         );
         return response.data;
     }
 }
 
-const StatsApi = new StatsApiService();
+const StatsApi = new StatsApiService({ path: "/user" });
 export default StatsApi;

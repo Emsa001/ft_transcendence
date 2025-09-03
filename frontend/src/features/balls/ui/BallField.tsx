@@ -57,7 +57,7 @@ export function BallField({ amount = 30, delay = 0 }: BallFieldProps) {
     }, [delay, amount]);
 
     return (
-        <div>
+        <div className="absolute w-screen h-screen top-0 left-0">
             <div
                 className={`w-full h-full absolute top-0 overflow-hidden z-5`}
                 ref={bound}

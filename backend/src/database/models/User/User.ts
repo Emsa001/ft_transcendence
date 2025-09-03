@@ -156,8 +156,10 @@ export class User extends Model<InferAttributes<User>, CreationAttributes> {
     declare blockedUsers: User[];
 
     getBlockedUsers = async () => BlockUserService.getBlockedUsers(this);
-    blockUser = async (userId: number) => BlockUserService.blockUser(this, userId);
-    unblockUser = async (userId: number) => BlockUserService.unblockUser(this, userId);
-    isBlocked = async (userId: number) => BlockUserService.isBlocked(this.id, userId);
-
+    blockUser = async (userId: number) =>
+        BlockUserService.blockUser(this, userId);
+    unblockUser = async (userId: number) =>
+        BlockUserService.unblockUser(this, userId);
+    isBlocked = async (userId: number) =>
+        BlockUserService.isBlocked(this.id, userId);
 }
