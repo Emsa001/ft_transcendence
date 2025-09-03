@@ -11,7 +11,7 @@ export function UserInfo() {
             <div className="flex justify-center">
                 <UserPicture
                     userId={user.id}
-                    className="w-28 h-28 rounded-full object-cover border-4 border-blue-400"
+                    className="w-28 h-28 rounded-full border-4 border-blue-400"
                 />
             </div>
             <h2 className="text-xl font-bold">{user?.username}</h2>
