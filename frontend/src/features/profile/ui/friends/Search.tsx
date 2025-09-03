@@ -21,19 +21,13 @@ export function SearchModal({ onClose, isOpen }: SearchModalProps) {
     if (!user) return <div />;
 
     useEffect(() => {
-        const fetchData = async () => {
-            const sent = await FriendsApi.getAllSentRequests();
-            setSentRequests(sent);
-        };
-        fetchData();
-    }, []);
-
-    useEffect(() => {
         if (query.trim() === "") {
             setResults([]);
             return;
         }
         const handler = setTimeout(async () => {
+            const sent = await FriendsApi.getAllSentRequests();
+            setSentRequests(sent);
             const filtered = await ProfileApi.searchUsers(query);
             const filteredWithoutSelf = filtered.filter(
                 (u: UserDTOType) => u.id !== user.id

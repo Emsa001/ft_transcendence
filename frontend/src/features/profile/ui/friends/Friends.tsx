@@ -5,6 +5,8 @@ import { SearchModal } from "./Search";
 import { MyFriends } from "./MyFriends";
 import { FriendRequests } from "./FriendRequests";
 
+let ws: WebSocket | undefined;
+
 export function Friends() {
     const [friends, setFriends] = useState<UserDTOType[]>([]);
     const [friendRequests, setFriendRequests] = useState<UserDTOType[]>([]);
@@ -18,6 +20,29 @@ export function Friends() {
             setFriendRequests(newFriendRequests);
         };
         fetchData();
+    }, []);
+
+    useEffect(() => {
+        ws = new WebSocket(`ws://localhost:8000/friends`);
+        ws.onmessage = async (event) => {
+            const data = JSON.parse(event.data);
+            if (data.type === "NEW_FRIEND_REQUEST") {
+                const newFriendRequests = await FriendsApi.getFriendRequests();
+                setFriendRequests(newFriendRequests);
+            } else if (data.type === "FRIEND_REQUEST_ACCEPTED") {
+                const newFriends = await FriendsApi.getAllFriends();
+                setFriends(newFriends);
+            } else if (data.type === "FRIEND_REMOVED") {
+                const newFriends = await FriendsApi.getAllFriends();
+                const newFriendRequests = await FriendsApi.getFriendRequests();
+                setFriends(newFriends);
+                setFriendRequests(newFriendRequests);
+            }
+        };
+
+        return () => {
+            if (ws) ws.close();
+        };
     }, []);
 
     return (
