@@ -16,6 +16,7 @@ export function BlockedUsers() {
 
     const handleUnblockUser = async (userId: number) => {
         await blockUserApi.unblockUser(userId);
+        setBlockedUsers((prev) => prev.filter((user) => user.id !== userId));
     };
 
     return (
