@@ -18,8 +18,10 @@ class ProfileApi extends APIService {
 
     async searchUsers(query: string): Promise<UserDTOType[]> {
         try {
-            const response: AxiosResponse<UserDTOType[]> =
-                await this.api.get("/user/search", { params: { query } });
+            const response: AxiosResponse<UserDTOType[]> = await this.api.get(
+                "/user/search",
+                { params: { query } }
+            );
             return response.data;
         } catch (error) {
             console.error("Error searching users:", error);
@@ -76,9 +78,13 @@ class ProfileApi extends APIService {
         }
     }
 
-    async getUserByIdOrUsername(idOrUsername: string): Promise<UserDTOType | null> {
+    async getUserByIdOrUsername(
+        idOrUsername: string
+    ): Promise<UserDTOType | null> {
         try {
-            const response: AxiosResponse<UserDTOType> = await this.api.get(`/user/${idOrUsername}`);
+            const response: AxiosResponse<UserDTOType> = await this.api.get(
+                `/user/${idOrUsername}`
+            );
             return response.data;
         } catch (error) {
             console.error("Error fetching user by ID or username:", error);

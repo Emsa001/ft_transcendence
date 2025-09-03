@@ -22,7 +22,7 @@ class FriendsWSService {
 
     public notifyUser(userId: number, type: string) {
         const payload = JSON.stringify({
-            type: type
+            type: type,
         });
         this.clients.forEach((client, id) => {
             client.forEach((socket) => {

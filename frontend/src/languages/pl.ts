@@ -1,4 +1,3 @@
-
 export default {
     transcendence: "ft_transcendencja",
     friends: "Przyjaciele",
@@ -15,5 +14,5 @@ export default {
         sendInvite: "Wyślij zaproszenie",
         sendPlaceholder: "Napisz wiadomość...",
         sendInvitePlaceholder: "Wpisz kod zaproszenia...",
-    }
+    },
 };
