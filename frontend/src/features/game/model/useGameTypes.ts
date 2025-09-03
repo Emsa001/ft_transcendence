@@ -2,47 +2,49 @@ import { GameUserDTOType } from "shared";
 import { CanvasMessage, GameState } from "../types";
 
 export interface GameContextType {
+    /** --- Players --- */
     players: GameUserDTOType[];
-    setPlayers: (
-        players:
-            | GameUserDTOType[]
-            | ((prev: GameUserDTOType[]) => GameUserDTOType[])
-    ) => void;
+    setPlayers: ReactStateSetter<GameUserDTOType[]>;
 
+    /** --- Config --- */
     maxScore: number;
-    setMaxScore: (score: number | ((prev: number) => number)) => void;
+    setMaxScore: ReactStateSetter<number>;
 
-    // Game Control
+    /** --- Runtime State --- */
     state: GameState;
-    message: CanvasMessage[];
-    countdown: number | null;
+    setState: ReactStateSetter<GameState>;
 
+    message: CanvasMessage[];
+    setMessage: ReactStateSetter<CanvasMessage[]>;
+
+    countdown: number | null;
+    setCountdown: ReactStateSetter<number | null>;
+
+    /** --- Timeouts / Refs --- */
     messageTimeoutRef: RefObject<NodeJS.Timeout | null>;
     countdownTimeoutRef: RefObject<NodeJS.Timeout | null>;
 
-    setMessage: (
-        message: CanvasMessage[] | ((prev: CanvasMessage[]) => CanvasMessage[])
-    ) => void;
-    setState: (state: GameState | ((prev: GameState) => GameState)) => void;
-    setCountdown: (
-        count: number | null | ((prev: number | null) => number | null)
-    ) => void;
-
+    /** --- Game Control Methods --- */
     startCountdown: () => Promise<void>;
+    startGame: () => void;
+    stopGame: () => void;
+    togglePause: () => void;
 
-    // Event Callbacks
+    /** --- Event Callbacks --- */
     onScore?: (scorer: GameUserDTOType) => void;
     onEnd?: (winner: GameUserDTOType) => void;
     onSpace?: () => boolean;
 }
 
-/** --- Provider --- */
+/** --- Provider Props --- */
 export interface GameProviderProps {
     children?: ReactNode;
+
+    /** --- Initial Values --- */
     players?: GameUserDTOType[];
     maxScore?: number;
 
-    // Event Callbacks
+    /** --- Event Callbacks --- */
     onScore?: (scorer: GameUserDTOType) => void;
     onEnd?: (winner: GameUserDTOType) => void;
     onSpace?: () => boolean;

@@ -2,10 +2,15 @@ import React from "react";
 import Swal from "sweetalert2";
 import { useGame } from "@features/game/model/useGame";
 
+const defaultButton =
+    "px-4 py-2 rounded-xl transition text-white font-bold shadow";
+
 const MaxScoreSettings = () => {
-    const { maxScore, setMaxScore } = useGame();
+    const { state, maxScore, setMaxScore } = useGame();
 
     const setScoreViaSwal = async () => {
+        if (state !== "created") return;
+
         const { value: newScore } = await Swal.fire({
             title: "Set Max Score",
             theme: "dark",
@@ -26,20 +31,47 @@ const MaxScoreSettings = () => {
         }
     };
 
+    const isRunning = state === "started" || state === "paused";
+
     return (
         <button
             onClick={setScoreViaSwal}
-            className="px-4 py-2 rounded-xl bg-white/10 hover:bg-white/15 transition text-white font-bold shadow"
+            className={`bg-white/10 ${defaultButton} ${isRunning ? "opacity-50" : "hover:bg-white/15"}`}
         >
             Max Score: {maxScore}
         </button>
     );
 };
 
+const GameActions = () => {
+    const { state, startGame, stopGame } = useGame();
+
+    if (state == "started" || state == "paused") {
+        return (
+            <button
+                className={`${defaultButton} hover:bg-red-600/30 bg-red-600/20`}
+                onClick={stopGame}
+            >
+                End Game
+            </button>
+        );
+    }
+
+    return (
+        <button
+            className={`${defaultButton} hover:bg-purple-500/30 bg-purple-500/20`}
+            onClick={startGame}
+        >
+            Start Game
+        </button>
+    );
+};
+
 export const GameSettings = () => {
     return (
-        <div className="">
+        <div className="flex items-center justify-center space-x-4">
             <MaxScoreSettings />
+            <GameActions />
         </div>
     );
 };

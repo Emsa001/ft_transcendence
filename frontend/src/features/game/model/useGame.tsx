@@ -1,13 +1,7 @@
-import React, {
-    createContext,
-    useContext,
-    useEffect,
-    useRef,
-    useState,
-} from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { GameUserDTOType } from "shared";
 import { gameEngine } from "../service/GameEngine";
-import { CanvasMessage, GameState } from "../types";
+import { GameState } from "../types";
 import { useGameKeys } from "./useGameKeys";
 import { GameContextType, GameProviderProps } from "./useGameTypes";
 import { useGameMessages } from "./useGameMessages";
@@ -93,7 +87,7 @@ export const GameProvider = ({
         );
     };
 
-    const startGame = () => {
+    const stopGame = () => {
         if (countdown) return;
 
         clearTimeout(messageTimeoutRef.current!);
@@ -102,6 +96,16 @@ export const GameProvider = ({
         setMessage([]);
         setCountdown(null);
         setPlayers((prev) => prev.map((p) => ({ ...p, score: 0 })));
+        setState("created");
+
+        gameEngine.resetPositions();
+        gameEngine.stopped = true;
+    };
+
+    const startGame = () => {
+        if (countdown) return;
+
+        stopGame();
         setState("started");
         startCountdown().then(() => (gameEngine.stopped = false));
 
@@ -130,14 +134,19 @@ export const GameProvider = ({
     // --- Context Value ---
     const value: GameContextType = {
         players: playersValue,
-        setPlayers,
         maxScore: maxScoreValue,
-        setMaxScore,
         messageTimeoutRef,
         countdownTimeoutRef,
         state,
         message,
         countdown,
+
+        stopGame,
+        startGame,
+        togglePause,
+
+        setPlayers,
+        setMaxScore,
         setMessage,
         setState,
         setCountdown,

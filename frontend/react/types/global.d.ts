@@ -58,3 +58,5 @@ type TDependencyList = any[];
 type RefObject<T> = {
     current: T;
 };
+
+type ReactStateSetter<T> = (value: T | ((prevState: T) => T)) => void;
