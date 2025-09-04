@@ -58,7 +58,10 @@ export default async function App() {
     });
 
     // Fastify Modules
-    await app.register(cors, { origin: process.env.ORIGIN, credentials: true });
+    await app.register(cors, {
+        origin: process.env.FRONTEND_URL,
+        credentials: true,
+    });
     await app.register(cookie, {
         secret: process.env.COOKIE_SECRET || "very-secret-cookie-key",
     });

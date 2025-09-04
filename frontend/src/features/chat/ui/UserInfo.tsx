@@ -1,12 +1,12 @@
 import React, { useNavigate } from "react";
 import { UserPicture } from "@features/user/ui/UserPicture";
 import blockUserApi from "@features/user/service/blockUserApi";
-import { usechat } from "../model/ChatContext";
+import { useChat } from "../model/ChatContext";
 import { useLanguage } from "@features/language/model/useLanguage";
 
 export function UserInfo() {
     const navigate = useNavigate();
-    const { selectedUser, users, setUsers, setSelectedUser } = usechat();
+    const { selectedUser, users, setUsers, setSelectedUser } = useChat();
 
     const { getText } = useLanguage();
     const text = getText("chat.blockUserButton");

@@ -1,5 +1,5 @@
 import React, { useState, useRef } from "react";
-import { usechat } from "../model/ChatContext";
+import { useChat } from "../model/ChatContext";
 import { useLanguage } from "@features/language/model/useLanguage";
 
 let errorTimeout: NodeJS.Timeout;
@@ -14,7 +14,7 @@ export function ChatInput() {
     const texts = getText("chat");
 
     const lastSentTime = useRef<number>(0);
-    const { sendMessage, isBlocked } = usechat();
+    const { sendMessage, isBlocked } = useChat();
 
     const showError = (msg: string) => {
         clearTimeout(errorTimeout);

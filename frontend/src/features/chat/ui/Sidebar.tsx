@@ -1,7 +1,7 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { UserPicture } from "@features/user/ui/UserPicture";
 import { useOnlineUsers } from "@features/user/model/useOnlineUsers";
-import { usechat } from "../model/ChatContext";
+import { useChat } from "../model/ChatContext";
 import { UserDTOType } from "shared";
 import { useLanguage } from "@features/language/model/useLanguage";
 
@@ -39,7 +39,7 @@ function UserCard({ user, isOnline, selectedUser, onClick }: UserCardProps) {
 }
 
 export function Sidebar() {
-    const { users, selectedUser, setSelectedUser } = usechat();
+    const { users, selectedUser, setSelectedUser } = useChat();
     const { onlineUsers } = useOnlineUsers();
 
     const { getText } = useLanguage();

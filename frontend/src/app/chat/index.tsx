@@ -17,7 +17,7 @@ export default function Chat() {
     return (
         <div className="w-full h-full">
             <ChatProvider>
-                <div className="flex h-full text-white pt-16">
+                <div className="flex h-full text-white pt-18">
                     <Sidebar />
                     <ChatArea />
                 </div>

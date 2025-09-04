@@ -94,8 +94,8 @@ export const ChatProvider = ({ children }: { children?: ReactNode }) => {
     );
 };
 
-export const usechat = (): ChatContextType => {
+export const useChat = (): ChatContextType => {
     const context = useContext(ChatContext);
-    if (!context) throw new Error("usechat must be used within a chatProvider");
+    if (!context) throw new Error("useChat must be used within a chatProvider");
     return context;
 };

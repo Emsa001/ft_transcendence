@@ -1,7 +1,7 @@
 import React, { useRef, useEffect, useState } from "react";
 import { ChatInput } from "@features/chat/ui/ChatInput";
 import { UserInfo } from "./UserInfo";
-import { usechat } from "../model/ChatContext";
+import { useChat } from "../model/ChatContext";
 import { useUser } from "@features/auth/model/useUser";
 import { MessageCard } from "./MessageCard";
 import ChatApi from "@features/chat/service/api";
@@ -9,7 +9,7 @@ import { useLanguage } from "@features/language/model/useLanguage";
 
 export function ChatArea() {
     const blockScroll = useRef(false);
-    const { setMessages, setIsBlocked, selectedUser, messages } = usechat();
+    const { setMessages, setIsBlocked, selectedUser, messages } = useChat();
     const [offset, setOffset] = useState(0);
     const [hasMore, setHasMore] = useState(false);
     const messageBoxRef = useRef<HTMLDivElement | null>(null);

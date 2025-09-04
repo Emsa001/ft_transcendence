@@ -31,10 +31,13 @@ export function UserPicture({ userId, className }: UserPictureProps) {
                 <img
                     src={`${user.avatar}?ver=${Date.now()}`}
                     alt="Profile"
-                    className={`object-cover ${className}`}
+                    className={`object-cover ${className} w-10 h-10 rounded-full shadow-[0_0_8px_rgba(0,255,255,0.7)]`}
                 />
             ) : (
-                <Icon icon={FaUserCircle} className={className} />
+                <Icon
+                    icon={FaUserCircle}
+                    className={`${className} w-10 h-10 rounded-full shadow-[0_0_8px_rgba(0,255,255,0.7)]`}
+                />
             )}
         </div>
     );

@@ -9,7 +9,7 @@ import { Op } from "sequelize";
 import { HttpException } from "@/utils/exceptions";
 import { UserGenerate } from "@/database/models/User/UserGenerate";
 
-const imageDirUrl = `${process.env.BASE_URL}/public/uploads/`;
+const imageDirUrl = `${process.env.BACKEND_URL}/public/uploads/`;
 
 async function uploadImage(image: MultipartFile, fileName: string) {
     const imagesDir = path.join(process.cwd(), "public", "uploads");
