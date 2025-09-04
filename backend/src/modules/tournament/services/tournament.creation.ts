@@ -78,6 +78,7 @@ export class TournamentCreationService {
 
             const game = await tournament.createGame({
                 status: GameStatus.WAITING,
+                hostId: player1.id, // arbitrary
             });
 
             if (player1) await game.addPlayer(player1);

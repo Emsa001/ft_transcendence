@@ -19,7 +19,7 @@ export type GameUserDTOType = UserDTOType & {
 export interface GameDTOType {
     id: number;
     code: string | null;
-    hostId: number;
+    hostId: number | null;
     status: GameStatus;
     mode: GameMode;
     isPrivate: boolean;
@@ -47,7 +47,7 @@ export interface GameCreationRequest {
 }
 
 export interface GameCreationAttributes extends GameCreationRequest {
-    hostId: number;
+    hostId?: number | null;
     round?: number | null;
     tournamentId?: number;
     winnerId?: number | null;
