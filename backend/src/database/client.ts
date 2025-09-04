@@ -6,13 +6,19 @@ import { GameUser } from "./models/Game/GameUser";
 import { DatabaseExampleFeed } from "./feed";
 import { Tournament } from "./models/Tournaments/Tournament";
 import { TournamentUser } from "./models/Tournaments/TournamentUser";
+import path from "path";
+import { fileURLToPath } from "url";
 
 const models = [User, Game, GameUser, Tournament, TournamentUser];
+
+// ESM-safe __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 export const registerDB = async (app: FastifyInstance) => {
     const sequelize = new Sequelize({
         dialect: "sqlite",
-        storage: "./db.sqlite",
+        storage: path.resolve(__dirname, "../db.sqlite"), // now works in ESM
         logging: false,
         models,
     });
