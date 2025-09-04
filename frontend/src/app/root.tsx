@@ -51,6 +51,7 @@ export default function Root() {
                 <Router src="/game" component={<Game />} />
                 <Router src="/chat" component={<Chat />} />
             </BrowserRouter>
+            <LanguageButton />
         </div>
     );
 }
