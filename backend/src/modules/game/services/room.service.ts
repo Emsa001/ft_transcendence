@@ -2,41 +2,78 @@ import { WebSocket } from "@fastify/websocket";
 import { User } from "@/database/models/User/User";
 import { Game } from "@/database/models/Game/Game";
 import { WebSocketService } from "@/lib/WebSocketService";
-import { GameFrame, GameStatus } from "shared";
+import { GameMessage, GameMessages, GameStatus } from "shared";
 import { GameRooms } from "./registry.service";
 import { GameEngine } from "./engine.service";
+import { HttpException } from "@/utils/exceptions";
 
+/**
+ * Utility for handling countdown messages.
+ */
+class CountdownService {
+    constructor(private send: (msg: GameMessage[] | null) => void) {}
+
+    run(count = 3, interval = 1000): Promise<void> {
+        return new Promise<void>((resolve) => {
+            const countdownInterval = setInterval(() => {
+                if (count > 0) {
+                    this.send(GameMessages.getReady(count));
+                    count--;
+                } else {
+                    clearInterval(countdownInterval);
+                    this.send(null);
+                    resolve();
+                }
+            }, interval);
+        });
+    }
+}
+
+// TODO: Cleanup room from storage when finished
+
+/**
+ * Handles the lifecycle of a game room and its players.
+ */
 export class GameRoom extends WebSocketService {
     game: Game;
     engine: GameEngine;
+
     private gameLoopInterval: NodeJS.Timeout | null = null;
+    private countdownService: CountdownService;
 
     constructor(game: Game) {
         super();
         this.game = game;
         this.engine = new GameEngine();
+        this.engine.onScore = this.onScore.bind(this);
+        this.countdownService = new CountdownService(
+            this.gameMessage.bind(this)
+        );
     }
 
-    private endGame() {
-        this.game.status = GameStatus.FINISHED;
-        this.game.save();
-        this.broadcast({ type: "GAME_ENDED" });
-        this.stopGameLoop();
-    }
+    /* -------------------- Player Management -------------------- */
 
     async addPlayer(connection: WebSocket, user: User) {
         try {
-            const isInGame = this.game.players.some((p) => p.id === user.id);
+            let gameUser = this.game.players.find((p) => p.id === user.id);
 
-            if (!isInGame) {
+            if (!gameUser) {
                 await this.game.addPlayer(user);
                 await this.game.reload({ include: ["players"] });
-
                 console.log(
                     `Player ${user.username} joined game ${this.game.code}`
                 );
-                this.broadcast({ type: "PLAYER_JOINED", player: user.toDTO() });
+                gameUser = this.game.players.find((p) => p.id === user.id);
             }
+
+            if (!gameUser)
+                throw new HttpException(501, "Failed to add player to game");
+
+            this.broadcast({
+                type: "PLAYER_JOINED",
+                player: gameUser.toDTO().gameUser(),
+            });
+
             this.addClient(user.id, connection);
             this.updateState(connection);
 
@@ -63,7 +100,7 @@ export class GameRoom extends WebSocketService {
         if (this.game.status !== GameStatus.WAITING) {
             this.broadcast({
                 type: "PLAYER_DISCONNECTED",
-                player: user.toDTO(),
+                player: user.toDTO().gameUser(),
             });
             return;
         }
@@ -82,45 +119,100 @@ export class GameRoom extends WebSocketService {
 
         this.broadcast({
             type: "PLAYER_DISCONNECTED",
-            player: user.toDTO(),
+            player: user.toDTO().gameUser(),
             host: this.game.hostId,
         });
     }
 
+    /* -------------------- Game Flow -------------------- */
+
     async startGame() {
+        if (this.game.status != GameStatus.WAITING) return;
+
         this.game.status = GameStatus.IN_PROGRESS;
         await this.game.save();
 
         this.engine.initPaddles(this.game.getGameUsers());
         this.updateState();
         this.startGameLoop();
-        setTimeout(() => {
+
+        const player1 = this.game.players[0].username;
+        const player2 = this.game.players[1].username;
+
+        this.gameMessage(
+            GameMessages.intro(player1, player2, this.game.maxScore)
+        );
+
+        setTimeout(async () => {
+            await this.countdownService.run(3);
+            this.engine.resetPositions();
             this.engine.togglePause();
-        }, 3000);
+        }, 1000);
     }
 
-    private startGameLoop() {
+    private async endGame(delay: number) {
+        this.stopGameLoop();
+        this.game.status = GameStatus.FINISHED;
+        await this.game.save();
+
+        setTimeout(async () => {
+            this.updateState();
+            await GameRooms.remove(this.game.code!);
+        }, delay * 1000);
+    }
+
+    /* -------------------- Score Handling -------------------- */
+
+    async onScore(scorerId: number) {
+        try {
+            await this.game.playerScore(scorerId, 1);
+            await this.game.reload({ include: ["players"] });
+        } catch {
+            throw new HttpException(500, "Failed to update player score");
+        }
+
+        const player = this.game.players.find((p) => p.id === scorerId);
+        if (!player) return;
+
+        this.updateState();
+        this.engine.togglePause();
+
+        if (player.GameUser.score >= this.game.maxScore) {
+            this.gameMessage(GameMessages.win(player.username));
+            await this.endGame(2);
+        } else {
+            this.gameMessage(GameMessages.score(player.username));
+            await this.countdownService.run(3);
+            this.engine.togglePause();
+        }
+    }
+
+    /* -------------------- Game Loop -------------------- */
+
+    startGameLoop() {
         if (this.gameLoopInterval) clearInterval(this.gameLoopInterval);
 
         this.gameLoopInterval = setInterval(() => {
-            this.engine.update(); // fixed physics step
-            this.broadcastFrame();
+            if (this.engine.update()) {
+                this.broadcast({
+                    type: "GAME_FRAME",
+                    frame: this.engine.getFrame(),
+                });
+            }
         }, 1000 / GameEngine.fps);
     }
 
-    private stopGameLoop() {
+    stopGameLoop() {
         if (this.gameLoopInterval) {
             clearInterval(this.gameLoopInterval);
             this.gameLoopInterval = null;
         }
     }
 
-    private broadcastFrame() {
-        const frame: GameFrame = {
-            ball: this.engine.ball,
-            paddles: this.engine.paddles,
-        };
-        this.broadcast({ type: "GAME_FRAME", frame });
+    /* -------------------- Messaging -------------------- */
+
+    private gameMessage(message: GameMessage[] | null) {
+        this.broadcast({ type: "GAME_MESSAGE", message });
     }
 
     async updateState(client?: WebSocket) {
@@ -128,6 +220,8 @@ export class GameRoom extends WebSocketService {
         if (client) this.sendToClient(client, payload);
         else this.broadcast(payload);
     }
+
+    /* -------------------- WebSocket Events -------------------- */
 
     protected onMessage(connection: WebSocket, message: any) {
         const payload = JSON.parse(message);
@@ -140,7 +234,6 @@ export class GameRoom extends WebSocketService {
                 break;
 
             case "PLAYER_INPUT":
-                // only update paddle velocity, not physics
                 this.engine.handleInput(userId, payload.key, payload.state);
                 break;
 
@@ -152,8 +245,6 @@ export class GameRoom extends WebSocketService {
     protected async onClientDisconnect(connection: WebSocket) {
         const userId = this.getUserId(connection);
         if (!userId) return;
-
-        // TODO: allow reconnect window
 
         await this.removePlayer(userId);
     }

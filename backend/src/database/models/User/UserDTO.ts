@@ -37,6 +37,15 @@ export class UserDTO implements UserDTOType {
         return this;
     }
 
+    gameUser(): GameUserDTOType {
+        return {
+            id: this.id,
+            username: this.username,
+            avatar: this.avatar,
+            score: 0,
+        };
+    }
+
     toString() {
         return `
             ID: ${this.id}

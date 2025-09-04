@@ -10,11 +10,14 @@ import { useWebSocket } from "@shared/hooks/useWebSocket";
 import {
     GameDTOType,
     GameFrame,
+    GameMessage,
     GameMode,
     GameStatus,
     GameUserDTOType,
 } from "shared";
 import { useGameKeys } from "./useGameKeys";
+import { useGameMessages } from "./useGameMessages";
+import Swal from "sweetalert2";
 
 interface RemoteGameContextType {
     host: number;
@@ -33,7 +36,8 @@ interface RemoteGameContextType {
     handleStartGame: () => void;
 
     frameRef: RefObject<GameFrame | null>;
-    sendInput: (input: string) => void;
+    messages: RefObject<GameMessage[] | null>;
+    error: string | null;
 }
 
 const RemoteGameContext = createContext<RemoteGameContextType | undefined>(
@@ -54,15 +58,26 @@ interface RemoteGameProviderProps {
     children?: ReactNode;
 }
 
+const Toast = Swal.mixin({
+    toast: true,
+    position: "top-end",
+    showConfirmButton: false,
+    timer: 3000,
+    theme: "dark",
+});
+
 export const RemoteGameProvider = ({
     code,
     children,
 }: RemoteGameProviderProps) => {
     const { user } = useUser();
 
+    const [status, setStatus] = useState<GameStatus | null>(null);
+    const statusRef = useRef<GameStatus | null>(null);
+
+    const [error, setError] = useState<string | null>(null);
     const [host, setHost] = useState<number>(-1);
     const [player, setPlayer] = useState<GameUserDTOType | null>(null);
-    const [status, setStatus] = useState<GameStatus | null>(null);
     const [mode, setMode] = useState<GameMode | null>(null);
     const [isPrivate, setIsPrivate] = useState<boolean>(false);
     const [round, setRound] = useState<number>(0);
@@ -70,7 +85,10 @@ export const RemoteGameProvider = ({
     const [players, setPlayers] = useState<GameUserDTOType[]>([]);
     const [winner, setWinner] = useState<string | null>(null);
     const [maxPlayers, setMaxPlayers] = useState<number>(0);
+
     const frameRef = useRef<GameFrame | null>(null);
+
+    const { messages } = useGameMessages();
 
     const { addHook, sendMessage } = useWebSocket(`/game/play/${code}`);
 
@@ -90,6 +108,7 @@ export const RemoteGameProvider = ({
         switch (payload.type) {
             case "GAME_UPDATE": {
                 const state: GameDTOType = payload.state;
+                statusRef.current = state.status;
                 setStatus(state.status);
                 setMode(state.mode);
                 setIsPrivate(state.isPrivate);
@@ -115,27 +134,59 @@ export const RemoteGameProvider = ({
                 break;
             }
 
+            case "GAME_MESSAGE": {
+                messages.current = payload.message;
+                break;
+            }
+
             case "PLAYER_JOINED": {
-                setPlayers((prev) => {
-                    const exists = prev.some((p) => p.id === payload.player.id);
-                    return exists ? prev : [...prev, payload.player];
+                if (statusRef.current === GameStatus.WAITING) {
+                    setPlayers((prev) => {
+                        const exists = prev.some(
+                            (p) => p.id === payload.player.id
+                        );
+                        return exists ? prev : [...prev, payload.player];
+                    });
+                }
+
+                Toast.fire({
+                    icon: "success",
+                    title: `${payload.player.username} has joined the game`,
                 });
+
                 break;
             }
             case "PLAYER_DISCONNECTED": {
-                setPlayers((prev) =>
-                    prev.filter((p) => p.id !== payload.player.id)
-                );
-                if (payload.host && payload.host !== host) {
-                    setHost(payload.host);
+                if (statusRef.current === GameStatus.WAITING) {
+                    setPlayers((prev) =>
+                        prev.filter((p) => p.id !== payload.player.id)
+                    );
+                    if (payload.host && payload.host !== host) {
+                        setHost(payload.host);
+                    }
                 }
+
+                Toast.fire({
+                    icon: "error",
+                    title: `${payload.player.username} has disconnected`,
+                });
+
                 break;
             }
+
             case "error":
                 console.error("Game error:", payload.message);
                 break;
             default:
                 console.warn("Unknown message type:", payload.type);
+        }
+    };
+
+    const onConnectionClose = (event: CloseEvent) => {
+        if (event.wasClean) {
+            if (event.code === 4004) {
+                setError("Connection closed: " + event.reason);
+            }
         }
     };
 
@@ -152,7 +203,7 @@ export const RemoteGameProvider = ({
         });
         addHook({
             type: "onDisconnect",
-            callback: () => console.log("WebSocket disconnected"),
+            callback: onConnectionClose,
         });
     }, []);
 
@@ -172,8 +223,8 @@ export const RemoteGameProvider = ({
         handleStartGame,
         code,
         frameRef,
-        sendInput: (input: string) =>
-            sendMessage({ type: "PLAYER_INPUT", input }),
+        messages,
+        error,
     };
 
     return (

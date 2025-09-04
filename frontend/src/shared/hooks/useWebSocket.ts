@@ -29,22 +29,22 @@ export const useWebSocket = (url: string) => {
             process.env.FT_REACT_PUBLIC_API_HOST + url
         );
 
-        wsRef.current.onopen = () => {
+        wsRef.current.onopen = (event) => {
             setIsConnected(true);
             setIsLoading(false);
             hooksRef.current.forEach((hook) => {
                 if (hook.type === "onConnect") {
-                    hook.callback();
+                    hook.callback(event);
                 }
             });
         };
 
-        wsRef.current.onclose = () => {
+        wsRef.current.onclose = (event) => {
             setIsConnected(false);
             setIsLoading(false);
             hooksRef.current.forEach((hook) => {
                 if (hook.type === "onDisconnect") {
-                    hook.callback();
+                    hook.callback(event);
                 }
             });
         };

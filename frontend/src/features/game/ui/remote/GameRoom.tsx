@@ -1,4 +1,4 @@
-import React from "react";
+import React, { Link } from "react";
 import { useRemoteGame } from "@features/game/model/useRemoteGame";
 import { GameStatus } from "shared";
 import { GameElementRemote } from "../components/GameElement";
@@ -6,16 +6,16 @@ import { GameElementRemote } from "../components/GameElement";
 export const GameRemoteRoom = () => {
     const {
         player,
-        status,
         players,
+        status,
         maxPlayers,
         winner,
         round,
         maxScore,
         isPrivate,
         host,
-        handleStartGame,
         code,
+        error,
     } = useRemoteGame();
 
     const renderStatus = () => {
@@ -31,13 +31,19 @@ export const GameRemoteRoom = () => {
         }
     };
 
+    if (error) {
+        return (
+            <span className="text-red-500 text-lg font-semibold">{error}</span>
+        );
+    }
+
     if (!player) {
-        return <div>Loading ...</div>;
+        return <div>Loading Player</div>;
     }
 
     if (status === GameStatus.IN_PROGRESS) {
         return (
-            <div className="w-full h-full">
+            <div className="w-full h-full flex items-center justify-center">
                 <GameElementRemote />
             </div>
         );
@@ -79,26 +85,28 @@ export const GameRemoteRoom = () => {
                 </ul>
             </div>
 
-            <GameActionButtons
-                playerSize={players.length}
-                isHost={host == player.id}
-                handleStartGame={handleStartGame}
-            />
+            <GameActionButtons />
         </div>
     );
 };
 
-interface GameActionButtonsProps {
-    playerSize: number;
-    isHost: boolean;
-    handleStartGame: () => void;
-}
+const GameActionButtons = () => {
+    const { player, players, host, status, handleStartGame, maxPlayers } =
+        useRemoteGame();
+    const playerSize = players.length;
+    const isHost = player?.id === host;
 
-const GameActionButtons = ({
-    playerSize,
-    isHost,
-    handleStartGame,
-}: GameActionButtonsProps) => {
+    if (status === GameStatus.FINISHED) {
+        return (
+            <Link
+                to="/lobby"
+                className="px-6 py-3 bg-gradient-to-r from-purple-500 to-blue-500 text-white font-semibold rounded-xl shadow-lg hover:scale-105 transition-transform"
+            >
+                Return to Lobby
+            </Link>
+        );
+    }
+
     if (!isHost) {
         return (
             <div className="text-gray-400">

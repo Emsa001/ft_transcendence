@@ -44,16 +44,14 @@ export interface GameCreationRequest {
     isPrivate?: boolean;
     maxScore?: number;
     maxPlayers?: number;
-};
+}
 
-export interface GameCreationAttributes extends GameCreationRequest{
+export interface GameCreationAttributes extends GameCreationRequest {
     hostId: number;
     round?: number | null;
     tournamentId?: number;
     winnerId?: number | null;
-};
-
-
+}
 
 export type Vec2 = { x: number; y: number };
 
@@ -75,4 +73,102 @@ export interface Ball {
 export interface GameFrame {
     ball?: Ball;
     paddles?: Record<number, Paddle>;
+}
+
+export interface GameMessage {
+    size?: number;
+    color?: string;
+    shadow?: {
+        color: string;
+        blur?: number;
+    };
+    marginTop?: number;
+    text: string;
+}
+
+// Game messages
+
+export class GameMessages {
+    static win(scorer: string, canRestart?: boolean): GameMessage[] {
+        const message: GameMessage[] = [
+            {
+                text: `${scorer} Wins!`,
+                shadow: { color: "#7a5cff", blur: 20 },
+                size: 60,
+            },
+        ];
+
+        if (canRestart) {
+            message.push({
+                text: "Press Space to Restart",
+                size: 30,
+            });
+        }
+
+        return message;
+    }
+
+    static score(scorer: string): GameMessage[] {
+        return [
+            {
+                text: `${scorer} Scores!`,
+                shadow: { color: "#7a5cff", blur: 20 },
+                size: 50,
+            },
+        ];
+    }
+
+    static start(): GameMessage[] {
+        return [
+            {
+                text: "Press Space to Start",
+                shadow: { color: "#7a5cff", blur: 20 },
+                size: 40,
+            },
+        ];
+    }
+
+    static intro(
+        player1: string,
+        player2: string,
+        points: number
+    ): GameMessage[] {
+        return [
+            {
+                text: `${player1}  VS  ${player2}`,
+                shadow: { color: "#7a5cff", blur: 20 },
+                size: 40,
+            },
+            { text: `First to ${points} points wins`, size: 30 },
+        ];
+    }
+
+    static getReady(count: number): GameMessage[] {
+        return [
+            {
+                text: "Get Ready!",
+                shadow: { color: "#7a5cff", blur: 20 },
+                size: 40,
+            },
+            {
+                text: `Starting in ${count}`,
+                size: 30,
+                marginTop: 10,
+            },
+        ];
+    }
+
+    static pause(): GameMessage[] {
+        return [
+            {
+                text: "Paused",
+                shadow: { color: "#f72585", blur: 20 },
+                size: 50,
+            },
+            {
+                text: "Press Space to Resume",
+                size: 30,
+            },
+        ];
+    }
 }

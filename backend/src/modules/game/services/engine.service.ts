@@ -1,4 +1,4 @@
-import { Ball, GameUserDTOType, Paddle } from "shared";
+import { Ball, GameFrame, GameUserDTOType, Paddle } from "shared";
 
 export class GameEngine {
     private readonly baseW = 1280;
@@ -26,6 +26,13 @@ export class GameEngine {
             speed: this.defaultBallSpeed,
         };
         this.paddles = {};
+    }
+
+    getFrame(): GameFrame {
+        return {
+            ball: this.ball,
+            paddles: this.paddles,
+        };
     }
 
     initPaddles(players: GameUserDTOType[]): void {
@@ -66,12 +73,14 @@ export class GameEngine {
     }
 
     update() {
-        if (this.stopped) return;
+        if (this.stopped) return false;
 
         this.updatePaddles();
         this.updateBall();
         this.handleCollisions();
         this.handleScoring();
+
+        return true;
     }
 
     private updatePaddles() {
@@ -144,7 +153,7 @@ export class GameEngine {
         }
     }
 
-    private resetPositions() {
+    resetPositions() {
         const centerY = this.baseH / 2;
 
         for (const id in this.paddles) {

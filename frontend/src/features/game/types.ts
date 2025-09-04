@@ -11,14 +11,3 @@ export interface StatusMessage {
     message: string;
     success: boolean;
 }
-
-export interface CanvasMessage {
-    size?: number;
-    color?: string;
-    shadow?: {
-        color: string;
-        blur?: number;
-    };
-    marginTop?: number;
-    text: string;
-}

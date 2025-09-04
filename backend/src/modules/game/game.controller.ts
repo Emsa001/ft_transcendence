@@ -9,7 +9,6 @@ import { GameCreationAttributes, GameStatus } from "shared";
 
 import GameLobbyService from "./services/lobby.service";
 import { GameRooms } from "./services/registry.service";
-import { HttpException } from "@/utils/exceptions";
 
 @Controller("/game")
 export class GameController extends BaseController {
@@ -39,10 +38,7 @@ export class GameController extends BaseController {
         });
 
         await room.reload({ include: ["players"] });
-
-        console.log(room.players);
         GameRooms.create(room);
-        console.log(`Game created with code: ${room.code}`);
 
         return reply.send(room.toDTO());
     }
@@ -62,12 +58,12 @@ export class GameController extends BaseController {
 
         const room = GameRooms.get(code);
         if (!room) {
-            connection.close();
+            connection.close(4004, "Room not found");
             return;
         }
         if (room.game.status === GameStatus.FINISHED) {
-            connection.close();
-            throw new HttpException(400, "Game has already finished");
+            connection.close(4004, "Game has already finished");
+            return;
         }
         room.addPlayer(connection, user);
     }

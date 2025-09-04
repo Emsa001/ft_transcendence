@@ -1,7 +1,7 @@
 import { Game } from "@/database/models/Game/Game";
 import { User } from "@/database/models/User/User";
 import { Op } from "sequelize";
-import { GameHistoryFilter, GetStatisticsResponse } from "shared";
+import { GameHistoryFilter, GameStatus, GetStatisticsResponse } from "shared";
 
 export class UserGamesService {
     static async getHistory(
@@ -37,6 +37,7 @@ export class UserGamesService {
         const gameHistory = await user.getGames({
             attributes: ["winnerId"],
             where: {
+                status: GameStatus.FINISHED,
                 tournamentId: null, // Only casual games
             },
         });

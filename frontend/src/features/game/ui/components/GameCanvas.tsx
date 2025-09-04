@@ -4,16 +4,9 @@ import { GameRenderer, renderer } from "@features/game/service/GameRender";
 import { gameEngine } from "@features/game/service/GameEngine";
 import { useCanvasResize } from "@features/game/model/useCanvasResize";
 import { useRemoteGame } from "@features/game/model/useRemoteGame";
-import { GameFrame } from "shared";
 
 export const GameCanvasLocal = () => {
-    const {
-        messageTimeoutRef,
-        countdownTimeoutRef,
-        state,
-        message,
-        countdown,
-    } = useGame();
+    const { state, messages, countdown } = useGame();
 
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const rafRef = useRef<number | null>(null);
@@ -39,8 +32,8 @@ export const GameCanvasLocal = () => {
             renderer.drawBall(gameEngine.ball);
             renderer.drawSpeed(gameEngine.ball);
             renderer.drawPaddles(gameEngine.paddles);
-            renderer.drawStateOverlay(state, countdown);
-            renderer.drawMessages(message);
+            renderer.drawCountDown(countdown.current);
+            renderer.drawMessages(messages.current);
 
             rafRef.current = requestAnimationFrame(loop);
         };
@@ -49,22 +42,13 @@ export const GameCanvasLocal = () => {
         return () => {
             if (rafRef.current) cancelAnimationFrame(rafRef.current);
         };
-    }, [state, message, countdown]);
-
-    useEffect(() => {
-        return () => {
-            if (messageTimeoutRef.current)
-                clearTimeout(messageTimeoutRef.current);
-            if (countdownTimeoutRef.current)
-                clearTimeout(countdownTimeoutRef.current);
-        };
-    }, [messageTimeoutRef, countdownTimeoutRef]);
+    }, [state]);
 
     return <canvas ref={canvasRef} className="rounded-xl m-auto" />;
 };
 
 export const GameCanvasRemote = () => {
-    const { frameRef } = useRemoteGame();
+    const { frameRef, messages } = useRemoteGame();
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const rafRef = useRef<number | null>(null);
     useCanvasResize(canvasRef);
@@ -82,15 +66,16 @@ export const GameCanvasRemote = () => {
 
             ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+            renderer.clearBackground();
+            renderer.drawMidline();
             if (frameRef.current) {
-                renderer.clearBackground();
-                renderer.drawMidline();
                 if (frameRef.current.ball) {
                     renderer.drawBall(frameRef.current.ball);
                     renderer.drawSpeed(frameRef.current.ball);
                 }
                 renderer.drawPaddles(frameRef.current?.paddles ?? {});
             }
+            renderer.drawMessages(messages.current);
 
             rafRef.current = requestAnimationFrame(loop);
         };

@@ -1,5 +1,11 @@
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { GameUserDTOType } from "shared";
+import React, {
+    createContext,
+    useContext,
+    useEffect,
+    useRef,
+    useState,
+} from "react";
+import { GameMessages, GameUserDTOType } from "shared";
 import { gameEngine } from "../service/GameEngine";
 import { GameState } from "../types";
 import { useGameKeys } from "./useGameKeys";
@@ -16,14 +22,6 @@ export const useGame = (): GameContextType => {
     return context;
 };
 
-const startMessage = [
-    {
-        text: "Press Space to Start",
-        shadow: { color: "#7a5cff", blur: 20 },
-        size: 40,
-    },
-];
-
 export const GameProvider = ({
     children,
     players,
@@ -36,32 +34,26 @@ export const GameProvider = ({
     const [playersValue, setPlayers] = useState<GameUserDTOType[]>([]);
     const [maxScoreValue, setMaxScore] = useState(maxScore);
     const [state, setState] = useState<GameState>("created");
+    const lockRef = useRef(false);
 
     useEffect(() => {
         setPlayers(gameEngine.createPlayers(players));
     }, []);
 
     const {
-        message,
-        setMessage,
+        messages,
         countdown,
-        setCountdown,
-        messageTimeoutRef,
-        countdownTimeoutRef,
+
         showMessage,
         startCountdown,
     } = useGameMessages();
 
     // events
-
     const stopGame = () => {
-        if (countdown) return;
+        if (countdown.current) return;
 
-        clearTimeout(messageTimeoutRef.current!);
-        clearTimeout(countdownTimeoutRef.current!);
+        messages.current = GameMessages.start();
 
-        setMessage(startMessage);
-        setCountdown(null);
         setPlayers((prev) => prev.map((p) => ({ ...p, score: 0 })));
         setState("created");
 
@@ -70,20 +62,27 @@ export const GameProvider = ({
     };
 
     const startGame = () => {
-        if (countdown) return;
+        if (countdown.current) return;
 
         stopGame();
-        setMessage([]);
         setState("started");
         startCountdown().then(() => (gameEngine.stopped = false));
+        messages.current = null;
 
         gameEngine.resetPositions();
     };
 
     // Only for local game
     const togglePause = () => {
-        if (countdown || message.length > 0) return;
+        if (countdown.current || lockRef.current) return;
+        if (state === "created" || state === "finished") return;
+
         setState((prev) => (prev === "started" ? "paused" : "started"));
+        if (gameEngine.stopped) {
+            messages.current = null;
+        } else {
+            messages.current = GameMessages.pause();
+        }
 
         gameEngine.stopped = !gameEngine.stopped;
     };
@@ -102,8 +101,9 @@ export const GameProvider = ({
         if (!scorer) return;
 
         const newScore = scorer.score + 1;
-
         gameEngine.stopped = true;
+        lockRef.current = true;
+
         setPlayers((prev) =>
             prev.map((p) => (p.id === scorerId ? { ...p, score: newScore } : p))
         );
@@ -112,31 +112,16 @@ export const GameProvider = ({
         if (newScore >= maxScoreValue) {
             setState("finished");
             onEnd?.(scorer);
-            setMessage([
-                {
-                    text: `${scorer.username} Wins!`,
-                    shadow: { color: "#7a5cff", blur: 20 },
-                    size: 60,
-                },
-                { text: `Press Space to Restart`, size: 30 },
-            ]);
+            messages.current = GameMessages.win(scorer.username, true);
             return;
         }
 
-        showMessage(
-            [
-                {
-                    text: `${scorer.username} Scores!`,
-                    shadow: { color: "#7a5cff", blur: 20 },
-                    size: 50,
-                },
-            ],
-            1000,
-            () =>
-                startCountdown().then(() => {
-                    gameEngine.resetPositions();
-                    gameEngine.stopped = false;
-                })
+        showMessage(GameMessages.score(scorer.username), 1000, () =>
+            startCountdown().then(() => {
+                gameEngine.resetPositions();
+                gameEngine.stopped = false;
+                lockRef.current = false;
+            })
         );
     };
 
@@ -146,12 +131,9 @@ export const GameProvider = ({
     }, [playersValue, maxScoreValue]);
 
     useEffect(() => {
-        setMessage(startMessage);
+        messages.current = GameMessages.start();
 
         return () => {
-            clearTimeout(messageTimeoutRef.current!);
-            clearTimeout(countdownTimeoutRef.current!);
-
             gameEngine.resetPositions();
             gameEngine.stopped = true;
             gameEngine.onScore = undefined;
@@ -168,10 +150,8 @@ export const GameProvider = ({
     const value: GameContextType = {
         players: playersValue,
         maxScore: maxScoreValue,
-        messageTimeoutRef,
-        countdownTimeoutRef,
         state,
-        message,
+        messages,
         countdown,
 
         stopGame,
@@ -180,9 +160,7 @@ export const GameProvider = ({
 
         setPlayers,
         setMaxScore,
-        setMessage,
         setState,
-        setCountdown,
         startCountdown,
     };
 

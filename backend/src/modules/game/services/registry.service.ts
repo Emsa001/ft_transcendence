@@ -64,10 +64,24 @@ class GameRoomRegistry {
         const room = this.rooms.get(gameCode);
         if (!room) return;
 
-        if (room.game.status === GameStatus.WAITING) await room.game.destroy();
+        try {
+            // Stop any active loops or countdowns
+            room.stopGameLoop();
+            room.closeAllClients();
 
-        this.rooms.delete(gameCode);
-        this.triggerHooks("onGameDelete", gameCode);
+            // Destroy the game record if never started
+            if (room.game.status != GameStatus.FINISHED) {
+                await room.game.destroy();
+            }
+
+            // Remove from registry
+            this.rooms.delete(gameCode);
+            this.triggerHooks("onGameDelete", gameCode);
+
+            console.log(`Game with code ${gameCode} removed from registry.`);
+        } catch (err) {
+            console.error(`Failed to fully clean up game ${gameCode}:`, err);
+        }
     }
 
     addHook(type: HookType, callback: Function) {

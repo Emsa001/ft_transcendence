@@ -25,7 +25,7 @@ export const GameRemoteElement = ({ code }: GameRemoteElementProps) => {
         return (
             <div className="w-full h-full">
                 <RemoteGameProvider code={code}>
-                    <div className="w-full h-full">
+                    <div className="w-full h-full flex items-center justify-center pt-8">
                         <GameRemoteRoom />
                     </div>
                 </RemoteGameProvider>

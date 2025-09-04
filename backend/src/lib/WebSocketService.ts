@@ -64,6 +64,13 @@ export class WebSocketService {
         return null;
     }
 
+    closeAllClients() {
+        this.getClients().forEach((sockets) => {
+            sockets.forEach((ws) => ws.close());
+        });
+        this.clients.clear();
+    }
+
     protected onClientConnect(connection: WebSocket) {}
     protected onClientDisconnect(connection: WebSocket) {}
     protected onMessage(connection: WebSocket, message: any) {}
