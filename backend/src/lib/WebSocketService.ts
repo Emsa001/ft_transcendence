@@ -9,8 +9,9 @@ export class WebSocketService {
         }
     }
 
-    broadcast(message: any) {
-        for (const [, sockets] of this.clients) {
+    broadcast(message: any, ignored: number[] = []) {
+        for (const [userId, sockets] of this.clients) {
+            if (ignored.includes(userId)) continue;
             for (const client of sockets) {
                 this.sendToClient(client, message);
             }

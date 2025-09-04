@@ -52,3 +52,27 @@ export interface GameCreationAttributes extends GameCreationRequest{
     tournamentId?: number;
     winnerId?: number | null;
 };
+
+
+
+export type Vec2 = { x: number; y: number };
+
+export interface Paddle {
+    pos: Vec2;
+    size: Vec2;
+    speed: number;
+    vel: number;
+    controls: { up: string; down: string };
+}
+
+export interface Ball {
+    pos: Vec2;
+    vel: Vec2;
+    size: number;
+    speed: number;
+}
+
+export interface GameFrame {
+    ball?: Ball;
+    paddles?: Record<number, Paddle>;
+}

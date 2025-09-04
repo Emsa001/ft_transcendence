@@ -29,7 +29,12 @@ import {
 import { User } from "../User/User";
 import { GameUser } from "./GameUser";
 import { GameDTO } from "./GameDTO";
-import { GameCreationAttributes, GameMode, GameStatus } from "shared";
+import {
+    GameCreationAttributes,
+    GameMode,
+    GameStatus,
+    GameUserDTOType,
+} from "shared";
 import { HttpException } from "@/utils/exceptions";
 import { Tournament } from "../Tournaments/Tournament";
 import { GameHooks } from "./GameHooks";
@@ -127,6 +132,16 @@ export class Game extends Model<InferAttributes<Game>, GameCreationAttributes> {
     // Custom methods
     toDTO(): GameDTO {
         return new GameDTO(this);
+    }
+
+    getGameUsers(): GameUserDTOType[] {
+        if (!this.players)
+            throw new HttpException(500, "Players not loaded in Game instance");
+
+        return this.players.map((p) => ({
+            ...p.toDTO(),
+            score: p.GameUser.score,
+        }));
     }
 
     static findByCode = (code: string) => Game.findOne({ where: { code } });

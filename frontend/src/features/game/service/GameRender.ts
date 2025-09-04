@@ -1,5 +1,5 @@
+import { Ball, Paddle } from "shared";
 import { CanvasMessage, GameState } from "../types";
-import { gameEngine } from "./GameEngine";
 
 // Drawing and Calculation Class
 export class GameRenderer {
@@ -70,8 +70,8 @@ export class GameRenderer {
         ctx.restore();
     }
 
-    drawPaddles() {
-        gameEngine.paddles.forEach((paddle) => {
+    drawPaddles(paddles: Record<number, Paddle>) {
+        Object.values(paddles).forEach((paddle) => {
             this.drawGlassRect(
                 paddle.pos.x,
                 paddle.pos.y,
@@ -108,11 +108,9 @@ export class GameRenderer {
         ctx.restore();
     }
 
-    drawBall() {
+    drawBall(ball: Ball) {
         const ctx = this.ctx;
         if (!ctx) return;
-
-        const ball = gameEngine.ball;
 
         ctx.save();
         ctx.shadowColor = "#4cc9f0";
@@ -137,11 +135,9 @@ export class GameRenderer {
         ctx.restore();
     }
 
-    drawSpeed() {
+    drawSpeed(ball: Ball) {
         const ctx = this.ctx;
         if (!ctx) return;
-
-        const ball = gameEngine.ball;
 
         ctx.save();
         ctx.font = `${22 * this.sx}px ui-sans-serif, system-ui`;
@@ -179,20 +175,6 @@ export class GameRenderer {
                 "Get Ready!",
                 canvas.width / 2,
                 canvas.height / 2 + 80 * this.sy
-            );
-            ctx.restore();
-        } else if (state === "created") {
-            ctx.save();
-            ctx.fillStyle = "rgba(15, 10, 40, 0.8)";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "#c4b5fd";
-            ctx.textAlign = "center";
-            ctx.textBaseline = "middle";
-            ctx.font = `${48 * this.sx}px ui-sans-serif, system-ui`;
-            ctx.fillText(
-                "Press Space to Start",
-                canvas.width / 2,
-                canvas.height / 2
             );
             ctx.restore();
         } else if (state === "paused") {

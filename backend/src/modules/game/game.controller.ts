@@ -5,7 +5,7 @@ import { BaseController } from "../base";
 import { Game } from "@/database/models/Game/Game";
 import { AUTHORIZED, WS_AUTHORIZED } from "../auth/auth.middleware";
 import { WebSocket } from "@fastify/websocket";
-import { GameCreationAttributes } from "shared";
+import { GameCreationAttributes, GameStatus } from "shared";
 
 import GameLobbyService from "./services/lobby.service";
 import { GameRooms } from "./services/registry.service";
@@ -64,6 +64,10 @@ export class GameController extends BaseController {
         if (!room) {
             connection.close();
             return;
+        }
+        if (room.game.status === GameStatus.FINISHED) {
+            connection.close();
+            throw new HttpException(400, "Game has already finished");
         }
         room.addPlayer(connection, user);
     }

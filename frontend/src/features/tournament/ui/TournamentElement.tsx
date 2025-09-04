@@ -3,13 +3,13 @@ import { TournamentRegister } from "./TournamentRegister";
 import { GameStatus, GameUserDTOType } from "shared";
 import { TournamentViewer } from "./TournamentViewer";
 
-import { GameElement } from "@features/game/ui/components/GameElement";
 import { GameFooter } from "@features/game/ui/components/GameFooter";
 import { GameProvider } from "@features/game/model/useGame";
 import {
     LocalTournamentProvider,
     useLocalTournament,
 } from "../model/LocalTournamentProvider";
+import { GameElementLocal } from "@features/game/ui/components/GameElement";
 
 export const TournamentElement = ({ code }: { code?: string }) => {
     return (
@@ -68,7 +68,7 @@ const TournamentView = () => {
                     onSpace={onSpace}
                 >
                     <div className="px-4 py-2" />
-                    <GameElement />
+                    <GameElementLocal />
                     <GameFooter />
                 </GameProvider>
             </div>

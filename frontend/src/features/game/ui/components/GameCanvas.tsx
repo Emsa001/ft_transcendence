@@ -2,8 +2,11 @@ import React, { useRef, useEffect } from "react";
 import { useGame } from "../../model/useGame";
 import { GameRenderer, renderer } from "@features/game/service/GameRender";
 import { gameEngine } from "@features/game/service/GameEngine";
+import { useCanvasResize } from "@features/game/model/useCanvasResize";
+import { useRemoteGame } from "@features/game/model/useRemoteGame";
+import { GameFrame } from "shared";
 
-export function GameCanvasElement() {
+export const GameCanvasLocal = () => {
     const {
         messageTimeoutRef,
         countdownTimeoutRef,
@@ -12,41 +15,9 @@ export function GameCanvasElement() {
         countdown,
     } = useGame();
 
-    const { players } = useGame();
-
     const canvasRef = useRef<HTMLCanvasElement | null>(null);
     const rafRef = useRef<number | null>(null);
-    const runningRef = useRef<boolean>(false);
-
-    const baseW = GameRenderer.baseW;
-    const baseH = GameRenderer.baseH;
-
-    // Resize canvas to parent size and scale for HiDPI
-    const setCanvasSize = () => {
-        const canvas = canvasRef.current;
-        if (!canvas) return;
-        const parent = canvas.parentElement as HTMLElement;
-        const rect = parent.getBoundingClientRect();
-        const parentW = rect.width;
-        const parentH = rect.height;
-        let width = parentW;
-        let height = (parentW * 9) / 16;
-        if (height > parentH) {
-            height = parentH;
-            width = (parentH * 16) / 9;
-        }
-        const dpr = window.devicePixelRatio || 1;
-        canvas.width = Math.floor(width * dpr);
-        canvas.height = Math.floor(height * dpr);
-        canvas.style.width = `${Math.floor(width)}px`;
-        canvas.style.height = `${Math.floor(height)}px`;
-    };
-
-    useEffect(() => {
-        setCanvasSize();
-        window.addEventListener("resize", setCanvasSize);
-        return () => window.removeEventListener("resize", setCanvasSize);
-    }, []);
+    useCanvasResize(canvasRef);
 
     useEffect(() => {
         const loop = () => {
@@ -55,34 +26,30 @@ export function GameCanvasElement() {
             const dpr = window.devicePixelRatio || 1;
             const ctx = canvas.getContext("2d");
             if (!ctx) return;
-            const sx = canvas.width / baseW;
-            const sy = canvas.height / baseH;
+            const sx = canvas.width / GameRenderer.baseW;
+            const sy = canvas.height / GameRenderer.baseH;
             renderer.init(ctx, dpr, sx, sy);
 
             // Update game logic if running
-            if (runningRef.current) {
-                gameEngine.update();
-            }
+            gameEngine.update();
 
             // Render everything
             renderer.clearBackground();
             renderer.drawMidline();
-            renderer.drawBall();
-            renderer.drawSpeed();
-            renderer.drawPaddles();
+            renderer.drawBall(gameEngine.ball);
+            renderer.drawSpeed(gameEngine.ball);
+            renderer.drawPaddles(gameEngine.paddles);
             renderer.drawStateOverlay(state, countdown);
             renderer.drawMessages(message);
 
             rafRef.current = requestAnimationFrame(loop);
         };
 
-        runningRef.current = true;
         rafRef.current = requestAnimationFrame(loop);
         return () => {
-            runningRef.current = false;
             if (rafRef.current) cancelAnimationFrame(rafRef.current);
         };
-    }, [state, players, message, countdown]);
+    }, [state, message, countdown]);
 
     useEffect(() => {
         return () => {
@@ -94,4 +61,45 @@ export function GameCanvasElement() {
     }, [messageTimeoutRef, countdownTimeoutRef]);
 
     return <canvas ref={canvasRef} className="rounded-xl m-auto" />;
-}
+};
+
+export const GameCanvasRemote = () => {
+    const { frameRef } = useRemoteGame();
+    const canvasRef = useRef<HTMLCanvasElement | null>(null);
+    const rafRef = useRef<number | null>(null);
+    useCanvasResize(canvasRef);
+
+    useEffect(() => {
+        const loop = () => {
+            const canvas = canvasRef.current;
+            if (!canvas) return;
+            const dpr = window.devicePixelRatio || 1;
+            const ctx = canvas.getContext("2d");
+            if (!ctx) return;
+            const sx = canvas.width / GameRenderer.baseW;
+            const sy = canvas.height / GameRenderer.baseH;
+            renderer.init(ctx, dpr, sx, sy);
+
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            if (frameRef.current) {
+                renderer.clearBackground();
+                renderer.drawMidline();
+                if (frameRef.current.ball) {
+                    renderer.drawBall(frameRef.current.ball);
+                    renderer.drawSpeed(frameRef.current.ball);
+                }
+                renderer.drawPaddles(frameRef.current?.paddles ?? {});
+            }
+
+            rafRef.current = requestAnimationFrame(loop);
+        };
+
+        rafRef.current = requestAnimationFrame(loop);
+        return () => {
+            if (rafRef.current) cancelAnimationFrame(rafRef.current);
+        };
+    }, []);
+
+    return <canvas ref={canvasRef} className="rounded-xl m-auto" />;
+};

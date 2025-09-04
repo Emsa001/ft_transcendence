@@ -1,12 +1,10 @@
 import React from "react";
-import { useGame } from "@features/game/model/useGame";
+import { GameUserDTOType } from "shared";
 
 const scoreClass =
     "px-4 py-2 bg-white/5 backdrop-blur-lg rounded-2xl shadow-2xl";
 
-export const GameScore = () => {
-    const { players } = useGame();
-
+export const GameScore = ({ players }: { players: GameUserDTOType[] }) => {
     return (
         <div className="absolute top-4 left-1/2 -translate-x-1/2 flex space-x-4 text-white text-2xl font-bold">
             {players.map((player) => (

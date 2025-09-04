@@ -1,14 +1,9 @@
 import React from "react";
 import { useRemoteGame } from "@features/game/model/useRemoteGame";
 import { GameStatus } from "shared";
-import { GameElement } from "../components/GameElement";
-import { GameProvider } from "@features/game/model/useGame";
+import { GameElementRemote } from "../components/GameElement";
 
-interface GameRemoteRoomProps {
-    code: string;
-}
-
-export const GameRemoteRoom = ({ code }: GameRemoteRoomProps) => {
+export const GameRemoteRoom = () => {
     const {
         player,
         status,
@@ -20,7 +15,8 @@ export const GameRemoteRoom = ({ code }: GameRemoteRoomProps) => {
         isPrivate,
         host,
         handleStartGame,
-    } = useRemoteGame(code);
+        code,
+    } = useRemoteGame();
 
     const renderStatus = () => {
         switch (status) {
@@ -42,9 +38,7 @@ export const GameRemoteRoom = ({ code }: GameRemoteRoomProps) => {
     if (status === GameStatus.IN_PROGRESS) {
         return (
             <div className="w-full h-full">
-                <GameProvider players={players} maxScore={maxScore}>
-                    <GameElement />
-                </GameProvider>
+                <GameElementRemote />
             </div>
         );
     }

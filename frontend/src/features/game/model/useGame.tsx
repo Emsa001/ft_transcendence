@@ -16,10 +16,19 @@ export const useGame = (): GameContextType => {
     return context;
 };
 
+const startMessage = [
+    {
+        text: "Press Space to Start",
+        shadow: { color: "#7a5cff", blur: 20 },
+        size: 40,
+    },
+];
+
 export const GameProvider = ({
     children,
     players,
     maxScore = 5,
+
     onScore,
     onEnd,
     onSpace,
@@ -43,14 +52,58 @@ export const GameProvider = ({
         startCountdown,
     } = useGameMessages();
 
-    // --- Game Flow ---
+    // events
+
+    const stopGame = () => {
+        if (countdown) return;
+
+        clearTimeout(messageTimeoutRef.current!);
+        clearTimeout(countdownTimeoutRef.current!);
+
+        setMessage(startMessage);
+        setCountdown(null);
+        setPlayers((prev) => prev.map((p) => ({ ...p, score: 0 })));
+        setState("created");
+
+        gameEngine.resetPositions();
+        gameEngine.stopped = true;
+    };
+
+    const startGame = () => {
+        if (countdown) return;
+
+        stopGame();
+        setMessage([]);
+        setState("started");
+        startCountdown().then(() => (gameEngine.stopped = false));
+
+        gameEngine.resetPositions();
+    };
+
+    // Only for local game
+    const togglePause = () => {
+        if (countdown || message.length > 0) return;
+        setState((prev) => (prev === "started" ? "paused" : "started"));
+
+        gameEngine.stopped = !gameEngine.stopped;
+    };
+
+    // Only for local game
+    const handleSpacePress = () => {
+        if (onSpace?.() === false) return;
+
+        if (state === "created" || state === "finished") startGame();
+        else togglePause();
+    };
+
+    // Only for local game
     const handleScore = (scorerId: number) => {
         const scorer = playersValue.find((p) => p.id === scorerId);
         if (!scorer) return;
 
-        gameEngine.stopped = true;
         const newScore = scorer.score + 1;
 
+        gameEngine.stopped = true;
         setPlayers((prev) =>
             prev.map((p) => (p.id === scorerId ? { ...p, score: newScore } : p))
         );
@@ -87,51 +140,31 @@ export const GameProvider = ({
         );
     };
 
-    const stopGame = () => {
-        if (countdown) return;
-
-        clearTimeout(messageTimeoutRef.current!);
-        clearTimeout(countdownTimeoutRef.current!);
-
-        setMessage([]);
-        setCountdown(null);
-        setPlayers((prev) => prev.map((p) => ({ ...p, score: 0 })));
-        setState("created");
-
-        gameEngine.resetPositions();
-        gameEngine.stopped = true;
-    };
-
-    const startGame = () => {
-        if (countdown) return;
-
-        stopGame();
-        setState("started");
-        startCountdown().then(() => (gameEngine.stopped = false));
-
-        gameEngine.resetPositions();
-    };
-
-    const togglePause = () => {
-        if (countdown || message.length > 0) return;
-        setState((prev) => (prev === "started" ? "paused" : "started"));
-        gameEngine.stopped = !gameEngine.stopped;
-    };
-
-    const handleSpacePress = () => {
-        if (onSpace?.() === false) return;
-        if (state === "created" || state === "finished") startGame();
-        else togglePause();
-    };
-
-    // --- Hooks ---
+    // keep handleScore up to date
     useEffect(() => {
         gameEngine.onScore = handleScore;
     }, [playersValue, maxScoreValue]);
 
-    useGameKeys({ onSpacePress: handleSpacePress });
+    useEffect(() => {
+        setMessage(startMessage);
 
-    // --- Context Value ---
+        return () => {
+            clearTimeout(messageTimeoutRef.current!);
+            clearTimeout(countdownTimeoutRef.current!);
+
+            gameEngine.resetPositions();
+            gameEngine.stopped = true;
+            gameEngine.onScore = undefined;
+        };
+    }, []);
+
+    // register space
+    const keys = useGameKeys({ onSpacePress: handleSpacePress });
+
+    useEffect(() => {
+        gameEngine.keys = keys;
+    }, [keys]);
+
     const value: GameContextType = {
         players: playersValue,
         maxScore: maxScoreValue,

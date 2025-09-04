@@ -1,4 +1,4 @@
-import { UserDTOType } from "shared";
+import { GameUserDTOType, UserDTOType } from "shared";
 import { User } from "./User";
 import { HttpException } from "@/utils/exceptions";
 
