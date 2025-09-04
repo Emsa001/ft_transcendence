@@ -38,7 +38,7 @@ export const getApp = () => {
     return app;
 };
 
-const isProduction: boolean = false;
+const isProduction: boolean = true;
 
 export default async function App() {
     if(isProduction)
