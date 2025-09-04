@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useUser } from "@features/auth/model/useUser";
 import { FaEdit, FaUser, FaUserCircle, FaUsers, FaComments, FaBan } from "react-icons/fa";
 import { UserStats } from "@features/user/ui/UserStats";
-import { GameHistory } from "@features/user/ui/GameHistory";
+import { PlayerGameHistory } from "@features/user/ui/PlayerGameHistory";
 import { UserPicture } from "@features/user/ui/UserPicture";
 import ProfileApi from "@features/user/service/profileApi";
 import { DeleteButton } from "@features/user/ui/Delete";
@@ -11,6 +11,7 @@ import FriendsApi from "@features/user/service/friendsApi";
 import { UserDTOType } from "shared";
 import { Icon } from "@shared/components/Icon";
 import { OtherUserPicture } from "@features/user/ui/UserPicture";
+
 
 export default function User({ username }: { username?: string }) {
     const [user, setUser] = useState<UserDTOType | null>(null);
@@ -129,7 +130,7 @@ export default function User({ username }: { username?: string }) {
                                     <Icon icon={FaUsers} className="w-6 h-6 md:w-8 md:h-8 text-purple-400" />
                                     Recent Games
                                 </h2>
-                                <GameHistory userId={user.id} />
+                                <PlayerGameHistory userId={user.id} />
                             </div>
                         </div>
                     </>

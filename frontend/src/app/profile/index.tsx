@@ -22,7 +22,7 @@ export const Profile = () => {
                     <div className="bg-gray-800 rounded-lg p-6 shadow-lg w-full md:w-1/3 flex items-center justify-center">
                         <UserInfo />
                     </div>
-                    <div className="bg-gray-800 rounded-lg p-6 shadow-lg w-full md:w-2/3 flex items-center justify-center">
+                    <div className="bg-gray-800 rounded-lg p-6 shadow-lg w-full md:w-2/3 ">
                         <ContactInfo />
                     </div>
                 </div>

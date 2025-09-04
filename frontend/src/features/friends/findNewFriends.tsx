@@ -16,7 +16,7 @@ export function FindNewFriends() {
         try {
             const newFriend = await ProfileApi.getUserByIdOrUsername(username);
             if (newFriend) {
-                await FriendsApi.addFriend(newFriend.id.toString());
+                await FriendsApi.addFriend(newFriend.id);
                 setSentRequests((prev: UserDTOType[]) => [
                     ...prev,
                     {

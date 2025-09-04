@@ -4,6 +4,7 @@ import { Icon } from "@shared/components/Icon";
 import ProfileApi from "@features/user/service/profileApi";
 import { useUser } from "@features/auth/model/useUser";
 import { UserDTOType } from "shared";
+import { useOnlineUsers } from "@features/user/model/useOnlineUsers";
 
 interface UserPictureProps {
     userId: number;

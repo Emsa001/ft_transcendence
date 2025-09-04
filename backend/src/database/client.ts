@@ -29,7 +29,7 @@ export const registerDB = async (app: FastifyInstance) => {
         models,
     });
 
-    await sequelize.sync({ force: false });
+    await sequelize.sync({ force: true });
     app.decorate("sequelize", sequelize);
 
     await GameRooms.init();

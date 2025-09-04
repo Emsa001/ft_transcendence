@@ -23,7 +23,7 @@ export function ReceivedRequests() {
 
     const handleAcceptRequest = async (requestId: number) => {
         try {
-            await FriendsApi.acceptFriendRequest(requestId.toString());
+            await FriendsApi.acceptFriendRequest(requestId);
             setReceivedRequests((prev) =>
                 prev.filter((req) => req.id !== requestId)
             );
@@ -38,7 +38,7 @@ export function ReceivedRequests() {
 
     const handleDeclineRequest = async (requestId: number) => {
         try {
-            await FriendsApi.removeFriend(requestId.toString());
+            await FriendsApi.removeFriend(requestId);
             setReceivedRequests((prev) =>
                 prev.filter((req) => req.id !== requestId)
             );
