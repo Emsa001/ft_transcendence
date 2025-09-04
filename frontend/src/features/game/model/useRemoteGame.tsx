@@ -17,7 +17,7 @@ import {
 } from "shared";
 import { useGameKeys } from "./useGameKeys";
 import { useGameMessages } from "./useGameMessages";
-import Swal from "sweetalert2";
+import { Toast } from "@shared/lib/Toast";
 
 interface RemoteGameContextType {
     host: number | null;
@@ -58,14 +58,6 @@ interface RemoteGameProviderProps {
     children?: ReactNode;
 }
 
-const Toast = Swal.mixin({
-    toast: true,
-    position: "top-end",
-    showConfirmButton: false,
-    timer: 3000,
-    theme: "dark",
-});
-
 export const RemoteGameProvider = ({
     code,
     children,
@@ -90,7 +82,7 @@ export const RemoteGameProvider = ({
 
     const { messages } = useGameMessages();
 
-    const { addHook, sendMessage } = useWebSocket(`/game/play/${code}`);
+    const { addHook, sendMessage } = useWebSocket(`/game/join/${code}`);
 
     useGameKeys({
         onKeyDown: (key) => {
@@ -149,11 +141,7 @@ export const RemoteGameProvider = ({
                     });
                 }
 
-                Toast.fire({
-                    icon: "success",
-                    title: `${payload.player.username} has joined the game`,
-                });
-
+                Toast.success(`${payload.player.username} has joined the game`);
                 break;
             }
             case "PLAYER_DISCONNECTED": {
@@ -166,11 +154,7 @@ export const RemoteGameProvider = ({
                     }
                 }
 
-                Toast.fire({
-                    icon: "error",
-                    title: `${payload.player.username} has disconnected`,
-                });
-
+                Toast.error(`${payload.player.username} has left the game`);
                 break;
             }
 

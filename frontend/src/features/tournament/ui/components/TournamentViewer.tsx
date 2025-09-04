@@ -1,8 +1,8 @@
 import React from "react";
 import { ShinyText } from "@shared/components/Shiny";
-import { GameList } from "./components/GameList";
-import { TournamentPlayerList } from "./components/PlayerList";
-import { useLocalTournament } from "../model/useLocalTournament";
+import { GameList } from "./GameList";
+import { TournamentPlayerList } from "./PlayerList";
+import { useLocalTournament } from "../../model/useLocalTournament";
 
 export const TournamentViewer = () => {
     const { createRound, playGame, deleteTournament } = useLocalTournament();

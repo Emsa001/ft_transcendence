@@ -10,6 +10,7 @@ import {
     BelongsToManyCountAssociationsMixin,
     HasManyCreateAssociationMixin,
     HasManyGetAssociationsMixin,
+    InferAttributes,
 } from "sequelize";
 import {
     Table,
@@ -29,11 +30,11 @@ import {
 import { User } from "../User/User";
 import { TournamentUser } from "./TournamentUser";
 import { Game } from "../Game/Game";
-import { GameStatus } from "shared";
+import { GameStatus, TournamentCreateType } from "shared";
 import { TournamentHooks } from "./TournamentHooks";
 import { TournamentDTO } from "./TournamentDTO";
-import { TournamentGamePlayService } from "@/modules/tournament/services/tournament.gameplay";
-import { TournamentCreationService } from "@/modules/tournament/services/tournament.creation";
+import { TournamentCreationService } from "@/modules/tournament/services/craete.service";
+import { TournamentGamePlayService } from "@/modules/tournament/services/gameplay.service";
 
 type UserWithTournamentData = User & {
     TournamentUser: TournamentUser;
@@ -50,7 +51,10 @@ type UserWithTournamentData = User & {
     },
 }))
 @Table
-export class Tournament extends Model {
+export class Tournament extends Model<
+    InferAttributes<Tournament>,
+    TournamentCreateType
+> {
     @PrimaryKey
     @AutoIncrement
     @Column(DataType.INTEGER)
@@ -59,9 +63,24 @@ export class Tournament extends Model {
     @Column(DataType.STRING)
     declare name: string;
 
+    @AllowNull(false)
+    @Default(() => crypto.randomUUID())
+    @Column(DataType.STRING)
+    declare uuid: string;
+
+    @ForeignKey(() => User)
+    @AllowNull(true)
+    @Default(null) // game with no host
+    @Column(DataType.INTEGER)
+    declare hostId: number | null;
+
     @Default(GameStatus.WAITING)
     @Column(DataType.STRING)
     declare status: GameStatus;
+
+    @Default(3)
+    @Column(DataType.INTEGER)
+    declare maxScore: number;
 
     @HasMany(() => Game)
     declare games: Game[];
@@ -100,6 +119,9 @@ export class Tournament extends Model {
         const allPlayers = await this.getPlayers();
         return allPlayers.filter((player) => !player.TournamentUser.eliminated);
     };
+
+    static findByUUID = async (uuid: string): Promise<Tournament | null> =>
+        Tournament.findOne({ where: { uuid } });
 
     start = async () => TournamentCreationService.start(this);
     end = async () => TournamentCreationService.end(this);

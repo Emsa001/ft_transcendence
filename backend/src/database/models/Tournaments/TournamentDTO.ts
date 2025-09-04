@@ -13,8 +13,11 @@ export class TournamentDTO implements TournamentDTOType {
     players: TournamentUserDTOType[];
     games?: GameDTOType[];
     round: number;
+    maxScore: number;
     maxPlayers: number;
     winnerId: number | null;
+    uuid: string;
+    hostId: number | null;
 
     private tournament: Tournament;
 
@@ -24,12 +27,14 @@ export class TournamentDTO implements TournamentDTOType {
         this.status = tournament.status;
         this.round = tournament.round;
         this.maxPlayers = tournament.maxPlayers;
+        this.maxScore = tournament.maxScore;
         this.players = tournament.players.map((player) => ({
             ...player.toDTO(),
             eliminated: player.TournamentUser.eliminated,
         }));
         this.winnerId = tournament.winnerId || null;
-
+        this.uuid = tournament.uuid;
+        this.hostId = tournament.hostId;
         this.tournament = tournament;
 
         Object.defineProperty(this, "tournament", {

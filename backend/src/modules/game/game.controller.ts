@@ -50,7 +50,7 @@ export class GameController extends BaseController {
         GameLobbyService.addPlayer(user.id, connection);
     }
 
-    @GET("/play/:code", { websocket: true })
+    @GET("/join/:code", { websocket: true })
     @WS_AUTHORIZED
     async joinGame(connection: WebSocket, request: FastifyRequest) {
         const { code } = request.params as { code: string };

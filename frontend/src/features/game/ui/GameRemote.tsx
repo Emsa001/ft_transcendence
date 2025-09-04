@@ -2,8 +2,9 @@ import React, { useEffect, useNavigate } from "react";
 import { GameRemoteRoom } from "./remote/GameRoom";
 import { GameLobby } from "./remote/GameLobby";
 import { useUser } from "@features/auth/model/useUser";
-import GameApi from "../service/GameAPI";
+import GameApi from "../service/GameApi";
 import { RemoteGameProvider } from "../model/useRemoteGame";
+import { Toast } from "@shared/lib/Toast";
 
 interface GameRemoteElementProps {
     code?: string;
@@ -17,7 +18,10 @@ export const GameRemote = ({ code }: GameRemoteElementProps) => {
         if (!code) return;
 
         GameApi.getGameByCode(code).then((game) => {
-            if (!game) navigate("/game/remote");
+            if (!game) {
+                Toast.error("Game not found");
+                navigate("/game/remote");
+            }
         });
     }, [code]);
 

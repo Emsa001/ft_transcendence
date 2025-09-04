@@ -13,5 +13,16 @@ export interface TournamentDTOType {
     games?: GameDTOType[];
     round: number;
     maxPlayers: number;
+    maxScore: number;
     winnerId: number | null;
+    hostId: number | null;
+    uuid: string;
+}
+
+export interface TournamentCreateType {
+    name?: string;
+    maxPlayers?: number;
+    maxScore?: number;
+    isPrivate?: boolean;
+    hostId?: number | null;
 }

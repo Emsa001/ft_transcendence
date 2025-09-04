@@ -61,7 +61,7 @@ export const TournamentPlayerList = () => {
 
 interface RegisteredPlayerListProps {
     players: TournamentUserDTOType[];
-    onRemovePlayer: (username: string) => void;
+    onRemovePlayer?: (username: string) => void;
 }
 
 export const RegisterPlayerList = ({
@@ -79,7 +79,7 @@ export const RegisterPlayerList = ({
 
     return (
         <ul
-            className="h-[25vh] overflow-y-auto scrollbar-minimal space-y-2 p-3"
+            className="h-full overflow-y-auto scrollbar-minimal space-y-2 p-3"
             ref={listRef}
         >
             {players.length === 0 && (
@@ -93,12 +93,14 @@ export const RegisterPlayerList = ({
                     className="flex justify-between items-center p-2 rounded-xl bg-white/10 backdrop-blur-sm"
                 >
                     <span className="text-gray-200">{p.username}</span>
-                    <button
-                        onClick={() => onRemovePlayer(p.username)}
-                        className="text-red-400 hover:text-red-300 transition"
-                    >
-                        ✕
-                    </button>
+                    {onRemovePlayer && (
+                        <button
+                            onClick={() => onRemovePlayer(p.username)}
+                            className="text-red-400 hover:text-red-300 transition"
+                        >
+                            ✕
+                        </button>
+                    )}
                 </li>
             ))}
         </ul>

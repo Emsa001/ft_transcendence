@@ -1,7 +1,7 @@
 import React from "react";
-import { TournamentRegister } from "./TournamentRegister";
 import { GameStatus, GameUserDTOType } from "shared";
-import { TournamentViewer } from "./TournamentViewer";
+import { TournamentRegister } from "./components/TournamentRegister";
+import { TournamentViewer } from "./components/TournamentViewer";
 
 import { GameFooter } from "@features/game/ui/components/GameFooter";
 import { GameProvider } from "@features/game/model/useGame";

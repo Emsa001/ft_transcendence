@@ -45,7 +45,7 @@ export const Modal = ({
             onClick={handleOverlayClick}
         >
             <div
-                className={`relative max-w-lg w-full backdrop-blur-2xl p-12 rounded-2xl transform ${animationClasses} ${className}`}
+                className={`relative max-w-lg w-full backdrop-blur-2xl shadow-2xl p-12 rounded-2xl transform ${animationClasses} ${className}`}
             >
                 {children}
             </div>

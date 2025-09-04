@@ -4,7 +4,7 @@ import { GameCreationModal } from "../remote/GameCreation";
 import { GameJoiningModal } from "../remote/GameJoin";
 import { GameCreationRequest } from "shared";
 import { useGameLobby } from "@features/game/model/useGameLobby";
-import GameApi from "../../service/GameAPI";
+import GameApi from "../../service/GameApi";
 
 export const GameLobby = () => {
     const navigate = useNavigate();
