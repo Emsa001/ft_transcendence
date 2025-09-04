@@ -9,7 +9,7 @@ import { Op } from "sequelize";
 import { HttpException } from "@/utils/exceptions";
 import { UserGenerate } from "@/database/models/User/UserGenerate";
 
-const imageDirUrl = `${process.env.BACKEND_URL}/public/uploads/`;
+const imageDirUrl = `${process.env.BASE_URL}/public/uploads/`;
 
 async function uploadImage(image: MultipartFile, fileName: string) {
     const imagesDir = path.join(process.cwd(), "public", "uploads");
@@ -63,7 +63,7 @@ class UserAccountService {
 
             user.username = data.username || user.username;
         }
-        if (data.password) {
+        if (data.newPassword) {
             if (!user.password)
                 throw new HttpException(400, "User does not have a password");
 
@@ -77,10 +77,10 @@ class UserAccountService {
             if (!isMatch)
                 throw new HttpException(400, "Old password is incorrect");
 
-            const newPassword = await bcrypt.hash(data.password, 10);
+            const newPassword = await bcrypt.hash(data.newPassword, 10);
 
             const samePassword = await bcrypt.compare(
-                data.password,
+                data.newPassword,
                 user.password
             );
             if (samePassword)

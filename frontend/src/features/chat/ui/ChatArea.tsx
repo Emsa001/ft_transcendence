@@ -5,6 +5,7 @@ import { usechat } from "../model/ChatContext";
 import { useUser } from "@features/auth/model/useUser";
 import { MessageCard } from "./MessageCard";
 import ChatApi from "@features/chat/service/api";
+import { useLanguage } from "@features/language/model/useLanguage";
 
 export function ChatArea() {
     const blockScroll = useRef(false);
@@ -12,6 +13,10 @@ export function ChatArea() {
     const [offset, setOffset] = useState(0);
     const [hasMore, setHasMore] = useState(false);
     const messageBoxRef = useRef<HTMLDivElement | null>(null);
+
+    const { getText } = useLanguage();
+    const text = getText("chat");
+
     const { user } = useUser();
     if (!user) return <div />;
 
@@ -81,7 +86,7 @@ export function ChatArea() {
                                     onClick={handleLoadMore}
                                     className="px-4 py-1 text-sm rounded-xl bg-cyan-500/20 hover:bg-cyan-500/30 border border-cyan-800 text-cyan-300 shadow-[0_0_8px_rgba(0,255,255,0.5)] transition"
                                 >
-                                    Load more
+                                    {text.loadMore}
                                 </button>
                             </div>
                         )}
@@ -97,7 +102,7 @@ export function ChatArea() {
                 </div>
             ) : (
                 <div className="flex items-center justify-center h-full">
-                    Please choose a user to start chatting
+                    {text.noChat}
                 </div>
             )}
         </div>

@@ -30,6 +30,7 @@ export const Icon = ({
     size,
     color,
     className,
+    ...props
 }: IconProps) => {
     if (!icon) {
         console.warn("Icon component: No icon provided");
@@ -47,6 +48,7 @@ export const Icon = ({
             fill={color || "currentColor"}
             viewBox={viewBox}
             className={className}
+            {...props}
         >
             {iconElement.children.map((child: any) => {
                 return child;

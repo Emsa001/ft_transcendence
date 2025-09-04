@@ -6,7 +6,7 @@ import { useUser } from "@features/auth/model/useUser";
 import { UserDTOType } from "shared";
 
 interface UserPictureProps {
-    userId: string;
+    userId: number;
     className?: string;
 }
 
@@ -14,7 +14,9 @@ export function UserPicture({ userId, className }: UserPictureProps) {
     const [user, setUser] = useState<UserDTOType | null>(null);
     useEffect(() => {
         const fetchUserData = async () => {
-            const userData = await ProfileApi.getUserByIdOrUsername(userId);
+            const userData = await ProfileApi.getUserByIdOrUsername(
+                userId.toString()
+            );
             if (userData) {
                 setUser(userData);
             }
@@ -29,7 +31,7 @@ export function UserPicture({ userId, className }: UserPictureProps) {
                 <img
                     src={`${user.avatar}?ver=${Date.now()}`}
                     alt="Profile"
-                    className={className}
+                    className={`object-cover ${className}`}
                 />
             ) : (
                 <Icon icon={FaUserCircle} className={className} />

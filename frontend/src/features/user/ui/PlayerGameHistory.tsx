@@ -51,7 +51,7 @@ export const PlayerGameHistory = ({ userId }: { userId: string | number }) => {
 
 const GameCard = ({ game }: { game: GameDTOType }) => {
     const winner =
-        game.players.find((p) => p.username === game.winner)?.username ||
+        game.players.find((p) => p.id === Number(game.winner))?.username ||
         "No Winner";
 
     return (

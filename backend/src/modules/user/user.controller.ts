@@ -13,6 +13,18 @@ import { WebSocket } from "@fastify/websocket";
 import { UserStatusService } from "./services/user.status";
 import { AUTHORIZED, WS_AUTHORIZED } from "../auth/auth.middleware";
 import { randomUUID } from "crypto";
+import { friendsWSService } from "../friends/services/ws.friends";
+
+// async searchUsers(query: string): Promise<UserDTOType[]> {
+//     try {
+//         const response: AxiosResponse<UserDTOType[]> =
+//             await this.api.get("/user/search", { params: { query } });
+//         return response.data;
+//     } catch (error) {
+//         console.error("Error searching users:", error);
+//         return Promise.reject(error);
+//     }
+// }
 
 @Controller("/user")
 export class UserController extends BaseController {
@@ -20,6 +32,16 @@ export class UserController extends BaseController {
     async getUsers(_: FastifyRequest, reply: FastifyReply) {
         const users = await User.findAll();
         return reply.send(users.map((user) => user.toDTO()));
+    }
+
+    @GET("/search")
+    async searchUsers(request: FastifyRequest, reply: FastifyReply) {
+        const { query } = request.query as { query: string };
+        const allUsers = await User.findAll();
+        const filtered = allUsers.filter((user) =>
+            user.username.toLowerCase().includes(query.toLowerCase())
+        );
+        return reply.send(filtered.map((user) => user.toDTO()));
     }
 
     @GET("/:id")
@@ -116,6 +138,8 @@ export class UserController extends BaseController {
         const { id } = request.params as { id: number };
 
         await request.user.blockUser(id);
+        friendsWSService.notifyUser(Number(id), "FRIEND_REMOVED");
+
         return reply.send({ success: true });
     }
 

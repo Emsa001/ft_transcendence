@@ -1,6 +1,7 @@
 import { AxiosResponse } from "axios";
 import { APIService } from "@shared/lib/api";
 import { UserDTOType } from "shared";
+import { Alert } from "@shared/components/Alert";
 
 class BlockUserApi extends APIService {
     async getAll(): Promise<UserDTOType[]> {
@@ -17,9 +18,8 @@ class BlockUserApi extends APIService {
     async blockUser(userId: number): Promise<void> {
         try {
             await this.api.post(`/block/${userId}`);
-        } catch (error) {
-            console.error("Error blocking user:", error);
-            return Promise.reject(error);
+        } catch (error: any) {
+            Alert.error(error.response.data.message);
         }
     }
 

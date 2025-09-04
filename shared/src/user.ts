@@ -7,7 +7,7 @@ export interface UserDTOType {
 }
 export interface UserEditableData {
     username?: string;
-    password?: string;
+    newPassword?: string;
     oldPassword?: string;
 }
 
