@@ -3,11 +3,9 @@ import { useUser } from "@features/auth/model/useUser";
 import React, { useState } from "react";
 import { SettingsModal } from "./Settings";
 import { useLanguage } from "@features/language/model/useLanguage";
-import { useAuth } from "@features/auth/model/useAuth";
 
 export function ContactInfo() {
     const { user } = useUser();
-    const { handleLogout } = useAuth();
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
     const { getText } = useLanguage();
@@ -34,20 +32,8 @@ export function ContactInfo() {
                     <p>{user.username}</p>
                 </div>
                 <div>
-                    <p className="text-gray-400">{texts.email}</p>
-                    <p>{user.email ? user.email : "No email :("}</p>
-                </div>
-                <div>
                     <p className="text-gray-400">{texts.userId}</p>
                     <p>{user.id}</p>
-                </div>
-                <div>
-                    <button
-                        className="p-1 text-lg mt-2 w-full bg-red-500/80 hover:bg-red-600/80 text-white rounded-lg shadow border border-red-300/40 transition"
-                        onClick={handleLogout}
-                    >
-                        {texts.logout}
-                    </button>
                 </div>
             </div>
             <SettingsModal
