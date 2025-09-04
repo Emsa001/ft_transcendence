@@ -25,7 +25,7 @@ export const TwoFactorAuthEnable = () => {
     }
 
     return (
-        <div className="border border-1 p-4">
+        <div className=" p-4">
             <h2>Enable Two-Factor Authentication</h2>
             <Button onClick={initiateSetup}>Enable 2FA</Button>
 

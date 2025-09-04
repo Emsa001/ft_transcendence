@@ -2,10 +2,6 @@ import React, { useEffect, useState } from "react";
 import { useStats } from "../model/useStats";
 import { GetStatisticsResponse } from "shared";
 
-/*
-    Test component to display user stats.
-    usage: <UserStats userId={1} /> // will fetch and display user stats for user with ID 1
-*/
 export const UserStats = ({ userId }: { userId: string | number }) => {
     const { fetchUserStats, loading, error } = useStats();
     const [stats, setStats] = useState<GetStatisticsResponse | null>(null);
@@ -24,7 +20,7 @@ export const UserStats = ({ userId }: { userId: string | number }) => {
 
     if (loading) {
         return (
-            <div className="flex items-center justify-center h-40">
+            <div className="w-full h-full flex items-center justify-center">
                 <div className="text-white animate-pulse">Loading stats...</div>
             </div>
         );
@@ -32,23 +28,27 @@ export const UserStats = ({ userId }: { userId: string | number }) => {
 
     if (error) {
         return (
-            <div className="text-red-400 text-center">
-                Failed to load stats. Please try again later.
+            <div className="w-full h-full flex items-center justify-center">
+                <div className="text-red-400 text-center">
+                    Failed to load stats. Please try again later.
+                </div>
             </div>
         );
     }
 
     if (!stats) {
         return (
-            <div className="text-gray-300 text-center">
-                No stats available for this user.
+            <div className="w-full h-full flex items-center justify-center">
+                <div className="text-gray-300 text-center">
+                    No stats available for this user.
+                </div>
             </div>
         );
     }
 
     return (
-        <div className="max-w-md mx-auto p-6 rounded-2xl shadow-lg bg-gradient-to-br from-purple-500/30 to-blue-500/30 backdrop-blur-lg border border-white/20">
-            <h2 className="text-2xl font-bold text-white mb-4 text-center">
+        <div className="w-full h-full flex flex-col justify-center items-center p-8 rounded-lg bg-purple-600/10 backdrop-blur-md border border-white/10">
+            <h2 className="text-3xl font-bold text-white mb-10 text-center">
                 Player Statistics
             </h2>
 
@@ -72,8 +72,8 @@ const StatCard = ({
     label: string;
     value: string | number;
 }) => (
-    <div className="p-4 rounded-xl bg-white/10 backdrop-blur-md border border-white/10 text-center">
-        <div className="text-lg font-semibold text-white">{value}</div>
+    <div className="p-6 rounded-xl bg-white/10 backdrop-blur-md border border-white/10 text-center">
+        <div className="text-2xl font-bold text-white mb-2">{value}</div>
         <div className="text-sm text-white/70">{label}</div>
     </div>
 );

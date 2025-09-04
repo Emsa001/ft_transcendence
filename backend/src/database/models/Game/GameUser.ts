@@ -8,6 +8,8 @@ import {
     BeforeBulkCreate,
     Default,
     BelongsTo,
+    AfterDestroy,
+    AfterBulkDestroy,
 } from "sequelize-typescript";
 import { Game } from "./Game";
 import { User } from "../User/User";
@@ -50,5 +52,15 @@ export class GameUser extends Model {
     @BeforeBulkCreate
     static async verifyBulkAddPlayer(GameUser: GameUser[]) {
         await GameUserHooks.verifyBulkAddPlayer(GameUser);
+    }
+
+    @AfterBulkDestroy
+    static async AfterBulkDestroy(options: any) {
+        const { where } = options;
+        if (where.gameId && where.userId) {
+            const gameId = where.gameId;
+            const userId = where.userId;
+            await GameUserHooks.setGameHost(gameId, userId);
+        }
     }
 }

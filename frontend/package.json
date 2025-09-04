@@ -17,16 +17,20 @@
         "dotenv": "^16.5.0",
         "gsap": "^3.13.0",
         "html-webpack-plugin": "^5.6.3",
+        "i": "^0.3.7",
         "lodash": "^4.17.21",
+        "npm": "^11.5.2",
         "react-icons": "^5.5.0",
+        "shared": "file:../shared",
         "sweetalert2": "^11.22.2",
         "tailwindcss": "^4.1.11",
         "ts-loader": "^9.5.2",
-        "shared": "file:../shared"
+        "uuid": "^11.1.0"
     },
     "devDependencies": {
         "@types/lodash": "^4.17.16",
         "@types/node": "^22.13.2",
+        "@types/uuid": "^10.0.0",
         "@types/webpack-env": "^1.18.8",
         "autoprefixer": "^10.4.21",
         "copy-webpack-plugin": "^12.0.2",
@@ -34,12 +38,12 @@
         "postcss": "^8.5.6",
         "postcss-loader": "^8.1.1",
         "postcss-preset-env": "^10.1.4",
+        "prettier": "^3.6.2",
         "style-loader": "^4.0.0",
         "tsconfig-paths-webpack-plugin": "^4.2.0",
         "typescript": "^5.7.3",
         "webpack": "^5.97.1",
         "webpack-cli": "^6.0.1",
-        "webpack-dev-server": "^5.2.0",
-        "prettier": "^3.6.2"
+        "webpack-dev-server": "^5.2.0"
     }
 }

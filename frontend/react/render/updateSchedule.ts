@@ -25,9 +25,8 @@ async function ensureRefExists(component: ReactComponentInstance) {
 
 export async function updateSchedule(component: ReactComponentInstance, states: Hook[]) {
     // Check if navigation is in progress before starting update
-    if (React.isNavigating) {
+    if (React.isNavigating || React.components.get(component.name) !== component)
         return;
-    }
 
     await ensureRefExists(component);
     await Promise.resolve().then(async () => {
@@ -42,7 +41,7 @@ export async function updateSchedule(component: ReactComponentInstance, states: 
         component.hookIndex = 0;
 
         if (typeof component.jsx?.type !== "function")
-            throw new Error("Invalid component type");
+            throw new Error(`Invalid component type ${component.jsx?.type} ${component.name}`);
 
         if (!component.vNode?.ref) {
             throw new Error("Component ref is null, something is very wrong here :|");

@@ -29,12 +29,13 @@ describe("User Tests", () => {
     });
 
     it("should set user with game history as deleted", async () => {
+        const user1 = await UserGenerate.createExample();
+        const user2 = await UserGenerate.createExample();
         const game = await Game.create({
             status: GameStatus.WAITING,
             maxPlayers: 2,
+            hostId: user1.id,
         });
-        const user1 = await UserGenerate.createExample();
-        const user2 = await UserGenerate.createExample();
 
         await game.addPlayers([user1, user2]);
 
@@ -48,6 +49,51 @@ describe("User Tests", () => {
 
         const players = await game.getPlayers();
         expect(players).toHaveLength(2);
+    });
+
+    it("should add and remove friend", async () => {
+        const user1 = await UserGenerate.createExample();
+        const user2 = await UserGenerate.createExample();
+
+        await user1.askFriendRequest(user2.id);
+
+        const friendRequests = await user2.getFriendRequests();
+        expect(friendRequests).toContainEqual(
+            expect.objectContaining({ id: user1.id })
+        );
+
+        await user2.acceptFriendRequest(user1.id);
+        expect(await user1.getFriends()).toContainEqual(
+            expect.objectContaining({ id: user2.id })
+        );
+
+        await user2.removeFriend(user1.id);
+        expect(await user2.getFriends()).toHaveLength(0);
+    });
+
+    it("error handling in friends", async () => {
+        const user1 = await UserGenerate.createExample();
+        const user2 = await UserGenerate.createExample();
+
+        await expect(user1.askFriendRequest(user1.id)).rejects.toThrow(
+            "Cannot send friend request to yourself"
+        );
+
+        await expect(user1.askFriendRequest(-1)).rejects.toThrow(
+            "User not found"
+        );
+
+        await user1.askFriendRequest(user2.id);
+        await user2.acceptFriendRequest(user1.id);
+
+        await expect(user1.askFriendRequest(user2.id)).rejects.toThrow(
+            "You are already friends"
+        );
+
+        await user1.removeFriend(user2.id);
+        await expect(user1.removeFriend(user2.id)).rejects.toThrow(
+            "You are not friends"
+        );
     });
 });
 

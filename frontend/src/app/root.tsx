@@ -9,19 +9,13 @@ import { Profile } from "./profile";
 import { useOnlineUsers } from "@features/user/model/useOnlineUsers";
 import MainMenu from "@features/menu/ui/MainMenu";
 import Game from "./game";
+import Chat from "./chat";
 
-let mounted = false;
 let lastUserId = -1;
 
 export default function Root() {
     const { user, loading, fetchUser } = useUser();
-    const { subscribeToOnline, resubscribe } = useOnlineUsers();
-
-    useEffect(() => {
-        if (mounted) return;
-        mounted = true;
-        subscribeToOnline();
-    }, []);
+    const { resubscribe } = useOnlineUsers();
 
     useEffect(() => {
         fetchUser();
@@ -41,11 +35,14 @@ export default function Root() {
             <div className="absolute top-[75%] left-1/2 -translate-x-1/2 w-[600px] h-[200px] bg-indigo-500/20 rounded-full blur-[80px]" />
 
             <MainMenu />
+
             <BrowserRouter>
                 <Router src="/" component={<Home />} default />
                 <Router src="/auth" component={<Auth />} />
                 <Router src="/profile" component={<Profile />} />
-                <Router src="/game/:type" component={<Game />} />
+                <Router src="/chat" component={<Chat />} />
+
+                <Router src="/game/:type?/:mode?/:code?" component={<Game />} />
             </BrowserRouter>
         </div>
     );

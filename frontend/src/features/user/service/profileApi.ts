@@ -1,9 +1,34 @@
 import { AxiosResponse } from "axios";
 import { APIService } from "@shared/lib/api";
 import { UserDTOType, UserEditableData } from "shared";
-import { AuthResponse, User } from "@features/auth/types";
+import { User } from "@features/auth/types";
+import { Alert } from "@shared/components/Alert";
 
 class ProfileApi extends APIService {
+    async getAllUsers(): Promise<UserDTOType[]> {
+        try {
+            const response: AxiosResponse<UserDTOType[]> =
+                await this.api.get("/user/all");
+            return response.data;
+        } catch (error) {
+            console.error("Error fetching all users:", error);
+            return Promise.reject(error);
+        }
+    }
+
+    async searchUsers(query: string): Promise<UserDTOType[]> {
+        try {
+            const response: AxiosResponse<UserDTOType[]> = await this.api.get(
+                "/user/search",
+                { params: { query } }
+            );
+            return response.data;
+        } catch (error) {
+            console.error("Error searching users:", error);
+            return Promise.reject(error);
+        }
+    }
+
     async getUser(): Promise<User> {
         try {
             const response: AxiosResponse<UserDTOType> =
@@ -35,9 +60,10 @@ class ProfileApi extends APIService {
     async updateUser(data: UserEditableData): Promise<User | null> {
         try {
             const response = await this.api.post("/user/edit", data);
+            Alert.success("User information updated successfully.");
             return response.data.user as User;
-        } catch (error) {
-            console.error("API Error:", error);
+        } catch (error: any) {
+            Alert.error(error.response.data.message);
             return null;
         }
     }
@@ -51,9 +77,21 @@ class ProfileApi extends APIService {
             return false;
         }
     }
+
+    async getUserByIdOrUsername(
+        idOrUsername: string
+    ): Promise<UserDTOType | null> {
+        try {
+            const response: AxiosResponse<UserDTOType> = await this.api.get(
+                `/user/${idOrUsername}`
+            );
+            return response.data;
+        } catch (error) {
+            console.error("Error fetching user by ID or username:", error);
+            return null;
+        }
+    }
 }
 
-const service = new ProfileApi(
-    process.env.FT_REACT_PUBLIC_API_HOST || "http://localhost:3000"
-);
+const service = new ProfileApi({});
 export default service;

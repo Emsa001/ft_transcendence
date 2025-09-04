@@ -1,23 +1,48 @@
-import { LocalGame } from "@features/game/ui/LocalGame";
 import React from "react";
+
+import GameMenu from "./GameMenu";
+import { GameBackground } from "@features/game/ui/components/GameBackground";
+import { GameHeader } from "@features/game/ui/components/GameHeader";
+import { GameLocal } from "@features/game/ui/GameLocal";
+import { GameRemote } from "@features/game/ui/GameRemote";
+import { TournamentLocal } from "@features/tournament/ui/TournamentLocal";
+import { TournamentRemote } from "@features/tournament/ui/TournamentRemote";
 
 interface GameProps {
     type?: "local" | "remote";
+    mode?: "casual" | "tournament";
+    code?: string;
 }
 
-export default function Game({ type }: GameProps) {
+export default function Game({ type, mode, code }: GameProps) {
+    if (!type || !mode) {
+        return (
+            <div className="p-16 pt-24 h-full">
+                <GameMenu />
+            </div>
+        );
+    }
+
     return (
-        <div className="flex items-center justify-center h-full text-white">
-            {type === "local" ? (
-                <LocalGame />
-            ) : (
-                <div>
-                    <h1 className="text-2xl font-bold">
-                        Remote Game Mode Coming Soon!
-                    </h1>
-                    <p className="mt-4">Stay tuned for multiplayer features.</p>
-                </div>
-            )}
+        <div className="select-none h-full w-full flex items-center justify-center p-16 pt-24">
+            <div className="w-full h-full rounded-2xl shadow-2xl bg-fuchsia-900/5 relative">
+                {/* Header stays at the top */}
+                <GameHeader type={type} mode={mode} code={code} />
+
+                {type === "local" && mode === "casual" && <GameLocal />}
+                {type === "local" && mode === "tournament" && (
+                    <TournamentLocal />
+                )}
+
+                {type === "remote" && mode === "casual" && (
+                    <GameRemote code={code} />
+                )}
+                {type === "remote" && mode === "tournament" && (
+                    <TournamentRemote code={code} />
+                )}
+
+                <GameBackground />
+            </div>
         </div>
     );
 }

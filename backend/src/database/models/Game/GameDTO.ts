@@ -4,12 +4,18 @@ import { HttpException } from "@/utils/exceptions";
 
 export class GameDTO implements GameDTOType {
     id: number;
+    hostId: number | null;
+    code: string | null;
     status: GameStatus;
     mode: GameMode;
+    isPrivate: boolean;
+    round?: number | null;
+    maxScore: number | null;
     players: GameUserDTOType[];
-    winner: number | null;
-    updatedAt: Date;
+    maxPlayers: number;
+    winner: string | null;
     createdAt: Date;
+    updatedAt: Date;
 
     constructor(game: Game) {
         if (!game || !game.id)
@@ -24,13 +30,23 @@ export class GameDTO implements GameDTOType {
             );
 
         this.id = game.id;
+        this.hostId = game.hostId;
+        this.code = game.code;
         this.status = game.status;
         this.mode = game.mode;
-        this.players = game.players.map((player) => ({
-            ...player.toDTO(),
-            score: player.GameUser.score,
-        }));
-        this.winner = game.winnerId || null;
+        this.isPrivate = game.isPrivate;
+        this.round = game.round;
+        this.maxScore = game.maxScore;
+        this.maxPlayers = game.maxPlayers;
+        this.players = game.players
+            ? game.players.map((player) => ({
+                  ...player.toDTO(),
+                  score: player.GameUser.score,
+              }))
+            : [];
+        this.winner = game.winnerId
+            ? game.players.find((p) => p.id === game.winnerId)?.username || null
+            : null;
         this.createdAt = game.createdAt;
         this.updatedAt = game.updatedAt;
     }

@@ -22,7 +22,9 @@ import fastifyStatic from "@fastify/static";
 import { fileURLToPath } from "url";
 import { dirname } from "path";
 import path from "path";
+import { FriendsController } from "./modules/friends/friends.controller";
 import { TournamentController } from "./modules/tournament/tournament.controller";
+import { ChatController } from "./modules/chat/chat.controller";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -56,7 +58,10 @@ export default async function App() {
     });
 
     // Fastify Modules
-    await app.register(cors, { origin: process.env.ORIGIN, credentials: true });
+    await app.register(cors, {
+        origin: process.env.FRONTEND_URL,
+        credentials: true,
+    });
     await app.register(cookie, {
         secret: process.env.COOKIE_SECRET || "very-secret-cookie-key",
     });
@@ -64,8 +69,10 @@ export default async function App() {
     await app.register(bootstrap, {
         controllers: [
             UserController,
+            ChatController,
             AuthController,
             GameController,
+            FriendsController,
             TournamentController,
         ],
     });

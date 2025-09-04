@@ -4,15 +4,17 @@ interface ShinyProps {
     text: string;
     opacity?: number;
     gradient?: string;
+    className?: string;
 }
 
 export const ShinyText = ({
     text,
     gradient = "from-red-500 via-blue-500 to-green-500",
     opacity = 100,
+    className = "",
 }: ShinyProps) => {
     return (
-        <span className="relative inline-block">
+        <span className={`relative inline-block ${className}`}>
             {/* Drop shadow layer */}
             <span
                 className={`absolute inset-0 ${gradient} text-transparent bg-clip-text blur-lg  select-none pointer-events-none`}
