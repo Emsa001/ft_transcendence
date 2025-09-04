@@ -5,9 +5,10 @@ import { useUser } from "@features/auth/model/useUser";
 
 interface DeleteButtonProps {
     className?: string;
+    text?: string;
 }
 
-export const DeleteButton = ({ className }: DeleteButtonProps) => {
+export const DeleteButton = ({ className, text }: DeleteButtonProps) => {
     const { setUser } = useUser();
     const handleDelete = async () => {
         const isConfirmed = window.confirm(
@@ -23,7 +24,7 @@ export const DeleteButton = ({ className }: DeleteButtonProps) => {
     return (
         <div>
             <Button onClick={handleDelete} color="error" className={className}>
-                Delete Account
+                {text || "Delete Account"}
             </Button>
         </div>
     );

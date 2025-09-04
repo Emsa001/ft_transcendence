@@ -1,12 +1,15 @@
 import React from "react";
 import { FcGoogle } from "react-icons/fc";
 import { Icon } from "@shared/components/Icon";
+import { useLanguage } from "@features/language/model/useLanguage";
 
 interface GoogleAuthButtonProps {
     handleLogin: () => Promise<void>;
 }
 
 export const GoogleAuthButton = ({ handleLogin }: GoogleAuthButtonProps) => {
+    const { getText } = useLanguage();
+    const text = getText("auth");
     return (
         <div>
             <button
@@ -21,7 +24,7 @@ export const GoogleAuthButton = ({ handleLogin }: GoogleAuthButtonProps) => {
                 type="button"
             >
                 <Icon icon={FcGoogle} size={24} />
-                Continue with Google
+                {text.continueWithGoogle}
             </button>
         </div>
     );

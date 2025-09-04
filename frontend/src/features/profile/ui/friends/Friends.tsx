@@ -4,6 +4,7 @@ import FriendsApi from "../../../user/service/friendsApi";
 import { SearchModal } from "./Search";
 import { MyFriends } from "./MyFriends";
 import { FriendRequests } from "./FriendRequests";
+import { useLanguage } from "@features/language/model/useLanguage";
 
 let ws: WebSocket | undefined;
 
@@ -11,6 +12,8 @@ export function Friends() {
     const [friends, setFriends] = useState<UserDTOType[]>([]);
     const [friendRequests, setFriendRequests] = useState<UserDTOType[]>([]);
     const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
+    const { getText } = useLanguage();
+    const texts = getText("profile.friends");
 
     useEffect(() => {
         const fetchData = async () => {
@@ -48,14 +51,14 @@ export function Friends() {
     return (
         <div>
             <div className="flex items-center justify-between mb-4 border-b border-gray-700 pb-2">
-                <h2 className="text-xl font-bold">Friends</h2>
+                <h2 className="text-xl font-bold">{texts.title}</h2>
                 <button
                     type="button"
                     className="px-3 py-1 rounded bg-gray-700 text-white hover:bg-gray-600 transition"
                     aria-label="Settings"
                     onClick={() => setIsSearchModalOpen(true)}
                 >
-                    Search
+                    {texts.search}
                 </button>
             </div>
 

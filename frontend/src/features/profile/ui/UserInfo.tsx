@@ -1,5 +1,6 @@
 import { TwoFactorAuthDisable, TwoFactorAuthEnable } from "@features/auth";
 import { useUser } from "@features/auth/model/useUser";
+import { useLanguage } from "@features/language/model/useLanguage";
 import { UserPicture } from "@features/user/ui/UserPicture";
 import { Icon } from "@shared/components/Icon";
 import { Modal } from "@shared/components/Modal";
@@ -29,8 +30,10 @@ function TwoFaModal({ modalOpen, setModalOpen }: TwoFaModalProps) {
 import { MdOutlineSecurity } from "react-icons/md";
 export function UserInfo() {
     const { user } = useUser();
-    if (!user || !user.id) return <div />;
     const [modalOpen, setModalOpen] = useState(false);
+    if (!user || !user.id) return <div />;
+    const { getText } = useLanguage();
+    const text = getText("profile.playerStats");
 
     return (
         <div className="relative w-full h-full text-center">
@@ -41,7 +44,7 @@ export function UserInfo() {
                 />
             </div>
             <h2 className="text-xl font-bold">{user?.username}</h2>
-            <p className="text-gray-400">Pong Player</p>
+            <p className="text-gray-400">{text}</p>
             <div className="absolute top-0 left-0">
                 <Icon
                     icon={MdOutlineSecurity}

@@ -1,3 +1,4 @@
+import { useLanguage } from "@features/language/model/useLanguage";
 import React from "react";
 
 interface ToggleAuthModeProps {
@@ -9,28 +10,30 @@ export default function ToggleAuthMode({
     isRegister,
     setIsRegister,
 }: ToggleAuthModeProps) {
+    const { getText } = useLanguage();
+    const text = getText("auth");
     return (
         <p className="text-center mt-6 text-sm text-gray-400">
             {isRegister ? (
                 <div>
-                    Already have an account?{" "}
+                    {text.alreadyHaveAccount}{" "}
                     <button
                         onClick={() => setIsRegister(false)}
                         className="font-semibold text-pink-500 hover:underline"
                         type="button"
                     >
-                        Log in
+                        {text.logIn}
                     </button>
                 </div>
             ) : (
                 <div>
-                    Don’t have an account?{" "}
+                    {text.dontHaveAccount}{" "}
                     <button
                         onClick={() => setIsRegister(true)}
                         className="font-semibold text-pink-500 hover:underline"
                         type="button"
                     >
-                        Register
+                        {text.register}
                     </button>
                 </div>
             )}
