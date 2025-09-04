@@ -1,7 +1,7 @@
 import { AxiosResponse } from "axios";
 import { APIService } from "@shared/lib/api";
 import { UserDTOType } from "shared";
-import { Alert } from "@shared/components/Alert";
+import { Toast } from "@shared/lib/Toast";
 
 class BlockUserApi extends APIService {
     async getAll(): Promise<UserDTOType[]> {
@@ -19,7 +19,7 @@ class BlockUserApi extends APIService {
         try {
             await this.api.post(`/block/${userId}`);
         } catch (error: any) {
-            Alert.error(error.response.data.message);
+            Toast.error(error.response.data.message);
         }
     }
 

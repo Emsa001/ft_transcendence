@@ -23,7 +23,7 @@ export function MyFriends({ friends, setFriends }: MyFriendsProps) {
             {friends.map((user: UserDTOType) => (
                 <li
                     key={user.id}
-                    className="flex items-center justify-between gap-3 py-3 px-2 bg-gray-700/60 hover:bg-gray-700 mb-2 rounded-lg transition-colors"
+                    className="flex items-center justify-between gap-3 py-3 px-2 bg-gray-700/50 hover:bg-gray-700 mb-2 rounded-lg transition-colors"
                 >
                     <div className="flex items-center gap-3">
                         <UserPicture

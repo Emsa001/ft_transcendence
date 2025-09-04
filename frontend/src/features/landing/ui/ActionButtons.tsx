@@ -1,9 +1,12 @@
+import { useLanguage } from "@features/language/model/useLanguage";
 import gsap from "gsap";
 import React, { useEffect, useNavigate, useRef } from "react";
 
 export const ActionButtons = () => {
     const navigate = useNavigate();
     const buttonsRef = useRef<HTMLDivElement | null>(null);
+    const { getText } = useLanguage();
+    const text = getText("landScreen");
 
     useEffect(() => {
         gsap.fromTo(
@@ -35,7 +38,7 @@ export const ActionButtons = () => {
                     bg-gradient-to-r from-indigo-500 via-purple-600 to-pink-500/70
                     bg-[length:200%_200%] hover:bg-[position:100%_0%]`}
             >
-                Play
+                {text.play}
             </button>
         </div>
     );

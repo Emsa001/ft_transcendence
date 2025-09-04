@@ -37,9 +37,9 @@ export function LanguageButton() {
                 onClick={handleClick}
                 aria-label="Change language"
                 className="px-4 py-2 text-lg font-semibold text-white 
-                       rounded-2xl bg-gradient-to-br from-purple-800/70 to-pink-700/60 
+                       rounded-2xl bg-gradient-to-br from-purple-800/50 to-pink-700/60 
                        backdrop-blur-md shadow-lg border border-white/10
-                       hover:from-purple-700/80 hover:to-pink-600/70 
+                       hover:from-purple-700/80 hover:to-pink-600/50 
                        transition-all duration-300 ease-out 
                        hover:scale-105 active:scale-95"
             >

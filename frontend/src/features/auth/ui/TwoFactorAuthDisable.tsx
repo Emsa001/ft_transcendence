@@ -21,20 +21,34 @@ export const TwoFactorAuthDisable = () => {
     };
 
     if (success) {
-        return <p>Two-Factor Authentication has been successfully disabled.</p>;
+        return (
+            <div className="text-center">
+                <h2 className="text-xl font-semibold text-purple-400 mb-4">
+                    Two-Factor Authentication Disabled
+                </h2>
+            </div>
+        );
     }
 
     return (
-        <div className="border border-1 p-4">
-            <h2>Disable Two-Factor Authentication</h2>
+        <div className=" backdrop-blur-lg rounded-2xl shadow-lg text-white">
+            <h2 className="text-xl font-semibold text-purple-400 mb-4">
+                Disable Two-Factor Authentication
+            </h2>
             <Input
                 type="text"
                 value={code}
                 onChange={(e: any) => setCode(e.target.value)}
                 placeholder="Enter 6-digit code"
+                className="w-full p-2 rounded-lg border border-pink-500 bg-black/30 text-pink-200 placeholder-pink-400 focus:ring-2 focus:ring-purple-500"
             />
-            <Button onClick={handleDisable}>Disable 2FA</Button>
-            {error && <p style={{ color: "red" }}>{error}</p>}
+            <button
+                className="p-2 mt-4 w-full bg-gradient-to-r from-purple-500 to-pink-600 text-white rounded-xl"
+                onClick={handleDisable}
+            >
+                Disable 2FA
+            </button>
+            {error && <p className="text-red-400 mt-2">{error}</p>}
         </div>
     );
 };

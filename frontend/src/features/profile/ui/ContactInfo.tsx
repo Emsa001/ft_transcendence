@@ -19,7 +19,7 @@ export function ContactInfo() {
                 <h2 className="text-xl font-bold">{texts.title}</h2>
                 <button
                     type="button"
-                    className="px-3 py-1 rounded bg-gray-700 text-white hover:bg-gray-600 transition"
+                    className="px-3 py-1 rounded bg-gray-700/50 text-white hover:bg-gray-600/50 transition"
                     aria-label="Settings"
                     onClick={() => setIsSettingsOpen(true)}
                 >

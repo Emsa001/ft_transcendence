@@ -5,6 +5,7 @@ import { MotionPathPlugin } from "gsap/MotionPathPlugin";
 
 import { ShinyText } from "@shared/components/Shiny";
 import { ActionButtons } from "./ActionButtons";
+import { useLanguage } from "@features/language/model/useLanguage";
 
 gsap.registerPlugin(MotionPathPlugin);
 
@@ -12,6 +13,8 @@ export default function LandingSection() {
     const titleRef = useRef<HTMLHeadingElement | null>(null);
     const subtitleRef = useRef<HTMLParagraphElement | null>(null);
     const scrollRef = useRef<HTMLDivElement | null>(null);
+    const { getText } = useLanguage();
+    const text = getText("landScreen");
 
     useEffect(() => {
         if (titleRef.current && subtitleRef.current) {
@@ -60,17 +63,13 @@ export default function LandingSection() {
                     ref={titleRef}
                     className="opacity-0 text-[clamp(3rem,6vw,10rem)] font-extrabold select-none text-white drop-shadow-xl"
                 >
-                    <ShinyText
-                        text="ft_transcendence"
-                        gradient="bg-logo-gradient"
-                    />
+                    <ShinyText text={text.label} gradient="bg-logo-gradient" />
                 </h1>
                 <p
                     ref={subtitleRef}
                     className="opacity-0 mt-6 text-lg md:text-xl text-zinc-300 max-w-2xl leading-relaxed"
                 >
-                    Experience a new dimension of interaction — fast, modern,
-                    and beautifully minimal.
+                    {text.welcomeText}
                 </p>
 
                 <ActionButtons />
