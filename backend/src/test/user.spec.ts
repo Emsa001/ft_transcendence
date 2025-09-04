@@ -29,12 +29,13 @@ describe("User Tests", () => {
     });
 
     it("should set user with game history as deleted", async () => {
+        const user1 = await UserGenerate.createExample();
+        const user2 = await UserGenerate.createExample();
         const game = await Game.create({
             status: GameStatus.WAITING,
             maxPlayers: 2,
+            hostId: user1.id,
         });
-        const user1 = await UserGenerate.createExample();
-        const user2 = await UserGenerate.createExample();
 
         await game.addPlayers([user1, user2]);
 

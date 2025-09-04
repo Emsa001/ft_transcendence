@@ -4,7 +4,7 @@ import { HttpException } from "@/utils/exceptions";
 
 export class GameDTO implements GameDTOType {
     id: number;
-    hostId: number;
+    hostId: number | null;
     code: string | null;
     status: GameStatus;
     mode: GameMode;

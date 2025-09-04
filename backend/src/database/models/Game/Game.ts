@@ -62,9 +62,10 @@ export class Game extends Model<InferAttributes<Game>, GameCreationAttributes> {
     declare id: number;
 
     @ForeignKey(() => User)
-    @AllowNull(false)
+    @AllowNull(true)
+    @Default(null) // game with no host
     @Column(DataType.INTEGER)
-    declare hostId: number;
+    declare hostId: number | null;
 
     @Unique
     @AllowNull(true)

@@ -20,7 +20,7 @@ import { useGameMessages } from "./useGameMessages";
 import Swal from "sweetalert2";
 
 interface RemoteGameContextType {
-    host: number;
+    host: number | null;
     status: GameStatus;
     mode: GameMode;
     isPrivate: boolean;
@@ -76,7 +76,7 @@ export const RemoteGameProvider = ({
     const statusRef = useRef<GameStatus | null>(null);
 
     const [error, setError] = useState<string | null>(null);
-    const [host, setHost] = useState<number>(-1);
+    const [host, setHost] = useState<number | null>(null);
     const [player, setPlayer] = useState<GameUserDTOType | null>(null);
     const [mode, setMode] = useState<GameMode | null>(null);
     const [isPrivate, setIsPrivate] = useState<boolean>(false);
