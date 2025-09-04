@@ -22,7 +22,7 @@ export function SentRequests() {
 
     const handleCancelRequest = async (requestId: number) => {
         try {
-            await FriendsApi.removeFriend(requestId.toString());
+            await FriendsApi.removeFriend(requestId);
             setSentRequests((prev: UserDTOType[]) =>
                 prev.filter((req) => req.id !== requestId)
             );

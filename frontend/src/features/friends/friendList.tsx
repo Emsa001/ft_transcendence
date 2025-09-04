@@ -24,7 +24,7 @@ export function FriendsList() {
 
     const handleRemoveFriend = async (friendId: number) => {
         try {
-            await FriendsApi.removeFriend(friendId.toString());
+            await FriendsApi.removeFriend(friendId);
             setFriends((prev: UserDTOType[]) =>
                 prev.filter((friend) => friend.id !== friendId)
             );

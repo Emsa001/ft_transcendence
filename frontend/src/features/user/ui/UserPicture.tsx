@@ -5,6 +5,7 @@ import ProfileApi from "@features/user/service/profileApi";
 import { useUser } from "@features/auth/model/useUser";
 import { useOnlineUsers } from "../model/useOnlineUsers";
 import { UserDTOType } from "shared";
+import { useOnlineUsers } from "@features/user/model/useOnlineUsers";
 
 interface UserPictureProps {
     userId: number;
