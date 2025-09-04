@@ -4,8 +4,9 @@ import GameMenu from "./GameMenu";
 import { GameBackground } from "@features/game/ui/components/GameBackground";
 import { GameHeader } from "@features/game/ui/components/GameHeader";
 import { GameLocal } from "@features/game/ui/GameLocal";
-import { GameRemoteElement } from "@features/game/ui/GameRemote";
-import { TournamentElement } from "@features/tournament/ui/TournamentElement";
+import { GameRemote } from "@features/game/ui/GameRemote";
+import { TournamentLocal } from "@features/tournament/ui/TournamentLocal";
+import { TournamentRemote } from "@features/tournament/ui/TournamentRemote";
 
 interface GameProps {
     type?: "local" | "remote";
@@ -30,14 +31,14 @@ export default function Game({ type, mode, code }: GameProps) {
 
                 {type === "local" && mode === "casual" && <GameLocal />}
                 {type === "local" && mode === "tournament" && (
-                    <TournamentElement />
+                    <TournamentLocal />
                 )}
 
                 {type === "remote" && mode === "casual" && (
-                    <GameRemoteElement code={code} />
+                    <GameRemote code={code} />
                 )}
                 {type === "remote" && mode === "tournament" && (
-                    <TournamentElement code={code} />
+                    <TournamentRemote code={code} />
                 )}
 
                 <GameBackground />

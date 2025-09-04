@@ -59,4 +59,4 @@ type RefObject<T> = {
     current: T;
 };
 
-type ReactStateSetter<T> = (value: T | ((prevState: T) => T)) => void;
+type SetState<T> = (value: T | ((prevState: T) => T)) => void;
