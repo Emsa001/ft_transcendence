@@ -1,45 +1,35 @@
+import { gameEngine } from "@features/game/service/GameEngine";
 import { useEffect, useRef } from "react";
 
 interface UseGameKeysProps {
-    onSpacePress?: () => void;
-    onKeyDown?: (key: string) => void;
-    onKeyUp?: (key: string) => void;
+    onSpacePress: () => void;
 }
 
-export function useGameKeys({
-    onSpacePress,
-    onKeyDown,
-    onKeyUp,
-}: UseGameKeysProps = {}) {
+export function useGameKeys({ onSpacePress }: UseGameKeysProps) {
     const keysRef = useRef<Record<string, boolean>>({});
 
     useEffect(() => {
         const down = (e: KeyboardEvent) => {
-            const key = e.key.toLowerCase();
-            keysRef.current[key] = true;
-
-            if (e.code === "Space" && onSpacePress) {
+            keysRef.current[e.key.toLowerCase()] = true;
+            if (e.code === "Space") {
                 e.preventDefault();
                 onSpacePress();
             }
-
-            onKeyDown?.(key);
         };
-
         const up = (e: KeyboardEvent) => {
-            const key = e.key.toLowerCase();
-            keysRef.current[key] = false;
-            onKeyUp?.(key);
+            keysRef.current[e.key.toLowerCase()] = false;
         };
-
         window.addEventListener("keydown", down);
         window.addEventListener("keyup", up);
-
         return () => {
             window.removeEventListener("keydown", down);
             window.removeEventListener("keyup", up);
         };
-    }, [onSpacePress, onKeyDown, onKeyUp]);
+    }, [onSpacePress]);
+
+    useEffect(() => {
+        gameEngine.keys = keysRef.current;
+    }, [keysRef]);
 
     return keysRef.current;
 }

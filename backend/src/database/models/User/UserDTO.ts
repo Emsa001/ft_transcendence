@@ -1,4 +1,4 @@
-import { UserDTOType } from "shared";
+import { GameUserDTOType, UserDTOType } from "shared";
 import { User } from "./User";
 import { HttpException } from "@/utils/exceptions";
 
@@ -35,6 +35,15 @@ export class UserDTO implements UserDTOType {
         this.email = this.user.email;
         this.is2FAEnabled = this.user.is2FAEnabled;
         return this;
+    }
+
+    gameUser(): GameUserDTOType {
+        return {
+            id: this.id,
+            username: this.username,
+            avatar: this.avatar,
+            score: 0,
+        };
     }
 
     toString() {

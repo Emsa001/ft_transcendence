@@ -1,5 +1,5 @@
-import { GameUserDTOType } from "shared";
-import { CanvasMessage, GameState } from "../types";
+import { GameMessage, GameUserDTOType } from "shared";
+import { GameState } from "../types";
 
 export interface GameContextType {
     /** --- Players --- */
@@ -14,15 +14,8 @@ export interface GameContextType {
     state: GameState;
     setState: ReactStateSetter<GameState>;
 
-    message: CanvasMessage[];
-    setMessage: ReactStateSetter<CanvasMessage[]>;
-
-    countdown: number | null;
-    setCountdown: ReactStateSetter<number | null>;
-
-    /** --- Timeouts / Refs --- */
-    messageTimeoutRef: RefObject<NodeJS.Timeout | null>;
-    countdownTimeoutRef: RefObject<NodeJS.Timeout | null>;
+    messages: RefObject<GameMessage[] | null>;
+    countdown: RefObject<number | null>;
 
     /** --- Game Control Methods --- */
     startCountdown: () => Promise<void>;

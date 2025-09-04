@@ -1,13 +1,8 @@
-import React from "react";
+import React, { Link } from "react";
 import { BallField } from "@features/balls/ui/BallField";
 import { ShinyText } from "@shared/components/Shiny";
-import { GameWindowState } from "../types";
 
-interface MenuScreenProps {
-    setWindow: (w: GameWindowState) => void;
-}
-
-export const MenuScreen = ({ setWindow }: MenuScreenProps) => {
+export default function GameMenu() {
     const baseButtonClasses =
         "group relative flex items-center justify-center " +
         "aspect-square min-w-[6rem] max-w-[16rem] rounded-2xl " +
@@ -22,25 +17,25 @@ export const MenuScreen = ({ setWindow }: MenuScreenProps) => {
     const buttons = [
         {
             label: "Local Casual",
-            window: "local-casual",
+            href: "local/casual",
             overlay: "bg-gradient-to-tr from-purple-500/40 to-blue-500/40",
             rotate: "hover:rotate-3",
         },
         {
             label: "Local Tournament",
-            window: "local-tournament",
+            href: "local/tournament",
             overlay: "bg-gradient-to-tr from-pink-500/40 to-orange-500/40",
             rotate: "hover:-rotate-3",
         },
         {
-            label: "Remote",
-            window: "remote-casual",
+            label: "Remote Casual",
+            href: "remote/casual",
             overlay: "bg-gradient-to-tr from-indigo-500/40 to-blue-500/40",
             rotate: "hover:-rotate-3",
         },
         {
             label: "Remote Tournament",
-            window: "remote-tournament",
+            href: "remote/tournament",
             overlay: "bg-gradient-to-tr from-fuchsia-500/40 to-pink-500/40",
             rotate: "hover:rotate-3",
         },
@@ -55,18 +50,18 @@ export const MenuScreen = ({ setWindow }: MenuScreenProps) => {
             />
             {/* Game Mode Buttons as Grid */}
             <div className="grid grid-cols-2 gap-6 md:gap-12 z-10 mt-8">
-                {buttons.map(({ label, window, overlay, rotate }) => (
-                    <button
-                        key={window}
-                        onClick={() => setWindow(window as GameWindowState)}
-                        className={`${baseButtonClasses} ${rotate}`}
+                {buttons.map(({ label, href, overlay, rotate }) => (
+                    <Link
+                        key={href}
+                        to={`/game/${href}`}
+                        className={`${baseButtonClasses} ${rotate} p-4`}
                     >
                         <span className="relative z-10 px-12">{label}</span>
                         <div className={`${overlayBaseClasses} ${overlay}`} />
-                    </button>
+                    </Link>
                 ))}
             </div>
             <BallField />
         </section>
     );
-};
+}

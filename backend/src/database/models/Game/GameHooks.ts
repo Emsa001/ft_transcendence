@@ -21,6 +21,21 @@ export class GameUserHooks {
             await Validators.validateGame(gameId, gameGroups[gameId]);
         }
     }
+
+    static async setGameHost(gameId: number, userIds: number[]) {
+        const game = await Game.findByPk(gameId);
+        if (!game) return;
+
+        if (game.hostId && !userIds.includes(game.hostId)) return;
+
+        if (game.players.length > 0) {
+            game.hostId = game.players[0].id;
+            console.log(
+                `Host left game ${game.code}, new host is ${game.hostId}`
+            );
+            await game.save();
+        }
+    }
 }
 
 export class GameHooks {

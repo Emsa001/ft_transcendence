@@ -1,5 +1,5 @@
-import { CanvasMessage, GameState } from "../types";
-import { gameEngine } from "./GameEngine";
+import { Ball, GameMessage, Paddle } from "shared";
+import { GameState } from "../types";
 
 // Drawing and Calculation Class
 export class GameRenderer {
@@ -70,8 +70,8 @@ export class GameRenderer {
         ctx.restore();
     }
 
-    drawPaddles() {
-        gameEngine.paddles.forEach((paddle) => {
+    drawPaddles(paddles: Record<number, Paddle>) {
+        Object.values(paddles).forEach((paddle) => {
             this.drawGlassRect(
                 paddle.pos.x,
                 paddle.pos.y,
@@ -108,11 +108,9 @@ export class GameRenderer {
         ctx.restore();
     }
 
-    drawBall() {
+    drawBall(ball: Ball) {
         const ctx = this.ctx;
         if (!ctx) return;
-
-        const ball = gameEngine.ball;
 
         ctx.save();
         ctx.shadowColor = "#4cc9f0";
@@ -137,11 +135,9 @@ export class GameRenderer {
         ctx.restore();
     }
 
-    drawSpeed() {
+    drawSpeed(ball: Ball) {
         const ctx = this.ctx;
         if (!ctx) return;
-
-        const ball = gameEngine.ball;
 
         ctx.save();
         ctx.font = `${22 * this.sx}px ui-sans-serif, system-ui`;
@@ -153,73 +149,35 @@ export class GameRenderer {
         ctx.restore();
     }
 
-    drawStateOverlay(state: GameState, countDown: number | null) {
+    // TODO: Get rid of it, handle countdown in messages
+    drawCountDown(countDown: number | null) {
+        if (countDown === null) return;
         const ctx = this.ctx;
         if (!ctx) return;
         const canvas = ctx.canvas;
 
-        if (countDown) {
-            ctx.save();
-            ctx.fillStyle = "rgba(15, 10, 40, 0.8)";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "#c4b5fd";
-            ctx.textAlign = "center";
-            ctx.textBaseline = "middle";
-            ctx.font = `${120 * this.sx}px ui-sans-serif, system-ui`;
-            ctx.shadowColor = "#7a5cff";
-            ctx.shadowBlur = 30 * this.dpr;
-            ctx.fillText(
-                String(countDown),
-                canvas.width / 2,
-                canvas.height / 2
-            );
-            ctx.font = `${24 * this.sx}px ui-sans-serif, system-ui`;
-            ctx.shadowBlur = 10 * this.dpr;
-            ctx.fillText(
-                "Get Ready!",
-                canvas.width / 2,
-                canvas.height / 2 + 80 * this.sy
-            );
-            ctx.restore();
-        } else if (state === "created") {
-            ctx.save();
-            ctx.fillStyle = "rgba(15, 10, 40, 0.8)";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "#c4b5fd";
-            ctx.textAlign = "center";
-            ctx.textBaseline = "middle";
-            ctx.font = `${48 * this.sx}px ui-sans-serif, system-ui`;
-            ctx.fillText(
-                "Press Space to Start",
-                canvas.width / 2,
-                canvas.height / 2
-            );
-            ctx.restore();
-        } else if (state === "paused") {
-            ctx.save();
-            ctx.fillStyle = "rgba(15, 10, 40, 0.45)";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "#c4b5fd";
-            ctx.textAlign = "center";
-            ctx.textBaseline = "middle";
-            ctx.font = `${34 * this.sx}px ui-sans-serif, system-ui`;
-            ctx.fillText(
-                "Press Space to Play/Pause",
-                canvas.width / 2,
-                canvas.height / 2 - 20 * this.sy
-            );
-            ctx.font = `${22 * this.sx}px ui-sans-serif, system-ui`;
-            ctx.fillText(
-                "Left: W/S     Right: ↑/↓",
-                canvas.width / 2,
-                canvas.height / 2 + 18 * this.sy
-            );
-            ctx.restore();
-        }
+        ctx.save();
+        ctx.fillStyle = "rgba(15, 10, 40, 0.8)";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        ctx.fillStyle = "#c4b5fd";
+        ctx.textAlign = "center";
+        ctx.textBaseline = "middle";
+        ctx.font = `${120 * this.sx}px ui-sans-serif, system-ui`;
+        ctx.shadowColor = "#7a5cff";
+        ctx.shadowBlur = 30 * this.dpr;
+        ctx.fillText(String(countDown), canvas.width / 2, canvas.height / 2);
+        ctx.font = `${24 * this.sx}px ui-sans-serif, system-ui`;
+        ctx.shadowBlur = 10 * this.dpr;
+        ctx.fillText(
+            "Get Ready!",
+            canvas.width / 2,
+            canvas.height / 2 + 80 * this.sy
+        );
+        ctx.restore();
     }
 
-    drawMessages(message: CanvasMessage[]) {
-        if (message.length === 0) return;
+    drawMessages(message: GameMessage[] | null) {
+        if (!message || message.length === 0) return;
 
         const ctx = this.ctx;
         if (!ctx) return;

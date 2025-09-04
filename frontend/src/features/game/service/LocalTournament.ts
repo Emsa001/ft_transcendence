@@ -6,7 +6,7 @@ import {
     TournamentUserDTOType,
 } from "shared";
 
-export class TournamentLogic {
+export class LocalTournament {
     static getActivePlayers(
         players: TournamentUserDTOType[]
     ): TournamentUserDTOType[] {
@@ -33,11 +33,15 @@ export class TournamentLogic {
             for (let i = 0; i < gamesInRound; i++) {
                 allGames.push({
                     id: gameIdCounter + gameIndex,
+                    hostId: 0,
                     status: GameStatus.LOCKED,
                     mode: GameMode.NORMAL,
                     players: [],
+                    maxPlayers: 2,
                     winner: null,
                     round: currentRound,
+                    isPrivate: false,
+                    code: null,
                     createdAt: new Date(),
                     updatedAt: new Date(),
                 });

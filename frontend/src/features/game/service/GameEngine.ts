@@ -1,11 +1,10 @@
 import { clamp } from "lodash";
-import { Ball, Paddle } from "../types";
 import { GameRenderer } from "./GameRender";
-import { GameUserDTOType } from "shared";
+import { Ball, GameUserDTOType, Paddle } from "shared";
 
 class GameEngine {
     ball: Ball;
-    paddles: Paddle[];
+    paddles: Record<number, Paddle>;
     keys: Record<string, boolean> = {};
     stopped = true;
     onScore?: (scorerId: number) => void;
@@ -23,7 +22,7 @@ class GameEngine {
             size: 14,
             speed: this.defaultBallSpeed,
         };
-        this.paddles = [];
+        this.paddles = {};
         console.log("GameEngine created");
     }
 
@@ -40,7 +39,8 @@ class GameEngine {
     }
 
     initPaddles(players: GameUserDTOType[]): void {
-        this.paddles = players.map((player, index) => {
+        this.paddles = {};
+        players.forEach((player, index) => {
             const y = GameRenderer.baseH / 2 - this.paddleHeight / 2;
             const x =
                 index === 0
@@ -53,12 +53,12 @@ class GameEngine {
                     ? { up: "w", down: "s" }
                     : { up: "arrowup", down: "arrowdown" };
 
-            return {
+            this.paddles[player.id] = {
                 pos: { x, y },
                 size: { x: this.paddleWidth, y: this.paddleHeight },
                 speed: this.paddleSpeed,
+                vel: 0, // not used in frontend
                 controls,
-                playerId: player.id,
             };
         });
     }
@@ -72,7 +72,9 @@ class GameEngine {
 
     private resetPaddles(): void {
         const centerY = GameRenderer.baseH / 2;
-        this.paddles.forEach((p) => (p.pos.y = centerY - p.size.y / 2));
+        Object.values(this.paddles).forEach(
+            (p) => (p.pos.y = centerY - p.size.y / 2)
+        );
     }
 
     private resetBall(): void {
@@ -101,7 +103,7 @@ class GameEngine {
 
     private updatePaddles(): void {
         const { baseH, padding } = GameRenderer;
-        this.paddles.forEach((p) => {
+        Object.values(this.paddles).forEach((p) => {
             if (this.keys[p.controls.up]) p.pos.y -= p.speed;
             if (this.keys[p.controls.down]) p.pos.y += p.speed;
             p.pos.y = clamp(p.pos.y, padding, baseH - p.size.y - padding);
@@ -115,9 +117,11 @@ class GameEngine {
 
     private handleCollisions(): void {
         this.handleWallCollision();
-        this.paddles.forEach((p, i) =>
-            this.handlePaddleCollision(p, i === 0 ? 1 : -1)
-        );
+        Object.entries(this.paddles).forEach(([playerId, paddle]) => {
+            // Determine direction based on paddle position (left paddle = 1, right paddle = -1)
+            const dir = paddle.pos.x < GameRenderer.baseW / 2 ? 1 : -1;
+            this.handlePaddleCollision(paddle, dir);
+        });
     }
 
     private handleWallCollision(): void {
@@ -154,9 +158,10 @@ class GameEngine {
 
     private handleScoring(): void {
         const { baseW } = GameRenderer;
-        if (this.ball.pos.x < -20) this.onScore?.(this.paddles[1].playerId);
-        else if (this.ball.pos.x > baseW + 20)
-            this.onScore?.(this.paddles[0].playerId);
+        const paddleIds = Object.keys(this.paddles).map(Number);
+        if (this.ball.pos.x < -20)
+            this.onScore?.(paddleIds[1]); // Right player scores
+        else if (this.ball.pos.x > baseW + 20) this.onScore?.(paddleIds[0]); // Left player scores
     }
 }
 

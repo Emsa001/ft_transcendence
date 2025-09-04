@@ -41,7 +41,7 @@ export async function updateSchedule(component: ReactComponentInstance, states: 
         component.hookIndex = 0;
 
         if (typeof component.jsx?.type !== "function")
-            throw new Error("Invalid component type");
+            throw new Error(`Invalid component type ${component.jsx?.type} ${component.name}`);
 
         if (!component.vNode?.ref) {
             throw new Error("Component ref is null, something is very wrong here :|");

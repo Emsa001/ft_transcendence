@@ -1,22 +1,23 @@
-import { useRef, useState } from "react";
-import { CanvasMessage } from "../types";
+import { useEffect, useRef } from "react";
+import { GameMessage } from "shared";
 
+// TODO: Handle countdown through messages
 export const useGameMessages = () => {
-    const [message, setMessage] = useState<CanvasMessage[]>([]);
-    const [countdown, setCountdown] = useState<number | null>(null);
+    const messages = useRef<GameMessage[] | null>(null);
+    const countdown = useRef<number | null>(null);
 
     const messageTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const countdownTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
     const showMessage = (
-        msgs: CanvasMessage[],
+        msgs: GameMessage[],
         duration = 1000,
         after?: () => void
     ) => {
-        setMessage(msgs);
+        messages.current = msgs;
         if (messageTimeoutRef.current) clearTimeout(messageTimeoutRef.current);
         messageTimeoutRef.current = setTimeout(() => {
-            setMessage([]);
+            messages.current = null;
             after?.();
         }, duration);
     };
@@ -25,27 +26,32 @@ export const useGameMessages = () => {
         new Promise((resolve) => {
             const run = (count: number) => {
                 if (count > 0) {
-                    setCountdown(count);
+                    countdown.current = count;
                     countdownTimeoutRef.current = setTimeout(
                         () => run(count - 1),
                         1000
                     );
                 } else {
-                    setCountdown(null);
+                    countdown.current = null;
                     resolve();
                 }
             };
             run(3);
         });
 
-    return {
-        message,
-        countdown,
-        messageTimeoutRef,
-        countdownTimeoutRef,
+    useEffect(() => {
+        return () => {
+            if (messageTimeoutRef.current)
+                clearTimeout(messageTimeoutRef.current);
+            if (countdownTimeoutRef.current)
+                clearTimeout(countdownTimeoutRef.current);
+        };
+    }, []);
 
-        setMessage,
-        setCountdown,
+    return {
+        messages,
+        countdown,
+
         showMessage,
         startCountdown,
     };

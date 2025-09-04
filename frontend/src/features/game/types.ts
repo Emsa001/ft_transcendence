@@ -1,20 +1,3 @@
-export type Vec2 = { x: number; y: number };
-
-export interface Paddle {
-    pos: Vec2;
-    size: Vec2;
-    speed: number;
-    controls: { up: string; down: string };
-    playerId: number;
-}
-
-export interface Ball {
-    pos: Vec2;
-    vel: Vec2;
-    size: number;
-    speed: number;
-}
-
 export type GameState = "created" | "started" | "paused" | "finished";
 
 export type GameWindowState =
@@ -27,15 +10,4 @@ export type GameWindowState =
 export interface StatusMessage {
     message: string;
     success: boolean;
-}
-
-export interface CanvasMessage {
-    size?: number;
-    color?: string;
-    shadow?: {
-        color: string;
-        blur?: number;
-    };
-    marginTop?: number;
-    text: string;
 }

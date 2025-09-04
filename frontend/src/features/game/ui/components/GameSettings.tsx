@@ -31,7 +31,7 @@ const MaxScoreSettings = () => {
         }
     };
 
-    const isRunning = state === "started" || state === "paused";
+    const isRunning = state != "created" && state != "finished";
 
     return (
         <button
