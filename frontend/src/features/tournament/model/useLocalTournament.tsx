@@ -1,9 +1,37 @@
+import React, { createContext, useContext } from "react";
+
 import { useState } from "react";
 import { GameDTOType, GameStatus, TournamentUserDTOType } from "shared";
-import { LocalTournamentState } from "../types";
-import { LocalTournament } from "./LocalTournament";
+import { LocalTournamentContextType, LocalTournamentState } from "../types";
+import { TournamentEngine } from "../service/TournamentEngine";
+import { useLocalTournamentStore } from "./useLocalTournamentStore";
+import { LocalTournament } from "@features/game/service/LocalTournament";
 
-export const useLocalTournamentState = (maxPlayers: number) => {
+const LocalTournamentContext = createContext<
+    LocalTournamentContextType | undefined
+>(undefined);
+
+export const useLocalTournament = (): LocalTournamentContextType => {
+    const context = useContext(LocalTournamentContext);
+
+    if (context === undefined) {
+        throw new Error(
+            "useLocalTournament must be used within a LocalTournamentProvider"
+        );
+    }
+
+    return context;
+};
+
+interface LocalTournamentProviderProps {
+    children?: any;
+    maxPlayers?: number;
+}
+
+export const LocalTournamentProvider = ({
+    children,
+    maxPlayers = 16,
+}: LocalTournamentProviderProps) => {
     const [state, setState] = useState<LocalTournamentState>({
         tournamentId: Date.now(),
         status: GameStatus.WAITING,
@@ -18,8 +46,13 @@ export const useLocalTournamentState = (maxPlayers: number) => {
         setState((prev) => ({ ...prev, ...updates }));
     };
 
+    const { setLocalTournamentData } = useLocalTournamentStore(
+        state,
+        updateState
+    );
+
     const addPlayer = (username: string): StatusMessage => {
-        const error = LocalTournament.validatePlayerAddition(
+        const error = TournamentEngine.validatePlayerAddition(
             state.players,
             username,
             maxPlayers,
@@ -57,13 +90,15 @@ export const useLocalTournamentState = (maxPlayers: number) => {
     };
 
     const startTournament = () => {
-        const error = LocalTournament.validateTournamentStart(state.players);
+        const error = TournamentEngine.validateTournamentStart(state.players);
         if (error) {
             alert(error);
             return;
         }
 
-        const totalGames = LocalTournament.createAllGames(state.players.length);
+        const totalGames = TournamentEngine.createAllGames(
+            state.players.length
+        );
         setState((prev) => ({
             ...prev,
             games: totalGames,
@@ -72,7 +107,7 @@ export const useLocalTournamentState = (maxPlayers: number) => {
     };
 
     const endTournament = () => {
-        const activePlayers = LocalTournament.getActivePlayers(state.players);
+        const activePlayers = TournamentEngine.getActivePlayers(state.players);
         if (activePlayers.length !== 1) {
             alert(
                 "Tournament cannot be ended. There should be exactly one winner."
@@ -92,21 +127,21 @@ export const useLocalTournamentState = (maxPlayers: number) => {
             return [];
         }
 
-        if (!LocalTournament.canAdvanceToNextRound(state.games)) {
+        if (!TournamentEngine.canAdvanceToNextRound(state.games)) {
             alert(
                 "Cannot create a new round while there are games in progress."
             );
             return [];
         }
 
-        const activePlayers = LocalTournament.getActivePlayers(state.players);
-        if (LocalTournament.shouldTournamentEnd(activePlayers)) {
+        const activePlayers = TournamentEngine.getActivePlayers(state.players);
+        if (TournamentEngine.shouldTournamentEnd(activePlayers)) {
             alert("Cannot create a new round. Tournament should be finished.");
             return [];
         }
 
         const { updatedGames, gamesForRound } =
-            LocalTournament.assignPlayersToGames(
+            TournamentEngine.assignPlayersToGames(
                 state.games,
                 state.round,
                 activePlayers
@@ -156,7 +191,7 @@ export const useLocalTournamentState = (maxPlayers: number) => {
 
         if (currentRoundInProgress.length === 0) {
             const activePlayers =
-                LocalTournament.getActivePlayers(updatedPlayers);
+                TournamentEngine.getActivePlayers(updatedPlayers);
             if (activePlayers.length === 1) {
                 updates.winnerId = activePlayers[0].id;
                 updates.status = GameStatus.FINISHED;
@@ -189,20 +224,33 @@ export const useLocalTournamentState = (maxPlayers: number) => {
             winnerId: null,
             currentGame: null,
         });
+        setLocalTournamentData(null);
     };
 
-    return {
-        state,
-        actions: {
-            updateState,
-            addPlayer,
-            removePlayer,
-            startTournament,
-            endTournament,
-            createRound,
-            setWinner,
-            playGame,
-            deleteTournament,
-        },
+    const contextValue: LocalTournamentContextType = {
+        ...state,
+        maxPlayers,
+
+        addPlayer,
+        removePlayer,
+        startTournament,
+        endTournament,
+        createRound,
+        setWinner,
+        playGame,
+        deleteTournament,
+        getActivePlayers: () => LocalTournament.getActivePlayers(state.players),
+        setCurrentGame: (game: GameDTOType | null) =>
+            updateState({ currentGame: game }),
     };
+
+    return (
+        <div className="w-full h-full">
+            <LocalTournamentContext.Provider value={contextValue}>
+                {children}
+            </LocalTournamentContext.Provider>
+        </div>
+    );
 };
+
+export { LocalTournamentContext };

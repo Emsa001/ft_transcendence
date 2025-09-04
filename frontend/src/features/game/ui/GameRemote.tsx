@@ -9,7 +9,7 @@ interface GameRemoteElementProps {
     code?: string;
 }
 
-export const GameRemoteElement = ({ code }: GameRemoteElementProps) => {
+export const GameRemote = ({ code }: GameRemoteElementProps) => {
     const { user } = useUser(true);
     const navigate = useNavigate();
 

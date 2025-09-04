@@ -1,7 +1,8 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useState } from "react";
 import { ShinyText } from "@shared/components/Shiny";
-import { TournamentUserDTOType } from "shared";
-import { useLocalTournament } from "../model/LocalTournamentProvider";
+import { AddPlayerInput } from "./components/AddPlayer";
+import { RegisterPlayerList } from "./components/PlayerList";
+import { useLocalTournament } from "../model/useLocalTournament";
 
 export const TournamentRegister = () => {
     const { players, maxPlayers, addPlayer, removePlayer, startTournament } =
@@ -39,8 +40,16 @@ export const TournamentRegister = () => {
 
             <div className="h-full w-full max-w-xl p-6 rounded-3xl bg-white/5 backdrop-blur-lg shadow-xl text-white flex flex-col gap-6">
                 <AddPlayerInput onAddPlayer={handleAddPlayer} />
-                <StatusMessageComponent status={status} />
-                <PlayerList
+
+                <p
+                    className={`h-[1.25rem] text-center ${
+                        status?.success ? "text-green-400" : "text-red-400"
+                    } text-sm transition-opacity ${status ? "opacity-100" : "opacity-0"}`}
+                >
+                    {status?.message || " "}
+                </p>
+
+                <RegisterPlayerList
                     players={players}
                     onRemovePlayer={handleRemovePlayer}
                 />
@@ -53,88 +62,5 @@ export const TournamentRegister = () => {
                 </button>
             </div>
         </div>
-    );
-};
-
-/* ------------------ Subcomponents ------------------ */
-
-const AddPlayerInput = ({
-    onAddPlayer,
-}: {
-    onAddPlayer: (e: Event) => void;
-}) => (
-    <form className="flex gap-3" onSubmit={onAddPlayer}>
-        <input
-            type="text"
-            name="player"
-            placeholder="Enter player alias"
-            className="flex-1 px-4 py-2 rounded-xl bg-fuchsia-200/10 placeholder-gray-200 focus:outline-none focus:bg-fuchsia-300/10 transition"
-        />
-        <button
-            type="submit"
-            className="px-4 py-2 rounded-xl bg-fuchsia-200/10 hover:bg-fuchsia-300/10 transition font-medium"
-        >
-            Add
-        </button>
-    </form>
-);
-
-const StatusMessageComponent = ({
-    status,
-}: {
-    status: StatusMessage | null;
-}) => (
-    <div className="h-[1.25rem] text-center">
-        <p
-            className={`${
-                status?.success ? "text-green-400" : "text-red-400"
-            } text-sm transition-opacity ${status ? "opacity-100" : "opacity-0"}`}
-        >
-            {status?.message || " "}
-        </p>
-    </div>
-);
-
-const PlayerList = ({
-    players,
-    onRemovePlayer,
-}: {
-    players: TournamentUserDTOType[];
-    onRemovePlayer: (username: string) => void;
-}) => {
-    const listRef = useRef<HTMLUListElement | null>(null);
-
-    useEffect(() => {
-        listRef.current?.scrollTo({
-            top: listRef.current.scrollHeight,
-            behavior: "smooth",
-        });
-    }, [players]);
-
-    return (
-        <ul
-            className="h-[25vh] overflow-y-auto scrollbar-minimal space-y-2 p-3"
-            ref={listRef}
-        >
-            {players.length === 0 && (
-                <li className="text-gray-400 text-center">
-                    No players registered yet.
-                </li>
-            )}
-            {players.map((p) => (
-                <li
-                    key={p.username}
-                    className="flex justify-between items-center p-2 rounded-xl bg-white/10 backdrop-blur-sm"
-                >
-                    <span className="text-gray-200">{p.username}</span>
-                    <button
-                        onClick={() => onRemovePlayer(p.username)}
-                        className="text-red-400 hover:text-red-300 transition"
-                    >
-                        ✕
-                    </button>
-                </li>
-            ))}
-        </ul>
     );
 };

@@ -5,16 +5,17 @@ import { TournamentViewer } from "./TournamentViewer";
 
 import { GameFooter } from "@features/game/ui/components/GameFooter";
 import { GameProvider } from "@features/game/model/useGame";
+
+import { GameElementLocal } from "@features/game/ui/components/GameElement";
 import {
     LocalTournamentProvider,
     useLocalTournament,
-} from "../model/LocalTournamentProvider";
-import { GameElementLocal } from "@features/game/ui/components/GameElement";
+} from "../model/useLocalTournament";
 
-export const TournamentElement = ({ code }: { code?: string }) => {
+export const TournamentLocal = () => {
     return (
         <div className="w-full h-full">
-            <LocalTournamentProvider maxPlayers={1000}>
+            <LocalTournamentProvider maxPlayers={16}>
                 <div className="w-full h-full">
                     <TournamentView />
                 </div>
@@ -24,15 +25,8 @@ export const TournamentElement = ({ code }: { code?: string }) => {
 };
 
 const TournamentView = () => {
-    const {
-        status,
-        currentGame,
-        setCurrentGame,
-        setWinner,
-        players,
-        winnerId,
-        deleteTournament,
-    } = useLocalTournament();
+    const { status, currentGame, setCurrentGame, setWinner } =
+        useLocalTournament();
 
     if (status === GameStatus.WAITING) {
         return (

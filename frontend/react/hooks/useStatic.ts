@@ -1,7 +1,7 @@
 import React, { IS_DEVELOPMENT } from "react";
 import { processQueue, updateSchedule } from "react/render/updateSchedule";
 
-export function useStaticHook<T>(name: string, initialState?: T): [T, ReactStateSetter<T>] {
+export function useStaticHook<T>(name: string, initialState?: T): [T, SetState<T>] {
     const component = React.currentComponent;
 
     if (!component) {
@@ -56,6 +56,6 @@ export function useStaticHook<T>(name: string, initialState?: T): [T, ReactState
         })    
     };
 
-    return [hook.memoizedState, setState] as [T, ReactStateSetter<T>];
+    return [hook.memoizedState, setState] as [T, SetState<T>];
 }
 

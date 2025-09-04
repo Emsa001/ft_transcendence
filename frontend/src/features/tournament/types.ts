@@ -10,29 +10,18 @@ export interface LocalTournamentState {
     currentGame: GameDTOType | null;
 }
 
-export interface LocalTournamentActions {
-    setStatus: (status: GameStatus) => void;
-    setPlayers: (
-        players:
-            | TournamentUserDTOType[]
-            | ((prev: TournamentUserDTOType[]) => TournamentUserDTOType[])
-    ) => void;
-    setGames: (games: GameDTOType[]) => void;
-    setRound: (round: number | ((prev: number) => number)) => void;
+export interface LocalTournamentContextType extends LocalTournamentState {
+    maxPlayers: number;
+
+    getActivePlayers: () => TournamentUserDTOType[];
     setCurrentGame: (game: GameDTOType | null) => void;
+
     addPlayer: (username: string) => StatusMessage;
     removePlayer: (username: string) => void;
     startTournament: () => void;
     endTournament: () => void;
     createRound: () => GameDTOType[];
-    nextRound: () => GameDTOType[]; // Alias for createRound
     setWinner: (gameId: number, winnerUsername: string) => void;
     playGame: () => void;
     deleteTournament: () => void;
 }
-
-export type LocalTournamentContextType = LocalTournamentState &
-    LocalTournamentActions & {
-        maxPlayers: number;
-        getActivePlayers: () => TournamentUserDTOType[];
-    };

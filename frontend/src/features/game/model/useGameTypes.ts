@@ -4,15 +4,15 @@ import { GameState } from "../types";
 export interface GameContextType {
     /** --- Players --- */
     players: GameUserDTOType[];
-    setPlayers: ReactStateSetter<GameUserDTOType[]>;
+    setPlayers: SetState<GameUserDTOType[]>;
 
     /** --- Config --- */
     maxScore: number;
-    setMaxScore: ReactStateSetter<number>;
+    setMaxScore: SetState<number>;
 
     /** --- Runtime State --- */
     state: GameState;
-    setState: ReactStateSetter<GameState>;
+    setState: SetState<GameState>;
 
     messages: RefObject<GameMessage[] | null>;
     countdown: RefObject<number | null>;

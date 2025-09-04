@@ -6,12 +6,9 @@ import {
     TournamentUserDTOType,
 } from "shared";
 
-export class LocalTournament {
-    static getActivePlayers(
-        players: TournamentUserDTOType[]
-    ): TournamentUserDTOType[] {
-        return players.filter((p) => !p.eliminated);
-    }
+export class TournamentEngine {
+    static getActivePlayers = (players: TournamentUserDTOType[]) =>
+        players.filter((p) => !p.eliminated);
 
     static createAllGames(playerCount: number): GameDTOType[] {
         const allGames: GameDTOType[] = [];
