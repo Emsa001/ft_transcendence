@@ -21,7 +21,7 @@ export class BlockUserService {
 
     static async blockUser(user: User, userId: number) {
         if (await this.isBlocked(user.id, userId)) {
-            throw new HttpException(400, "User is already blocked");
+            throw new HttpException(400, "User is blocked");
         }
         const blockedUser = await BlockedUsers.create({
             userId: user.id,

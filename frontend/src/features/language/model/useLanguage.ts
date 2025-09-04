@@ -25,7 +25,7 @@ type DeepValue<T, K extends string> = K extends keyof T
       : never;
 
 export const useLanguage = () => {
-    const [language] = useLocalStorage("language");
+    const [language] = useLocalStorage("language", "en");
 
     const getText = <K extends DotNestedKeys<Translation>>(
         key: K

@@ -109,7 +109,7 @@ export function SettingsModal({ onClose, isOpen }: SettingsModalProps) {
                         {texts.deleteAccount}
                     </label>
                     <button
-                        className="p-1 ext-lg mt-2 w-full bg-red-500/80 hover:bg-red-600/80 text-white rounded-lg shadow border border-red-300/40 transition"
+                        className="p-1 text-lg mt-2 w-full bg-red-500/80 hover:bg-red-600/80 text-white rounded-lg shadow border border-red-300/40 transition"
                         onClick={handleDelete}
                     >
                         {texts.deleteAccount}

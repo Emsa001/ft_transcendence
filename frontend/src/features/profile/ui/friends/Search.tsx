@@ -46,8 +46,13 @@ export function SearchModal({ onClose, isOpen }: SearchModalProps) {
     };
 
     const handleAddFriend = async (friend: UserDTOType) => {
-        await FriendsApi.addFriend(friend.id);
-        setSentRequests([...sentRequests, { id: friend.id } as UserDTOType]);
+        const response = await FriendsApi.addFriend(friend.id);
+        if (response) {
+            setSentRequests([
+                ...sentRequests,
+                { id: friend.id } as UserDTOType,
+            ]);
+        }
     };
 
     const handleCancelRequest = async (friend: UserDTOType) => {

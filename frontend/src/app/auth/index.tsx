@@ -45,12 +45,12 @@ export default function Auth() {
                 <h1
                     className="text-center text-4xl font-extrabold text-transparent bg-clip-text
                     bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-500 mb-2"
-                    >
-                        {isRegister ? text.createAccount : text.welcomeBack}
-                    </h1>
-                    <p className="text-center text-gray-400 mb-8">
-                        {isRegister ? text.weDontKnow : text.pleaseLogIn}
-                    </p>
+                >
+                    {isRegister ? text.createAccount : text.welcomeBack}
+                </h1>
+                <p className="text-center text-gray-400 mb-8">
+                    {isRegister ? text.weDontKnow : text.pleaseLogIn}
+                </p>
 
                 <AuthForm
                     isRegister={isRegister}
@@ -60,13 +60,13 @@ export default function Auth() {
 
                 <p className="text-red-400 mt-4">{error}</p>
 
-                    <div className="flex items-center my-8">
-                        <div className="flex-grow border-t border-gray-700"></div>
-                        <span className="mx-4 text-gray-500 font-semibold">
-                            {text.or}
-                        </span>
-                        <div className="flex-grow border-t border-gray-700"></div>
-                    </div>
+                <div className="flex items-center my-8">
+                    <div className="flex-grow border-t border-gray-700"></div>
+                    <span className="mx-4 text-gray-500 font-semibold">
+                        {text.or}
+                    </span>
+                    <div className="flex-grow border-t border-gray-700"></div>
+                </div>
 
                 <GoogleAuthButton handleLogin={redirectToGoogleAuth} />
 

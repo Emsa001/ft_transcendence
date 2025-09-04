@@ -2,7 +2,7 @@
 import React, { useLocalStorage, useEffect, useState } from "react";
 
 export function LanguageButton() {
-    const [language, setLanguage] = useLocalStorage("language", "en");
+    const [language, setLanguage] = useLocalStorage("language");
 
     function handleClick() {
         let nextLanguage;
@@ -13,6 +13,8 @@ export function LanguageButton() {
             case "pl":
                 nextLanguage = "en";
                 break;
+            default:
+                nextLanguage = "en";
         }
 
         setLanguage(nextLanguage);

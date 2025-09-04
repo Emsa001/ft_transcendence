@@ -40,8 +40,9 @@ class FriendsApi extends APIService {
 
     async addFriend(friendId: number) {
         try {
-            await this.api.post(`/friends/add`, { friendId });
+            const response = await this.api.post(`/friends/add`, { friendId });
             Alert.success("Friend request sent successfully.");
+            return response.data;
         } catch (error: any) {
             Alert.error(error.response.data.message);
         }
