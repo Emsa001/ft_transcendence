@@ -18,15 +18,16 @@ services:
     build:
       context: .
       dockerfile: ./frontend/Dockerfile
+    volumes:
+      - ./frontend:/app/frontend
+      - ./shared:/app/shared
     ports:
       - "3000:3000"
+    command: npm start
     depends_on:
       - backend
     env_file:
       - ./frontend/.env
-    volumes:
-        - ./frontend:/app
-        - ./shared:/app/shared
   
   prometheus:
     image: prom/prometheus:v2.37.0

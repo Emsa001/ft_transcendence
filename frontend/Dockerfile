@@ -9,6 +9,10 @@ RUN npm install
 COPY frontend ./
 COPY shared ../shared
 
+RUN npm run build 
+# build will create /dist directory with static files
+# nginx should listen to static files
+
 EXPOSE 3000
 
 # Start the app at runtime, not build time

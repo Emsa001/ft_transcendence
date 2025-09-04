@@ -12,4 +12,4 @@ COPY shared ../shared
 
 EXPOSE 8000
 
-CMD ["npx", "tsx", "src/bin/server.ts"]
+CMD ["npm", "start"]
