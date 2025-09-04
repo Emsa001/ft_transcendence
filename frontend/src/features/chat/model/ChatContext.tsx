@@ -88,7 +88,7 @@ export const ChatProvider = ({ children }: { children?: ReactNode }) => {
     return (
         <div className="w-full h-full">
             <ChatContext.Provider value={value}>
-                <div className="flex h-full text-white pt-16 ">{children}</div>
+                <div className="w-full h-full">{children}</div>
             </ChatContext.Provider>
         </div>
     );

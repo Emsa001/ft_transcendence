@@ -38,15 +38,15 @@ export function AllUsers() {
         fetchData();
     }, []);
 
-    const handleAddFriend = async (friendId: string) => {
+    const handleAddFriend = async (friendId: number) => {
         await FriendsApi.addFriend(friendId);
     };
 
-    const handleAcceptFriendRequest = async (friendId: string) => {
+    const handleAcceptFriendRequest = async (friendId: number) => {
         await FriendsApi.acceptFriendRequest(friendId);
     };
 
-    const handleRemoveFriend = async (friendId: string) => {
+    const handleRemoveFriend = async (friendId: number) => {
         await FriendsApi.removeFriend(friendId);
     };
 
@@ -74,9 +74,7 @@ export function AllUsers() {
                                 <button
                                     className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded"
                                     onClick={() =>
-                                        handleAcceptFriendRequest(
-                                            user.id.toString()
-                                        )
+                                        handleAcceptFriendRequest(user.id)
                                     }
                                 >
                                     accept
@@ -84,9 +82,7 @@ export function AllUsers() {
                             ) : (
                                 <button
                                     className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded"
-                                    onClick={() =>
-                                        handleAddFriend(user.id.toString())
-                                    }
+                                    onClick={() => handleAddFriend(user.id)}
                                 >
                                     add
                                 </button>
@@ -109,9 +105,7 @@ export function AllUsers() {
                             </span>
                             <button
                                 className="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded"
-                                onClick={() =>
-                                    handleRemoveFriend(friend.id.toString())
-                                }
+                                onClick={() => handleRemoveFriend(friend.id)}
                             >
                                 remove
                             </button>

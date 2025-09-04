@@ -1,4 +1,5 @@
 import { FormInput } from "@shared/components/FormInput";
+import { useLanguage } from "@features/language/model/useLanguage";
 import React from "react";
 
 interface AuthFormProps {
@@ -16,6 +17,9 @@ export default function AuthForm({
     handleUsernameLogin,
     handleUsernameRegister,
 }: AuthFormProps) {
+    const { getText } = useLanguage();
+    const text = getText("auth");
+
     const handleSubmit = async (e: HTMLFormElement) => {
         e.preventDefault();
         const formData = new FormData(e.currentTarget);
@@ -34,14 +38,14 @@ export default function AuthForm({
     return (
         <form className="space-y-6" onSubmit={handleSubmit}>
             <FormInput
-                label="Username"
+                label={text.username}
                 name="username"
                 type="text"
-                placeholder="Your username"
+                placeholder={text.yourUsername}
                 required
             />
             <FormInput
-                label="Password"
+                label={text.password}
                 name="password"
                 type="password"
                 placeholder="••••••••"
@@ -49,7 +53,7 @@ export default function AuthForm({
             />
             {isRegister && (
                 <FormInput
-                    label="Confirm Password"
+                    label={text.confirmPassword}
                     name="confirmPassword"
                     type="password"
                     placeholder="••••••••"
@@ -60,7 +64,7 @@ export default function AuthForm({
                 type="submit"
                 className="w-full py-3 rounded-lg bg-gradient-to-r from-indigo-500 via-purple-600 to-pink-500 text-white font-semibold shadow-lg hover:brightness-110 transition duration-300"
             >
-                {isRegister ? "Register" : "Log In"}
+                {isRegister ? text.register : text.logIn}
             </button>
         </form>
     );
