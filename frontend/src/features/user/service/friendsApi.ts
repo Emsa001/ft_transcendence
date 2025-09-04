@@ -31,6 +31,9 @@ class FriendsApi extends APIService {
             const response: AxiosResponse<UserDTOType[]> = await this.api.get(
                 "/friends/requests/sent"
             );
+            const response: AxiosResponse<UserDTOType[]> = await this.api.get(
+                "/friends/requests/sent"
+            );
             return response.data;
         } catch (error) {
             console.error("Error fetching all sent friend requests:", error);
