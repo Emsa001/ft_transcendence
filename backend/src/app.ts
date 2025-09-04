@@ -8,6 +8,8 @@ import cors from "@fastify/cors";
 import cookie from "@fastify/cookie";
 import middie from "@fastify/middie";
 
+import fs from "fs"
+
 import { registerDB } from "./database/client";
 import { UserController } from "./modules/user/user.controller";
 import { AuthController } from "./modules/auth/auth.controller";
@@ -36,8 +38,23 @@ export const getApp = () => {
     return app;
 };
 
+const isProduction: boolean = false;
+
 export default async function App() {
-    app = Fastify({ logger: false });
+    if(isProduction)
+    {
+        app = Fastify({ 
+            https: {
+                key: fs.readFileSync("ssl/key.pem"),
+                cert: fs.readFileSync("ssl/cert.pem"),
+            },
+            logger: false 
+        });
+    } else {
+        app = Fastify({ 
+            logger: false 
+        });
+    }
 
     // WebSocket support
     await app.register(websocketPlugin);

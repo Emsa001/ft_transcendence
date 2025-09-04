@@ -1,63 +1,71 @@
 services:
-  backend:
-    build:
-      context: .
-      dockerfile: ./backend/Dockerfile
-    volumes:
-      - ./backend/db.sqlite:/app/db.sqlite
-      - ./backend:/app/backend
-      - ./shared:/app/shared
-    ports:
-      - "8000:8000"
-    env_file:
-      - ./backend/.env
-    networks:
-      - monitoring
+  # backend:
+  #   build:
+  #     context: .
+  #     dockerfile: ./backend/Dockerfile
+  #   volumes:
+  #     - ./backend/db.sqlite:/app/db.sqlite
+  #     - ./backend:/app/backend
+  #     - ./shared:/app/shared
+  #   ports:
+  #     - "8000:8000"
+  #   env_file:
+  #     - ./backend/.env
+  #   networks:
+  #     - monitoring
 
   frontend:
     build:
       context: .
       dockerfile: ./frontend/Dockerfile
-    volumes:
-      - ./frontend:/app/frontend
-      - ./shared:/app/shared
-    ports:
-      - "3000:3000"
-    command: npm start
-    depends_on:
-      - backend
-    env_file:
-      - ./frontend/.env
-  
-  prometheus:
-    image: prom/prometheus:v2.37.0
-    container_name: prometheus
-    volumes:
-      - ./backend/prometheus.yml:/etc/prometheus/prometheus.yml:ro
-    ports:
-      - "9090:9090"
-    depends_on:
-      - backend
     networks:
       - monitoring
 
-  grafana:
-    image: grafana/grafana:9.0.0
-    container_name: grafana
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: nginx
     ports:
-      - "3001:3000"
-    env_file:
-      - ./grafana/.env
+      - "80:80"        # optional if you want http redirect
+      - "443:443"      # serve https://localhost
     volumes:
-      - grafana-data:/var/lib/grafana
-      # Provisioning config
-      - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
-       # Dashboards JSON files
-      - ./grafana/dashboards:/var/lib/grafana/dashboards
-    depends_on:
-      - prometheus
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./nginx/certs:/etc/nginx/certs:ro
+      # mount the compiled frontend (React build output) into nginx
+      - ./frontend/dist:/usr/share/nginx/html:ro
+    # depends_on:
+    #   - backend
     networks:
       - monitoring
+  
+  # prometheus:
+  #   image: prom/prometheus:v2.37.0
+  #   container_name: prometheus
+  #   volumes:
+  #     - ./backend/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+  #   ports:
+  #     - "9090:9090"
+  #   depends_on:
+  #     - backend
+  #   networks:
+  #     - monitoring
+
+  # grafana:
+  #   image: grafana/grafana:9.0.0
+  #   container_name: grafana
+  #   ports:
+  #     - "3001:3000"
+  #   env_file:
+  #     - ./grafana/.env
+  #   volumes:
+  #     - grafana-data:/var/lib/grafana
+  #     # Provisioning config
+  #     - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards
+  #      # Dashboards JSON files
+  #     - ./grafana/dashboards:/var/lib/grafana/dashboards
+  #   depends_on:
+  #     - prometheus
+  #   networks:
+  #     - monitoring
 
 networks:
   monitoring:

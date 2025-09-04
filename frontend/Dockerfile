@@ -1,19 +1,20 @@
-FROM node:24-alpine
-
+# Stage 1: Build React app
+FROM node:24-alpine AS build
 WORKDIR /app/frontend
 
 COPY frontend/package*.json ./
-
 RUN npm install
 
 COPY frontend ./
 COPY shared ../shared
+RUN npm run build  
+# creates /dist
 
-RUN npm run build 
-# build will create /dist directory with static files
-# nginx should listen to static files
+# Stage 2: NGINX
+FROM nginx:alpine
+COPY --from=build /app/frontend/dist /usr/share/nginx/html
+COPY nginx/nginx.conf /etc/nginx/conf.d/default.conf
+COPY nginx/certs /etc/nginx/certs
 
-EXPOSE 3000
-
-# Start the app at runtime, not build time
-CMD ["npm", "start"]
+EXPOSE 443
+CMD ["nginx", "-g", "daemon off;"]
