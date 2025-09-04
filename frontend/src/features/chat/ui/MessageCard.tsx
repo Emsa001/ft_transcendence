@@ -1,5 +1,5 @@
 import { MessageDTOType, UserDTOType } from "shared";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { RiGamepadLine } from "react-icons/ri";
 import { FaCopy } from "react-icons/fa6";
 import { Icon } from "@shared/components/Icon";
@@ -69,10 +69,12 @@ export function MessageCard({ msg, user }: MessageProps) {
     const [isInvite, setIsInvite] = useState(false);
     const [code, setCode] = useState("");
 
-    if (checkIfInviteMessage(msg.message)) {
-        setIsInvite(true);
-        setCode(getCode(msg.message));
-    }
+    useEffect(() => {
+        if (checkIfInviteMessage(msg.message)) {
+            setIsInvite(true);
+            setCode(getCode(msg.message));
+        }
+    }, []);
 
     const time = msg.createdAt
         ? new Date(msg.createdAt).toLocaleTimeString([], {
