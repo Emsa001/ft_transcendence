@@ -11,6 +11,9 @@ export function LanguageButton() {
                 nextLanguage = "pl";
                 break;
             case "pl":
+                nextLanguage = "slangs";
+                break;
+            case "slangs":
                 nextLanguage = "en";
                 break;
             default:
@@ -29,13 +32,24 @@ export function LanguageButton() {
     if (!isHydrated) return <div />;
 
     return (
-        <div className="fixed bottom-32 right-6 z-50">
+        <div>
             <button
                 onClick={handleClick}
-                className="p-2 text-3xl text-white font-semibold rounded-xl shadow-lg bg-purple-700 hover:bg-purple-600 transition-colors"
                 aria-label="Change language"
+                className="px-4 py-2 text-lg font-semibold text-white 
+                       rounded-2xl bg-gradient-to-br from-purple-800/70 to-pink-700/60 
+                       backdrop-blur-md shadow-lg border border-white/10
+                       hover:from-purple-700/80 hover:to-pink-600/70 
+                       transition-all duration-300 ease-out 
+                       hover:scale-105 active:scale-95"
             >
-                {language === "en" ? <span>EN</span> : <span>PL</span>}
+                {language === "en"
+                    ? "English"
+                    : language === "pl"
+                      ? "Polski"
+                      : language === "slangs"
+                        ? "Slangs"
+                        : "English"}
             </button>
         </div>
     );

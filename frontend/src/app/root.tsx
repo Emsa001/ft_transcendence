@@ -10,7 +10,6 @@ import { useOnlineUsers } from "@features/user/model/useOnlineUsers";
 import MainMenu from "@features/menu/ui/MainMenu";
 import Game from "./game";
 import Chat from "./chat";
-import { LanguageButton } from "@features/language/ui/LanguageButton";
 
 let mounted = false;
 let lastUserId = -1;
@@ -43,7 +42,6 @@ export default function Root() {
             <div className="absolute top-[75%] left-1/2 -translate-x-1/2 w-[600px] h-[200px] bg-indigo-500/20 rounded-full blur-[80px]" />
 
             <MainMenu />
-            <LanguageButton />
             <BrowserRouter>
                 <Router src="/" component={<Home />} default />
                 <Router src="/auth" component={<Auth />} />
@@ -51,7 +49,6 @@ export default function Root() {
                 <Router src="/game" component={<Game />} />
                 <Router src="/chat" component={<Chat />} />
             </BrowserRouter>
-            <LanguageButton />
         </div>
     );
 }

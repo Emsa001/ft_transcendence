@@ -4,6 +4,7 @@ import { Icon } from "@shared/components/Icon";
 import { FaUser } from "react-icons/fa";
 import { useUser } from "@features/auth/model/useUser";
 import { useLanguage } from "@features/language/model/useLanguage";
+import { LanguageButton } from "@features/language/ui/LanguageButton";
 
 let loaded = false;
 
@@ -69,6 +70,7 @@ export default function MainMenu() {
                 className="flex w-full justify-end space-x-4 pr-2"
                 ref={menuRef}
             >
+                <LanguageButton />
                 {items.map((item, idx) => (
                     <button
                         key={idx}
