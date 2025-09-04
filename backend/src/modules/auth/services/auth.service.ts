@@ -1,0 +1,188 @@
+import { OAuth2Client } from "google-auth-library";
+import bcrypt from "bcrypt";
+
+import { User } from "@/database/models/User/User";
+import { HttpException } from "@/utils/exceptions";
+
+import { Token } from "../auth.types";
+import jwtService from "./jwt.service";
+import { UserGenerate } from "@/database/models/User/UserGenerate";
+
+/*
+
+    user - full user data
+    payload - JWT payload shared with client
+
+*/
+
+class AuthService {
+    oauth2: OAuth2Client;
+
+    constructor() {
+        const redirectUri =
+            process.env.GOOGLE_REDIRECT_URI ||
+            "http://localhost:8000/auth/google/callback";
+
+        this.oauth2 = new OAuth2Client(
+            process.env.GOOGLE_CLIENT_ID,
+            process.env.GOOGLE_CLIENT_SECRET,
+            redirectUri
+        );
+
+        console.log(
+            "Google OAuth2 Client initialized with redirect URI:",
+            redirectUri
+        );
+    }
+
+    /**
+     * Checks if the user is authorized based on the provided token.
+     * Will return true if the user is fully authorized, false if in case of ongoing 2FA or not found.
+     * @throws HttpException if the token is invalid or user not found.
+     * @param token - The JWT token to verify.
+     * @returns True if the user is authorized, false otherwise.
+     */
+    async isAuthorized(
+        token: Token
+    ): Promise<{ status: boolean; user?: User }> {
+        try {
+            const { id, twoFA } = jwtService.verify(token);
+
+            const user = await User.findByPk(id);
+            if (!user) return { status: false };
+
+            return {
+                status: twoFA == "disabled" || twoFA == "completed",
+                user,
+            };
+        } catch (err) {
+            console.error("Authorization error:", err);
+            return { status: false };
+        }
+    }
+
+    /**
+     * Generate Google OAuth2 authorization URL
+     * Returns the URL for redirecting users to Google OAuth2 consent screen
+     */
+    getGoogleAuthUrl(): string {
+        const scopes = [
+            "https://www.googleapis.com/auth/userinfo.email",
+            "https://www.googleapis.com/auth/userinfo.profile",
+        ];
+
+        const authUrl = this.oauth2.generateAuthUrl({
+            scope: scopes,
+            include_granted_scopes: true,
+        });
+
+        return authUrl;
+    }
+
+    /**
+     * Handle Google OAuth2 callback
+     * Exchange authorization code for tokens and return user data
+     */
+    async handleGoogleCallback(
+        code: string
+    ): Promise<{ user: User; token: string }> {
+        if (!code) {
+            throw new HttpException(
+                400,
+                "Bad Request: Authorization code is required"
+            );
+        }
+
+        // Exchange authorization code for tokens
+        const { tokens } = await this.oauth2.getToken(code);
+        this.oauth2.setCredentials(tokens);
+
+        // Verify the ID token
+        const ticket = await this.oauth2.verifyIdToken({
+            idToken: tokens.id_token!,
+            audience: process.env.GOOGLE_CLIENT_ID,
+        });
+
+        const payload = ticket.getPayload();
+        if (!payload || !payload.email) {
+            throw new HttpException(401, "Unauthorized: Invalid token payload");
+        }
+
+        let user = await User.findByEmail(payload.email);
+
+        // Register user if not exists
+        if (!user) {
+            user = await User.create({
+                email: payload.email!,
+                username: await UserGenerate.createUsername(
+                    payload.email.split("@")[0]
+                ),
+                avatar: payload.picture || null,
+                provider: "google",
+            });
+
+            return {
+                user: user,
+                token: jwtService.getToken(user),
+            };
+        }
+
+        return { user, token: jwtService.getToken(user) };
+    }
+
+    async register(
+        username: string,
+        password: string
+    ): Promise<{ user: User; token: string }> {
+        if (!username || !password)
+            throw new HttpException(
+                400,
+                "Bad Request: Missing required fields"
+            );
+
+        const existingUser = await User.findByUsername(username);
+        if (existingUser)
+            throw new HttpException(409, "Conflict: User already exists");
+
+        const hashedPassword = await bcrypt.hash(password, 10);
+
+        const user = await User.create({
+            username,
+            password: hashedPassword,
+            provider: "local",
+        });
+
+        // success
+        return { user, token: jwtService.getToken(user) };
+    }
+
+    async login(
+        username: string,
+        password: string
+    ): Promise<{ user: User; token: string }> {
+        if (!username || !password)
+            throw new HttpException(
+                400,
+                "Bad Request: Missing required fields"
+            );
+
+        const user = await User.findOne({
+            where: {
+                username,
+                provider: "local",
+                status: "active",
+            },
+        });
+        if (!user)
+            throw new HttpException(401, "Unauthorized: Invalid credentials");
+
+        const isPasswordValid = await bcrypt.compare(password, user.password!);
+        if (!isPasswordValid)
+            throw new HttpException(401, "Unauthorized: Invalid credentials");
+
+        return { user, token: jwtService.getToken(user) };
+    }
+}
+
+const authService = new AuthService();
+export default authService;

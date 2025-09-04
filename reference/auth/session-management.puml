@@ -1,0 +1,47 @@
+@startuml Session Management Flow
+!theme plain
+title Session Management and Authorization
+
+actor User
+participant "Frontend" as FE
+participant "AuthController" as AC
+participant "AuthService" as AS
+participant "JWTService" as JWT
+participant "User" as UF
+participant "Database" as DB
+
+== Authentication Check ==
+User -> FE: Access protected resource
+FE -> AC: GET /auth/ (with session cookie)
+AC -> JWT: verify(token from cookie)
+JWT --> AC: {email, twoFA}
+AC -> UF: findByEmail(email)
+UF -> DB: SELECT user
+DB --> UF: User
+UF --> AC: User
+AC --> FE: {user: user.toDTO(), twoFA}
+FE --> User: User data or redirect to login
+
+== Authorization Check ==
+note over AS: isAuthorized() method
+AS -> JWT: verify(token)
+JWT --> AS: {email, twoFA}
+AS -> UF: findByEmail(email)
+UF --> AS: User or null
+
+alt User found and twoFA is false
+    AS --> AS: return true (fully authorized)
+else User not found or twoFA is true
+    AS --> AS: return false (not authorized/needs 2FA)
+end
+
+== Logout ==
+User -> FE: Logout
+FE -> AC: POST /auth/logout
+AC -> AC: clearCookie('session')
+AC --> FE: {success: true}
+FE --> User: Logged out successfully
+
+note right of AS: Validates session token\nChecks 2FA completion\nClears session on logout
+
+@enduml

@@ -1,22 +1,31 @@
-import React, { useEffect } from "react";
-import { useAuth } from "../model/useAuth";
+import React from "react";
+import { FcGoogle } from "react-icons/fc";
+import { Icon } from "@shared/components/Icon";
+import { useLanguage } from "@features/language/model/useLanguage";
 
-export const GoogleAuthButton = () => {
-    const { fetchUser, initializeGoogleSignIn, ref } = useAuth();
+interface GoogleAuthButtonProps {
+    handleLogin: () => Promise<void>;
+}
 
-    useEffect(() => {
-        fetchUser();
-
-        // Wait until the script is loaded
-        const interval = setInterval(() => {
-            if (window.google && window.google.accounts) {
-                clearInterval(interval);
-                initializeGoogleSignIn();
-            }
-        }, 100);
-
-        return () => clearInterval(interval);
-    }, []);
-
-    return <div ref={ref} />;
+export const GoogleAuthButton = ({ handleLogin }: GoogleAuthButtonProps) => {
+    const { getText } = useLanguage();
+    const text = getText("auth");
+    return (
+        <div>
+            <button
+                onClick={handleLogin}
+                className="
+                relative w-full py-3 rounded-xl
+                flex items-center justify-center gap-3 
+                text-white font-semibold 
+                border border-fuchsia-500 hover:border-fuchsia-400/20
+                hover:bg-fuchsia-700/30
+                transition duration-300"
+                type="button"
+            >
+                <Icon icon={FcGoogle} size={24} />
+                {text.continueWithGoogle}
+            </button>
+        </div>
+    );
 };

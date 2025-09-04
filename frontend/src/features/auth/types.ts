@@ -1,13 +1,8 @@
-export interface User {
-    id: string;
-    name: string;
-    email: string;
-    picture?: string;
+import { TwoFaStatus, UserDTOType } from "shared";
 
-    is2FAEnabled: boolean;
-}
+export type User = UserDTOType;
 
 export interface AuthResponse {
     user: User;
-    token?: string;
+    twoFA: TwoFaStatus;
 }

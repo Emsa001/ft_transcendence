@@ -43,15 +43,14 @@ const mountComponentVNode = async (
 
     React.components.set(component.name, component);
     React.currentComponent = component;
-
+    
     component.vNode = (vNode.type as ComponentType)(vNode.props, ...vNode.children);
     if (component.vNode === null) return null;
     if (!component.vNode.type) component.vNode!.type = "div";
-
+    
     component.vNode.componentName = component.name;
-    component.isMounted = true;
     component.onMount();
-
+    
     const newRef = await mount({
         vNode: component.vNode,
         parent,
@@ -59,7 +58,7 @@ const mountComponentVNode = async (
         mode,
         isSvg,
     });
-
+    
     component.vNode.ref = newRef as HTMLElement | null;
 
     return newRef;
@@ -109,7 +108,7 @@ export const unMountNode = (node: ReactNode) => {
 
     if (typeof node.type === "function") {
         if (!node.componentName) {
-            console.warn("Tried to unmount component but it's name is not defined");
+            console.warn("Tried to unmount component but it's name is not defined", node);
             return;
         }
         React.components.get(node.componentName)?.onUnmount();

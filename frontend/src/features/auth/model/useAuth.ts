@@ -1,67 +1,136 @@
-import { useRef, useStatic } from "react";
-import AuthApi from "../api";
-import { User } from "../types";
+import { useNavigate, useState } from "react";
+import { twoFactorAuthAlert, AuthApi } from "../";
+import { useUser } from "./useUser";
+import { useOnlineUsers } from "@features/user/model/useOnlineUsers";
 
 export const useAuth = () => {
-    const ref = useRef<HTMLDivElement | null>(null);
-    const [user, setUser] = useStatic<User | null>("user", null);
+    const { setUser } = useUser();
+    const navigate = useNavigate();
+    const [error, setError] = useState<string | null>(null);
+    const { unsubscribeFromOnline } = useOnlineUsers();
 
-    const handleCredentialResponse = async (response: google.CredentialResponse) => {
+    const handleLogout = async () => {
         try {
-            const token = response.credential;
+            await AuthApi.logout();
+            unsubscribeFromOnline();
+            navigate("/");
 
-            const data = await AuthApi.googleAuth(token);
-            if (!data || !data.user) {
-                console.error("Failed to authenticate user with Google.");
-                return;
-            }
-
-            setUser(data.user as unknown as User);
+            /* 
+                Don't ask question, useStatic is just stupid and does rerenders differently, that's why we need to timeout it to avoid conflicts between rerenders (I'll try to fix it)
+                TODO: Fix If not too lazy
+            */
+            setTimeout(() => {
+                setUser(null);
+            }, 0);
         } catch (error) {
-            console.error("Error during Google authentication:", error);
+            console.error("Logout failed:", error);
         }
     };
 
-    const initializeGoogleSignIn = () => {
-        if (!ref.current) {
-            console.error("Google Sign-In button reference is null.");
-            return;
+    /**
+     * Redirect to Google OAuth2 authorization URL
+     */
+    const redirectToGoogleAuth = async () => {
+        try {
+            const response = await AuthApi.getGoogleAuthUrl();
+            if (response?.authUrl) {
+                window.location.href = response.authUrl;
+            } else {
+                console.error("Failed to get Google auth URL");
+            }
+        } catch (error) {
+            console.error("Error redirecting to Google auth:", error);
         }
-
-        const google = window.google?.accounts?.id;
-        if (!google) {
-            console.error("Google Identity Services not available.");
-            return;
-        }
-
-        google.initialize({
-            client_id: process.env.FT_REACT_PUBLIC_GOOGLE_CLIENT_ID || "",
-            callback: handleCredentialResponse,
-        });
-
-        google.renderButton(ref.current, {
-            theme: "outline",
-            size: "large",
-        });
     };
 
-    const fetchUser = async () => {
+    /**
+     * Handle OAuth2 callback parameters from URL
+     * Should be called on auth page load to check for callback parameters
+     */
+    const handleOAuthCallback = async () => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const success = urlParams.get("success");
+        const error = urlParams.get("error");
+        const require2fa = urlParams.get("require2fa");
+
+        if (error) {
+            console.error("OAuth error:", error);
+            // Handle different error types
+            switch (error) {
+                case "access_denied":
+                    alert("Access denied. Please try again.");
+                    break;
+                case "auth_failed":
+                    alert("Authentication failed. Please try again.");
+                    break;
+                case "no_code":
+                    alert("No authorization code received.");
+                    break;
+                default:
+                    alert(`Authentication error: ${error}`);
+            }
+            // Clean up URL
+            window.history.replaceState(
+                {},
+                document.title,
+                window.location.pathname
+            );
+            return;
+        }
+
+        if (success === "true") {
+            if (require2fa === "true") twoFactorAuthAlert();
+
+            // Clean up URL
+            window.history.replaceState(
+                {},
+                document.title,
+                window.location.pathname
+            );
+            return;
+        }
+    };
+
+    const handleUsernameLogin = async (username: string, password: string) => {
         try {
-            const data = await AuthApi.getUser();
-            if (!data || !data.user) {
-                console.error("Failed to fetch user data from Google.");
+            const data = await AuthApi.login(username, password);
+            setUser(data);
+        } catch (error: any) {
+            console.log(error.response);
+            setError(
+                error.response.data.message || "Login failed. Try again later"
+            );
+        }
+    };
+
+    const handleUsernameRegister = async (
+        username: string,
+        password: string,
+        confirmPassword: string
+    ) => {
+        try {
+            if (password !== confirmPassword) {
+                setError("Passwords do not match");
                 return;
             }
 
-            setUser(data.user as unknown as User);
-        } catch (error) {
-            console.error("Error fetching user data:", error);
+            let data = await AuthApi.register(username, password);
+            setUser(data);
+        } catch (error: any) {
+            setError(
+                error.response.data.message ||
+                    "Registration failed. Try again later"
+            );
         }
     };
 
     return {
-        fetchUser,
-        initializeGoogleSignIn,
-        ref,
+        handleLogout,
+        redirectToGoogleAuth,
+        handleOAuthCallback,
+        handleUsernameLogin,
+        handleUsernameRegister,
+        error,
+        setError,
     };
 };

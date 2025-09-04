@@ -1,0 +1,46 @@
+@startuml Google OAuth Login Flow
+!theme plain
+title Google OAuth Authentication (outdated)
+
+actor User
+participant "Frontend" as FE
+participant "AuthController" as AC
+participant "AuthService" as AS
+participant "JWTService" as JWT
+participant "CookieService" as CS
+participant "User" as UF
+participant "Database" as DB
+participant "Google OAuth" as GOAuth
+
+== Google OAuth Login ==
+User -> FE: Click Google Sign-In
+FE -> GOAuth: initiate OAuth flow
+GOAuth --> FE: Google ID token
+FE -> AC: POST /auth/google {token}
+AC -> AS: googleLogin(token)
+AS -> GOAuth: verifyIdToken(token)
+GOAuth --> AS: ticket with payload
+AS -> UF: findByEmail(payload.email)
+UF -> DB: SELECT user by email
+DB --> UF: User or null
+
+alt User exists
+    UF --> AS: User
+else User doesn't exist
+    UF --> AS: null
+    AS -> DB: User.create({email, name, avatar, provider: 'google'...})
+    DB --> AS: new User
+end
+
+AS -> JWT: getToken(user)
+JWT --> AS: JWT token
+AS --> AC: {user, token}
+AC -> CS: getAuthSession()
+CS --> AC: cookie options
+AC -> AC: setCookie('session', token)
+AC --> FE: {user: user.toDTO(), twoFA: user.is2FAEnabled}
+FE --> User: Login successful
+
+note right of AS: Verifies Google token\nCreates user if not exists\nSets provider to 'google'
+
+@enduml

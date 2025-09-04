@@ -1,0 +1,53 @@
+@startuml 2FA Verification Flow
+!theme plain
+title Two-Factor Authentication Verification
+
+actor User
+participant "Frontend" as FE
+participant "AuthController" as AC
+participant "TwoFAService" as TFA
+participant "JWTService" as JWT
+participant "CookieService" as CS
+participant "User" as UF
+participant "Database" as DB
+
+== 2FA Verification (Enable) ==
+User -> FE: Enter 2FA code to enable
+FE -> AC: POST /auth/2fa/verify {code, action: 'enable'}
+AC -> TFA: verify(token, code, 'enable')
+TFA -> JWT: verify(token)
+JWT --> TFA: {email, twoFA}
+TFA -> UF: findByEmail(email)
+UF -> DB: SELECT user
+DB --> UF: User
+UF --> TFA: User
+TFA -> TFA: speakeasy.totp.verify(secret, code)
+TFA -> DB: User.update({is2FAEnabled: true})
+DB --> TFA: success
+TFA --> AC: {user, session: '', shouldSetCookie: false}
+AC --> FE: {success: true}
+FE --> User: 2FA enabled successfully
+
+== 2FA Verification (Login) ==
+User -> FE: Enter 2FA code during login
+FE -> AC: POST /auth/2fa/verify {code, action: 'login'}
+AC -> TFA: verify(token, code, 'login')
+TFA -> JWT: verify(token)
+JWT --> TFA: {email, twoFA: true}
+TFA -> UF: findByEmail(email)
+UF -> DB: SELECT user
+DB --> UF: User
+UF --> TFA: User
+TFA -> TFA: speakeasy.totp.verify(secret, code)
+TFA -> JWT: sign({email, provider, twoFA: false})
+JWT --> TFA: new session token
+TFA --> AC: {user, session: newToken, shouldSetCookie: true}
+AC -> CS: getAuthSession()
+CS --> AC: cookie options
+AC -> AC: setCookie('session', newToken)
+AC --> FE: {success: true}
+FE --> User: Login completed successfully
+
+note right of TFA: Verifies TOTP code\nUpdates user 2FA status
+
+@enduml
