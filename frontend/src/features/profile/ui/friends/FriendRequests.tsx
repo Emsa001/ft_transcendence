@@ -3,6 +3,7 @@ import { UserDTOType } from "shared";
 import FriendsApi from "../../../user/service/friendsApi";
 import { UserPicture } from "@features/user/ui/UserPicture";
 import { Alert } from "@shared/components/Alert";
+import { useLanguage } from "@features/language/model/useLanguage";
 
 interface FriendRequestsProps {
     friendRequests: UserDTOType[];
@@ -17,6 +18,9 @@ export function FriendRequests({
     setFriends,
     friends,
 }: FriendRequestsProps) {
+    const { getText } = useLanguage();
+    const texts = getText("profile.friends");
+
     const handleAcceptFriendRequest = async (friend: UserDTOType) => {
         await FriendsApi.acceptFriendRequest(friend.id);
         setFriendRequests(friendRequests.filter((f) => f.id !== friend.id));
@@ -52,13 +56,13 @@ export function FriendRequests({
                             className="bg-green-600 hover:bg-green-500 text-white px-3 py-1 rounded-md text-sm font-medium transition"
                             onClick={() => handleAcceptFriendRequest(user)}
                         >
-                            Accept
+                            {texts.accept}
                         </button>
                         <button
                             className="bg-red-500/80 hover:bg-red-500 text-white px-3 py-1 rounded-md text-sm font-medium transition"
                             onClick={() => handleRejectFriendRequest(user)}
                         >
-                            Reject
+                            {texts.reject}
                         </button>
                     </div>
                 </li>

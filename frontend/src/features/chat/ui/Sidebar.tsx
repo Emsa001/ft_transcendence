@@ -43,7 +43,7 @@ export function Sidebar() {
     const { onlineUsers } = useOnlineUsers();
 
     const { getText } = useLanguage();
-    const text = getText("friends");
+    const text = getText("chat.friends");
 
     return (
         <div className="w-1/3 border-r border-gray-800 bg-black/50 p-4 z-[10]">

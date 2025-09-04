@@ -3,12 +3,15 @@ import gsap from "gsap";
 import { Icon } from "@shared/components/Icon";
 import { FaUser } from "react-icons/fa";
 import { useUser } from "@features/auth/model/useUser";
+import { useLanguage } from "@features/language/model/useLanguage";
 
 let loaded = false;
 
 export default function MainMenu() {
     const navigate = useNavigate();
     const menuRef = useRef<HTMLDivElement | null>(null);
+    const { getText } = useLanguage();
+    const text = getText("mainMenu");
     const { user } = useUser();
 
     useEffect(() => {
@@ -31,9 +34,11 @@ export default function MainMenu() {
 
     const menuItems = [{ label: "", icon: null, link: "" }];
 
-    const profileItems = [{ label: "Profile", icon: FaUser, link: "/profile" }];
+    const profileItems = [
+        { label: text.profile, icon: FaUser, link: "/profile" },
+    ];
 
-    const loginItems = [{ label: "Login", icon: FaUser, link: "/auth" }];
+    const loginItems = [{ label: text.login, icon: FaUser, link: "/auth" }];
 
     const items = user ? profileItems : loginItems;
 
@@ -44,7 +49,7 @@ export default function MainMenu() {
                     onClick={() => navigate("/")}
                     className="text-3xl font-bold bg-logo-gradient text-transparent bg-clip-text"
                 >
-                    ft_transcendence
+                    {text.title}
                 </button>
             </div>
 

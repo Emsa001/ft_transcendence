@@ -1,9 +1,9 @@
 import { useUser } from "@features/auth/model/useUser";
-import { DeleteButton } from "@features/user/ui/Delete";
 import { MyPicture } from "@features/user/ui/UserPicture";
 import { Modal } from "@shared/components/Modal";
 import ProfileApi from "@features/user/service/profileApi";
 import React, { useState } from "react";
+import { useLanguage } from "@features/language/model/useLanguage";
 
 interface SettingsModalProps {
     onClose: () => void;
@@ -15,6 +15,9 @@ export function SettingsModal({ onClose, isOpen }: SettingsModalProps) {
     const [username, setUsername] = useState(user?.username || "");
     const [currentPassword, setCurrentPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
+
+    const { getText } = useLanguage();
+    const texts = getText("profile.settings");
 
     const handleChangeUsername = async () => {
         const data = {
@@ -32,10 +35,23 @@ export function SettingsModal({ onClose, isOpen }: SettingsModalProps) {
         await ProfileApi.updateUser(data);
     };
 
+    const handleDelete = async () => {
+        const isConfirmed = window.confirm(
+            "Are you sure you want to delete your account?"
+        );
+        if (!isConfirmed) return;
+        const status = await ProfileApi.deleteUser();
+        if (status) {
+            setUser(null);
+        }
+    };
+
     return (
         <div>
             <Modal isOpen={isOpen} onClose={onClose}>
-                <h2 className="text-xl font-bold mb-4 text-center">Settings</h2>
+                <h2 className="text-xl font-bold mb-4 text-center">
+                    {texts.title}
+                </h2>
 
                 <div className="flex justify-center mb-6">
                     <MyPicture />
@@ -43,26 +59,26 @@ export function SettingsModal({ onClose, isOpen }: SettingsModalProps) {
 
                 <div className="mb-4">
                     <label className="block text-sm font-medium mb-1">
-                        Change Username
+                        {texts.changeUsername}
                     </label>
                     <input
                         type="text"
                         className="w-full px-3 py-2 border border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800"
                         value={username}
                         onChange={(e: any) => setUsername(e.target.value)}
-                        placeholder="Enter username"
+                        placeholder={texts.enterUsername}
                     />
                     <button
                         className="mt-2 w-full px-4 py-2 bg-blue-500/80 hover:bg-blue-700 text-white font-medium rounded-lg shadow transition"
                         onClick={handleChangeUsername}
                     >
-                        Save Username
+                        {texts.saveUsername}
                     </button>
                 </div>
 
                 <div className="mb-6">
                     <label className="block text-sm font-medium mb-1">
-                        Change Password
+                        {texts.changePassword}
                     </label>
                     <input
                         type="password"
@@ -71,28 +87,33 @@ export function SettingsModal({ onClose, isOpen }: SettingsModalProps) {
                         onChange={(e: any) =>
                             setCurrentPassword(e.target.value)
                         }
-                        placeholder="Enter current password"
+                        placeholder={texts.currentPassword}
                     />
                     <input
                         type="password"
                         className="w-full px-3 py-2 border border-gray-600 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-800"
                         value={newPassword}
                         onChange={(e: any) => setNewPassword(e.target.value)}
-                        placeholder="Enter new password"
+                        placeholder={texts.newPassword}
                     />
                     <button
                         className="mt-2 w-full px-4 py-2 bg-blue-500/80 hover:bg-blue-700 text-white font-medium rounded-lg shadow transition"
                         onClick={handleChangePassword}
                     >
-                        Change Password
+                        {texts.changePasswordButton}
                     </button>
                 </div>
 
                 <div className="mb-4">
                     <label className="block text-sm font-medium mb-1">
-                        Delete Account
+                        {texts.deleteAccount}
                     </label>
-                    <DeleteButton className="md:col-span-2 text-lg mt-2 w-full bg-red-500/80 hover:bg-red-600/80 text-white rounded-lg shadow border border-red-300/40 transition" />
+                    <button
+                        className="p-1 ext-lg mt-2 w-full bg-red-500/80 hover:bg-red-600/80 text-white rounded-lg shadow border border-red-300/40 transition"
+                        onClick={handleDelete}
+                    >
+                        {texts.deleteAccount}
+                    </button>
                 </div>
             </Modal>
         </div>

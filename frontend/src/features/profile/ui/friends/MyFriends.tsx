@@ -2,6 +2,7 @@ import React from "react";
 import { UserDTOType } from "shared";
 import FriendsApi from "../../../user/service/friendsApi";
 import { UserPicture } from "@features/user/ui/UserPicture";
+import { useLanguage } from "@features/language/model/useLanguage";
 
 interface MyFriendsProps {
     friends: UserDTOType[];
@@ -9,6 +10,9 @@ interface MyFriendsProps {
 }
 
 export function MyFriends({ friends, setFriends }: MyFriendsProps) {
+    const { getText } = useLanguage();
+    const texts = getText("profile.friends");
+
     const handleRemoveFriend = async (friend: UserDTOType) => {
         await FriendsApi.removeFriend(friend.id);
         setFriends(friends.filter((f) => f.id !== friend.id));
@@ -35,7 +39,7 @@ export function MyFriends({ friends, setFriends }: MyFriendsProps) {
                         className="bg-red-500/80 hover:bg-red-500 text-white px-3 py-1 rounded-md text-sm font-medium transition"
                         onClick={() => handleRemoveFriend(user)}
                     >
-                        Remove
+                        {texts.remove}
                     </button>
                 </li>
             ))}
