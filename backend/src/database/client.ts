@@ -9,6 +9,7 @@ import { TournamentUser } from "./models/Tournaments/TournamentUser";
 import { Message } from "./models/Message/Message";
 import { BlockedUsers } from "./models/User/BlockedUsers";
 import { GameRooms } from "@/modules/game/services/registry.service";
+import { DatabaseExampleFeed } from "./feed";
 
 const models = [
     User,
@@ -36,8 +37,8 @@ export const registerDB = async (app: FastifyInstance) => {
 
     // Feed database with example data
     // await DatabaseExampleFeed.feed({
-    //     users: 4,
-    //     games: 1,
+    //     users: 50,
+    //     // games: 1,
     // });
 };
 

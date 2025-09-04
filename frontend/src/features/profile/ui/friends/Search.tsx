@@ -52,6 +52,7 @@ export function SearchModal({ onClose, isOpen }: SearchModalProps) {
                 ...sentRequests,
                 { id: friend.id } as UserDTOType,
             ]);
+            onClose();
         }
     };
 

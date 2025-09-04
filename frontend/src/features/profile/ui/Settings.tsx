@@ -24,7 +24,10 @@ export function SettingsModal({ onClose, isOpen }: SettingsModalProps) {
             username,
         };
         const user = await ProfileApi.updateUser(data);
-        setUser(user);
+        if (user) {
+            onClose();
+            setUser(user);
+        }
     };
 
     const handleChangePassword = async () => {
@@ -33,6 +36,7 @@ export function SettingsModal({ onClose, isOpen }: SettingsModalProps) {
             newPassword,
         };
         await ProfileApi.updateUser(data);
+        onClose();
     };
 
     const handleDelete = async () => {
