@@ -2,7 +2,7 @@ import { useUser } from "@features/auth/model/useUser";
 import React, { createContext, useContext, useEffect, useState } from "react";
 import { MessageDTOType, UserDTOType } from "shared";
 import FriendsApi from "@features/user/service/friendsApi";
-import { Alert } from "@shared/components/Alert";
+import { Toast } from "@shared/lib/Toast";
 
 interface ChatContextType {
     selectedUser: UserDTOType | null;
@@ -46,7 +46,7 @@ export const ChatProvider = ({ children }: { children?: ReactNode }) => {
             if (data.type === "error" && data.code === "BLOCKED_USER") {
                 setMessages((prev) => prev.slice(0, -1));
                 setIsBlocked(true);
-                Alert.error("You have been blocked by this user.");
+                Toast.error("You have been blocked by this user.");
             } else {
                 setIsBlocked(false);
                 setMessages((prev) => [...prev, data]);

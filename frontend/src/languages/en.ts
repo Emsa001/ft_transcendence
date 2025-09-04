@@ -1,4 +1,17 @@
 export default {
+    landScreen: {
+        label: "ft_transcendence",
+        welcomeText:
+            "Experience a new dimension of interaction — fast, modern, and beautifully minimal.",
+        play: "Play",
+    },
+    footer: {
+        name: "ft_transcendence",
+        madeWith: "Made with",
+        badDecisions: "bad decisions",
+        and: "and",
+        aLotOfFaith: "a lot of faith",
+    },
     mainMenu: {
         title: "ft_transcendence",
         login: "Login",
@@ -18,6 +31,9 @@ export default {
         sendInvite: "Send Invite",
         sendPlaceholder: "Type a message...",
         sendInvitePlaceholder: "Type an invite code...",
+        pongDuel: "Pong Duel",
+        casualPongGame: "Casual 1v1 pong game",
+        joinGame: "Join Game",
     },
     profile: {
         playerStats: "Pong Player",

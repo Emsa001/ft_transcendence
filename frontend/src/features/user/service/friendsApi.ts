@@ -1,7 +1,7 @@
 import { AxiosResponse } from "axios";
 import { APIService } from "@shared/lib/api";
 import { UserDTOType } from "shared";
-import { Alert } from "@shared/components/Alert";
+import { Toast } from "@shared/lib/Toast";
 
 class FriendsApi extends APIService {
     async getAllFriends(): Promise<UserDTOType[]> {
@@ -41,10 +41,10 @@ class FriendsApi extends APIService {
     async addFriend(friendId: number) {
         try {
             const response = await this.api.post(`/friends/add`, { friendId });
-            Alert.success("Friend request sent successfully.");
+            Toast.success("Friend request sent successfully.");
             return response.data;
         } catch (error: any) {
-            Alert.error(error.response.data.message);
+            Toast.error(error.response.data.message);
         }
     }
 
@@ -52,7 +52,7 @@ class FriendsApi extends APIService {
         try {
             await this.api.post(`/friends/accept`, { friendId });
         } catch (error: any) {
-            Alert.error(error.response.data.message);
+            Toast.error(error.response.data.message);
         }
     }
 
@@ -60,7 +60,7 @@ class FriendsApi extends APIService {
         try {
             await this.api.post(`/friends/remove`, { friendId });
         } catch (error: any) {
-            Alert.error(error.response.data.message);
+            Toast.error(error.response.data.message);
         }
     }
 

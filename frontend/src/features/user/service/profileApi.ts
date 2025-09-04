@@ -2,7 +2,7 @@ import { AxiosResponse } from "axios";
 import { APIService } from "@shared/lib/api";
 import { UserDTOType, UserEditableData } from "shared";
 import { User } from "@features/auth/types";
-import { Alert } from "@shared/components/Alert";
+import { Toast } from "@shared/lib/Toast";
 
 class ProfileApi extends APIService {
     async getAllUsers(): Promise<UserDTOType[]> {
@@ -60,10 +60,10 @@ class ProfileApi extends APIService {
     async updateUser(data: UserEditableData): Promise<User | null> {
         try {
             const response = await this.api.post("/user/edit", data);
-            Alert.success("User information updated successfully.");
+            Toast.success("User information updated successfully.");
             return response.data.user as User;
         } catch (error: any) {
-            Alert.error(error.response.data.message);
+            Toast.error(error.response.data.message);
             return null;
         }
     }
