@@ -5,6 +5,7 @@ import { Ball, GameUserDTOType, Paddle } from "shared";
 class GameEngine {
     ball: Ball;
     paddles: Record<number, Paddle>;
+    aiPaddle?: boolean;
     keys: Record<string, boolean> = {};
     stopped = true;
     onScore?: (scorerId: number) => void;
@@ -34,6 +35,15 @@ class GameEngine {
             { id: 1, username: "Player 2", score: 0 },
         ];
         const initialized = players ?? defaultPlayers;
+        if (
+            players &&
+            players.length === 2 &&
+            players[1].username === "Computer"
+        ) {
+            this.aiPaddle = true;
+        } else {
+            this.aiPaddle = false;
+        }
         this.initPaddles(initialized);
         return initialized;
     }
@@ -48,10 +58,10 @@ class GameEngine {
                     : GameRenderer.baseW -
                       (this.paddlePadding + this.paddleWidth);
 
-            const controls =
-                index === 0
-                    ? { up: "w", down: "s" }
-                    : { up: "arrowup", down: "arrowdown" };
+            const controls = {
+                up: index === 0 ? "w" : !this.aiPaddle ? "arrowup" : "",
+                down: index === 0 ? "s" : !this.aiPaddle ? "arrowdown" : "",
+            };
 
             this.paddles[player.id] = {
                 pos: { x, y },
@@ -100,6 +110,24 @@ class GameEngine {
         this.handleCollisions();
         this.handleScoring();
     }
+    private aiPaddleAlgo(baseH: number, padding: number): void {
+        const paddle = this.paddles[1];
+        if (
+            this.ball.pos.y + this.ball.size / 2 <
+            paddle.pos.y + paddle.size.y / 2 - 10
+        )
+            paddle.pos.y -= paddle.speed;
+        else if (
+            this.ball.pos.y + this.ball.size / 2 >
+            paddle.pos.y + paddle.size.y / 2 + 10
+        )
+            paddle.pos.y += paddle.speed;
+        paddle.pos.y = clamp(
+            paddle.pos.y,
+            padding,
+            baseH - paddle.size.y - padding
+        );
+    }
 
     private updatePaddles(): void {
         const { baseH, padding } = GameRenderer;
@@ -108,6 +136,7 @@ class GameEngine {
             if (this.keys[p.controls.down]) p.pos.y += p.speed;
             p.pos.y = clamp(p.pos.y, padding, baseH - p.size.y - padding);
         });
+        if (this.aiPaddle) this.aiPaddleAlgo(baseH, padding);
     }
 
     private updateBall(): void {

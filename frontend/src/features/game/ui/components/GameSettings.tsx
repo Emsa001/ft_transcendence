@@ -1,6 +1,8 @@
 import React from "react";
 import Swal from "sweetalert2";
 import { useGame } from "@features/game/model/useGame";
+import { GameUserDTOType } from "shared";
+import { gameEngine } from "@features/game/service/GameEngine";
 
 const defaultButton =
     "px-4 py-2 rounded-xl transition text-white font-bold shadow";
@@ -67,9 +69,47 @@ const GameActions = () => {
     );
 };
 
+function Options() {
+    const { setPlayers } = useGame();
+    const handleVersus = () => {
+        const players: GameUserDTOType[] = [
+            { id: 0, username: "Player 1", score: 0 },
+            { id: 1, username: "Player 2", score: 0 },
+        ];
+        gameEngine.createPlayers(players);
+        setPlayers(players);
+    };
+    const handleComputer = () => {
+        const players: GameUserDTOType[] = [
+            { id: 0, username: "Player 1", score: 0 },
+            { id: 1, username: "Computer", score: 0 },
+        ];
+        gameEngine.createPlayers(players);
+        setPlayers(players);
+    };
+
+    return (
+        <div className="flex space-x-4 mb-2">
+            <button
+                onClick={handleVersus}
+                className={`${defaultButton} bg-blue-600/20 hover:bg-blue-600/30`}
+            >
+                Versus
+            </button>
+            <button
+                onClick={handleComputer}
+                className={`${defaultButton} bg-green-600/20 hover:bg-green-600/30`}
+            >
+                Computer
+            </button>
+        </div>
+    );
+}
+
 export const GameSettings = () => {
     return (
-        <div className="flex items-center justify-center space-x-4">
+        <div className="flex flex-col items-center justify-center space-y-2">
+            <Options />
             <MaxScoreSettings />
             <GameActions />
         </div>
