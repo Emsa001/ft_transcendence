@@ -5,7 +5,7 @@ import { UserPicture } from "@features/user/ui/UserPicture";
 import { Modal } from "@shared/components/Modal";
 import ProfileApi from "../../../user/service/profileApi";
 import { useUser } from "@features/auth/model/useUser";
-import { Alert } from "@shared/components/Alert";
+import { Toast } from "@shared/lib/Toast";
 import { useLanguage } from "@features/language/model/useLanguage";
 
 interface SearchModalProps {
@@ -59,7 +59,7 @@ export const SearchModal = ({ onClose, isOpen }: SearchModalProps) => {
     const handleCancelRequest = async (friend: UserDTOType) => {
         await FriendsApi.removeFriend(friend.id);
         setSentRequests(sentRequests.filter((req) => req.id !== friend.id));
-        Alert.success("Friend request canceled successfully.");
+        Toast.success("Friend request canceled successfully.");
     };
 
     return (
@@ -96,6 +96,7 @@ export const SearchModal = ({ onClose, isOpen }: SearchModalProps) => {
                                             <div className="flex items-center gap-3">
                                                 <UserPicture
                                                     userId={user.id}
+                                                    size={8} 
                                                     className="w-9 h-9 rounded-full"
                                                 />
                                                 <span className="font-medium text-gray-200">

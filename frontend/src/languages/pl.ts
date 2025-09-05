@@ -1,4 +1,17 @@
 export default {
+    landScreen: {
+        label: "ft_transcendencja",
+        welcomeText:
+            "Doświadcz nowego wymiaru interakcji — szybkiego, nowoczesnego i pięknie minimalistycznego.",
+        play: "Graj",
+    },
+    footer: {
+        name: "ft_transcendencja",
+        madeWith: "Zrobione z",
+        badDecisions: "złych decyzji",
+        and: "i",
+        aLotOfFaith: "dużo wiary",
+    },
     mainMenu: {
         title: "ft_transcendencja",
         login: "Zaloguj się",
@@ -18,6 +31,9 @@ export default {
         sendInvite: "Wyślij zaproszenie",
         sendPlaceholder: "Napisz wiadomość...",
         sendInvitePlaceholder: "Wpisz kod zaproszenia...",
+        pongDuel: "Pojedynek w Pong",
+        casualPongGame: "Przypadkowa gra 1v1 w pong",
+        joinGame: "Dołącz do gry",
     },
     profile: {
         playerStats: "Gracz Pong",

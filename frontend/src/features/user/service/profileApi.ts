@@ -2,7 +2,7 @@ import { AxiosResponse } from "axios";
 import { APIService } from "@shared/lib/api";
 import { UserDTOType, UserEditableData } from "shared";
 import { User } from "@features/auth/types";
-import { Alert } from "@shared/components/Alert";
+import { Toast } from "@shared/lib/Toast";
 
 class ProfileApi extends APIService {
     async getAllUsers(): Promise<UserDTOType[]> {
@@ -40,6 +40,7 @@ class ProfileApi extends APIService {
         }
     }
 
+    // TODO: handle errors properly and return types properly
     async updateUserPicture(file: File): Promise<string | null> {
         const formData = new FormData();
         formData.append("file", file);
@@ -52,7 +53,7 @@ class ProfileApi extends APIService {
             });
             return response.data.picture as string;
         } catch (error) {
-            console.error("API Error:", error);
+            Toast.error("Failed to update picture.");
             return null;
         }
     }
@@ -60,10 +61,10 @@ class ProfileApi extends APIService {
     async updateUser(data: UserEditableData): Promise<User | null> {
         try {
             const response = await this.api.post("/user/edit", data);
-            Alert.success("User information updated successfully.");
+            Toast.success("User information updated successfully.");
             return response.data.user as User;
         } catch (error: any) {
-            Alert.error(error.response.data.message);
+            Toast.error(error.response.data.message);
             return null;
         }
     }
@@ -75,20 +76,6 @@ class ProfileApi extends APIService {
         } catch (error) {
             console.error("API Error:", error);
             return false;
-        }
-    }
-
-    async getUserByIdOrUsername(
-        idOrUsername: string
-    ): Promise<UserDTOType | null> {
-        try {
-            const response: AxiosResponse<UserDTOType> = await this.api.get(
-                `/user/${idOrUsername}`
-            );
-            return response.data;
-        } catch (error) {
-            console.error("Error fetching user by ID or username:", error);
-            return null;
         }
     }
 }

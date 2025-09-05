@@ -17,6 +17,7 @@
             "@shared/*": ["src/shared/*"],
             "@components/*": ["src/shared/components/*"],
             "@features/*": ["src/features/*"],
+            "shared/*": ["../shared/*"]
         }
     },
     "include": ["src/**/*", "react/**/*", "react/types/global.d.ts"],

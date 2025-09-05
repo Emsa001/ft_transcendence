@@ -89,9 +89,14 @@ export interface GameMessage {
 
 // Game messages
 
+export interface MessageData {
+    messages: GameMessage[];
+    cover: boolean;
+}
+
 export class GameMessages {
-    static win(scorer: string, canRestart?: boolean): GameMessage[] {
-        const message: GameMessage[] = [
+    static win(scorer: string, canRestart?: boolean): MessageData {
+        const messages: GameMessage[] = [
             {
                 text: `${scorer} Wins!`,
                 shadow: { color: "#7a5cff", blur: 20 },
@@ -100,41 +105,43 @@ export class GameMessages {
         ];
 
         if (canRestart) {
-            message.push({
+            messages.push({
                 text: "Press Space to Restart",
                 size: 30,
             });
         }
 
-        return message;
+        return { messages, cover: true };
     }
 
-    static score(scorer: string): GameMessage[] {
-        return [
+    static score(scorer: string): MessageData {
+        const messages: GameMessage[] = [
             {
                 text: `${scorer} Scores!`,
                 shadow: { color: "#7a5cff", blur: 20 },
                 size: 50,
             },
         ];
+        return { messages, cover: true };
     }
 
-    static start(): GameMessage[] {
-        return [
+    static start(): MessageData {
+        const messages: GameMessage[] = [
             {
                 text: "Press Space to Start",
                 shadow: { color: "#7a5cff", blur: 20 },
                 size: 40,
             },
         ];
+        return { messages, cover: true };
     }
 
     static intro(
         player1: string,
         player2: string,
         points: number
-    ): GameMessage[] {
-        return [
+    ): MessageData {
+        const messages: GameMessage[] = [
             {
                 text: `${player1}  VS  ${player2}`,
                 shadow: { color: "#7a5cff", blur: 20 },
@@ -142,10 +149,12 @@ export class GameMessages {
             },
             { text: `First to ${points} points wins`, size: 30 },
         ];
+
+        return { messages, cover: true };
     }
 
-    static getReady(count: number): GameMessage[] {
-        return [
+    static getReady(count: number): MessageData {
+        const messages: GameMessage[] = [
             {
                 text: "Get Ready!",
                 shadow: { color: "#7a5cff", blur: 20 },
@@ -157,10 +166,11 @@ export class GameMessages {
                 marginTop: 10,
             },
         ];
+        return { messages, cover: true };
     }
 
-    static pause(): GameMessage[] {
-        return [
+    static pause(): MessageData {
+        const messages: GameMessage[] = [
             {
                 text: "Paused",
                 shadow: { color: "#f72585", blur: 20 },
@@ -171,5 +181,22 @@ export class GameMessages {
                 size: 30,
             },
         ];
+
+        return { messages, cover: true };
+    }
+
+    static event(event: string): MessageData {
+        const messages: GameMessage[] = [
+            {
+                text: "Random Event!",
+                shadow: { color: "#f72585", blur: 20 },
+                size: 40,
+            },
+            {
+                text: event,
+                size: 30,
+            }
+        ];
+        return { messages, cover: false };
     }
 }

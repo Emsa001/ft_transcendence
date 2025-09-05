@@ -1,20 +1,35 @@
 services:
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
-    depends_on:
-      - backend
-    env_file:
-      - ./frontend/.env
-
   backend:
     build:
-      context: ./backend
-      dockerfile: Dockerfile
-    ports:
-      - "8000:8000"
+      context: .
+      dockerfile: ./backend/Dockerfile
     env_file:
       - ./backend/.env
+    environment:
+      - NODE_ENV=development
+    networks:
+      - monitoring
+
+  frontend:
+    build:
+      context: .
+      dockerfile: ./frontend/Dockerfile
+    networks:
+      - monitoring
+
+  nginx:
+    build:
+      context: .
+      dockerfile: ./frontend/Dockerfile
+    container_name: nginx
+    ports:
+      - "443:443"
+      - "8080:8080"
+    networks:
+      - monitoring
+    depends_on:
+      - backend
+      - frontend
+
+networks:
+  monitoring:

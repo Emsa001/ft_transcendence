@@ -1,12 +1,13 @@
 import { useUser } from "@features/auth/model/useUser";
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useNavigate, useState } from "react";
 import { MessageDTOType, UserDTOType } from "shared";
 import FriendsApi from "@features/user/service/friendsApi";
-import { Alert } from "@shared/components/Alert";
+import { Toast } from "@shared/lib/Toast";
 
 interface ChatContextType {
     selectedUser: UserDTOType | null;
     setSelectedUser: (user: UserDTOType | null) => void;
+    handleSelectUser: (user?: UserDTOType) => void;
     users: UserDTOType[];
     setUsers: (users: UserDTOType[]) => void;
     messages: MessageDTOType[];
@@ -27,6 +28,15 @@ export const ChatProvider = ({ children }: { children?: ReactNode }) => {
     const [isBlocked, setIsBlocked] = useState(false);
     const { user: currentUser } = useUser();
 
+    const navigate = useNavigate();
+
+    const handleSelectUser = (user?: UserDTOType) => {
+        if(!user) 
+            navigate("/chat");
+        else 
+            navigate(`/chat/${user.id}`);
+    };
+
     useEffect(() => {
         const fetchUsers = async () => {
             const allUsers = await FriendsApi.getAllFriends();
@@ -46,7 +56,7 @@ export const ChatProvider = ({ children }: { children?: ReactNode }) => {
             if (data.type === "error" && data.code === "BLOCKED_USER") {
                 setMessages((prev) => prev.slice(0, -1));
                 setIsBlocked(true);
-                Alert.error("You have been blocked by this user.");
+                Toast.error("You have been blocked by this user.");
             } else {
                 setIsBlocked(false);
                 setMessages((prev) => [...prev, data]);
@@ -75,6 +85,7 @@ export const ChatProvider = ({ children }: { children?: ReactNode }) => {
     const value: ChatContextType = {
         selectedUser,
         setSelectedUser,
+        handleSelectUser,
         users,
         setUsers,
         messages,

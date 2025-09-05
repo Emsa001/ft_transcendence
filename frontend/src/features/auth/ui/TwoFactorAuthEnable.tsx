@@ -21,30 +21,54 @@ export const TwoFactorAuthEnable = () => {
     };
 
     if (success) {
-        return <p>Two-Factor Authentication has been successfully enabled.</p>;
+        return (
+            <div className="text-center">
+                <h2 className="text-xl font-semibold text-purple-400 mb-4">
+                    Two-Factor Authentication Enabled
+                </h2>
+            </div>
+        );
     }
 
     return (
-        <div className=" p-4">
-            <h2>Enable Two-Factor Authentication</h2>
-            <Button onClick={initiateSetup}>Enable 2FA</Button>
+        <div className="backdrop-blur-lg rounded-2xl shadow-lg text-white">
+            <h2 className="text-xl font-semibold text-pink-400 mb-4">
+                Enable Two-Factor Authentication
+            </h2>
+            <button
+                className="p-3 bg-gradient-to-r from-pink-500 to-purple-600 text-white rounded-xl shadow-md"
+                onClick={initiateSetup}
+            >
+                Generate QR Code
+            </button>
 
-            <div>
-                {qrImageUrl && (
-                    <div>
-                        <img src={qrImageUrl} alt="Scan QR code" width={200} />
-                        <Input
-                            type="text"
-                            value={code}
-                            onChange={(e: any) => setCode(e.target.value)}
-                            placeholder="Enter 6-digit code"
-                        />
-                        <Button onClick={handleEnable}>Submit</Button>
-                        <p>Scan the QR code with your authenticator app.</p>
-                        {error && <p style={{ color: "red" }}>{error}</p>}
-                    </div>
-                )}
-            </div>
+            {qrImageUrl && (
+                <div className="mt-6 space-y-3">
+                    <img
+                        src={qrImageUrl}
+                        alt="Scan QR code"
+                        className="mx-auto border-2 border-pink-400 rounded-lg"
+                        width={200}
+                    />
+                    <Input
+                        type="text"
+                        value={code}
+                        onChange={(e: any) => setCode(e.target.value)}
+                        placeholder="Enter 6-digit code"
+                        className="w-full p-2 rounded-lg border border-purple-500 bg-black/30 text-pink-200 placeholder-pink-400 focus:ring-2 focus:ring-pink-500"
+                    />
+                    <button
+                        className="p-2 mt-4 w-full bg-gradient-to-r from-purple-500 to-pink-600 text-white rounded-xl"
+                        onClick={handleEnable}
+                    >
+                        Submit
+                    </button>
+                    <p className="text-sm text-purple-300">
+                        Scan with your authenticator app.
+                    </p>
+                    {error && <p className="text-red-400">{error}</p>}
+                </div>
+            )}
         </div>
     );
 };

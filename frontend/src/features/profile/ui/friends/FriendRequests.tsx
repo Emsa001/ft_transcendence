@@ -2,7 +2,7 @@ import React from "react";
 import { UserDTOType } from "shared";
 import FriendsApi from "../../../user/service/friendsApi";
 import { UserPicture } from "@features/user/ui/UserPicture";
-import { Alert } from "@shared/components/Alert";
+import { Toast } from "@shared/lib/Toast";
 import { useLanguage } from "@features/language/model/useLanguage";
 
 interface FriendRequestsProps {
@@ -25,13 +25,13 @@ export const FriendRequests = ({
         await FriendsApi.acceptFriendRequest(friend.id);
         setFriendRequests(friendRequests.filter((f) => f.id !== friend.id));
         setFriends([...friends, friend]);
-        Alert.success("Friend request accepted.");
+        Toast.success("Friend request accepted.");
     };
 
     const handleRejectFriendRequest = async (friend: UserDTOType) => {
         await FriendsApi.removeFriend(friend.id);
         setFriendRequests(friendRequests.filter((f) => f.id !== friend.id));
-        Alert.success("Friend request rejected.");
+        Toast.success("Friend request rejected.");
     };
 
     return (
@@ -39,11 +39,12 @@ export const FriendRequests = ({
             {friendRequests.map((user: UserDTOType) => (
                 <li
                     key={user.id}
-                    className="flex items-center justify-between gap-3 py-3 px-2 bg-gray-700/60 hover:bg-gray-700 mb-2 rounded-lg transition-colors"
+                    className="flex items-center justify-between gap-3 py-3 px-2 bg-gray-700/50 hover:bg-gray-700 mb-2 rounded-lg transition-colors"
                 >
                     <div className="flex items-center gap-3">
                         <UserPicture
                             userId={user.id}
+                            size={8} 
                             className="w-9 h-9 rounded-full"
                         />
                         <span className="font-medium text-gray-200">

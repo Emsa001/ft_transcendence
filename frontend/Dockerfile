@@ -1,13 +1,30 @@
-FROM node:24-alpine
+# Stage 1: Build React app
+FROM node:24-alpine AS build
+WORKDIR /app/frontend
 
-WORKDIR /app
-
-COPY package.json ./
+COPY frontend/package*.json ./
 RUN npm install
 
-COPY . .
+COPY frontend ./
+COPY shared ../shared
+RUN npm run build   
+# produces /dist
 
-EXPOSE 3000
+# Stage 2: NGINX
+FROM nginx:alpine
 
-# Start the app at runtime, not build time
-CMD ["npm", "start"]
+# Copy React build
+COPY --from=build /app/frontend/dist /usr/share/nginx/html
+
+# Copy Nginx config
+COPY nginx/nginx.conf /etc/nginx/nginx.conf
+
+# Copy certificates
+COPY nginx/certs /etc/nginx/certs
+
+# Make sure nginx can read files
+RUN chmod -R 755 /usr/share/nginx/html
+
+EXPOSE 443
+
+CMD ["nginx", "-g", "daemon off;"]

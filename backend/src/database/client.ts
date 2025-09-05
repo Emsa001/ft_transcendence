@@ -6,6 +6,8 @@ import { GameUser } from "./models/Game/GameUser";
 import { UserFriends } from "./models/User/UserFriends";
 import { Tournament } from "./models/Tournaments/Tournament";
 import { TournamentUser } from "./models/Tournaments/TournamentUser";
+import path from "path";
+import { fileURLToPath } from "url";
 import { Message } from "./models/Message/Message";
 import { BlockedUsers } from "./models/User/BlockedUsers";
 import { GameRooms } from "@/modules/game/services/registry.service";
@@ -23,6 +25,10 @@ const models = [
     TournamentUser,
 ];
 
+// ESM-safe __dirname
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
 export const registerDB = async (app: FastifyInstance) => {
     const sequelize = new Sequelize({
         dialect: "sqlite",
@@ -31,7 +37,7 @@ export const registerDB = async (app: FastifyInstance) => {
         models,
     });
 
-    await sequelize.sync({ force: false });
+    await sequelize.sync({ force: true });
     app.decorate("sequelize", sequelize);
 
     await GameRooms.init();

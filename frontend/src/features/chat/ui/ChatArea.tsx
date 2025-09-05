@@ -31,7 +31,7 @@ export const ChatArea = () => {
                 messageBoxRef.current.scrollTop =
                     messageBoxRef.current.scrollHeight;
             }
-        }, 0);
+        }, 50);
     };
 
     const handleLoadMore = async () => {

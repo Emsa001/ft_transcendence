@@ -1,4 +1,17 @@
 export default {
+    landScreen: {
+        label: "ft_transcendence.exe",
+        welcomeText:
+            "Welcome to ft_transcendence.exe — because you clearly had nothing better to do.",
+        play: "Boom Boom Go",
+    },
+    footer: {
+        name: "ft_transcendence.exe",
+        madeWith: "Made with",
+        badDecisions: "bad decisions",
+        and: "and",
+        aLotOfFaith: "a lot of faith",
+    },
     mainMenu: {
         title: "ft_transcendence.exe",
         login: "Just Log In Already",
@@ -18,6 +31,9 @@ export default {
         sendInvite: "Force Friendship",
         sendPlaceholder: "Say something, or don't",
         sendInvitePlaceholder: "Drop your cringe code here",
+        pongDuel: "Pong Duel",
+        casualPongGame: "Casual 1v1 pong game",
+        joinGame: "Join Game",
     },
     profile: {
         playerStats: "Professional Button Masher",

@@ -37,6 +37,7 @@ export const BlockedUsers = () => {
                         <div className="flex items-center gap-3">
                             <UserPicture
                                 userId={user.id}
+                                size={8} 
                                 className="w-9 h-9 rounded-full"
                             />
                             <span className="font-medium text-gray-200">

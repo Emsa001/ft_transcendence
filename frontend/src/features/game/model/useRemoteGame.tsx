@@ -14,6 +14,7 @@ import {
     GameMode,
     GameStatus,
     GameUserDTOType,
+    MessageData,
 } from "shared";
 import { useGameKeys } from "./useGameKeys";
 import { useGameMessages } from "./useGameMessages";
@@ -37,7 +38,7 @@ interface RemoteGameContextType {
     handleStartGame: () => void;
 
     frameRef: RefObject<GameFrame | null>;
-    messages: RefObject<GameMessage[] | null>;
+    messages: RefObject<MessageData | null>;
     error: string | null;
 }
 
