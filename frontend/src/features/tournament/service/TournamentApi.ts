@@ -42,6 +42,19 @@ class TournamentApi extends APIService {
             return null;
         }
     }
+
+    async start(uuid: string): Promise<{
+        error?: string;
+        message?: string;
+    }> {
+        try {
+            const response = await this.api.post(`/${uuid}/start`);
+            return response.data;
+        } catch (error) {
+            console.error("Error starting tournament:", error);
+            return (error as any)?.response?.data;
+        }
+    }
 }
 
 export const tournamentApi = new TournamentApi({ path: "/tournament" });

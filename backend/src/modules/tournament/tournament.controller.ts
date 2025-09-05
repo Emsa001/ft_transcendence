@@ -4,7 +4,6 @@ import { Controller, GET, POST } from "fastify-decorators";
 import { BaseController } from "../base";
 import { HttpException } from "@/utils/exceptions";
 import { Tournament } from "@/database/models/Tournaments/Tournament";
-import { UserGenerate } from "@/database/models/User/UserGenerate";
 import { GameStatus } from "shared";
 import { AUTHORIZED, WS_AUTHORIZED } from "../auth/auth.middleware";
 import { TournamentRooms } from "./services/registry.service";
@@ -76,7 +75,26 @@ export class TournamentController extends BaseController {
         return reply.status(201).send(tournament.toDTO());
     }
 
-    @GET("/join/:uuid", { websocket: true })
+    @POST("/:uuid/start")
+    @AUTHORIZED
+    async startTournament(request: FastifyRequest, reply: FastifyReply) {
+        const { uuid } = request.params as { uuid: string };
+
+        const room = TournamentRooms.get(uuid);
+        if (!room) throw new HttpException(500, "Tournament room not found");
+        if (room.tournament.hostId !== request.user.id) {
+            throw new HttpException(
+                403,
+                "Only the host can start the tournament"
+            );
+        }
+
+        await room.start();
+
+        return reply.send({ message: "Tournament started" });
+    }
+
+    @GET("/:uuid/join", { websocket: true })
     @WS_AUTHORIZED
     async joinGame(connection: WebSocket, request: FastifyRequest) {
         const { uuid } = request.params as { uuid: string };
@@ -93,23 +111,5 @@ export class TournamentController extends BaseController {
         }
 
         await room.addPlayer(connection, request.user);
-
-        /*
-
-            const { code } = request.params as { code: string };
-            const user = request.user;
-    
-            const room = GameRooms.get(code);
-            if (!room) {
-                connection.close(4004, "Room not found");
-                return;
-            }
-            if (room.game.status === GameStatus.FINISHED) {
-                connection.close(4004, "Game has already finished");
-                return;
-            }
-            room.addPlayer(connection, user);
-
-        */
     }
 }

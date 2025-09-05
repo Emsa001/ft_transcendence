@@ -3,10 +3,9 @@ import { TournamentRoom } from "./room.service";
 import { Tournament } from "@/database/models/Tournaments/Tournament";
 
 type HookType =
-    | "onGameCreate"
-    | "onGameDelete"
-    | "onGameStart"
-    | "onGameAvailabilityChange";
+    | "onTournamentCreate"
+    | "onTournamentDelete"
+    | "onTournamentStart";
 
 interface Hook {
     type: HookType;
@@ -37,7 +36,7 @@ class TournamentRoomRegistry {
     create(tournament: Tournament) {
         if (!this.rooms.has(tournament.uuid)) {
             this.rooms.set(tournament.uuid, new TournamentRoom(tournament));
-            this.triggerHooks("onGameCreate", tournament);
+            this.triggerHooks("onTournamentCreate", tournament);
         }
         return this.rooms.get(tournament.uuid)!;
     }
@@ -60,7 +59,7 @@ class TournamentRoomRegistry {
 
             // Remove from registry
             this.rooms.delete(uuid);
-            this.triggerHooks("onGameDelete", uuid);
+            this.triggerHooks("onTournamentDelete", uuid);
 
             console.log(`Tournament with ID ${uuid} removed from registry.`);
         } catch (err) {

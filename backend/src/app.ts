@@ -77,11 +77,13 @@ export default async function App() {
         ],
     });
 
-    await app.setErrorHandler((error: HttpException, request, reply) => {
+    app.setErrorHandler((error: any, request, reply) => {
         request.log.error(error);
-        reply.status(error.statusCode || 500).send({
-            error: error.message || "Internal Server Error",
-        });
+
+        const status = error.statusCode ?? 500;
+        const message = error.message ?? "Internal Server Error";
+
+        reply.status(status).send({ error: message });
     });
 
     // Register Database client and models

@@ -8,11 +8,17 @@ import React, {
 import { tournamentApi } from "../service/TournamentApi";
 import { Toast } from "@shared/lib/Toast";
 import { useUser } from "@features/auth/model/useUser";
-import { GameStatus, TournamentUserDTOType } from "shared";
+import { GameStatus, TournamentDTOType, TournamentUserDTOType } from "shared";
 import { useWebSocket } from "@shared/hooks/useWebSocket";
 
 interface RemoteTournamentContextType {
     players: TournamentUserDTOType[];
+    start: () => Promise<void>;
+
+    status: GameStatus | null;
+    host: number | null;
+    player: TournamentUserDTOType | null;
+    error: string | null;
 }
 
 const RemoteTournamentContext = createContext<
@@ -47,28 +53,36 @@ export const RemoteTournamentProvider = ({
     const [player, setPlayer] = useState<TournamentUserDTOType | null>(null);
     const [players, setPlayers] = useState<TournamentUserDTOType[]>([]);
 
-    const fetchTournament = async () => {
-        const tournament = await tournamentApi.get(uuid);
-        if (!tournament) {
-            Toast.error("Tournament not found");
-            navigate("/game/remote/tournament");
+    const start = async () => {
+        const tournament = await tournamentApi.start(uuid);
+        console.log(tournament);
+        if (tournament.error) {
+            setError("Failed to start tournament");
             return;
         }
 
-        setStatus(tournament.status);
-        setHost(tournament.hostId);
-        setPlayers(tournament.players);
-        const currentPlayer = tournament.players.find((p) => p.id === user?.id);
-        setPlayer(currentPlayer ?? null);
-
-        console.log("Tournament data loaded:", tournament);
+        console.log("Tournament started:", tournament);
     };
 
-    const { addHook, sendMessage } = useWebSocket(`/tournament/join/${uuid}`);
+    const { addHook, sendMessage } = useWebSocket(`/tournament/${uuid}/join`);
 
     const handleSocketMessage = (msg: MessageEvent) => {
         const payload = JSON.parse(msg.data);
         console.log("Received message:", payload);
+
+        switch (payload.type) {
+            case "STATE_UPDATE": {
+                const state: TournamentDTOType = payload.state;
+                setStatus(state.status);
+                setHost(state.hostId);
+                setPlayers(state.players);
+                const currentPlayer = state.players.find(
+                    (p) => p.id === user?.id
+                );
+                setPlayer(currentPlayer ?? null);
+                break;
+            }
+        }
     };
 
     const onConnectionClose = (event: CloseEvent) => {
@@ -83,16 +97,19 @@ export const RemoteTournamentProvider = ({
     useEffect(() => {
         addHook({ type: "onMessage", callback: handleSocketMessage });
         addHook({
-            type: "onConnect",
-            callback: () => fetchTournament(),
-        });
-        addHook({
             type: "onDisconnect",
             callback: onConnectionClose,
         });
     }, []);
 
-    const contextValue: RemoteTournamentContextType = { players };
+    const contextValue: RemoteTournamentContextType = {
+        players,
+        start,
+        status,
+        host,
+        player,
+        error,
+    };
 
     return (
         <div className="w-full h-full">

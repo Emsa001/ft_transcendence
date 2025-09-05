@@ -97,6 +97,9 @@ export class GameRoom extends WebSocketService {
         const user = this.game.players.find((p) => p.id === userId);
         if (!user) return;
 
+        const userConnections = this.getClient(userId);
+        if (userConnections.length > 1) return;
+
         if (this.game.status !== GameStatus.WAITING) {
             this.broadcast({
                 type: "PLAYER_DISCONNECTED",
