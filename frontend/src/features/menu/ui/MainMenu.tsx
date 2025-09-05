@@ -70,7 +70,6 @@ export default function MainMenu() {
                 className="flex w-full justify-end space-x-4 pr-2"
                 ref={menuRef}
             >
-                <LanguageButton />
                 {items.map((item, idx) => (
                     <button
                         key={idx}
@@ -81,6 +80,7 @@ export default function MainMenu() {
                         {item.label}
                     </button>
                 ))}
+                <LanguageButton />
             </div>
         </nav>
     );

@@ -1,14 +1,14 @@
 import React, { useState, useRef } from "react";
 import { useChat } from "../model/ChatContext";
 import { useLanguage } from "@features/language/model/useLanguage";
+import GameApi from "../../game/service/GameAPI";
+import { Toast } from "@shared/lib/Toast";
 
 let errorTimeout: NodeJS.Timeout;
 
 export function ChatInput() {
     const [input, setInput] = useState("");
     const [error, setError] = useState("");
-    const [lobbyCode, setLobbyCode] = useState("");
-    const [showInvite, setShowInvite] = useState(false);
 
     const { getText } = useLanguage();
     const texts = getText("chat");
@@ -51,15 +51,20 @@ export function ChatInput() {
         setInput("");
     };
 
-    const handleInvite = () => {
-        if (!checkErrors(lobbyCode)) return;
-        sendMessage(`lobby Code: ${lobbyCode}`);
-        setLobbyCode("");
-        setShowInvite(false);
+    const handleInvite = async () => {
+        try {
+            const res = await GameApi.createGame({
+                isPrivate: true,
+            });
+            sendMessage(`/invite ${res.data.code}`);
+            window.open(`/game/remote/casual/${res.data.code}`, "_blank");
+        } catch (e) {
+            Toast.error("You are already in a game!");
+        }
     };
 
     return (
-        <div className="flex flex-col border-t border-gray-800 bg-black/50 shadow-[0_0_15px_rgba(0,255,255,0.4)]">
+        <div className="flex flex-col border-t border-gray-800 bg-gray-800/20">
             {error && (
                 <div className="text-red-500 text-sm px-4 pt-1 transition-opacity duration-300">
                     {error}
@@ -72,7 +77,7 @@ export function ChatInput() {
                     value={input}
                     onChange={(e: any) => setInput(e.target.value as any)}
                     onKeyDown={(e) => e.key === "Enter" && handleSend()}
-                    className="flex-1 border border-cyan-500 bg-black/50 text-cyan-200 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-400 shadow-[0_0_6px_rgba(0,255,255,0.6)]"
+                    className="flex-1 border border-cyan-700 bg-gray-800/20 text-cyan-200 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-cyan-600"
                     placeholder={texts.sendPlaceholder}
                 />
                 <button
@@ -82,33 +87,12 @@ export function ChatInput() {
                     {texts.send}
                 </button>
                 <button
-                    onClick={() => setShowInvite(!showInvite)}
+                    onClick={handleInvite}
                     className="bg-purple-500 hover:bg-purple-400 text-black rounded-lg px-4 py-2 shadow-[0_0_6px_rgba(200,0,255,0.6)] transition"
                 >
                     {texts.invite}
                 </button>
             </div>
-
-            {showInvite && (
-                <div className="flex items-center px-4 pb-3 space-x-2 animate-fadeIn">
-                    <input
-                        type="text"
-                        value={lobbyCode}
-                        onChange={(e: any) =>
-                            setLobbyCode(e.target.value as any)
-                        }
-                        onKeyDown={(e) => e.key === "Enter" && handleInvite()}
-                        className="flex-1 border border-purple-500 bg-black/50 text-purple-200 rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-400 shadow-[0_0_6px_rgba(200,0,255,0.6)]"
-                        placeholder={texts.sendInvitePlaceholder}
-                    />
-                    <button
-                        onClick={handleInvite}
-                        className="bg-purple-500 hover:bg-purple-400 text-black rounded-lg px-4 py-2 shadow-[0_0_6px_rgba(200,0,255,0.6)] transition"
-                    >
-                        {texts.sendInvite}
-                    </button>
-                </div>
-            )}
         </div>
     );
 }
