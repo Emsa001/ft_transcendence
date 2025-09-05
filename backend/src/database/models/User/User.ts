@@ -3,6 +3,7 @@ import {
     BelongsToManyGetAssociationsMixin,
     FindOptions,
     InferAttributes,
+    Op,
 } from "sequelize";
 import {
     Table,
@@ -15,6 +16,8 @@ import {
     PrimaryKey,
     AutoIncrement,
     BelongsToMany,
+    BeforeUpdate,
+    BeforeCreate,
 } from "sequelize-typescript";
 import { UserDTO } from "./UserDTO";
 import { Game } from "../Game/Game";
@@ -58,6 +61,11 @@ export class User extends Model<InferAttributes<User>, CreationAttributes> {
         validate: { len: [2, 100] },
     })
     declare username: string;
+
+    @Unique
+    @AllowNull(true)
+    @Column(DataType.STRING)
+    declare slug: string | null;
 
     @AllowNull(true)
     @Default(null)
@@ -110,7 +118,7 @@ export class User extends Model<InferAttributes<User>, CreationAttributes> {
     };
 
     static findByUsername = async (username: string, options?: FindOptions) => {
-        const where = { username, ...(options?.where ?? {}) };
+        const where = { slug: username.toLowerCase(), ...(options?.where ?? {}) };
         const user = await User.findOne({ ...options, where });
         return user;
     };
@@ -162,4 +170,34 @@ export class User extends Model<InferAttributes<User>, CreationAttributes> {
         BlockUserService.unblockUser(this, userId);
     isBlocked = async (userId: number) =>
         BlockUserService.isBlocked(this.id, userId);
+
+
+    // TODO: check for other uses of username and change to slug
+
+    @BeforeCreate
+    static async createSlug(instance: User) {
+        if (instance.changed("username")) {
+            instance.slug = instance.username
+                .toLowerCase()
+        }
+    }
+
+    @BeforeUpdate
+    static async updateSlug(instance: User) {
+        if (instance.changed("username")) {
+            instance.slug = instance.username
+                .toLowerCase()
+
+            const existingUser = await User.findOne({
+                where: {
+                    slug: instance.slug,
+                    id: { [Op.ne]: instance.id },
+                },
+            });
+
+            if (existingUser) {
+                throw new HttpException(400, "Username already exists");
+            }
+        }
+    }
 }

@@ -6,7 +6,7 @@ import { useLanguage } from "@features/language/model/useLanguage";
 
 export function UserInfo() {
     const navigate = useNavigate();
-    const { selectedUser, users, setUsers, setSelectedUser } = useChat();
+    const { selectedUser, users, setUsers, handleSelectUser } = useChat();
 
     const { getText } = useLanguage();
     const text = getText("chat.blockUserButton");
@@ -15,16 +15,17 @@ export function UserInfo() {
     const handleBlockUser = async () => {
         await blockUserApi.blockUser(selectedUser.id);
         setUsers(users.filter((user) => user.id !== selectedUser.id));
-        setSelectedUser(null);
+        handleSelectUser();
     };
 
     return (
         <div
-            onClick={() => navigate(`/users/${selectedUser.id}`)}
+            onClick={() => navigate(`/profile/${selectedUser.id}`)}
             className="h-18 border-b gap-2 border-gray-800 flex items-center px-4 cursor-pointer shadow-[0_0_10px_rgba(0,255,255,0.3)] relative"
         >
             <UserPicture
                 userId={selectedUser.id}
+                size={8} 
                 className="w-10 h-10 rounded-full shadow-[0_0_8px_rgba(0,255,255,0.7)]"
             />
             <h3 className="font-semibold text-cyan-300 drop-shadow-[0_0_8px_rgba(0,255,255,0.8)]">

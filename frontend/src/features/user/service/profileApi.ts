@@ -78,20 +78,6 @@ class ProfileApi extends APIService {
             return false;
         }
     }
-
-    async getUserByIdOrUsername(
-        idOrUsername: string
-    ): Promise<UserDTOType | null> {
-        try {
-            const response: AxiosResponse<UserDTOType> = await this.api.get(
-                `/user/${idOrUsername}`
-            );
-            return response.data;
-        } catch (error) {
-            console.error("Error fetching user by ID or username:", error);
-            return null;
-        }
-    }
 }
 
 const service = new ProfileApi({});

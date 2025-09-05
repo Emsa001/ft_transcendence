@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useStats } from "../model/useStats";
 import { GameDTOType } from "shared";
 import { PlayerCard } from "./PlayerCard";
+import { useLanguage } from "@features/language/model/useLanguage";
 
 /*
     Test component to display game history.
@@ -29,18 +30,21 @@ export const PlayerGameHistory = ({ userId }: { userId: string | number }) => {
     if (!gameHistory.length)
         return (
             <div>
-                <p className="text-gray-300 text-center">
+                <h2 className="text-xl font-semibold mb-4 border-b border-gray-700 pb-2 text-gray-100">
+                    Game History
+                </h2>
+                <p className="h-124 text-gray-300 text-center">
                     No games found for this user.
                 </p>
             </div>
         );
 
     return (
-        <div className="max-w-2xl mx-auto p-6 rounded-2xl shadow-lg bg-gradient-to-br from-purple-500/30 to-blue-500/30 backdrop-blur-lg border border-white/20">
-            <h1 className="text-2xl font-bold text-white mb-6 text-center">
+        <div >
+            <h2 className="text-xl font-bold mb-4 border-b border-gray-700 pb-2">
                 Game History
-            </h1>
-            <div className="flex flex-col gap-4  overflow-auto max-h-[500px]">
+            </h2>
+            <div className="h-124 overflow-y-auto rounded-lg scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-800">
                 {gameHistory.map((game) => (
                     <GameCard key={game.id} game={game} />
                 ))}
@@ -50,26 +54,24 @@ export const PlayerGameHistory = ({ userId }: { userId: string | number }) => {
 };
 
 const GameCard = ({ game }: { game: GameDTOType }) => {
-    const winner =
-        game.players.find((p) => p.id === Number(game.winner))?.username ||
-        "No Winner";
+    const winner = game.winner ||  "No Winner";
 
     return (
-        <div className="p-4 rounded-xl bg-white/10 backdrop-blur-md border border-white/10 text-white">
-            <GameHeader winner={winner} date={game.createdAt} />
-            <div className="grid grid-cols-2 gap-3">
-                {game.players.map((player) => (
-                    <PlayerCard key={player.id} player={player} />
-                ))}
+            <div className="bg-gray-700/50 rounded-lg pl-2">
+                <GameHeader winner={winner} date={game.createdAt} />
+                <div className="flex items-center justify-evenly p-2">
+                    {game.players.map((player) => (
+                        <PlayerCard key={player.id} player={player} />
+                    ))}
+                </div>
             </div>
-        </div>
     );
 };
 
 const GameHeader = ({ winner, date }: { winner: string; date: Date }) => (
-    <div className="flex justify-between mb-3">
+    <div className="flex justify-between px-4 pt-2 ">
         <span className="font-semibold">
-            Winner: <span className="text-green-300">{winner}</span>
+            Winner: <span className="text-green-500/80 pl-1">{winner}</span>
         </span>
         <span className="text-sm text-white/70">
             {new Date(date).toLocaleDateString()}

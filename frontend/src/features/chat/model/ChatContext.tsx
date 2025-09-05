@@ -1,5 +1,5 @@
 import { useUser } from "@features/auth/model/useUser";
-import React, { createContext, useContext, useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useNavigate, useState } from "react";
 import { MessageDTOType, UserDTOType } from "shared";
 import FriendsApi from "@features/user/service/friendsApi";
 import { Toast } from "@shared/lib/Toast";
@@ -7,6 +7,7 @@ import { Toast } from "@shared/lib/Toast";
 interface ChatContextType {
     selectedUser: UserDTOType | null;
     setSelectedUser: (user: UserDTOType | null) => void;
+    handleSelectUser: (user?: UserDTOType) => void;
     users: UserDTOType[];
     setUsers: (users: UserDTOType[]) => void;
     messages: MessageDTOType[];
@@ -26,6 +27,15 @@ export const ChatProvider = ({ children }: { children?: ReactNode }) => {
     const [ws, setWs] = useState<WebSocket | null>(null);
     const [isBlocked, setIsBlocked] = useState(false);
     const { user: currentUser } = useUser();
+
+    const navigate = useNavigate();
+
+    const handleSelectUser = (user?: UserDTOType) => {
+        if(!user) 
+            navigate("/chat");
+        else 
+            navigate(`/chat/${user.id}`);
+    };
 
     useEffect(() => {
         const fetchUsers = async () => {
@@ -75,6 +85,7 @@ export const ChatProvider = ({ children }: { children?: ReactNode }) => {
     const value: ChatContextType = {
         selectedUser,
         setSelectedUser,
+        handleSelectUser,
         users,
         setUsers,
         messages,
