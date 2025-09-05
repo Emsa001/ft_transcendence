@@ -53,7 +53,7 @@ class ProfileApi extends APIService {
             });
             return response.data.picture as string;
         } catch (error) {
-            Alert.error("Failed to update picture.");
+            Toast.error("Failed to update picture.");
             return null;
         }
     }
