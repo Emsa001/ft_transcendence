@@ -181,11 +181,9 @@ class GameEngine {
         const paddleIds = Object.keys(this.paddles).map(Number);
         if (this.ball.pos.x < -20) {
             this.onScore?.(paddleIds[1]); // Right player scores
-            console.log("Score handled by game engine");
             gameEvents.reset();
         } else if (this.ball.pos.x > baseW + 20) {
             this.onScore?.(paddleIds[0]); // Left player scores
-            console.log("Score handled by game engine");
             gameEvents.reset();
         }
     }
