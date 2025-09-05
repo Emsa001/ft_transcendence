@@ -38,21 +38,20 @@ export const getApp = () => {
     return app;
 };
 
-const isProduction: boolean = true;
+const isProduction = process.env.NODE_ENV === "production";
 
 export default async function App() {
-    if(isProduction)
-    {
-        app = Fastify({ 
+    if (isProduction) {
+        app = Fastify({
+            logger: false,
             https: {
                 key: fs.readFileSync("ssl/key.pem"),
                 cert: fs.readFileSync("ssl/cert.pem"),
-            },
-            logger: false 
+            }
         });
     } else {
-        app = Fastify({ 
-            logger: false 
+        app = Fastify({
+            logger: false
         });
     }
 
@@ -109,6 +108,12 @@ export default async function App() {
         endpoint: "/metrics",
         defaultMetrics: { enabled: true },
         routeMetrics: { enabled: true },
+    });
+
+
+    // health endpoint here
+    app.get('/api/health', async (request, reply) => {
+    return { status: 'ok' };
     });
 
     return app;

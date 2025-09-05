@@ -3,14 +3,10 @@ services:
     build:
       context: .
       dockerfile: ./backend/Dockerfile
-    volumes:
-      - ./backend/db.sqlite:/app/db.sqlite
-      - ./backend:/app/backend
-      - ./shared:/app/shared
-    ports:
-      - "8000:8000"
     env_file:
       - ./backend/.env
+    environment:
+      - NODE_ENV=development
     networks:
       - monitoring
 
@@ -22,16 +18,18 @@ services:
       - monitoring
 
   nginx:
-    image: nginx:1.27-alpine
+    build:
+      context: .
+      dockerfile: ./frontend/Dockerfile
     container_name: nginx
     ports:
       - "443:443"
-    volumes:
-      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
-      - ./nginx/certs:/etc/nginx/certs:ro
-      - ./frontend/dist:/usr/share/nginx/html:ro
+      - "8080:8080"
     networks:
       - monitoring
+    depends_on:
+      - backend
+      - frontend
 
 networks:
   monitoring:
