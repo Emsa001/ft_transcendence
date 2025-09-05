@@ -14,7 +14,7 @@ interface AlertParamObject {
         | "bottom-end";
 }
 
-export class Alert {
+export class Toast {
     static message(
         params: AlertParamObject | string,
         type: "info" | "success" | "error"
@@ -22,20 +22,24 @@ export class Alert {
         const message = typeof params === "string" ? params : params?.message;
         const place = typeof params === "string" ? "top-end" : params?.place;
 
-        Swal.fire({
+        const base = Swal.mixin({
+            toast: true,
             position: place,
             icon: type,
             title: message,
             showConfirmButton: false,
             timer: 1500,
+            theme: "dark",
         });
+
+        base.fire();
     }
 
     static error(params: AlertParamObject | string) {
-        Alert.message(params, "error");
+        Toast.message(params, "error");
     }
 
     static success(params: AlertParamObject | string) {
-        Alert.message(params, "success");
+        Toast.message(params, "success");
     }
 }

@@ -31,6 +31,20 @@ export class GameController extends BaseController {
     @AUTHORIZED
     async createGame(request: FastifyRequest, reply: FastifyReply) {
         const data = request.body as GameCreationAttributes;
+
+        const hasGame = await Game.findOne({
+            where: {
+                hostId: request.user.id,
+                status: [GameStatus.WAITING, GameStatus.IN_PROGRESS],
+            },
+        });
+
+        if (hasGame) {
+            return reply
+                .status(409)
+                .send({ message: "You already have a game in progress" });
+        }
+
         const room = await Game.create({
             hostId: request.user.id,
             isPrivate: data.isPrivate || false,
