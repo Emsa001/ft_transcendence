@@ -1,20 +1,22 @@
 import { useEffect, useRef } from "react";
-import { GameMessage } from "shared";
+import { GameMessage, MessageData } from "shared";
+
+interface showMessageProps {
+    message: MessageData;
+    duration?: number;
+    after?: () => void;
+}
 
 // TODO: Handle countdown through messages
 export const useGameMessages = () => {
-    const messages = useRef<GameMessage[] | null>(null);
+    const messages = useRef<MessageData | null>(null);
     const countdown = useRef<number | null>(null);
 
     const messageTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const countdownTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-    const showMessage = (
-        msgs: GameMessage[],
-        duration = 1000,
-        after?: () => void
-    ) => {
-        messages.current = msgs;
+    const showMessage = ({ message, duration, after }: showMessageProps) => {
+        messages.current = message;
         if (messageTimeoutRef.current) clearTimeout(messageTimeoutRef.current);
         messageTimeoutRef.current = setTimeout(() => {
             messages.current = null;

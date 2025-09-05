@@ -1,8 +1,9 @@
-import React from "react";
+import React, { useState } from "react";
 import Swal from "sweetalert2";
 import { useGame } from "@features/game/model/useGame";
 import { GameUserDTOType } from "shared";
 import { gameEngine } from "@features/game/service/GameEngine";
+import { aiEngine, AiLevel } from "@features/game/service/AiEngine";
 
 const defaultButton =
     "px-4 py-2 rounded-xl transition text-white font-bold shadow";
@@ -70,48 +71,65 @@ const GameActions = () => {
 };
 
 function Options() {
-    const { setPlayers } = useGame();
-    const handleVersus = () => {
-        const players: GameUserDTOType[] = [
-            { id: 0, username: "Player 1", score: 0 },
-            { id: 1, username: "Player 2", score: 0 },
-        ];
-        gameEngine.createPlayers(players);
-        setPlayers(players);
-    };
-    const handleComputer = () => {
-        const players: GameUserDTOType[] = [
-            { id: 0, username: "Player 1", score: 0 },
-            { id: 1, username: "Computer", score: 0 },
-        ];
+    const { state, setPlayers } = useGame();
+
+    const [mode, setMode] = useState<
+        "versus" | "ai_easy" | "ai_hard" | "ai_impossible"
+    >("versus");
+    const isRunning = state != "created" && state != "finished";
+
+    const handleChange = () => {
+        if (isRunning) return;
+        let players: GameUserDTOType[];
+        if (mode === "versus") {
+            players = [
+                { id: 0, username: "Player 1", score: 0 },
+                { id: 1, username: "Ai-Pong", score: 0 },
+            ];
+            aiEngine.level = AiLevel.EASY;
+            setMode("ai_easy");
+        } else if (mode === "ai_easy") {
+            players = [
+                { id: 0, username: "Player 1", score: 0 },
+                { id: 1, username: "Ai-Pong", score: 0 },
+            ];
+            aiEngine.level = AiLevel.HARD;
+            setMode("ai_hard");
+        } else if (mode === "ai_hard") {
+            players = [
+                { id: 0, username: "Player 1", score: 0 },
+                { id: 1, username: "Ai-Pong", score: 0 },
+            ];
+            aiEngine.level = AiLevel.IMPOSSIBLE;
+            setMode("ai_impossible");
+        } else {
+            players = [
+                { id: 0, username: "Player 1", score: 0 },
+                { id: 1, username: "Player 2", score: 0 },
+            ];
+            aiEngine.level = AiLevel.EASY;
+            setMode("versus");
+        }
         gameEngine.createPlayers(players);
         setPlayers(players);
     };
 
     return (
-        <div className="flex space-x-4 mb-2">
-            <button
-                onClick={handleVersus}
-                className={`${defaultButton} bg-blue-600/20 hover:bg-blue-600/30`}
-            >
-                Versus
-            </button>
-            <button
-                onClick={handleComputer}
-                className={`${defaultButton} bg-green-600/20 hover:bg-green-600/30`}
-            >
-                Computer
-            </button>
-        </div>
+        <button
+            onClick={handleChange}
+            className={`bg-white/10 ${defaultButton} ${isRunning ? "opacity-50" : "hover:bg-white/15"}`}
+        >
+            {mode}
+        </button>
     );
 }
 
 export const GameSettings = () => {
     return (
-        <div className="flex flex-col items-center justify-center space-y-2">
-            <Options />
+        <div className="flex gap-4 items-center justify-center">
             <MaxScoreSettings />
             <GameActions />
+            <Options />
         </div>
     );
 };

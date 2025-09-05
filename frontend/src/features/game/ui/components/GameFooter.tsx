@@ -8,6 +8,7 @@ const symbols: Record<string, string> = {
     w: "W",
     s: "S",
     space: "space",
+    ai: "🤖",
 };
 
 export function GameFooter() {
@@ -57,7 +58,9 @@ export function GameFooter() {
                             <kbd className="px-2 py-1 bg-white/10 rounded-md">
                                 {symbols[paddles[1].controls.up.toLowerCase()]}
                             </kbd>
-                            <kbd className="px-2 py-1 bg-white/10 rounded-md">
+                            <kbd
+                                className={`px-2 py-1 bg-white/10 rounded-md ${paddles[1].controls.down === "ai" && "hidden"}`}
+                            >
                                 {
                                     symbols[
                                         paddles[1].controls.down.toLowerCase()

@@ -1,6 +1,8 @@
-import { clamp } from "lodash";
+import { clamp, set } from "lodash";
 import { GameRenderer } from "./GameRender";
 import { Ball, GameUserDTOType, Paddle } from "shared";
+import { aiEngine } from "./AiEngine";
+import { gameEvents } from "./GameEvents";
 
 class GameEngine {
     ball: Ball;
@@ -8,13 +10,15 @@ class GameEngine {
     aiPaddle?: boolean;
     keys: Record<string, boolean> = {};
     stopped = true;
-    onScore?: (scorerId: number) => void;
 
-    private readonly defaultBallSpeed = 7.5;
-    private readonly paddleWidth = 14;
-    private readonly paddleHeight = 120;
-    private readonly paddleSpeed = 9;
-    private readonly paddlePadding = 40;
+    onScore?: (scorerId: number) => void;
+    onRandomEvent?: (event: string) => void;
+
+    readonly defaultBallSpeed = 7.5;
+    readonly paddleWidth = 14;
+    readonly paddleHeight = 120;
+    readonly paddleSpeed = 9;
+    readonly paddlePadding = 40;
 
     constructor() {
         this.ball = {
@@ -38,7 +42,7 @@ class GameEngine {
         if (
             players &&
             players.length === 2 &&
-            players[1].username === "Computer"
+            players[1].username === "Ai-Pong"
         ) {
             this.aiPaddle = true;
         } else {
@@ -59,8 +63,8 @@ class GameEngine {
                       (this.paddlePadding + this.paddleWidth);
 
             const controls = {
-                up: index === 0 ? "w" : !this.aiPaddle ? "arrowup" : "",
-                down: index === 0 ? "s" : !this.aiPaddle ? "arrowdown" : "",
+                up: index === 0 ? "w" : !this.aiPaddle ? "arrowup" : "ai",
+                down: index === 0 ? "s" : !this.aiPaddle ? "arrowdown" : "ai",
             };
 
             this.paddles[player.id] = {
@@ -105,38 +109,25 @@ class GameEngine {
     update(): void {
         if (this.stopped) return;
 
+        gameEvents.tryEvent();
+
         this.updatePaddles();
         this.updateBall();
         this.handleCollisions();
         this.handleScoring();
     }
-    private aiPaddleAlgo(baseH: number, padding: number): void {
-        const paddle = this.paddles[1];
-        if (
-            this.ball.pos.y + this.ball.size / 2 <
-            paddle.pos.y + paddle.size.y / 2 - 10
-        )
-            paddle.pos.y -= paddle.speed;
-        else if (
-            this.ball.pos.y + this.ball.size / 2 >
-            paddle.pos.y + paddle.size.y / 2 + 10
-        )
-            paddle.pos.y += paddle.speed;
-        paddle.pos.y = clamp(
-            paddle.pos.y,
-            padding,
-            baseH - paddle.size.y - padding
-        );
-    }
 
     private updatePaddles(): void {
         const { baseH, padding } = GameRenderer;
         Object.values(this.paddles).forEach((p) => {
+            if (this.aiPaddle && p.controls.up === "ai") return;
             if (this.keys[p.controls.up]) p.pos.y -= p.speed;
             if (this.keys[p.controls.down]) p.pos.y += p.speed;
             p.pos.y = clamp(p.pos.y, padding, baseH - p.size.y - padding);
         });
-        if (this.aiPaddle) this.aiPaddleAlgo(baseH, padding);
+        if (this.aiPaddle) {
+            aiEngine.update(this.paddles[1], this.ball);
+        }
     }
 
     private updateBall(): void {
@@ -188,9 +179,15 @@ class GameEngine {
     private handleScoring(): void {
         const { baseW } = GameRenderer;
         const paddleIds = Object.keys(this.paddles).map(Number);
-        if (this.ball.pos.x < -20)
+        if (this.ball.pos.x < -20) {
             this.onScore?.(paddleIds[1]); // Right player scores
-        else if (this.ball.pos.x > baseW + 20) this.onScore?.(paddleIds[0]); // Left player scores
+            console.log("Score handled by game engine");
+            gameEvents.reset();
+        } else if (this.ball.pos.x > baseW + 20) {
+            this.onScore?.(paddleIds[0]); // Left player scores
+            console.log("Score handled by game engine");
+            gameEvents.reset();
+        }
     }
 }
 

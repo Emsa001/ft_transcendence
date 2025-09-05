@@ -33,7 +33,13 @@ export const GameCanvasLocal = () => {
             renderer.drawSpeed(gameEngine.ball);
             renderer.drawPaddles(gameEngine.paddles);
             renderer.drawCountDown(countdown.current);
-            renderer.drawMessages(messages.current);
+
+            if (messages.current) {
+                renderer.drawMessages(
+                    messages.current.messages,
+                    messages.current.cover
+                );
+            }
 
             rafRef.current = requestAnimationFrame(loop);
         };
@@ -75,7 +81,13 @@ export const GameCanvasRemote = () => {
                 }
                 renderer.drawPaddles(frameRef.current?.paddles ?? {});
             }
-            renderer.drawMessages(messages.current);
+
+            if (messages.current) {
+                renderer.drawMessages(
+                    messages.current.messages,
+                    messages.current.cover
+                );
+            }
 
             rafRef.current = requestAnimationFrame(loop);
         };
