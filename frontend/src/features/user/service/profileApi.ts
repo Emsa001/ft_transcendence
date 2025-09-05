@@ -40,6 +40,7 @@ class ProfileApi extends APIService {
         }
     }
 
+    // TODO: handle errors properly and return types properly
     async updateUserPicture(file: File): Promise<string | null> {
         const formData = new FormData();
         formData.append("file", file);
@@ -52,7 +53,7 @@ class ProfileApi extends APIService {
             });
             return response.data.picture as string;
         } catch (error) {
-            console.error("API Error:", error);
+            Alert.error("Failed to update picture.");
             return null;
         }
     }

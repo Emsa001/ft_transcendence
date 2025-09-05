@@ -19,10 +19,15 @@ async function uploadImage(image: MultipartFile, fileName: string) {
     }
 
     fileName += ".webp";
-
     const filePath = path.join(imagesDir, fileName);
 
-    await sharp(await image.toBuffer())
+    const buffer = await image.toBuffer();
+
+    const MAX_WIDTH = 512;
+    const MAX_HEIGHT = 512;
+
+    await sharp(buffer)
+        .resize({ width: MAX_WIDTH, height: MAX_HEIGHT, fit: "inside" })
         .webp({ quality: 80 })
         .toFile(filePath);
 
