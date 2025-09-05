@@ -7,14 +7,24 @@ RUN npm install
 
 COPY frontend ./
 COPY shared ../shared
-RUN npm run build  
-# creates /dist
+RUN npm run build   
+# produces /dist
 
 # Stage 2: NGINX
 FROM nginx:alpine
+
+# Copy React build
 COPY --from=build /app/frontend/dist /usr/share/nginx/html
-COPY nginx/nginx.conf /etc/nginx/conf.d/default.conf
+
+# Copy Nginx config
+COPY nginx/nginx.conf /etc/nginx/nginx.conf
+
+# Copy certificates
 COPY nginx/certs /etc/nginx/certs
 
+# Make sure nginx can read files
+RUN chmod -R 755 /usr/share/nginx/html
+
 EXPOSE 443
+
 CMD ["nginx", "-g", "daemon off;"]
