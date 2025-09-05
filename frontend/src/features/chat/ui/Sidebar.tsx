@@ -23,7 +23,7 @@ const UserCard = ({ user, isOnline, selectedUser, onClick }: UserCardProps) => {
             <div className="relative">
                 <UserPicture
                     userId={user.id}
-                    size={8} 
+                    size={8}
                     className="w-10 h-10 rounded-full shadow-[0_0_8px_rgba(0,255,255,0.7)]"
                 />
                 <span
@@ -37,19 +37,19 @@ const UserCard = ({ user, isOnline, selectedUser, onClick }: UserCardProps) => {
             </span>
         </div>
     );
-}
+};
 
 export const Sidebar = ({ userId }: { userId?: string }) => {
-    const { users, selectedUser, setSelectedUser, handleSelectUser } = useChat();
+    const { users, selectedUser, setSelectedUser, handleSelectUser } =
+        useChat();
     const { onlineUsers } = useOnlineUsers();
-    useEffect( () => {
+    useEffect(() => {
         if (userId) {
             console.log(users);
             const user = users.find((u) => u.id === parseInt(userId));
-            if (user)
-                setSelectedUser(user);
+            if (user) setSelectedUser(user);
         }
-    },[userId, users]);
+    }, [userId, users]);
 
     const { getText } = useLanguage();
     const text = getText("chat.friends");

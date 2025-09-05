@@ -26,18 +26,14 @@ export default function Friends() {
 
     return (
         <div className="w-full h-full">
-
             <FriendsProvider>
                 <div className="flex flex-col h-full w-full text-white p-1 ">
-
                     <div className="grow-[1]">
-
-                    <FindNewFriends />
+                        <FindNewFriends />
                     </div>
 
                     <div className="grow-[2]">
-
-                    <FriendsList />
+                        <FriendsList />
                     </div>
 
                     <div className="flex flex-row grow-[3]">

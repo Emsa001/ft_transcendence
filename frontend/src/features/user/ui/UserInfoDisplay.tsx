@@ -20,4 +20,4 @@ export function UserInfoDisplay({ user }: { user: UserDTOType }) {
             <p className="text-gray-400">{text}</p>
         </div>
     );
-};
+}

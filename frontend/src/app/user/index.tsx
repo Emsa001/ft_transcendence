@@ -10,7 +10,6 @@ import { UserInfo } from "@features/user/ui/UserInfo";
 import blockUserApi from "@features/user/service/blockUserApi";
 import FriendsApi from "@features/user/service/friendsApi";
 
-
 export default function User({ username }: { username?: string }) {
     const [user, setUser] = useState<UserDTOType | null>(null);
     const [loading, setLoading] = useState(true);
@@ -26,7 +25,8 @@ export default function User({ username }: { username?: string }) {
             try {
                 setLoading(true);
                 setError(null);
-                const newUser = await FriendsApi.getUserByIdOrUsername(username);
+                const newUser =
+                    await FriendsApi.getUserByIdOrUsername(username);
                 setUser(newUser);
             } catch (err) {
                 setError("Failed to load user profile");
@@ -43,12 +43,14 @@ export default function User({ username }: { username?: string }) {
         fetchUser();
     }, [username]);
 
-    if (loading) {	
+    if (loading) {
         return (
             <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-black via-zinc-900 to-black">
                 <div className="text-center">
                     <div className="w-12 h-12 border-4 border-purple-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                    <div className="text-white text-xl">Loading user profile...</div>
+                    <div className="text-white text-xl">
+                        Loading user profile...
+                    </div>
                 </div>
             </div>
         );
@@ -58,10 +60,15 @@ export default function User({ username }: { username?: string }) {
         return (
             <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-black via-zinc-900 to-black">
                 <section className="max-w-md w-full backdrop-blur-xl bg-white/5 rounded-2xl p-8 border border-red-500/20 text-center">
-                    <Icon icon={FaBan} className="text-red-400 w-16 h-16 mx-auto mb-4" />
-                    <h1 className="text-2xl font-bold text-red-400 mb-2">Error</h1>
+                    <Icon
+                        icon={FaBan}
+                        className="text-red-400 w-16 h-16 mx-auto mb-4"
+                    />
+                    <h1 className="text-2xl font-bold text-red-400 mb-2">
+                        Error
+                    </h1>
                     <p className="text-gray-300 mb-4">{error}</p>
-                    <button 
+                    <button
                         onClick={() => window.location.reload()}
                         className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors"
                     >
@@ -76,9 +83,16 @@ export default function User({ username }: { username?: string }) {
         return (
             <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-black via-zinc-900 to-black">
                 <section className="max-w-md w-full backdrop-blur-xl bg-white/5 rounded-2xl p-8 border border-red-500/20 text-center">
-                    <Icon icon={FaBan} className="text-red-400 w-16 h-16 mx-auto mb-4" />
-                    <h1 className="text-2xl font-bold text-red-400 mb-2">User Blocked</h1>
-                    <p className="text-gray-300 mb-4">You have been blocked from viewing this profile.</p>
+                    <Icon
+                        icon={FaBan}
+                        className="text-red-400 w-16 h-16 mx-auto mb-4"
+                    />
+                    <h1 className="text-2xl font-bold text-red-400 mb-2">
+                        User Blocked
+                    </h1>
+                    <p className="text-gray-300 mb-4">
+                        You have been blocked from viewing this profile.
+                    </p>
                     <button
                         onClick={() => navigate("/home")}
                         className="px-4 py-2 bg-red-500 hover:bg-red-600 text-white rounded-lg transition-colors"

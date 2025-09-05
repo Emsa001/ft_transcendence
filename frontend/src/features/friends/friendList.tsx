@@ -45,14 +45,17 @@ export function FriendsList() {
             <div className="overflow-y-auto max-h-96 space-y-2">
                 {friends.map((friend: UserDTOType) => (
                     <div
-                    key={friend.id}
-                    className="overflow-y-auto
+                        key={friend.id}
+                        className="overflow-y-auto
                     bg-white/5 rounded-lg p-4 border border-white/10 hover:bg-white/10 transition-all duration-300"
                     >
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-4">
                                 <div className="relative">
-                                    <OtherUserPicture userId={friend.id} size={8} />
+                                    <OtherUserPicture
+                                        userId={friend.id}
+                                        size={8}
+                                    />
                                 </div>
                                 <div>
                                     <h3 className="text-lg font-semibold text-white-800">
@@ -62,8 +65,10 @@ export function FriendsList() {
                             </div>
                             <div className="flex gap-2 rounded bg-red-800 p-1">
                                 <button
-                                    onClick={() => handleRemoveFriend(friend.id)}
-                                    >
+                                    onClick={() =>
+                                        handleRemoveFriend(friend.id)
+                                    }
+                                >
                                     remove friend
                                 </button>
                             </div>

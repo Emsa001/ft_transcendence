@@ -25,7 +25,9 @@ export const UserStats = ({ userId }: { userId: string | number }) => {
             <div className="w-full p-6 md:p-8 min-h-[250px] flex items-center justify-center">
                 <div className="text-center">
                     <div className="w-8 h-8 border-4 border-purple-400 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
-                    <div className="text-white/80 animate-pulse">Loading player stats...</div>
+                    <div className="text-white/80 animate-pulse">
+                        Loading player stats...
+                    </div>
                 </div>
             </div>
         );
@@ -35,9 +37,16 @@ export const UserStats = ({ userId }: { userId: string | number }) => {
         return (
             <div className="w-full p-6 md:p-8 min-h-[250px] flex items-center justify-center">
                 <div className="text-center bg-red-500/10 p-6 rounded-xl border border-red-500/20">
-                    <Icon icon={FaChartLine} className="text-red-400 w-12 h-12 mx-auto mb-3 opacity-60" />
-                    <div className="text-red-400 font-medium mb-2">Stats Unavailable</div>
-                    <div className="text-red-300/70 text-sm">Failed to load player statistics</div>
+                    <Icon
+                        icon={FaChartLine}
+                        className="text-red-400 w-12 h-12 mx-auto mb-3 opacity-60"
+                    />
+                    <div className="text-red-400 font-medium mb-2">
+                        Stats Unavailable
+                    </div>
+                    <div className="text-red-300/70 text-sm">
+                        Failed to load player statistics
+                    </div>
                 </div>
             </div>
         );

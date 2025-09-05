@@ -25,7 +25,7 @@ export const UserInfo = () => {
         >
             <UserPicture
                 userId={selectedUser.id}
-                size={8} 
+                size={8}
                 className="w-10 h-10 rounded-full shadow-[0_0_8px_rgba(0,255,255,0.7)]"
             />
             <h3 className="font-semibold text-cyan-300 drop-shadow-[0_0_8px_rgba(0,255,255,0.8)]">

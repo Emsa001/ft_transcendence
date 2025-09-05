@@ -1,5 +1,11 @@
 import { useUser } from "@features/auth/model/useUser";
-import React, { createContext, useContext, useEffect, useNavigate, useState } from "react";
+import React, {
+    createContext,
+    useContext,
+    useEffect,
+    useNavigate,
+    useState,
+} from "react";
 import { MessageDTOType, UserDTOType } from "shared";
 import FriendsApi from "@features/user/service/friendsApi";
 import { Toast } from "@shared/lib/Toast";
@@ -31,10 +37,8 @@ export const ChatProvider = ({ children }: { children?: ReactNode }) => {
     const navigate = useNavigate();
 
     const handleSelectUser = (user?: UserDTOType) => {
-        if(!user) 
-            navigate("/chat");
-        else 
-            navigate(`/chat/${user.id}`);
+        if (!user) navigate("/chat");
+        else navigate(`/chat/${user.id}`);
     };
 
     useEffect(() => {

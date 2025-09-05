@@ -1,8 +1,8 @@
 import React, { useState, useRef } from "react";
 import { useChat } from "../model/ChatContext";
 import { useLanguage } from "@features/language/model/useLanguage";
-import GameApi from "../../game/service/GameAPI";
 import { Toast } from "@shared/lib/Toast";
+import GameApi from "../../game/service/GameApi";
 
 let errorTimeout: NodeJS.Timeout;
 

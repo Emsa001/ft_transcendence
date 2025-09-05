@@ -1,6 +1,23 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react";
-import { FaComments, FaUsers, FaBan, FaUserFriends, FaAddressBook, FaUserPlus, FaUserMinus, FaUserClock, FaUserAlt, FaUserAltSlash, FaUserCog, FaRegUser, FaUserMd, FaUserLock, FaUserCircle, FaUserSlash } from "react-icons/fa";
+import {
+    FaComments,
+    FaUsers,
+    FaBan,
+    FaUserFriends,
+    FaAddressBook,
+    FaUserPlus,
+    FaUserMinus,
+    FaUserClock,
+    FaUserAlt,
+    FaUserAltSlash,
+    FaUserCog,
+    FaRegUser,
+    FaUserMd,
+    FaUserLock,
+    FaUserCircle,
+    FaUserSlash,
+} from "react-icons/fa";
 import { UserDTOType } from "shared";
 import { Icon } from "@shared/components/Icon";
 import { useUser } from "@features/auth/model/useUser";
@@ -9,7 +26,6 @@ import FriendsApi from "../service/friendsApi";
 import blockUserApi from "../service/blockUserApi";
 import { set } from "lodash";
 import { Toast } from "@shared/lib/Toast";
-
 
 export function UserInfo({ user }: { user: UserDTOType }) {
     const { getText } = useLanguage();
@@ -24,10 +40,7 @@ export function UserInfo({ user }: { user: UserDTOType }) {
     const handleAddFriend = async () => {
         const response = await FriendsApi.addFriend(user.id);
         if (response) {
-            setSentRequests([
-                ...sentRequests,
-                { id: user.id } as UserDTOType,
-            ]);
+            setSentRequests([...sentRequests, { id: user.id } as UserDTOType]);
         }
     };
 
@@ -42,16 +55,15 @@ export function UserInfo({ user }: { user: UserDTOType }) {
         await FriendsApi.removeFriend(user.id);
         setIsFriend(false);
         Toast.success("Friend removed successfully.");
-    }
+    };
 
     const handleChat = () => {
         if (isFriend) {
             navigate(`/chat/${user.id}`);
-        }
-        else {
+        } else {
             Toast.error("You can only chat with friends.");
         }
-    }
+    };
 
     const handleBlockUser = async () => {
         await blockUserApi.blockUser(user.id);
@@ -63,22 +75,18 @@ export function UserInfo({ user }: { user: UserDTOType }) {
         await blockUserApi.unblockUser(user.id);
         setIsBlocked(false);
         Toast.success("User has been unblocked.");
-    }
-    
-    
+    };
 
     useEffect(() => {
         const fetchSentRequests = async () => {
             const sent = await FriendsApi.getAllSentRequests();
             setSendedRequest(sent);
-            if (sent.some((req) => req.id === user.id))
-                setIsPending(true);
+            if (sent.some((req) => req.id === user.id)) setIsPending(true);
         };
 
         const fetchFriendStatus = async () => {
             const allFriends = await FriendsApi.getAllFriends();
-            if (allFriends.some((friend) => friend.id === user.id))
-            {
+            if (allFriends.some((friend) => friend.id === user.id)) {
                 setIsPending(false);
                 setIsFriend(true);
             }
@@ -88,14 +96,12 @@ export function UserInfo({ user }: { user: UserDTOType }) {
             const blockedUsers = await blockUserApi.getAll();
             if (blockedUsers.some((blocked) => blocked.id === user.id))
                 setIsBlocked(true);
-        }
+        };
 
         fetchSentRequests();
         fetchFriendStatus();
         fetchBlockStatus();
     }, [sentRequests]);
-
-    
 
     return (
         <div className="w-full">
@@ -114,45 +120,47 @@ export function UserInfo({ user }: { user: UserDTOType }) {
                     </div>
                 </div>
                 <div className="grid grid-cols-3 mt-1 justify-items-center items-center">
-                        
-                        <Icon   icon={FaComments} 
-                            className={`mx-2 ${isFriend ? "text-purple-400/80" : "text-gray-400/80"}  w-9 h-9 hover:w-10 hover:h-10 hover:cursor-pointer`} 
-                            onClick={handleChat} 
+                    <Icon
+                        icon={FaComments}
+                        className={`mx-2 ${isFriend ? "text-purple-400/80" : "text-gray-400/80"}  w-9 h-9 hover:w-10 hover:h-10 hover:cursor-pointer`}
+                        onClick={handleChat}
+                    />
+
+                    {isPending ? (
+                        <Icon
+                            icon={FaUserClock}
+                            className="mx-2 text-emerald-400/80 w-9 h-9 hover:w-10 hover:h-10 hover:cursor-pointer"
+                            onClick={handleCancelRequest}
                         />
+                    ) : isFriend ? (
+                        <Icon
+                            icon={FaUserMinus}
+                            className="ml-2 text-amber-500/70 w-9 h-9 hover:w-10 hover:h-10 hover:cursor-pointer"
+                            onClick={handleRemoveFriend}
+                        />
+                    ) : (
+                        <Icon
+                            icon={FaUserPlus}
+                            className="mx-2 text-indigo-300/80 w-9 h-9 hover:w-10 hover:h-10 hover:cursor-pointer"
+                            onClick={handleAddFriend}
+                        />
+                    )}
 
-                        {isPending ? (
-                            <Icon   icon={FaUserClock} 
-                                className="mx-2 text-emerald-400/80 w-9 h-9 hover:w-10 hover:h-10 hover:cursor-pointer" 
-                                onClick={handleCancelRequest} 
-                                />
-                            ) 
-                        : isFriend? (
-                            <Icon   icon={FaUserMinus} 
-                                    className="ml-2 text-amber-500/70 w-9 h-9 hover:w-10 hover:h-10 hover:cursor-pointer" 
-                                    onClick={handleRemoveFriend} 
-                                />) 
-                        : (
-                            <Icon   icon={FaUserPlus} 
-                                    className="mx-2 text-indigo-300/80 w-9 h-9 hover:w-10 hover:h-10 hover:cursor-pointer" 
-                                    onClick={handleAddFriend} 
-                                />
-                            )
-                        }
-
-                        {!isBlocked ? (
-                            <Icon   icon={FaBan} 
+                    {!isBlocked ? (
+                        <Icon
+                            icon={FaBan}
                             className="mx-2 text-red-400/70 w-9 h-9 hover:w-10 hover:h-10 hover:cursor-pointer"
                             onClick={handleBlockUser}
-                            />
-                        ) : (
-                            <Icon   icon={FaUserSlash} 
+                        />
+                    ) : (
+                        <Icon
+                            icon={FaUserSlash}
                             className="mx-2 text-gray-400/70 w-9 h-9 hover:w-10 hover:h-10 hover:cursor-pointer"
                             onClick={handleUnblockUser}
-                            />
-                        )}
+                        />
+                    )}
                 </div>
             </div>
-            
         </div>
     );
-};
+}

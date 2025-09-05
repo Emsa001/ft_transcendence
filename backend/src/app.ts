@@ -8,7 +8,7 @@ import cors from "@fastify/cors";
 import cookie from "@fastify/cookie";
 import middie from "@fastify/middie";
 
-import fs from "fs"
+import fs from "fs";
 
 import { registerDB } from "./database/client";
 import { UserController } from "./modules/user/user.controller";
@@ -47,11 +47,11 @@ export default async function App() {
             https: {
                 key: fs.readFileSync("ssl/key.pem"),
                 cert: fs.readFileSync("ssl/cert.pem"),
-            }
+            },
         });
     } else {
         app = Fastify({
-            logger: false
+            logger: false,
         });
     }
 
@@ -112,10 +112,9 @@ export default async function App() {
         routeMetrics: { enabled: true },
     });
 
-
     // health endpoint here
-    app.get('/api/health', async (request, reply) => {
-    return { status: 'ok' };
+    app.get("/api/health", async (request, reply) => {
+        return { status: "ok" };
     });
 
     return app;

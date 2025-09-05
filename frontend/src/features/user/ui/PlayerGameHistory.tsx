@@ -40,7 +40,7 @@ export const PlayerGameHistory = ({ userId }: { userId: string | number }) => {
         );
 
     return (
-        <div >
+        <div>
             <h2 className="text-xl font-bold mb-4 border-b border-gray-700 pb-2">
                 Game History
             </h2>
@@ -54,17 +54,17 @@ export const PlayerGameHistory = ({ userId }: { userId: string | number }) => {
 };
 
 const GameCard = ({ game }: { game: GameDTOType }) => {
-    const winner = game.winner ||  "No Winner";
+    const winner = game.winner || "No Winner";
 
     return (
-            <div className="bg-gray-700/50 rounded-lg pl-2">
-                <GameHeader winner={winner} date={game.createdAt} />
-                <div className="flex items-center justify-evenly p-2">
-                    {game.players.map((player) => (
-                        <PlayerCard key={player.id} player={player} />
-                    ))}
-                </div>
+        <div className="bg-gray-700/50 rounded-lg pl-2">
+            <GameHeader winner={winner} date={game.createdAt} />
+            <div className="flex items-center justify-evenly p-2">
+                {game.players.map((player) => (
+                    <PlayerCard key={player.id} player={player} />
+                ))}
             </div>
+        </div>
     );
 };
 

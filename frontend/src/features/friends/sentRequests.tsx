@@ -4,7 +4,6 @@ import { UserDTOType } from "shared";
 import { useFriends } from "./context";
 import { OtherUserPicture } from "@features/user/ui/UserPicture";
 
-
 export function SentRequests() {
     const { sentRequests, setSentRequests } = useFriends();
 
@@ -42,7 +41,10 @@ export function SentRequests() {
                     >
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-4">
-                                <OtherUserPicture userId={request.id} size={8} />
+                                <OtherUserPicture
+                                    userId={request.id}
+                                    size={8}
+                                />
                                 <h3 className=" text-lg font-semibold text-white">
                                     {request.username}
                                 </h3>

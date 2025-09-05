@@ -132,6 +132,6 @@ export const useAuth = () => {
         handleUsernameRegister,
         error,
         setError,
-		//fetchUser,
+        //fetchUser,
     };
 };

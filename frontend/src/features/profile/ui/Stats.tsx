@@ -68,4 +68,3 @@ export const Stats = ({ userId }: StatsProps) => {
         </div>
     );
 };
-

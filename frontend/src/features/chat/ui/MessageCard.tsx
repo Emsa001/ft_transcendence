@@ -65,7 +65,6 @@ interface MessageProps {
     user: UserDTOType;
 }
 
-
 export const MessageCard = ({ msg, user }: MessageProps) => {
     const [isInvite, setIsInvite] = useState(false);
     const [code, setCode] = useState("");

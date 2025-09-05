@@ -118,7 +118,10 @@ export class User extends Model<InferAttributes<User>, CreationAttributes> {
     };
 
     static findByUsername = async (username: string, options?: FindOptions) => {
-        const where = { slug: username.toLowerCase(), ...(options?.where ?? {}) };
+        const where = {
+            slug: username.toLowerCase(),
+            ...(options?.where ?? {}),
+        };
         const user = await User.findOne({ ...options, where });
         return user;
     };
@@ -171,22 +174,19 @@ export class User extends Model<InferAttributes<User>, CreationAttributes> {
     isBlocked = async (userId: number) =>
         BlockUserService.isBlocked(this.id, userId);
 
-
     // TODO: check for other uses of username and change to slug
 
     @BeforeCreate
     static async createSlug(instance: User) {
         if (instance.changed("username")) {
-            instance.slug = instance.username
-                .toLowerCase()
+            instance.slug = instance.username.toLowerCase();
         }
     }
 
     @BeforeUpdate
     static async updateSlug(instance: User) {
         if (instance.changed("username")) {
-            instance.slug = instance.username
-                .toLowerCase()
+            instance.slug = instance.username.toLowerCase();
 
             const existingUser = await User.findOne({
                 where: {
