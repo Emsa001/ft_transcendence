@@ -29,6 +29,7 @@ interface RemoteTournamentContextType {
     player: TournamentUserDTOType | null;
     maxPlayers: number;
     error: string | null;
+    winner: string | null;
 
     start: () => Promise<void>;
     joinGame: (code: string) => void;
@@ -68,6 +69,7 @@ export const RemoteTournamentProvider = ({
     const [players, setPlayers] = useState<TournamentUserDTOType[]>([]);
     const [games, setGames] = useState<GameDTOType[]>([]);
     const [maxPlayers, setMaxPlayers] = useState<number>(16);
+    const [winner, setWinner] = useState<string | null>(null);
 
     const [currentGame, setCurrentGame] = useState<GameDTOType | null>(null);
 
@@ -93,11 +95,15 @@ export const RemoteTournamentProvider = ({
                 }
                 if (state.maxPlayers != maxPlayers)
                     setMaxPlayers(state.maxPlayers);
+                if (state.winner) {
+                    setWinner(state.winner);
+                }
                 break;
             }
 
             case "GAME_UPDATE": {
                 const game: GameDTOType = payload.game;
+
                 setGames((prev) => {
                     const exists = prev.some((g) => g.id === game.id);
                     if (exists) {
@@ -105,6 +111,7 @@ export const RemoteTournamentProvider = ({
                     }
                     return [...prev, game];
                 });
+
                 break;
             }
 
@@ -192,6 +199,7 @@ export const RemoteTournamentProvider = ({
         player,
         error,
         games,
+        winner,
 
         maxPlayers,
         currentGame,

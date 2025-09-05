@@ -39,7 +39,7 @@ export class TournamentEngine {
                     round: currentRound,
                     isPrivate: false,
                     tournamentId: -1,
-                    code: "0000000",
+                    code: Math.floor(1000 + Math.random() * 9000).toString(),
                     createdAt: new Date(),
                     updatedAt: new Date(),
                 });
@@ -76,6 +76,8 @@ export class TournamentEngine {
 
         const gamesForRound: GameDTOType[] = [];
         const gamesNeeded = Math.floor(playersInThisRound.length / 2);
+
+        playersInThisRound.sort(() => Math.random() - 0.5);
 
         for (let i = 0; i < Math.min(gamesNeeded, roundGames.length); i++) {
             const game = roundGames[i];

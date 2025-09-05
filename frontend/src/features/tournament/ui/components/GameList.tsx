@@ -33,7 +33,7 @@ export const GameList = ({ isLocal, onGameClick }: GameListProps) => {
                     >
                         <div className="flex justify-between items-center">
                             <span className="font-semibold text-gray-200">
-                                Game #{g.id} - {g.status.replace("_", " ")}{" "}
+                                Game #{g.code} - {g.status.replace("_", " ")}{" "}
                                 {g.round}
                             </span>
                             {g.winner && (

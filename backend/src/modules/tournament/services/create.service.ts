@@ -86,7 +86,9 @@ export class TournamentCreationService {
         }
 
         const games: Game[] = await tournament.getGames({
-            where: { status: GameStatus.LOCKED },
+            where: {
+                status: [GameStatus.LOCKED],
+            },
         });
 
         if (games.length === 0) {
@@ -108,6 +110,8 @@ export class TournamentCreationService {
             `Found ${roundGames.length} games to start in round ${tournament.round}`
         );
         const activePlayers = await tournament.getActivePlayers(); // already filtered by eliminated=false
+        activePlayers.sort(() => Math.random() - 0.5);
+
         const nextPowerOfTwo =
             activePlayers.length <= 2
                 ? 2

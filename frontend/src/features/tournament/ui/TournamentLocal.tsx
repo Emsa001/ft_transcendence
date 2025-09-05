@@ -1,7 +1,6 @@
 import React from "react";
 import { GameStatus, GameUserDTOType } from "shared";
 import { TournamentRegister } from "./components/TournamentRegister";
-import { TournamentViewer } from "./components/TournamentViewer";
 
 import { GameFooter } from "@features/game/ui/components/GameFooter";
 import { GameProvider } from "@features/game/model/useGame";
@@ -11,6 +10,7 @@ import {
     LocalTournamentProvider,
     useLocalTournament,
 } from "../model/useLocalTournament";
+import { LocalTournamentViewer } from "./components/TournamentViewer";
 
 export const TournamentLocal = () => {
     return (
@@ -48,7 +48,6 @@ const TournamentView = () => {
         };
 
         const onEnd = (winner: GameUserDTOType) => {
-            console.log("game ended, winner:", winner);
             setWinner(currentGame!.id, winner.username);
         };
 
@@ -71,7 +70,7 @@ const TournamentView = () => {
 
     return (
         <div className="w-full h-full">
-            <TournamentViewer />
+            <LocalTournamentViewer />
         </div>
     );
 };

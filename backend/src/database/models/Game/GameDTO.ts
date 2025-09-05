@@ -16,7 +16,7 @@ export class GameDTO implements GameDTOType {
     winner: string | null;
     createdAt: Date;
     updatedAt: Date;
-    tournamentId: number | null = null;
+    tournamentId: number | null;
 
     constructor(game: Game) {
         if (!game || !game.id)
@@ -48,7 +48,7 @@ export class GameDTO implements GameDTOType {
         this.winner = game.winnerId
             ? game.players.find((p) => p.id === game.winnerId)?.username || null
             : null;
-        this.tournamentId = game.tournamentId;
+        this.tournamentId = game.tournamentId ?? null;
         this.createdAt = game.createdAt;
         this.updatedAt = game.updatedAt;
     }

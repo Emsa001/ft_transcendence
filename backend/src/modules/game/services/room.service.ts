@@ -157,12 +157,14 @@ export class GameRoom extends WebSocketService {
             }
         }
 
-        this.engine.initPaddles(this.game.getGameUsers());
+        const players = this.game.getGameUsers();
+
+        this.engine.initPaddles(players);
         this.updateState();
         this.startGameLoop();
 
-        const player1 = this.game.players[0].username;
-        const player2 = this.game.players[1].username;
+        const player1 = players[0].username;
+        const player2 = players[1].username;
 
         this.gameMessage(
             GameMessages.intro(player1, player2, this.game.maxScore)

@@ -10,7 +10,7 @@ const symbols: Record<string, string> = {
     space: "space",
 };
 
-export function GameFooter() {
+export const GameFooter = () => {
     const { players } = useGame();
     const paddles = gameEngine.paddles;
 
@@ -70,4 +70,4 @@ export function GameFooter() {
             </div>
         </div>
     );
-}
+};

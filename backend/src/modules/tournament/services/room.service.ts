@@ -89,6 +89,8 @@ export class TournamentRoom extends WebSocketService {
             GameRooms.triggerHooks("onGameAvailabilityChange", this.tournament);
         }
 
+        await this.tournament.reload();
+
         this.broadcast({
             type: "PLAYER_DISCONNECTED",
             player: user.toDTO().gameUser(),
@@ -126,12 +128,17 @@ export class TournamentRoom extends WebSocketService {
         const eliminated = game.players.filter((p) => p.id != game.winnerId);
         for (const player of eliminated) {
             await tournament.eliminatePlayer(player.id);
+            console.log("Eliminated player", player.username);
         }
 
         const roundGames: Game[] = await tournament.getGames({
             where: {
                 round: game.round,
-                status: GameStatus.LOCKED,
+                status: [
+                    GameStatus.LOCKED,
+                    GameStatus.WAITING,
+                    GameStatus.IN_PROGRESS,
+                ],
             },
         });
 
@@ -148,6 +155,7 @@ export class TournamentRoom extends WebSocketService {
     }
 
     async updateState(client?: WebSocket) {
+        await this.tournament.reload({ include: ["players"] });
         const payload = {
             type: "STATE_UPDATE",
             state: await this.tournament.toDTO().withGames(),

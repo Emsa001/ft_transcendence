@@ -6,7 +6,7 @@ interface GameHeaderProps {
     code?: string;
 }
 
-export function GameHeader({ type, mode, code }: GameHeaderProps) {
+export const GameHeader = ({ type, mode, code }: GameHeaderProps) => {
     const navigate = useNavigate();
 
     const handleBack = () => {
@@ -48,4 +48,4 @@ export function GameHeader({ type, mode, code }: GameHeaderProps) {
             </button>
         </div>
     );
-}
+};

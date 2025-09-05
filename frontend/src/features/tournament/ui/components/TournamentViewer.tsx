@@ -1,26 +1,30 @@
 import React from "react";
-import { ShinyText } from "@shared/components/Shiny";
 import { GameList } from "./GameList";
-import { RegisterPlayerList, TournamentPlayerList } from "./PlayerList";
+import { RegisterPlayerList, sortPlayersByWins } from "./PlayerList";
 import { useLocalTournament } from "../../model/useLocalTournament";
 import { TournamentInfo } from "../remote/TournamentInfo";
+import { useRemoteTournament } from "@features/tournament/model/useRemoteTournament";
+import { GameRemote } from "@features/game/ui/GameRemote";
 
-export const TournamentViewer = () => {
+export const LocalTournamentViewer = () => {
     const {
         players,
         status,
         maxPlayers,
+        games,
         startRound,
         playGame,
         deleteTournament,
-        games,
+        winner,
     } = useLocalTournament();
 
     return (
         <div className="w-full h-full grid grid-cols-2 grid-rows-2 gap-2 p-6">
             {/* Player List */}
             <div className="w-full h-full">
-                <RegisterPlayerList players={players} />
+                <RegisterPlayerList
+                    players={sortPlayersByWins(players, games)}
+                />
             </div>
 
             {/* Tournament Info */}
@@ -28,6 +32,7 @@ export const TournamentViewer = () => {
                 <TournamentInfo
                     status={status}
                     players={players.length}
+                    winner={winner}
                     maxPlayers={maxPlayers}
                     onStart={startRound}
                     onDelete={deleteTournament}
@@ -40,42 +45,60 @@ export const TournamentViewer = () => {
             </div>
         </div>
     );
+};
+
+export const RemoteTournamentViewer = () => {
+    const {
+        player,
+        players,
+        status,
+        start,
+        host,
+        joinGame,
+        currentGame,
+        setCurrentGame,
+        maxPlayers,
+        games,
+        winner,
+    } = useRemoteTournament();
+
+    if (currentGame) {
+        const handleEnd = () => {
+            setCurrentGame(null);
+        };
+
+        return (
+            <div className="w-full h-full">
+                <GameRemote code={currentGame.code} onEnd={handleEnd} />
+            </div>
+        );
+    }
 
     return (
-        <div className="w-full h-full flex flex-col items-center justify-center">
-            {/* Title */}
-            <ShinyText
-                text="Tournament Viewer"
-                gradient="bg-logo-gradient"
-                className="text-5xl font-extrabold text-center mb-6"
-            />
-
-            {/* Main content area */}
-            <div className="relative w-full max-h-[50vh] max-w-6xl grid grid-cols-1 lg:grid-cols-3 gap-6 p-6 flex-1 overflow-hidden">
-                <TournamentPlayerList />
-                <GameList isLocal={true} />
+        <div className="max-w-[1600px] w-full h-full grid grid-cols-2 grid-rows-2 gap-2 p-6">
+            {/* Player List */}
+            <div className="w-full h-full">
+                <RegisterPlayerList
+                    players={sortPlayersByWins(players, games)}
+                    isLocal={false}
+                />
             </div>
 
-            {/* Buttons area pinned at bottom */}
-            <div className="flex gap-4 flex-wrap justify-center p-4 shrink-0">
-                <button
-                    className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700"
-                    onClick={startRound}
-                >
-                    Next Round
-                </button>
-                <button
-                    className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700"
-                    onClick={playGame}
-                >
-                    Play
-                </button>
-                <button
-                    className="px-4 py-2 bg-gray-600 text-white rounded hover:bg-gray-700"
-                    onClick={deleteTournament}
-                >
-                    Delete Tournament
-                </button>
+            {/* Tournament Info */}
+            <div className="w-full h-full">
+                <TournamentInfo
+                    status={status}
+                    host={players.find((p) => p.id === host)?.username}
+                    players={players.length}
+                    maxPlayers={maxPlayers}
+                    onStart={host === player?.id ? start : undefined}
+                    winner={winner}
+                />
+            </div>
+
+            {/* Games */}
+            <div className="w-full h-full col-span-2">
+                <GameList isLocal={false} onGameClick={joinGame} />
             </div>
         </div>
     );

@@ -6,7 +6,7 @@ interface MessageProps {
     user: UserDTOType;
 }
 
-export function MessageCard({ msg, user }: MessageProps) {
+export const MessageCard = ({ msg, user }: MessageProps) => {
     const time = msg.createdAt
         ? new Date(msg.createdAt).toLocaleTimeString([], {
               hour: "2-digit",
@@ -34,4 +34,4 @@ export function MessageCard({ msg, user }: MessageProps) {
             </span>
         </div>
     );
-}
+};

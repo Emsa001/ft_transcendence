@@ -6,6 +6,7 @@ interface TournamentInfoProps {
     host?: string;
     players: number;
     maxPlayers: number;
+    winner: string | null;
     onStart?: () => void;
     onDelete?: () => void;
 }
@@ -15,6 +16,7 @@ export const TournamentInfo = ({
     host,
     players,
     maxPlayers,
+    winner,
     onStart,
     onDelete,
 }: TournamentInfoProps) => {
@@ -38,6 +40,12 @@ export const TournamentInfo = ({
                 Players:{" "}
                 <span className="font-medium text-white">
                     {`${players}`} / {`${maxPlayers}`}
+                </span>
+            </p>
+            <p className="text-white/80 mb-4">
+                Winner:{" "}
+                <span className="font-medium text-white">
+                    {winner || "N/A"}
                 </span>
             </p>
 

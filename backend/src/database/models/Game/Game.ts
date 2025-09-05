@@ -142,10 +142,12 @@ export class Game extends Model<InferAttributes<Game>, GameCreationAttributes> {
         if (!this.players)
             throw new HttpException(500, "Players not loaded in Game instance");
 
-        return this.players.map((p) => ({
-            ...p.toDTO(),
-            score: p.GameUser.score,
-        }));
+        return this.players
+            .map((p) => ({
+                ...p.toDTO(),
+                score: p.GameUser.score,
+            }))
+            .sort((a, b) => a.id - b.id);
     }
 
     static findByCode = (code: string) => Game.findOne({ where: { code } });

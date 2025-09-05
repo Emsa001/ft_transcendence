@@ -10,7 +10,7 @@ interface UserPictureProps {
     className?: string;
 }
 
-export function UserPicture({ userId, className }: UserPictureProps) {
+export const UserPicture = ({ userId, className }: UserPictureProps) => {
     const [user, setUser] = useState<UserDTOType | null>(null);
     useEffect(() => {
         const fetchUserData = async () => {
@@ -41,9 +41,9 @@ export function UserPicture({ userId, className }: UserPictureProps) {
             )}
         </div>
     );
-}
+};
 
-export function MyPicture() {
+export const MyPicture = () => {
     const { user, setUser } = useUser();
 
     if (!user) return <div />;
@@ -87,4 +87,4 @@ export function MyPicture() {
             </label>
         </div>
     );
-}
+};

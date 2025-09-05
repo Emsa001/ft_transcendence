@@ -4,7 +4,7 @@ import blockUserApi from "@features/user/service/blockUserApi";
 import { useChat } from "../model/ChatContext";
 import { useLanguage } from "@features/language/model/useLanguage";
 
-export function UserInfo() {
+export const UserInfo = () => {
     const navigate = useNavigate();
     const { selectedUser, users, setUsers, setSelectedUser } = useChat();
 
@@ -41,4 +41,4 @@ export function UserInfo() {
             </button>
         </div>
     );
-}
+};

@@ -104,6 +104,7 @@ export const RemoteGameProvider = ({
             case "GAME_UPDATE": {
                 const state: GameDTOType = payload.state;
                 statusRef.current = state.status;
+
                 setStatus(state.status);
                 setMode(state.mode);
                 setIsPrivate(state.isPrivate);
@@ -205,7 +206,7 @@ export const RemoteGameProvider = ({
         round,
         maxScore,
         player,
-        players,
+        players: players.sort((a, b) => a.id - b.id),
         maxPlayers,
         winner,
         createdAt: new Date(),

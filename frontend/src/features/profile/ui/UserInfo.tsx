@@ -2,34 +2,37 @@ import { TwoFactorAuthDisable, TwoFactorAuthEnable } from "@features/auth";
 import { useAuth } from "@features/auth/model/useAuth";
 import { useUser } from "@features/auth/model/useUser";
 import { useLanguage } from "@features/language/model/useLanguage";
-import { MyPicture, UserPicture } from "@features/user/ui/UserPicture";
+import { MyPicture } from "@features/user/ui/UserPicture";
 import { Icon } from "@shared/components/Icon";
 import { Modal } from "@shared/components/Modal";
 import React, { useState } from "react";
 import { MdOutlineSecurity } from "react-icons/md";
 import { CiLogout } from "react-icons/ci";
+
 interface TwoFaModalProps {
     modalOpen: boolean;
     setModalOpen: (open: boolean) => void;
 }
 
-function TwoFaModal({ modalOpen, setModalOpen }: TwoFaModalProps) {
+const TwoFaModal = ({ modalOpen, setModalOpen }: TwoFaModalProps) => {
     const { user } = useUser();
     if (!user) return <div />;
     return (
         <div className="mt-6">
             <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)}>
-                {user.is2FAEnabled ? (
-                    <TwoFactorAuthDisable />
-                ) : (
-                    <TwoFactorAuthEnable />
-                )}
+                <div className="w-full h-full">
+                    {user.is2FAEnabled ? (
+                        <TwoFactorAuthDisable />
+                    ) : (
+                        <TwoFactorAuthEnable />
+                    )}
+                </div>
             </Modal>
         </div>
     );
-}
+};
 
-export function UserInfo() {
+export const UserInfo = () => {
     const { user } = useUser();
     const [modalOpen, setModalOpen] = useState(false);
     if (!user || !user.id) return <div />;
@@ -61,4 +64,4 @@ export function UserInfo() {
             <TwoFaModal modalOpen={modalOpen} setModalOpen={setModalOpen} />
         </div>
     );
-}
+};

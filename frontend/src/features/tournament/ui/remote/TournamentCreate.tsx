@@ -35,10 +35,10 @@ export const TournamentCreate = () => {
     };
 
     return (
-        <div className="">
+        <div className="absolute right-4">
             <button
                 onClick={() => setIsOpen(true)}
-                className="h-16 w-64 rounded-2xl font-semibold text-xl bg-emerald-200/10 hover:bg-emerald-300/10 text-white shadow-lg transition flex items-center justify-center"
+                className="px-3 py-2 rounded-2xl font-semibold bg-emerald-200/10 hover:bg-emerald-300/10 text-white shadow-lg transition"
             >
                 Create Tournament
             </button>

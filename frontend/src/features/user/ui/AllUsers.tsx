@@ -5,7 +5,7 @@ import ProfileApi from "../service/profileApi";
 import FriendsApi from "../service/friendsApi";
 import blockUserApi from "../service/blockUserApi";
 
-export function AllUsers() {
+export const AllUsers = () => {
     const [allUsers, setAllUsers] = useState<UserDTOType[]>([]);
     const [friends, setFriends] = useState<UserDTOType[]>([]);
     const [blockedUsers, setBlockedUsers] = useState<UserDTOType[]>([]);
@@ -136,4 +136,4 @@ export function AllUsers() {
             </div>
         </div>
     );
-}
+};

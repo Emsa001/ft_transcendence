@@ -12,7 +12,7 @@ export const TournamentCard = ({ tournament }: TournamentCardProps) => {
         <div
             className="rounded-2xl p-6 shadow-lg hover:shadow-2xl transition 
                         bg-gradient-to-br from-purple-900/40 to-blue-900/40 
-                        border border-white/10 backdrop-blur-xl"
+                        border border-white/10 backdrop-blur-xl min-w-sm max-w-sm"
         >
             <div className="flex justify-between items-center mb-3">
                 <h3 className="text-lg font-semibold text-white">

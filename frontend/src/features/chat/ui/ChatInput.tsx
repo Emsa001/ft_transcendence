@@ -4,7 +4,7 @@ import { useLanguage } from "@features/language/model/useLanguage";
 
 let errorTimeout: NodeJS.Timeout;
 
-export function ChatInput() {
+export const ChatInput = () => {
     const [input, setInput] = useState("");
     const [error, setError] = useState("");
     const [lobbyCode, setLobbyCode] = useState("");
@@ -111,4 +111,4 @@ export function ChatInput() {
             )}
         </div>
     );
-}
+};

@@ -15,7 +15,7 @@ export class TournamentDTO implements TournamentDTOType {
     round: number;
     maxScore: number;
     maxPlayers: number;
-    winnerId: number | null;
+    winner: string | null;
     uuid: string;
     hostId: number | null;
 
@@ -32,7 +32,10 @@ export class TournamentDTO implements TournamentDTOType {
             ...player.toDTO(),
             eliminated: player.TournamentUser.eliminated,
         }));
-        this.winnerId = tournament.winnerId || null;
+        this.winner = tournament.winnerId
+            ? tournament.players.find((p) => p.id === tournament.winnerId)
+                  ?.username || null
+            : null;
         this.uuid = tournament.uuid;
         this.hostId = tournament.hostId;
         this.tournament = tournament;

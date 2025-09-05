@@ -38,7 +38,7 @@ function UserCard({ user, isOnline, selectedUser, onClick }: UserCardProps) {
     );
 }
 
-export function Sidebar() {
+export const Sidebar = () => {
     const { users, selectedUser, setSelectedUser } = useChat();
     const { onlineUsers } = useOnlineUsers();
 
@@ -66,4 +66,4 @@ export function Sidebar() {
             </div>
         </div>
     );
-}
+};

@@ -8,7 +8,7 @@ import { useLanguage } from "@features/language/model/useLanguage";
 
 let ws: WebSocket | undefined;
 
-export function Friends() {
+export const Friends = () => {
     const [friends, setFriends] = useState<UserDTOType[]>([]);
     const [friendRequests, setFriendRequests] = useState<UserDTOType[]>([]);
     const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
@@ -80,4 +80,4 @@ export function Friends() {
             />
         </div>
     );
-}
+};

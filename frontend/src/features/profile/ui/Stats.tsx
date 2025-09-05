@@ -4,7 +4,7 @@ import { useStats } from "@features/user/model/useStats";
 import React, { useEffect, useState } from "react";
 import { GetStatisticsResponse } from "shared";
 
-export function Stats() {
+export const Stats = () => {
     const { fetchUserStats } = useStats();
     const [stats, setStats] = useState<GetStatisticsResponse | null>(null);
     const { user } = useUser();
@@ -65,4 +65,4 @@ export function Stats() {
             </div>
         </div>
     );
-}
+};

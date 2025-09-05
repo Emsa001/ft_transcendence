@@ -14,7 +14,7 @@ export interface TournamentDTOType {
     round: number;
     maxPlayers: number;
     maxScore: number;
-    winnerId: number | null;
+    winner: string | null;
     hostId: number | null;
     uuid: string;
 }

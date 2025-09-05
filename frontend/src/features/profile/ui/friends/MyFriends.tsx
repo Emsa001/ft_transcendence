@@ -9,7 +9,7 @@ interface MyFriendsProps {
     setFriends: (friends: UserDTOType[]) => void;
 }
 
-export function MyFriends({ friends, setFriends }: MyFriendsProps) {
+export const MyFriends = ({ friends, setFriends }: MyFriendsProps) => {
     const { getText } = useLanguage();
     const texts = getText("profile.friends");
 
@@ -45,4 +45,4 @@ export function MyFriends({ friends, setFriends }: MyFriendsProps) {
             ))}
         </div>
     );
-}
+};

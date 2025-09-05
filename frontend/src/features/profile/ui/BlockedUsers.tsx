@@ -4,7 +4,7 @@ import blockUserApi from "../../user/service/blockUserApi";
 import { UserPicture } from "@features/user/ui/UserPicture";
 import { useLanguage } from "@features/language/model/useLanguage";
 
-export function BlockedUsers() {
+export const BlockedUsers = () => {
     const [blockedUsers, setBlockedUsers] = useState<UserDTOType[]>([]);
     const { getText } = useLanguage();
     const texts = getText("profile.blockedUsers");
@@ -55,4 +55,4 @@ export function BlockedUsers() {
             </div>
         </div>
     );
-}
+};
