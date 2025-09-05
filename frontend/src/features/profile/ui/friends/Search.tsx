@@ -13,7 +13,7 @@ interface SearchModalProps {
     isOpen: boolean;
 }
 
-export function SearchModal({ onClose, isOpen }: SearchModalProps) {
+export const SearchModal = ({ onClose, isOpen }: SearchModalProps) => {
     const [query, setQuery] = useState("");
     const { user } = useUser();
     const [results, setResults] = useState<UserDTOType[]>([]);
@@ -134,4 +134,4 @@ export function SearchModal({ onClose, isOpen }: SearchModalProps) {
             </Modal>
         </div>
     );
-}
+};

@@ -141,14 +141,25 @@ export class GameEngine {
     }
 
     private handleScoring() {
-        const paddleIds = Object.keys(this.paddles).map(Number);
+        const paddleEntries = Object.entries(this.paddles).map(([id, p]) => ({
+            id: parseInt(id),
+            x: p.pos.x,
+        }));
+
+        const leftPlayerId = paddleEntries.reduce((left, p) =>
+            p.x < left.x ? p : left
+        ).id;
+        const rightPlayerId = paddleEntries.reduce((right, p) =>
+            p.x > right.x ? p : right
+        ).id;
+
         if (this.ball.pos.x < -20) {
             // Right player scores
-            this.onScore?.(paddleIds[1]);
+            this.onScore?.(rightPlayerId);
             this.resetPositions();
         } else if (this.ball.pos.x > this.baseW + 20) {
             // Left player scores
-            this.onScore?.(paddleIds[0]);
+            this.onScore?.(leftPlayerId);
             this.resetPositions();
         }
     }

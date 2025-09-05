@@ -2,10 +2,13 @@
     "name": "shared",
     "version": "1.0.0",
     "type": "module",
-    "main": "dist/index.js",
-    "types": "dist/index.d.ts",
+    "files": [
+        "dist"
+    ],
+    "main": "./dist/index.js",
+    "types": "./dist/index.d.ts",
     "scripts": {
-        "build": "npx tsc"
+        "build": "tsc"
     },
     "dependencies": {
         "typescript": "^5.9.2"

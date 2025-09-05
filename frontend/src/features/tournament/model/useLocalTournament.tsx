@@ -1,11 +1,11 @@
-import React, { createContext, useContext } from "react";
+import React, { createContext, useContext, useEffect } from "react";
 
 import { useState } from "react";
 import { GameDTOType, GameStatus, TournamentUserDTOType } from "shared";
 import { LocalTournamentContextType, LocalTournamentState } from "../types";
 import { TournamentEngine } from "../service/TournamentEngine";
 import { useLocalTournamentStore } from "./useLocalTournamentStore";
-import { LocalTournament } from "@features/game/service/LocalTournament";
+import Swal from "sweetalert2";
 
 const LocalTournamentContext = createContext<
     LocalTournamentContextType | undefined
@@ -38,7 +38,7 @@ export const LocalTournamentProvider = ({
         players: [],
         games: [],
         round: 1,
-        winnerId: null,
+        winner: null,
         currentGame: null,
     });
 
@@ -99,11 +99,30 @@ export const LocalTournamentProvider = ({
         const totalGames = TournamentEngine.createAllGames(
             state.players.length
         );
-        setState((prev) => ({
-            ...prev,
-            games: totalGames,
-            status: GameStatus.IN_PROGRESS,
-        }));
+
+        // Update state with games and mark tournament as in progress
+        setState((prev) => {
+            const newState = {
+                ...prev,
+                games: totalGames,
+                status: GameStatus.IN_PROGRESS,
+            };
+
+            // Immediately start the first round
+            const activePlayers = TournamentEngine.getActivePlayers(
+                newState.players
+            );
+            const { updatedGames, gamesForRound } = TournamentEngine.startRound(
+                newState.games,
+                newState.round,
+                activePlayers
+            );
+
+            return {
+                ...newState,
+                games: updatedGames,
+            };
+        });
     };
 
     const endTournament = () => {
@@ -116,12 +135,12 @@ export const LocalTournamentProvider = ({
         }
         setState((prev) => ({
             ...prev,
-            winnerId: activePlayers[0].id,
+            winner: activePlayers[0].username,
             status: GameStatus.FINISHED,
         }));
     };
 
-    const createRound = (): GameDTOType[] => {
+    const startRound = (): GameDTOType[] => {
         if (state.status !== GameStatus.IN_PROGRESS) {
             alert("Tournament is not in progress.");
             return [];
@@ -140,12 +159,11 @@ export const LocalTournamentProvider = ({
             return [];
         }
 
-        const { updatedGames, gamesForRound } =
-            TournamentEngine.assignPlayersToGames(
-                state.games,
-                state.round,
-                activePlayers
-            );
+        const { updatedGames, gamesForRound } = TournamentEngine.startRound(
+            state.games,
+            state.round,
+            activePlayers
+        );
 
         setState((prev) => ({ ...prev, games: updatedGames }));
         return gamesForRound;
@@ -172,59 +190,75 @@ export const LocalTournamentProvider = ({
             return p;
         });
 
-        const updatedGames = state.games.map((g, i) =>
-            i === gameIndex ? game : g
-        );
+        const games = state.games.map((g, i) => (i === gameIndex ? game : g));
 
         // Check if round is complete
-        const currentRoundGames = updatedGames.filter(
-            (g) => g.round === state.round
-        );
+        const currentRoundGames = games.filter((g) => g.round === state.round);
         const currentRoundInProgress = currentRoundGames.filter(
             (g) => g.status === GameStatus.IN_PROGRESS
         );
 
         const updates: Partial<LocalTournamentState> = {
             players: updatedPlayers,
-            games: updatedGames,
+            games: games,
         };
 
         if (currentRoundInProgress.length === 0) {
             const activePlayers =
                 TournamentEngine.getActivePlayers(updatedPlayers);
             if (activePlayers.length === 1) {
-                updates.winnerId = activePlayers[0].id;
+                updates.winner = activePlayers[0].username;
                 updates.status = GameStatus.FINISHED;
             } else {
                 updates.round = state.round + 1;
+                const { updatedGames, gamesForRound } =
+                    TournamentEngine.startRound(
+                        games,
+                        updates.round,
+                        activePlayers
+                    );
+                updates.games = updatedGames;
             }
         }
 
-        setState((prev) => ({ ...prev, ...updates }));
+        setState((prev) => {
+            return { ...prev, ...updates };
+        });
     };
 
-    const playGame = () => {
-        const activeGames = state.games.filter(
-            (game) => game.status === GameStatus.IN_PROGRESS
-        );
-        if (activeGames.length === 0) {
-            alert("No active games to play.");
+    const playGame = (code: string) => {
+        const gameToPlay = state.games.find((game) => game.code === code);
+        if (!gameToPlay || gameToPlay.status !== GameStatus.IN_PROGRESS) {
+            alert("Game not found or not active.");
             return;
         }
-        setState((prev) => ({ ...prev, currentGame: activeGames[0] }));
+        setState((prev) => ({ ...prev, currentGame: gameToPlay }));
     };
 
-    const deleteTournament = () => {
-        setState({
-            tournamentId: Date.now(),
-            status: GameStatus.WAITING,
-            players: [],
-            games: [],
-            round: 1,
-            winnerId: null,
-            currentGame: null,
+    const deleteTournament = async () => {
+        // @ts-ignore
+        const result = await Swal.fire({
+            title: "Are you sure?",
+            text: "This will delete the current tournament and all progress.",
+            icon: "warning",
+            showCancelButton: true,
+            confirmButtonText: "Yes, delete it!",
+            cancelButtonText: "Cancel",
+            theme: "dark",
         });
-        setLocalTournamentData(null);
+
+        if (result.isConfirmed) {
+            setState({
+                tournamentId: Date.now(),
+                status: GameStatus.WAITING,
+                players: [],
+                games: [],
+                round: 1,
+                winner: null,
+                currentGame: null,
+            });
+            setLocalTournamentData(null);
+        }
     };
 
     const contextValue: LocalTournamentContextType = {
@@ -235,11 +269,12 @@ export const LocalTournamentProvider = ({
         removePlayer,
         startTournament,
         endTournament,
-        createRound,
+        startRound,
         setWinner,
         playGame,
         deleteTournament,
-        getActivePlayers: () => LocalTournament.getActivePlayers(state.players),
+        getActivePlayers: () =>
+            TournamentEngine.getActivePlayers(state.players),
         setCurrentGame: (game: GameDTOType | null) =>
             updateState({ currentGame: game }),
     };

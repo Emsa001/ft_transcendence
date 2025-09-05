@@ -1,7 +1,7 @@
 "use client";
 import React, { useLocalStorage, useEffect, useState } from "react";
 
-export function LanguageButton() {
+export const LanguageButton = () => {
     const [language, setLanguage] = useLocalStorage("language");
 
     function handleClick() {
@@ -53,4 +53,4 @@ export function LanguageButton() {
             </button>
         </div>
     );
-}
+};

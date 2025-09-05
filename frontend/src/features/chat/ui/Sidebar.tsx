@@ -12,7 +12,7 @@ interface UserCardProps {
     onClick: () => void;
 }
 
-function UserCard({ user, isOnline, selectedUser, onClick }: UserCardProps) {
+const UserCard = ({ user, isOnline, selectedUser, onClick }: UserCardProps) => {
     return (
         <div
             onClick={onClick}
@@ -39,7 +39,7 @@ function UserCard({ user, isOnline, selectedUser, onClick }: UserCardProps) {
     );
 }
 
-export function Sidebar({ userId }: { userId?: string }) {
+export const Sidebar = ({ userId }: { userId?: string }) => {
     const { users, selectedUser, setSelectedUser, handleSelectUser } = useChat();
     const { onlineUsers } = useOnlineUsers();
     useEffect( () => {
@@ -75,4 +75,4 @@ export function Sidebar({ userId }: { userId?: string }) {
             </div>
         </div>
     );
-}
+};

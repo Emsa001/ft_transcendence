@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { Modal } from "@shared/components/Modal";
-import GameAPI from "../../service/GameAPI";
+import GameApi from "../../service/GameApi";
 import { Button } from "@shared/components/Button";
 
 type GameJoiningModalProps = {
@@ -20,7 +20,7 @@ export const GameJoiningModal = ({
         if (code.length != 6) return;
 
         // TODO: api request to check if game exists
-        const game = await GameAPI.getGameByCode(code);
+        const game = await GameApi.getGameByCode(code);
         if (!game) {
             setError("Game not found. Please check the code and try again.");
             return;

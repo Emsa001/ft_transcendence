@@ -34,8 +34,9 @@ class GameRoomRegistry {
         });
     }
 
-    create(game: Game) {
+    async create(game: Game) {
         if (!this.rooms.has(game.code!)) {
+            await game.reload({ include: ["players"] });
             this.rooms.set(game.code!, new GameRoom(game));
             this.triggerHooks("onGameCreate", game);
         }

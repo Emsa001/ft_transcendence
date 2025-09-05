@@ -23,11 +23,11 @@ export const useLocalTournamentStore = (
             players: state.players,
             games: state.games,
             round: state.round,
-            winnerId: state.winnerId,
+            winner: state.winner,
         };
 
         setLocalTournamentData(data as TournamentDTOType);
-    }, [state.status, state.games, state.round, state.winnerId]);
+    }, [state.status, state.games, state.round, state.winner]);
 
     // Load from localStorage on mount
     useEffect(() => {
@@ -38,7 +38,7 @@ export const useLocalTournamentStore = (
                 players: localTournamentData.players,
                 games: localTournamentData.games ?? [],
                 round: localTournamentData.round,
-                winnerId: localTournamentData.winnerId,
+                winner: localTournamentData.winner,
             });
         }
     }, []);

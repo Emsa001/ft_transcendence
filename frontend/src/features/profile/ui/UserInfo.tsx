@@ -6,10 +6,11 @@ import { Icon } from "@shared/components/Icon";
 import React, { useNavigate, useState } from "react";
 import { MdOutlineSecurity } from "react-icons/md";
 import { CiLogout } from "react-icons/ci";
+
 import { FaRegMessage } from "react-icons/fa6";
 import { TwoFaModal } from "@features/auth/ui/TwoFaModal";
 
-export function UserInfo() {
+export const UserInfo = () => {
     const { user } = useUser();
     const [modalOpen, setModalOpen] = useState(false);
     const navigate = useNavigate();
@@ -47,4 +48,4 @@ export function UserInfo() {
             <TwoFaModal modalOpen={modalOpen} setModalOpen={setModalOpen} />
         </div>
     );
-}
+};

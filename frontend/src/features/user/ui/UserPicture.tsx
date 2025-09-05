@@ -13,7 +13,8 @@ interface UserPictureProps {
     size: number | string;
 }
 
-export function UserPicture({ userId, className, size }: UserPictureProps) {
+
+export const UserPicture = ({ userId, className, size }: UserPictureProps) => {
     const [user, setUser] = useState<UserDTOType | null>(null);
 
     const navigate = useNavigate();
@@ -47,9 +48,9 @@ export function UserPicture({ userId, className, size }: UserPictureProps) {
             )}
         </button>
     );
-}
+};
 
-export function MyPicture() {
+export const MyPicture = () => {
     const { user, setUser } = useUser();
 
     if (!user) return <div />;
@@ -96,10 +97,9 @@ export function MyPicture() {
             </label>
         </div>
     );
-}
+};
 
-
-export function OtherUserPicture({ userId, size }: { userId: number; size: number}) {
+export const OtherUserPicture = ({ userId, size }: { userId: number; size: number}) => {
     const [ user, setUser] = useState<UserDTOType | null>(null);
     const { onlineUsers } = useOnlineUsers();
     console.log("Online Users:", onlineUsers);

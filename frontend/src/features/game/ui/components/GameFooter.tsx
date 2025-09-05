@@ -11,7 +11,7 @@ const symbols: Record<string, string> = {
     ai: "🤖",
 };
 
-export function GameFooter() {
+export const GameFooter = () => {
     const { players } = useGame();
     const paddles = gameEngine.paddles;
 
@@ -73,4 +73,4 @@ export function GameFooter() {
             </div>
         </div>
     );
-}
+};

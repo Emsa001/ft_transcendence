@@ -7,7 +7,7 @@ interface StatsProps {
     userId: number;
 }
 
-export function Stats({ userId }: StatsProps) {
+export const Stats = ({ userId }: StatsProps) => {
     const { fetchUserStats } = useStats();
     const [stats, setStats] = useState<GetStatisticsResponse | null>(null);
     const { getText } = useLanguage();
@@ -67,4 +67,5 @@ export function Stats({ userId }: StatsProps) {
             </div>
         </div>
     );
-}
+};
+

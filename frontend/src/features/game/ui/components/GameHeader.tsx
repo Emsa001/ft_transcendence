@@ -6,7 +6,7 @@ interface GameHeaderProps {
     code?: string;
 }
 
-export function GameHeader({ type, mode, code }: GameHeaderProps) {
+export const GameHeader = ({ type, mode, code }: GameHeaderProps) => {
     const navigate = useNavigate();
 
     const handleBack = () => {
@@ -23,7 +23,7 @@ export function GameHeader({ type, mode, code }: GameHeaderProps) {
     };
 
     return (
-        <div className="absolute z-20 left-4 right-4 top-4 flex items-center justify-between">
+        <div className="p-4 flex items-center justify-between">
             <div className="px-4 py-2 rounded-2xl bg-white/10 shadow-lg">
                 <h1 className="text-lg md:text-xl font-semibold tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-fuchsia-400 to-sky-300">
                     {type === "local" &&
@@ -48,4 +48,4 @@ export function GameHeader({ type, mode, code }: GameHeaderProps) {
             </button>
         </div>
     );
-}
+};

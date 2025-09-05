@@ -18,7 +18,7 @@ export type GameUserDTOType = UserDTOType & {
 
 export interface GameDTOType {
     id: number;
-    code: string | null;
+    code: string;
     hostId: number | null;
     status: GameStatus;
     mode: GameMode;
@@ -28,6 +28,7 @@ export interface GameDTOType {
     players: GameUserDTOType[];
     maxPlayers: number;
     winner: string | null;
+    tournamentId: number | null;
     createdAt: Date;
     updatedAt: Date;
 }

@@ -5,7 +5,9 @@ interface ChangePasswordProps {
     setShowChangePassword: any;
 }
 
-export function ChangePassword({ setShowChangePassword }: ChangePasswordProps) {
+export const ChangePassword = ({
+    setShowChangePassword,
+}: ChangePasswordProps) => {
     const handleChangePassword = async (e: any) => {
         e.preventDefault();
         const data = {
@@ -41,4 +43,4 @@ export function ChangePassword({ setShowChangePassword }: ChangePasswordProps) {
             </button>
         </form>
     );
-}
+};

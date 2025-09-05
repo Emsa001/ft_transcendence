@@ -144,7 +144,7 @@ describe("User Statistics Tests", () => {
         await tournament1.start();
 
         while (tournament1.status === GameStatus.IN_PROGRESS) {
-            await tournament1.createRound();
+            await tournament1.startRound();
             await tournament1.exampleRoundFlow(user1.id);
         }
 
@@ -184,7 +184,7 @@ describe("User Statistics Tests", () => {
         await tournament1.start();
 
         while (tournament1.status === GameStatus.IN_PROGRESS) {
-            await tournament1.createRound();
+            await tournament1.startRound();
             await tournament1.exampleRoundFlow(user1.id);
         }
 

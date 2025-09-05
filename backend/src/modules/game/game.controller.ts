@@ -31,30 +31,15 @@ export class GameController extends BaseController {
     @AUTHORIZED
     async createGame(request: FastifyRequest, reply: FastifyReply) {
         const data = request.body as GameCreationAttributes;
-
-        const hasGame = await Game.findOne({
-            where: {
-                hostId: request.user.id,
-                status: [GameStatus.WAITING, GameStatus.IN_PROGRESS],
-            },
-        });
-
-        if (hasGame) {
-            return reply
-                .status(409)
-                .send({ message: "You already have a game in progress" });
-        }
-
-        const room = await Game.create({
+        const game = await Game.create({
             hostId: request.user.id,
             isPrivate: data.isPrivate || false,
             maxScore: data.maxScore || 7,
         });
 
-        await room.reload({ include: ["players"] });
-        GameRooms.create(room);
+        await GameRooms.create(game);
 
-        return reply.send(room.toDTO());
+        return reply.send(game.toDTO());
     }
 
     @GET("/lobby", { websocket: true })
@@ -64,7 +49,7 @@ export class GameController extends BaseController {
         GameLobbyService.addPlayer(user.id, connection);
     }
 
-    @GET("/play/:code", { websocket: true })
+    @GET("/join/:code", { websocket: true })
     @WS_AUTHORIZED
     async joinGame(connection: WebSocket, request: FastifyRequest) {
         const { code } = request.params as { code: string };

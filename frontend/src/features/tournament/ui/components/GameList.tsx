@@ -1,8 +1,16 @@
 import { useLocalTournament } from "@features/tournament/model/useLocalTournament";
+import { useRemoteTournament } from "@features/tournament/model/useRemoteTournament";
 import React from "react";
 
-export const GameList = () => {
-    const { games } = useLocalTournament();
+interface GameListProps {
+    isLocal: boolean;
+    onGameClick?: (code: string) => void;
+}
+
+export const GameList = ({ isLocal, onGameClick }: GameListProps) => {
+    let games = isLocal
+        ? useLocalTournament().games
+        : useRemoteTournament().games;
 
     return (
         <section className="overflow-y-auto w-full col-span-2 h-full bg-white/10 p-4 rounded-2xl flex flex-col">
@@ -12,7 +20,7 @@ export const GameList = () => {
 
             {games.length === 0 && (
                 <div className="w-full h-full flex items-center justify-center text-gray-400">
-                    No games played yet.
+                    Start the tournament to create games!
                 </div>
             )}
 
@@ -20,11 +28,12 @@ export const GameList = () => {
                 {games.map((g) => (
                     <li
                         key={g.id}
-                        className="p-3 rounded-xl bg-white/10 backdrop-blur-sm flex flex-col gap-1"
+                        className="p-3 rounded-xl bg-white/10 backdrop-blur-sm flex flex-col gap-1 cursor-pointer hover:bg-white/20 transition"
+                        onClick={() => onGameClick?.(g.code)}
                     >
                         <div className="flex justify-between items-center">
                             <span className="font-semibold text-gray-200">
-                                Game #{g.id} - {g.status.replace("_", " ")}{" "}
+                                Game #{g.code} - {g.status.replace("_", " ")}{" "}
                                 {g.round}
                             </span>
                             {g.winner && (

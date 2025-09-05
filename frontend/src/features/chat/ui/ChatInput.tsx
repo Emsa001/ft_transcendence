@@ -6,7 +6,7 @@ import { Toast } from "@shared/lib/Toast";
 
 let errorTimeout: NodeJS.Timeout;
 
-export function ChatInput() {
+export const ChatInput = () => {
     const [input, setInput] = useState("");
     const [error, setError] = useState("");
 
@@ -95,4 +95,4 @@ export function ChatInput() {
             </div>
         </div>
     );
-}
+};

@@ -18,7 +18,7 @@ import {
 } from "shared";
 import { useGameKeys } from "./useGameKeys";
 import { useGameMessages } from "./useGameMessages";
-import Swal from "sweetalert2";
+import { Toast } from "@shared/lib/Toast";
 
 interface RemoteGameContextType {
     host: number | null;
@@ -26,6 +26,7 @@ interface RemoteGameContextType {
     mode: GameMode;
     isPrivate: boolean;
     round: number;
+    isTournament: boolean;
     maxScore: number;
     player: GameUserDTOType | null;
     players: GameUserDTOType[];
@@ -57,19 +58,13 @@ export const useRemoteGame = (): RemoteGameContextType => {
 interface RemoteGameProviderProps {
     code: string;
     children?: ReactNode;
+    onEnd?: () => void;
 }
-
-const Toast = Swal.mixin({
-    toast: true,
-    position: "top-end",
-    showConfirmButton: false,
-    timer: 3000,
-    theme: "dark",
-});
 
 export const RemoteGameProvider = ({
     code,
     children,
+    onEnd,
 }: RemoteGameProviderProps) => {
     const { user } = useUser();
 
@@ -86,12 +81,12 @@ export const RemoteGameProvider = ({
     const [players, setPlayers] = useState<GameUserDTOType[]>([]);
     const [winner, setWinner] = useState<string | null>(null);
     const [maxPlayers, setMaxPlayers] = useState<number>(0);
+    const [isTournament, setIsTournament] = useState<boolean>(false);
 
     const frameRef = useRef<GameFrame | null>(null);
 
     const { messages } = useGameMessages();
-
-    const { addHook, sendMessage } = useWebSocket(`/game/play/${code}`);
+    const { addHook, sendMessage } = useWebSocket(`/game/join/${code}`);
 
     useGameKeys({
         onKeyDown: (key) => {
@@ -110,6 +105,7 @@ export const RemoteGameProvider = ({
             case "GAME_UPDATE": {
                 const state: GameDTOType = payload.state;
                 statusRef.current = state.status;
+
                 setStatus(state.status);
                 setMode(state.mode);
                 setIsPrivate(state.isPrivate);
@@ -118,9 +114,11 @@ export const RemoteGameProvider = ({
                 setMaxPlayers(state.maxPlayers);
                 setPlayer(state.players.find((p) => p.id === user!.id) || null);
                 setHost(state.hostId);
+                setIsTournament(state.tournamentId ? true : false);
 
                 if (state.round) setRound(state.round);
                 if (state.maxScore) setMaxScore(state.maxScore);
+                if (state.status === GameStatus.FINISHED && onEnd) onEnd();
                 break;
             }
 
@@ -150,13 +148,10 @@ export const RemoteGameProvider = ({
                     });
                 }
 
-                Toast.fire({
-                    icon: "success",
-                    title: `${payload.player.username} has joined the game`,
-                });
-
+                Toast.success(`${payload.player.username} has joined the game`);
                 break;
             }
+
             case "PLAYER_DISCONNECTED": {
                 if (statusRef.current === GameStatus.WAITING) {
                     setPlayers((prev) =>
@@ -167,11 +162,7 @@ export const RemoteGameProvider = ({
                     }
                 }
 
-                Toast.fire({
-                    icon: "error",
-                    title: `${payload.player.username} has disconnected`,
-                });
-
+                Toast.error(`${payload.player.username} has left the game`);
                 break;
             }
 
@@ -216,7 +207,7 @@ export const RemoteGameProvider = ({
         round,
         maxScore,
         player,
-        players,
+        players: players.sort((a, b) => a.id - b.id),
         maxPlayers,
         winner,
         createdAt: new Date(),
@@ -226,6 +217,7 @@ export const RemoteGameProvider = ({
         frameRef,
         messages,
         error,
+        isTournament,
     };
 
     return (
