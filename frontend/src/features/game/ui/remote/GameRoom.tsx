@@ -99,7 +99,7 @@ const GameActionButtons = () => {
     if (status === GameStatus.FINISHED) {
         return (
             <Link
-                to="/lobby"
+                to="/game/remote/casual"
                 className="px-6 py-3 bg-gradient-to-r from-purple-500 to-blue-500 text-white font-semibold rounded-xl shadow-lg hover:scale-105 transition-transform"
             >
                 Return to Lobby

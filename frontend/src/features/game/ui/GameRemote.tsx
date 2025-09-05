@@ -8,9 +8,10 @@ import { Toast } from "@shared/lib/Toast";
 
 interface GameRemoteElementProps {
     code?: string;
+    onEnd?: () => void;
 }
 
-export const GameRemote = ({ code }: GameRemoteElementProps) => {
+export const GameRemote = ({ code, onEnd }: GameRemoteElementProps) => {
     const { user } = useUser(true);
     const navigate = useNavigate();
 
@@ -28,7 +29,7 @@ export const GameRemote = ({ code }: GameRemoteElementProps) => {
     if (code && user) {
         return (
             <div className="w-full h-full">
-                <RemoteGameProvider code={code}>
+                <RemoteGameProvider code={code} onEnd={onEnd}>
                     <div className="w-full h-full flex items-center justify-center pt-8">
                         <GameRemoteRoom />
                     </div>

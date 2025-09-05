@@ -6,6 +6,8 @@ import { GameMessage, GameMessages, GameStatus } from "shared";
 import { GameRooms } from "./registry.service";
 import { GameEngine } from "./engine.service";
 import { HttpException } from "@/utils/exceptions";
+import { Tournament } from "@/database/models/Tournaments/Tournament";
+import { TournamentRooms } from "@/modules/tournament/services/registry.service";
 
 /**
  * Utility for handling countdown messages.
@@ -75,10 +77,19 @@ export class GameRoom extends WebSocketService {
             });
 
             this.addClient(user.id, connection);
-            this.updateState(connection);
+            await this.updateState(connection);
 
             if (this.game.players.length === this.game.maxPlayers) {
                 GameRooms.triggerHooks("onGameAvailabilityChange", this.game);
+
+                if (this.game.tournamentId) {
+                    // check if all players are connected
+                    const allConnected = this.game.players.every((p) => {
+                        const conns = this.getClient(p.id);
+                        return conns && conns.length > 0;
+                    });
+                    if (allConnected) await this.startGame();
+                }
             }
         } catch (error) {
             console.error(
@@ -132,8 +143,17 @@ export class GameRoom extends WebSocketService {
     async startGame() {
         if (this.game.status != GameStatus.WAITING) return;
 
-        this.game.status = GameStatus.IN_PROGRESS;
-        await this.game.save();
+        await this.game.update({ status: GameStatus.IN_PROGRESS });
+        const tournament = await Tournament.findByPk(this.game.tournamentId);
+        if (tournament) {
+            const room = TournamentRooms.get(tournament.uuid);
+            if (room) {
+                room.broadcast({
+                    type: "GAME_UPDATE",
+                    game: this.game.toDTO(),
+                });
+            }
+        }
 
         this.engine.initPaddles(this.game.getGameUsers());
         this.updateState();
@@ -154,9 +174,8 @@ export class GameRoom extends WebSocketService {
     }
 
     private async endGame(delay: number) {
+        await this.game.end();
         this.stopGameLoop();
-        this.game.status = GameStatus.FINISHED;
-        await this.game.save();
 
         setTimeout(async () => {
             this.updateState();

@@ -42,7 +42,8 @@ export class TournamentGamePlayService {
                 }
             }
 
-            await game.update({ status: GameStatus.FINISHED });
+            await tournament.increment({ round: 1 });
+            await game.end();
         }
 
         // TODO: There is smarter way check if it's last round

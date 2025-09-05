@@ -5,7 +5,6 @@ import { GameDTOType, GameStatus, TournamentUserDTOType } from "shared";
 import { LocalTournamentContextType, LocalTournamentState } from "../types";
 import { TournamentEngine } from "../service/TournamentEngine";
 import { useLocalTournamentStore } from "./useLocalTournamentStore";
-import { LocalTournament } from "@features/game/service/LocalTournament";
 
 const LocalTournamentContext = createContext<
     LocalTournamentContextType | undefined
@@ -121,7 +120,7 @@ export const LocalTournamentProvider = ({
         }));
     };
 
-    const createRound = (): GameDTOType[] => {
+    const startRound = (): GameDTOType[] => {
         if (state.status !== GameStatus.IN_PROGRESS) {
             alert("Tournament is not in progress.");
             return [];
@@ -140,12 +139,11 @@ export const LocalTournamentProvider = ({
             return [];
         }
 
-        const { updatedGames, gamesForRound } =
-            TournamentEngine.assignPlayersToGames(
-                state.games,
-                state.round,
-                activePlayers
-            );
+        const { updatedGames, gamesForRound } = TournamentEngine.startRound(
+            state.games,
+            state.round,
+            activePlayers
+        );
 
         setState((prev) => ({ ...prev, games: updatedGames }));
         return gamesForRound;
@@ -235,11 +233,12 @@ export const LocalTournamentProvider = ({
         removePlayer,
         startTournament,
         endTournament,
-        createRound,
+        startRound,
         setWinner,
         playGame,
         deleteTournament,
-        getActivePlayers: () => LocalTournament.getActivePlayers(state.players),
+        getActivePlayers: () =>
+            TournamentEngine.getActivePlayers(state.players),
         setCurrentGame: (game: GameDTOType | null) =>
             updateState({ currentGame: game }),
     };

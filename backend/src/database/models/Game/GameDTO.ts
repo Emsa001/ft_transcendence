@@ -5,7 +5,7 @@ import { HttpException } from "@/utils/exceptions";
 export class GameDTO implements GameDTOType {
     id: number;
     hostId: number | null;
-    code: string | null;
+    code: string;
     status: GameStatus;
     mode: GameMode;
     isPrivate: boolean;
@@ -31,7 +31,7 @@ export class GameDTO implements GameDTOType {
 
         this.id = game.id;
         this.hostId = game.hostId;
-        this.code = game.code;
+        this.code = game.code || "-1";
         this.status = game.status;
         this.mode = game.mode;
         this.isPrivate = game.isPrivate;

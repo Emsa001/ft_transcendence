@@ -11,8 +11,6 @@ interface TournamentRemoteProps {
 }
 
 export const TournamentRemote = ({ code }: TournamentRemoteProps) => {
-    const { user } = useUser(true);
-
     if (code) {
         return (
             <div>

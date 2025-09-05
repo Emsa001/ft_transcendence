@@ -18,7 +18,7 @@ export type GameUserDTOType = UserDTOType & {
 
 export interface GameDTOType {
     id: number;
-    code: string | null;
+    code: string;
     hostId: number | null;
     status: GameStatus;
     mode: GameMode;

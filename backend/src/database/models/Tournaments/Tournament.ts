@@ -33,7 +33,7 @@ import { Game } from "../Game/Game";
 import { GameStatus, TournamentCreateType } from "shared";
 import { TournamentHooks } from "./TournamentHooks";
 import { TournamentDTO } from "./TournamentDTO";
-import { TournamentCreationService } from "@/modules/tournament/services/craete.service";
+import { TournamentCreationService } from "@/modules/tournament/services/create.service";
 import { TournamentGamePlayService } from "@/modules/tournament/services/gameplay.service";
 
 type UserWithTournamentData = User & {
@@ -125,7 +125,8 @@ export class Tournament extends Model<
 
     start = async () => TournamentCreationService.start(this);
     end = async () => TournamentCreationService.end(this);
-    createRound = async () => TournamentCreationService.createRound(this);
+    createGames = async () => TournamentCreationService.createGames(this);
+    startRound = async () => TournamentCreationService.startRound(this);
     eliminatePlayer = async (playerId: number) =>
         TournamentGamePlayService.eliminatePlayer(this, playerId);
     exampleRoundFlow = async (winner?: number) =>

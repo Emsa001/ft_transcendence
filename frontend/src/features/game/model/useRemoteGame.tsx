@@ -56,11 +56,13 @@ export const useRemoteGame = (): RemoteGameContextType => {
 interface RemoteGameProviderProps {
     code: string;
     children?: ReactNode;
+    onEnd?: () => void;
 }
 
 export const RemoteGameProvider = ({
     code,
     children,
+    onEnd,
 }: RemoteGameProviderProps) => {
     const { user } = useUser();
 
@@ -112,6 +114,7 @@ export const RemoteGameProvider = ({
 
                 if (state.round) setRound(state.round);
                 if (state.maxScore) setMaxScore(state.maxScore);
+                if (state.status === GameStatus.FINISHED && onEnd) onEnd();
                 break;
             }
 
@@ -144,6 +147,7 @@ export const RemoteGameProvider = ({
                 Toast.success(`${payload.player.username} has joined the game`);
                 break;
             }
+
             case "PLAYER_DISCONNECTED": {
                 if (statusRef.current === GameStatus.WAITING) {
                     setPlayers((prev) =>

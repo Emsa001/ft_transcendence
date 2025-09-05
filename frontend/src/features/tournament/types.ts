@@ -20,7 +20,7 @@ export interface LocalTournamentContextType extends LocalTournamentState {
     removePlayer: (username: string) => void;
     startTournament: () => void;
     endTournament: () => void;
-    createRound: () => GameDTOType[];
+    startRound: () => GameDTOType[];
     setWinner: (gameId: number, winnerUsername: string) => void;
     playGame: () => void;
     deleteTournament: () => void;

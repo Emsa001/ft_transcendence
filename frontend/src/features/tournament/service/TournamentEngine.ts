@@ -38,7 +38,7 @@ export class TournamentEngine {
                     winner: null,
                     round: currentRound,
                     isPrivate: false,
-                    code: null,
+                    code: "0000000",
                     createdAt: new Date(),
                     updatedAt: new Date(),
                 });
@@ -53,7 +53,7 @@ export class TournamentEngine {
         return allGames;
     }
 
-    static assignPlayersToGames(
+    static startRound(
         games: GameDTOType[],
         round: number,
         activePlayers: TournamentUserDTOType[]

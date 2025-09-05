@@ -1,8 +1,16 @@
 import { useLocalTournament } from "@features/tournament/model/useLocalTournament";
+import { useRemoteTournament } from "@features/tournament/model/useRemoteTournament";
 import React from "react";
 
-export const GameList = () => {
-    const { games } = useLocalTournament();
+interface GameListProps {
+    isLocal: boolean;
+    onGameClick?: (code: string) => void;
+}
+
+export const GameList = ({ isLocal, onGameClick }: GameListProps) => {
+    let games = isLocal
+        ? useLocalTournament().games
+        : useRemoteTournament().games;
 
     return (
         <section className="overflow-y-auto w-full col-span-2 h-full bg-white/10 p-4 rounded-2xl flex flex-col">
@@ -21,6 +29,7 @@ export const GameList = () => {
                     <li
                         key={g.id}
                         className="p-3 rounded-xl bg-white/10 backdrop-blur-sm flex flex-col gap-1"
+                        onClick={() => onGameClick?.(g.code)}
                     >
                         <div className="flex justify-between items-center">
                             <span className="font-semibold text-gray-200">

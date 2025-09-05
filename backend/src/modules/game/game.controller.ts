@@ -31,16 +31,15 @@ export class GameController extends BaseController {
     @AUTHORIZED
     async createGame(request: FastifyRequest, reply: FastifyReply) {
         const data = request.body as GameCreationAttributes;
-        const room = await Game.create({
+        const game = await Game.create({
             hostId: request.user.id,
             isPrivate: data.isPrivate || false,
             maxScore: data.maxScore || 7,
         });
 
-        await room.reload({ include: ["players"] });
-        GameRooms.create(room);
+        await GameRooms.create(game);
 
-        return reply.send(room.toDTO());
+        return reply.send(game.toDTO());
     }
 
     @GET("/lobby", { websocket: true })

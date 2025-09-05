@@ -38,6 +38,7 @@ import {
 import { HttpException } from "@/utils/exceptions";
 import { Tournament } from "../Tournaments/Tournament";
 import { GameHooks } from "./GameHooks";
+import { GameService } from "./GameService";
 
 type UserWithGameData = User & {
     GameUser: GameUser;
@@ -70,7 +71,7 @@ export class Game extends Model<InferAttributes<Game>, GameCreationAttributes> {
     @Unique
     @AllowNull(true)
     @Column(DataType.STRING)
-    declare code: string | null;
+    declare code?: string;
 
     // Core metadata
     @Default(GameStatus.WAITING)
@@ -135,6 +136,8 @@ export class Game extends Model<InferAttributes<Game>, GameCreationAttributes> {
         return new GameDTO(this);
     }
 
+    end = async () => GameService.end(this);
+
     getGameUsers(): GameUserDTOType[] {
         if (!this.players)
             throw new HttpException(500, "Players not loaded in Game instance");
@@ -157,12 +160,6 @@ export class Game extends Model<InferAttributes<Game>, GameCreationAttributes> {
                 where: { userId, gameId: this.id },
             }
         );
-    }
-
-    // Hooks
-    @AfterUpdate
-    static async setGameWinner(instance: Game) {
-        await GameHooks.setGameWinner(instance);
     }
 
     @BeforeCreate

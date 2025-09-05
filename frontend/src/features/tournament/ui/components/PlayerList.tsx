@@ -87,6 +87,7 @@ export const RegisterPlayerList = ({
                     No players registered yet.
                 </li>
             )}
+
             {players.map((p) => (
                 <li
                     key={p.username}

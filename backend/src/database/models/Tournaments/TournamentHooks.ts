@@ -27,6 +27,7 @@ export class TournamentUserHooks {
         const tournament = await Tournament.findByPk(tournamentId);
         if (!tournament) return;
 
+        console.log("Checking tournament host...");
         if (tournament.hostId && !userIds.includes(tournament.hostId)) return;
 
         if (tournament.players.length > 0) {

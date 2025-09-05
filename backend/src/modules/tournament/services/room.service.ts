@@ -5,6 +5,7 @@ import { User } from "@/database/models/User/User";
 import { GameStatus } from "shared";
 import { GameRooms } from "@/modules/game/services/registry.service";
 import { HttpException } from "@/utils/exceptions";
+import { Game } from "@/database/models/Game/Game";
 
 /**
  * Handles the lifecycle of a tournament room and its players.
@@ -32,25 +33,22 @@ export class TournamentRoom extends WebSocketService {
                 tournamentUser = this.tournament.players.find(
                     (p) => p.id === user.id
                 );
+                if (!tournamentUser)
+                    throw new HttpException(
+                        501,
+                        "Failed to add player to tournament"
+                    );
             }
 
-            if (!tournamentUser)
-                throw new HttpException(
-                    501,
-                    "Failed to add player to tournament"
-                );
-
-            this.broadcast({
-                type: "PLAYER_JOINED",
-                player: tournamentUser.toDTO().gameUser(),
-            });
+            if (this.tournament.status === GameStatus.WAITING) {
+                this.broadcast({
+                    type: "PLAYER_JOINED",
+                    player: tournamentUser.toDTO().gameUser(),
+                });
+            }
 
             this.addClient(user.id, connection);
             this.updateState(connection);
-
-            // if (this.tournament.players.length === this.tournament.maxPlayers) {
-            //     GameRooms.triggerHooks("onGameAvailabilityChange", this.game);
-            // }
         } catch (error) {
             console.error(
                 `Error adding player to tournament ${this.tournament.uuid}:`,
@@ -65,19 +63,13 @@ export class TournamentRoom extends WebSocketService {
     }
 
     async removePlayer(userId: number) {
+        if (this.tournament.status !== GameStatus.WAITING) return;
+
         const user = this.tournament.players.find((p) => p.id === userId);
         if (!user) return;
 
         const userConnections = this.getClient(userId);
         if (userConnections.length > 1) return;
-
-        if (this.tournament.status !== GameStatus.WAITING) {
-            this.broadcast({
-                type: "PLAYER_DISCONNECTED",
-                player: user.toDTO().gameUser(),
-            });
-            return;
-        }
 
         await this.tournament.removePlayer(user);
         await this.tournament.reload({ include: ["players"] });
@@ -108,14 +100,45 @@ export class TournamentRoom extends WebSocketService {
                 "Not enough players to start the tournament"
             );
         }
-        this.tournament.status = GameStatus.IN_PROGRESS;
-        await this.tournament.save();
-        await this.tournament.reload({ include: ["players"] });
+
+        await this.tournament.start();
+        await this.tournament.startRound();
+
         this.broadcast({
             type: "TOURNAMENT_STARTED",
             host: this.tournament.hostId,
         });
+
         this.updateState();
+    }
+
+    async onGameEnd(game: Game) {
+        const tournament = await Tournament.findByPk(game.tournamentId);
+        if (!tournament) return;
+        if (tournament.status != GameStatus.IN_PROGRESS) return;
+
+        const eliminated = game.players.filter((p) => p.id != game.winnerId);
+        for (const player of eliminated) {
+            await tournament.eliminatePlayer(player.id);
+        }
+
+        const roundGames: Game[] = await tournament.getGames({
+            where: {
+                round: game.round,
+                status: GameStatus.LOCKED,
+            },
+        });
+
+        this.broadcast({
+            type: "GAME_UPDATE",
+            game: game.toDTO(),
+        });
+
+        if (roundGames.length === 0) {
+            await tournament.startRound();
+            this.tournament = tournament;
+            await this.updateState();
+        }
     }
 
     async updateState(client?: WebSocket) {
