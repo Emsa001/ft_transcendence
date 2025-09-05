@@ -52,7 +52,7 @@ export function FriendsList() {
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-4">
                                 <div className="relative">
-                                    <OtherUserPicture userId={friend.id} />
+                                    <OtherUserPicture userId={friend.id} size={8} />
                                 </div>
                                 <div>
                                     <h3 className="text-lg font-semibold text-white-800">

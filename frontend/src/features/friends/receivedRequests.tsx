@@ -59,7 +59,7 @@ export function ReceivedRequests() {
                     >
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-1">
-                                <OtherUserPicture userId={request.id} />
+                                <OtherUserPicture userId={request.id} size={8} />
                                 <h3 className="text-lg font-semibold text-white">
                                     {request.username}
                                 </h3>

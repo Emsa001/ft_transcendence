@@ -23,7 +23,7 @@ async function uploadImage(image: MultipartFile, fileName: string) {
     const filePath = path.join(imagesDir, fileName);
 
     await sharp(await image.toBuffer())
-        .webp({ quality: 80 })
+        .webp({ quality: 60 })
         .toFile(filePath);
 
     return `${imageDirUrl}${fileName}`;
