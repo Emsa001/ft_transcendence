@@ -45,6 +45,7 @@ export class UserController extends BaseController {
     }
 
     @GET("/:id")
+    @AUTHORIZED
     async getUserById(request: FastifyRequest, reply: FastifyReply) {
         const { id } = request.params as { id: string };
 
