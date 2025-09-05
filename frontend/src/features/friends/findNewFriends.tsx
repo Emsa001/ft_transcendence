@@ -3,7 +3,7 @@ import { useUser } from "@features/auth/model/useUser";
 import FriendsApi from "@features/user/service/friendsApi";
 import { UserDTOType } from "shared";
 import { useFriends } from "./context";
-import ProfileApi from "@features/user/service/profileApi";
+
 
 export function FindNewFriends() {
     const { user } = useUser();
@@ -14,7 +14,7 @@ export function FindNewFriends() {
 
     const handleAddFriendByUsername = async (username: string) => {
         try {
-            const newFriend = await ProfileApi.getUserByIdOrUsername(username);
+            const newFriend = await FriendsApi.getUserByIdOrUsername(username);
             if (newFriend) {
                 await FriendsApi.addFriend(newFriend.id);
                 setSentRequests((prev: UserDTOType[]) => [

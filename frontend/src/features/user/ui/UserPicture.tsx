@@ -2,10 +2,10 @@ import React, { useEffect, useState, useNavigate } from "react";
 import { FaUserCircle, FaCamera } from "react-icons/fa";
 import { Icon } from "@shared/components/Icon";
 import ProfileApi from "@features/user/service/profileApi";
+import FriendsApi from "@features/user/service/friendsApi";
 import { useUser } from "@features/auth/model/useUser";
 import { useOnlineUsers } from "../model/useOnlineUsers";
 import { UserDTOType } from "shared";
-import { useOnlineUsers } from "@features/user/model/useOnlineUsers";
 
 interface UserPictureProps {
     userId: number;
@@ -20,7 +20,7 @@ export function UserPicture({ userId, className, size }: UserPictureProps) {
 
     useEffect(() => {
         const fetchUserData = async () => {
-            const userData = await ProfileApi.getUserByIdOrUsername(
+            const userData = await FriendsApi.getUserByIdOrUsername(
                 userId.toString()
             );
             if (userData) {
@@ -113,7 +113,7 @@ export function OtherUserPicture({ userId, size }: { userId: number; size: numbe
     
     useEffect(() => {
         const fetchUser = async () => {
-            const fetchedUser = await ProfileApi.getUserByIdOrUsername(userId.toString());
+            const fetchedUser = await FriendsApi.getUserByIdOrUsername(userId.toString());
             console.log("FETCHED USER ", fetchedUser);
             if (fetchedUser) {
                 setUser(fetchedUser);

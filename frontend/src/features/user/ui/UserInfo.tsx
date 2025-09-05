@@ -6,9 +6,9 @@ import { Icon } from "@shared/components/Icon";
 import { useUser } from "@features/auth/model/useUser";
 import { useLanguage } from "@features/language/model/useLanguage";
 import FriendsApi from "../service/friendsApi";
-import { Alert } from "@shared/components/Alert";
 import blockUserApi from "../service/blockUserApi";
 import { set } from "lodash";
+import { Toast } from "@shared/lib/Toast";
 
 
 export function UserInfo({ user }: { user: UserDTOType }) {
@@ -35,13 +35,13 @@ export function UserInfo({ user }: { user: UserDTOType }) {
         await FriendsApi.removeFriend(user.id);
         setSentRequests(sentRequests.filter((req) => req.id !== user.id));
         setIsPending(false);
-        Alert.success("Friend request canceled successfully.");
+        Toast.success("Friend request canceled successfully.");
     };
 
     const handleRemoveFriend = async () => {
         await FriendsApi.removeFriend(user.id);
         setIsFriend(false);
-        Alert.success("Friend removed successfully.");
+        Toast.success("Friend removed successfully.");
     }
 
     const handleChat = () => {
@@ -49,20 +49,20 @@ export function UserInfo({ user }: { user: UserDTOType }) {
             navigate(`/chat/${user.id}`);
         }
         else {
-            Alert.error("You can only chat with friends.");
+            Toast.error("You can only chat with friends.");
         }
     }
 
     const handleBlockUser = async () => {
         await blockUserApi.blockUser(user.id);
         setIsBlocked(true);
-        Alert.success("User has been blocked.");
+        Toast.success("User has been blocked.");
     };
 
     const handleUnblockUser = async () => {
         await blockUserApi.unblockUser(user.id);
         setIsBlocked(false);
-        Alert.success("User has been unblocked.");
+        Toast.success("User has been unblocked.");
     }
     
     

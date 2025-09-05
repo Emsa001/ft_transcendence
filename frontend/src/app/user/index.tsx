@@ -8,6 +8,7 @@ import { Icon } from "@shared/components/Icon";
 import { UserInfoDisplay } from "@features/user/ui/UserInfoDisplay";
 import { UserInfo } from "@features/user/ui/UserInfo";
 import blockUserApi from "@features/user/service/blockUserApi";
+import FriendsApi from "@features/user/service/friendsApi";
 
 
 export default function User({ username }: { username?: string }) {
@@ -25,7 +26,7 @@ export default function User({ username }: { username?: string }) {
             try {
                 setLoading(true);
                 setError(null);
-                const newUser = await ProfileApi.getUserByIdOrUsername(username);
+                const newUser = await FriendsApi.getUserByIdOrUsername(username);
                 setUser(newUser);
             } catch (err) {
                 setError("Failed to load user profile");
