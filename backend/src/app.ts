@@ -8,6 +8,8 @@ import cors from "@fastify/cors";
 import cookie from "@fastify/cookie";
 import middie from "@fastify/middie";
 
+import fs from "fs"
+
 import { registerDB } from "./database/client";
 import { UserController } from "./modules/user/user.controller";
 import { AuthController } from "./modules/auth/auth.controller";
@@ -36,8 +38,22 @@ export const getApp = () => {
     return app;
 };
 
+const isProduction = process.env.NODE_ENV === "production";
+
 export default async function App() {
-    app = Fastify({ logger: false });
+    if (isProduction) {
+        app = Fastify({
+            logger: false,
+            https: {
+                key: fs.readFileSync("ssl/key.pem"),
+                cert: fs.readFileSync("ssl/cert.pem"),
+            }
+        });
+    } else {
+        app = Fastify({
+            logger: false
+        });
+    }
 
     // WebSocket support
     await app.register(websocketPlugin);
@@ -92,6 +108,12 @@ export default async function App() {
         endpoint: "/metrics",
         defaultMetrics: { enabled: true },
         routeMetrics: { enabled: true },
+    });
+
+
+    // health endpoint here
+    app.get('/api/health', async (request, reply) => {
+    return { status: 'ok' };
     });
 
     return app;
