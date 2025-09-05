@@ -28,6 +28,7 @@ export interface GameDTOType {
     players: GameUserDTOType[];
     maxPlayers: number;
     winner: string | null;
+    tournamentId: number | null;
     createdAt: Date;
     updatedAt: Date;
 }

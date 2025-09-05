@@ -4,7 +4,6 @@ import { TournamentCreate } from "./remote/TournamentCreate";
 import { TournamentView } from "./remote/TournamentView";
 import { GameStatus } from "shared";
 import { RemoteTournamentProvider } from "../model/useRemoteTournament";
-import { useUser } from "@features/auth/model/useUser";
 
 interface TournamentRemoteProps {
     code?: string;
@@ -13,9 +12,9 @@ interface TournamentRemoteProps {
 export const TournamentRemote = ({ code }: TournamentRemoteProps) => {
     if (code) {
         return (
-            <div>
+            <div className="w-full h-full">
                 <RemoteTournamentProvider uuid={code}>
-                    <div>
+                    <div className="w-full h-full">
                         <TournamentView />
                     </div>
                 </RemoteTournamentProvider>

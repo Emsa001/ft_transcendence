@@ -27,6 +27,7 @@ interface RemoteTournamentContextType {
     status: GameStatus | null;
     host: number | null;
     player: TournamentUserDTOType | null;
+    maxPlayers: number;
     error: string | null;
 
     start: () => Promise<void>;
@@ -66,6 +67,7 @@ export const RemoteTournamentProvider = ({
     const [player, setPlayer] = useState<TournamentUserDTOType | null>(null);
     const [players, setPlayers] = useState<TournamentUserDTOType[]>([]);
     const [games, setGames] = useState<GameDTOType[]>([]);
+    const [maxPlayers, setMaxPlayers] = useState<number>(16);
 
     const [currentGame, setCurrentGame] = useState<GameDTOType | null>(null);
 
@@ -89,6 +91,8 @@ export const RemoteTournamentProvider = ({
                 if (state.games) {
                     setGames(state.games);
                 }
+                if (state.maxPlayers != maxPlayers)
+                    setMaxPlayers(state.maxPlayers);
                 break;
             }
 
@@ -189,6 +193,7 @@ export const RemoteTournamentProvider = ({
         error,
         games,
 
+        maxPlayers,
         currentGame,
         setCurrentGame,
 

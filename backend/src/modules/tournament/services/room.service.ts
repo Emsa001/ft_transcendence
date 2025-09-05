@@ -6,6 +6,7 @@ import { GameStatus } from "shared";
 import { GameRooms } from "@/modules/game/services/registry.service";
 import { HttpException } from "@/utils/exceptions";
 import { Game } from "@/database/models/Game/Game";
+import { TournamentRooms } from "./registry.service";
 
 /**
  * Handles the lifecycle of a tournament room and its players.
@@ -20,9 +21,8 @@ export class TournamentRoom extends WebSocketService {
 
     async addPlayer(connection: WebSocket, user: User) {
         try {
-            let tournamentUser = this.tournament.players.find(
-                (p) => p.id === user.id
-            );
+            const users = await this.tournament.getPlayers();
+            let tournamentUser = users.find((p) => p.id === user.id);
 
             if (!tournamentUser) {
                 await this.tournament.addPlayer(user);
@@ -30,7 +30,7 @@ export class TournamentRoom extends WebSocketService {
                 console.log(
                     `Player ${user.username} joined tournament ${this.tournament.uuid}`
                 );
-                tournamentUser = this.tournament.players.find(
+                tournamentUser = await this.tournament.players.find(
                     (p) => p.id === user.id
                 );
                 if (!tournamentUser)
@@ -65,21 +65,27 @@ export class TournamentRoom extends WebSocketService {
     async removePlayer(userId: number) {
         if (this.tournament.status !== GameStatus.WAITING) return;
 
-        const user = this.tournament.players.find((p) => p.id === userId);
+        const players = await this.tournament.getPlayers();
+        const user = players.find((p) => p.id === userId);
         if (!user) return;
 
         const userConnections = this.getClient(userId);
         if (userConnections.length > 1) return;
 
         await this.tournament.removePlayer(user);
-        await this.tournament.reload({ include: ["players"] });
 
-        if (this.tournament.players.length === 0) {
-            await GameRooms.remove(this.tournament.uuid);
+        players.splice(
+            players.findIndex((p) => p.id === userId),
+            1
+        );
+
+        if (players.length === 0) {
+            console.log(`Deleting empty tournament ${this.tournament.uuid}`);
+            await TournamentRooms.remove(this.tournament.uuid);
             return;
         }
 
-        if (this.tournament.players.length === this.tournament.maxPlayers - 1) {
+        if (players.length === this.tournament.maxPlayers - 1) {
             GameRooms.triggerHooks("onGameAvailabilityChange", this.tournament);
         }
 

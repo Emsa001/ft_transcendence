@@ -38,6 +38,7 @@ export class TournamentEngine {
                     winner: null,
                     round: currentRound,
                     isPrivate: false,
+                    tournamentId: -1,
                     code: "0000000",
                     createdAt: new Date(),
                     updatedAt: new Date(),

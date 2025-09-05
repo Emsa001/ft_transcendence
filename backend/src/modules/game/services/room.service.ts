@@ -119,6 +119,8 @@ export class GameRoom extends WebSocketService {
             return;
         }
 
+        if (this.game.tournamentId) return;
+
         await this.game.removePlayer(user);
         await this.game.reload({ include: ["players"] });
 

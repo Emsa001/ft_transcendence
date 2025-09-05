@@ -3,17 +3,19 @@ import { RegisterPlayerList } from "../components/PlayerList";
 import { useRemoteTournament } from "@features/tournament/model/useRemoteTournament";
 import { GameList } from "../components/GameList";
 import { GameRemote } from "@features/game/ui/GameRemote";
+import { TournamentInfo } from "./TournamentInfo";
 
 export const TournamentView = () => {
     const {
+        player,
         players,
-        start,
         status,
+        start,
         host,
-        error,
         joinGame,
         currentGame,
         setCurrentGame,
+        maxPlayers,
     } = useRemoteTournament();
 
     if (currentGame) {
@@ -29,14 +31,27 @@ export const TournamentView = () => {
     }
 
     return (
-        <div className="w-full h-full flex flex-col items-center justify-center">
-            <RegisterPlayerList players={players} />
-            <GameList isLocal={false} onGameClick={joinGame} />
+        <div className="w-full h-full grid grid-cols-2 grid-rows-2 gap-2 p-6">
+            {/* Player List */}
+            <div className="w-full h-full">
+                <RegisterPlayerList players={players} isLocal={false} />
+            </div>
 
-            <div>Status: {status}</div>
-            <div>Host: {players.find((e) => e.id === host)?.username}</div>
-            <div>{error}</div>
-            <button onClick={start}>Start</button>
+            {/* Tournament Info */}
+            <div className="w-full h-full">
+                <TournamentInfo
+                    status={status}
+                    host={players.find((p) => p.id === host)?.username}
+                    players={players.length}
+                    maxPlayers={maxPlayers}
+                    onStart={host === player?.id ? start : undefined}
+                />
+            </div>
+
+            {/* Games */}
+            <div className="w-full h-full col-span-2">
+                <GameList isLocal={false} onGameClick={joinGame} />
+            </div>
         </div>
     );
 };

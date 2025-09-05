@@ -20,7 +20,7 @@ export const GameList = ({ isLocal, onGameClick }: GameListProps) => {
 
             {games.length === 0 && (
                 <div className="w-full h-full flex items-center justify-center text-gray-400">
-                    No games played yet.
+                    Start the tournament to create games!
                 </div>
             )}
 
@@ -28,7 +28,7 @@ export const GameList = ({ isLocal, onGameClick }: GameListProps) => {
                 {games.map((g) => (
                     <li
                         key={g.id}
-                        className="p-3 rounded-xl bg-white/10 backdrop-blur-sm flex flex-col gap-1"
+                        className="p-3 rounded-xl bg-white/10 backdrop-blur-sm flex flex-col gap-1 cursor-pointer hover:bg-white/20 transition"
                         onClick={() => onGameClick?.(g.code)}
                     >
                         <div className="flex justify-between items-center">

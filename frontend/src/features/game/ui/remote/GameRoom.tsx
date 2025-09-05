@@ -2,6 +2,7 @@ import React, { Link } from "react";
 import { useRemoteGame } from "@features/game/model/useRemoteGame";
 import { GameStatus } from "shared";
 import { GameElementRemote } from "../components/GameElement";
+import { GameWaiting } from "./GameWaiting";
 
 export const GameRemoteRoom = () => {
     const {
@@ -16,6 +17,7 @@ export const GameRemoteRoom = () => {
         host,
         code,
         error,
+        isTournament,
     } = useRemoteGame();
 
     const renderStatus = () => {
@@ -38,13 +40,21 @@ export const GameRemoteRoom = () => {
     }
 
     if (!player) {
-        return <div>Loading Player</div>;
+        return <div />;
     }
 
     if (status === GameStatus.IN_PROGRESS) {
         return (
             <div className="w-full h-full flex items-center justify-center">
                 <GameElementRemote />
+            </div>
+        );
+    }
+
+    if (isTournament && status === GameStatus.WAITING) {
+        return (
+            <div className="w-full h-full">
+                <GameWaiting />
             </div>
         );
     }

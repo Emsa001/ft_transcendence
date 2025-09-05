@@ -1,12 +1,45 @@
 import React from "react";
 import { ShinyText } from "@shared/components/Shiny";
 import { GameList } from "./GameList";
-import { TournamentPlayerList } from "./PlayerList";
+import { RegisterPlayerList, TournamentPlayerList } from "./PlayerList";
 import { useLocalTournament } from "../../model/useLocalTournament";
+import { TournamentInfo } from "../remote/TournamentInfo";
 
 export const TournamentViewer = () => {
-    const { startRound, playGame, deleteTournament, games } =
-        useLocalTournament();
+    const {
+        players,
+        status,
+        maxPlayers,
+        startRound,
+        playGame,
+        deleteTournament,
+        games,
+    } = useLocalTournament();
+
+    return (
+        <div className="w-full h-full grid grid-cols-2 grid-rows-2 gap-2 p-6">
+            {/* Player List */}
+            <div className="w-full h-full">
+                <RegisterPlayerList players={players} />
+            </div>
+
+            {/* Tournament Info */}
+            <div className="w-full h-full">
+                <TournamentInfo
+                    status={status}
+                    players={players.length}
+                    maxPlayers={maxPlayers}
+                    onStart={startRound}
+                    onDelete={deleteTournament}
+                />
+            </div>
+
+            {/* Games */}
+            <div className="w-full h-full col-span-2">
+                <GameList isLocal={true} onGameClick={playGame} />
+            </div>
+        </div>
+    );
 
     return (
         <div className="w-full h-full flex flex-col items-center justify-center">

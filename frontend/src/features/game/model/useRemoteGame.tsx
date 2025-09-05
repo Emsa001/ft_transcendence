@@ -25,6 +25,7 @@ interface RemoteGameContextType {
     mode: GameMode;
     isPrivate: boolean;
     round: number;
+    isTournament: boolean;
     maxScore: number;
     player: GameUserDTOType | null;
     players: GameUserDTOType[];
@@ -79,11 +80,11 @@ export const RemoteGameProvider = ({
     const [players, setPlayers] = useState<GameUserDTOType[]>([]);
     const [winner, setWinner] = useState<string | null>(null);
     const [maxPlayers, setMaxPlayers] = useState<number>(0);
+    const [isTournament, setIsTournament] = useState<boolean>(false);
 
     const frameRef = useRef<GameFrame | null>(null);
 
     const { messages } = useGameMessages();
-
     const { addHook, sendMessage } = useWebSocket(`/game/join/${code}`);
 
     useGameKeys({
@@ -111,6 +112,7 @@ export const RemoteGameProvider = ({
                 setMaxPlayers(state.maxPlayers);
                 setPlayer(state.players.find((p) => p.id === user!.id) || null);
                 setHost(state.hostId);
+                setIsTournament(state.tournamentId ? true : false);
 
                 if (state.round) setRound(state.round);
                 if (state.maxScore) setMaxScore(state.maxScore);
@@ -213,6 +215,7 @@ export const RemoteGameProvider = ({
         frameRef,
         messages,
         error,
+        isTournament,
     };
 
     return (
