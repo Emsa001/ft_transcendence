@@ -55,6 +55,7 @@ export class UserController extends BaseController {
             return reply.send(user.toDTO());
         }
         const user = await User.findById(Number(id));
+        if (!user) throw new HttpException(404, "User not found");
         return reply.send(user?.toDTO());
     }
 

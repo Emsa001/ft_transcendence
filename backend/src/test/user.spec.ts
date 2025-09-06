@@ -213,8 +213,7 @@ const playGame = async (
     game.status = GameStatus.IN_PROGRESS;
     await game.playerScore(user.id, userScore);
     await game.playerScore(opponent.id, opponentScore);
-    game.status = GameStatus.FINISHED;
-    await game.save();
+    await game.end();
 };
 
 const winGame = async (user: User, game?: Game) => {

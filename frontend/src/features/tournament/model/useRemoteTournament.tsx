@@ -74,7 +74,7 @@ export const RemoteTournamentProvider = ({
     const [winner, setWinner] = useState<string | null>(null);
 
     const [randomEvents, setRandomEvents] = useState<boolean>(false);
-    const [maxScore, setMaxScore] = useState<number>(5);
+    const [maxScore, setMaxScore] = useState<number>(1);
 
     const [currentGame, setCurrentGame] = useState<GameDTOType | null>(null);
 

@@ -6,12 +6,9 @@ import { GameUser } from "./models/Game/GameUser";
 import { UserFriends } from "./models/User/UserFriends";
 import { Tournament } from "./models/Tournaments/Tournament";
 import { TournamentUser } from "./models/Tournaments/TournamentUser";
-import path from "path";
-import { fileURLToPath } from "url";
 import { Message } from "./models/Message/Message";
 import { BlockedUsers } from "./models/User/BlockedUsers";
 import { GameRooms } from "@/modules/game/services/registry.service";
-import { DatabaseExampleFeed } from "./feed";
 import { TournamentRooms } from "@/modules/tournament/services/registry.service";
 
 const models = [
@@ -24,10 +21,6 @@ const models = [
     Tournament,
     TournamentUser,
 ];
-
-// ESM-safe __dirname
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
 
 export const registerDB = async (app: FastifyInstance) => {
     const sequelize = new Sequelize({

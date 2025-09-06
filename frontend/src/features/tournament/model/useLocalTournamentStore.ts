@@ -1,6 +1,18 @@
 import { useEffect, useLocalStorage } from "react";
-import { TournamentDTOType } from "shared";
+import { GameStatus, TournamentDTOType } from "shared";
 import { LocalTournamentState } from "../types";
+
+export const DefaultTournamentState: LocalTournamentState = {
+    tournamentId: Date.now(),
+    status: GameStatus.WAITING,
+    players: [],
+    games: [],
+    round: 1,
+    winner: null,
+    currentGame: null,
+    randomEvents: false,
+    maxScore: 1,
+};
 
 export const useLocalTournamentStore = (
     state: LocalTournamentState,
@@ -41,7 +53,7 @@ export const useLocalTournamentStore = (
                 games: localTournamentData.games ?? [],
                 round: localTournamentData.round,
                 winner: localTournamentData.winner,
-                maxScore: localTournamentData.maxScore ?? 5,
+                maxScore: localTournamentData.maxScore ?? 1,
                 randomEvents: localTournamentData.randomEvents ?? false,
             });
         }
