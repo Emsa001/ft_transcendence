@@ -1,9 +1,7 @@
 import React, { useState } from "react";
 import Swal from "sweetalert2";
 import { useGame } from "@features/game/model/useGame";
-import { GameUserDTOType } from "shared";
-import { gameEngine } from "@features/game/service/GameEngine";
-import { aiEngine, AiLevel } from "@features/game/service/AiEngine";
+import { OptionsModal } from "./GameOptions";
 
 const defaultButton =
     "px-4 py-2 rounded-xl transition text-white font-bold shadow";
@@ -70,57 +68,25 @@ const GameActions = () => {
     );
 };
 
-function Options() {
-    const { state, setPlayers } = useGame();
-
-    const [mode, setMode] = useState<
-        "versus" | "ai_easy" | "ai_hard" | "ai_impossible"
-    >("versus");
+export function Options() {
+    const [isOpen, setIsOpen] = useState(false);
+    const { state } = useGame();
     const isRunning = state != "created" && state != "finished";
 
-    const handleChange = () => {
-        if (isRunning) return;
-        let players: GameUserDTOType[];
-        if (mode === "versus") {
-            players = [
-                { id: 0, username: "Player 1", score: 0 },
-                { id: 1, username: "Ai-Pong", score: 0 },
-            ];
-            aiEngine.level = AiLevel.EASY;
-            setMode("ai_easy");
-        } else if (mode === "ai_easy") {
-            players = [
-                { id: 0, username: "Player 1", score: 0 },
-                { id: 1, username: "Ai-Pong", score: 0 },
-            ];
-            aiEngine.level = AiLevel.HARD;
-            setMode("ai_hard");
-        } else if (mode === "ai_hard") {
-            players = [
-                { id: 0, username: "Player 1", score: 0 },
-                { id: 1, username: "Ai-Pong", score: 0 },
-            ];
-            aiEngine.level = AiLevel.IMPOSSIBLE;
-            setMode("ai_impossible");
-        } else {
-            players = [
-                { id: 0, username: "Player 1", score: 0 },
-                { id: 1, username: "Player 2", score: 0 },
-            ];
-            aiEngine.level = AiLevel.EASY;
-            setMode("versus");
-        }
-        gameEngine.createPlayers(players);
-        setPlayers(players);
+    const handleOpen = () => {
+        setIsOpen(true);
     };
 
     return (
-        <button
-            onClick={handleChange}
-            className={`bg-white/10 ${defaultButton} ${isRunning ? "opacity-50" : "hover:bg-white/15"}`}
-        >
-            {mode}
-        </button>
+        <div>
+            <button
+                onClick={handleOpen}
+                className={`bg-white/10 px-4 py-2 rounded-xl transition text-white font-bold shadow ${isRunning ? "opacity-50" : "hover:bg-white/15"}`}
+            >
+                Options
+            </button>
+            <OptionsModal modalOpen={isOpen} setModalOpen={setIsOpen} />
+        </div>
     );
 }
 

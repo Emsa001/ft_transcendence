@@ -91,7 +91,6 @@ export const RemoteGameProvider = ({
     useGameKeys({
         onKeyDown: (key) => {
             sendMessage({ type: "PLAYER_INPUT", key, state: "down" });
-            console.log("Key down:", key);
         },
         onKeyUp: (key) => {
             sendMessage({ type: "PLAYER_INPUT", key, state: "up" });

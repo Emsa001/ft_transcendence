@@ -1,5 +1,5 @@
 import { Ball, Paddle } from "shared";
-import { GameEngine } from "./GameEngine";
+import { GameEngine } from "./engine.service";
 
 interface RandomEvent {
     action: (gameEngine: GameEngine) => void;

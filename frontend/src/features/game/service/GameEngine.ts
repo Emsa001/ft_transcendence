@@ -4,10 +4,11 @@ import { Ball, GameUserDTOType, Paddle } from "shared";
 import { aiEngine } from "./AiEngine";
 import { gameEvents } from "./GameEvents";
 
-class GameEngine {
+export class GameEngine {
     ball: Ball;
     paddles: Record<number, Paddle>;
     aiPaddle?: boolean;
+    randomEvents = false;
     keys: Record<string, boolean> = {};
     stopped = true;
 
@@ -109,7 +110,7 @@ class GameEngine {
     update(): void {
         if (this.stopped) return;
 
-        gameEvents.tryEvent();
+        if (this.randomEvents) gameEvents.tryEvent(this);
 
         this.updatePaddles();
         this.updateBall();
@@ -181,10 +182,10 @@ class GameEngine {
         const paddleIds = Object.keys(this.paddles).map(Number);
         if (this.ball.pos.x < -20) {
             this.onScore?.(paddleIds[1]); // Right player scores
-            gameEvents.reset();
+            gameEvents.reset(this);
         } else if (this.ball.pos.x > baseW + 20) {
             this.onScore?.(paddleIds[0]); // Left player scores
-            gameEvents.reset();
+            gameEvents.reset(this);
         }
     }
 }

@@ -48,6 +48,7 @@ export class GameRoom extends WebSocketService {
         this.game = game;
         this.engine = new GameEngine();
         this.engine.onScore = this.onScore.bind(this);
+        this.engine.onRandomEvent = this.onRandomEvent.bind(this);
         this.countdownService = new CountdownService(
             this.gameMessage.bind(this)
         );
@@ -160,6 +161,7 @@ export class GameRoom extends WebSocketService {
         const players = this.game.getGameUsers();
 
         this.engine.initPaddles(players);
+        this.engine.randomEvents = this.game.randomEvents;
         this.updateState();
         this.startGameLoop();
 
@@ -211,6 +213,12 @@ export class GameRoom extends WebSocketService {
             await this.countdownService.run(3);
             this.engine.togglePause();
         }
+    }
+
+    /* -------------------- Random Events -------------------- */
+
+    onRandomEvent(event: string) {
+        this.broadcast({ type: "GAME_EVENT", event });
     }
 
     /* -------------------- Game Loop -------------------- */

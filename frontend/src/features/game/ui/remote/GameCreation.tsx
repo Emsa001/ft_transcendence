@@ -9,6 +9,7 @@ type GameModalProps = {
 
 export const GameCreationModal = ({ onClose, onCreate }: GameModalProps) => {
     const [isPrivate, setIsPrivate] = useState(false);
+    const [randomEvents, setRandomEvents] = useState(false);
     const [maxScore, setMaxScore] = useState(10);
     const [error, setError] = useState<string | null>(null);
 
@@ -17,7 +18,7 @@ export const GameCreationModal = ({ onClose, onCreate }: GameModalProps) => {
             setError("Please enter a valid max score in range 1-99");
             return;
         }
-        onCreate?.({ isPrivate, maxScore });
+        onCreate?.({ isPrivate, randomEvents, maxScore });
         onClose?.();
     };
 
@@ -71,8 +72,45 @@ export const GameCreationModal = ({ onClose, onCreate }: GameModalProps) => {
                     </label>
                 </div>
 
+                <div className="mb-6">
+                    <label className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer group">
+                        <div>
+                            <span className="font-medium text-purple-300 group-hover:text-purple-200 transition-colors">
+                                Random Events
+                            </span>
+                            <p className="text-xs text-white/50 mt-1">
+                                Enable random events during the game
+                            </p>
+                        </div>
+                        <div className="relative">
+                            <input
+                                type="checkbox"
+                                onChange={(e: any) =>
+                                    setRandomEvents(e.target.checked)
+                                }
+                                className="sr-only"
+                            />
+                            <div
+                                className={`w-12 h-6 rounded-full transition-colors ${
+                                    randomEvents
+                                        ? "bg-gradient-to-r from-purple-500 to-fuchsia-500"
+                                        : "bg-white/20"
+                                }`}
+                            >
+                                <div
+                                    className={`w-5 h-5 top-0 absolute bg-white rounded-full shadow-lg transform transition-transform ${
+                                        randomEvents
+                                            ? "translate-x-6"
+                                            : "translate-x-0.5"
+                                    } mt-0.5`}
+                                />
+                            </div>
+                        </div>
+                    </label>
+                </div>
+
                 {/* Max Score Input */}
-                <div className="mb-8">
+                <div className="mb-6">
                     <label className="block text-sm font-semibold text-purple-300 mb-2">
                         Max Score
                     </label>
