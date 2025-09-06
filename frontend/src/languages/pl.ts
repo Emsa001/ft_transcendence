@@ -16,6 +16,8 @@ export default {
         title: "ft_transcendencja",
         login: "Zaloguj się",
         profile: "Profil",
+        chat: "Czat",
+        play: "Graj",
     },
     chat: {
         friends: "Przyjaciele",

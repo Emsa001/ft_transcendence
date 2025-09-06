@@ -191,20 +191,34 @@ export class GameRenderer {
         }
 
         let currentY = canvas.height / 2;
-        message.forEach((msg, index) => {
-            const size = msg.size ?? 48;
+
+        message.forEach((msg) => {
+            let size = msg.size ?? 48;
             const color = msg.color ?? "#c4b5fd";
             const marginTop = msg.marginTop ?? 0;
+
+            // pick a starting font
+            ctx.font = `${size * this.sx}px ui-sans-serif, system-ui`;
+
+            // shrink if text is too wide
+            let textWidth = ctx.measureText(msg.text).width;
+            const maxWidth = canvas.width * 0.9; // allow some padding
+            if (textWidth > maxWidth) {
+                size = Math.floor((size * maxWidth) / textWidth); // scale proportionally
+                ctx.font = `${size * this.sx}px ui-sans-serif, system-ui`;
+                textWidth = ctx.measureText(msg.text).width;
+            }
 
             ctx.save();
             ctx.fillStyle = color;
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
-            ctx.font = `${size * this.sx}px ui-sans-serif, system-ui`;
+
             if (msg.shadow) {
                 ctx.shadowColor = msg.shadow.color;
                 ctx.shadowBlur = (msg.shadow.blur || 30) * this.dpr;
             }
+
             currentY += marginTop * this.sy;
             ctx.fillText(msg.text, canvas.width / 2, currentY);
             currentY += (size + 10) * this.sy;

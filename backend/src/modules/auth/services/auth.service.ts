@@ -7,6 +7,7 @@ import { HttpException } from "@/utils/exceptions";
 import { Token } from "../auth.types";
 import jwtService from "./jwt.service";
 import { UserGenerate } from "@/database/models/User/UserGenerate";
+import { Validators } from "@/database/other/Validators";
 
 /*
 
@@ -143,6 +144,11 @@ class AuthService {
         const existingUser = await User.findByUsername(username);
         if (existingUser)
             throw new HttpException(409, "Conflict: User already exists");
+
+        const error = Validators.validatePassword(password);
+        if (error) {
+            throw new HttpException(400, error);
+        }
 
         const hashedPassword = await bcrypt.hash(password, 10);
 

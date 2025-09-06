@@ -42,4 +42,8 @@ export class Toast {
     static success(params: AlertParamObject | string) {
         Toast.message(params, "success");
     }
+
+    static info(params: AlertParamObject | string) {
+        Toast.message(params, "info");
+    }
 }

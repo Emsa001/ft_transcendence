@@ -29,14 +29,14 @@ class ProfileApi extends APIService {
         }
     }
 
-    async getUser(): Promise<User> {
+    async getUser(): Promise<User | null> {
         try {
             const response: AxiosResponse<UserDTOType> =
                 await this.api.get("/user");
             return response.data;
         } catch (error) {
             console.error("Error during Google token verification:", error);
-            return Promise.reject(error);
+            return null;
         }
     }
 
@@ -58,13 +58,19 @@ class ProfileApi extends APIService {
         }
     }
 
-    async updateUser(data: UserEditableData): Promise<User | null> {
+    async updateUser(
+        data: UserEditableData,
+        onError?: (error: any) => void
+    ): Promise<User | null> {
         try {
             const response = await this.api.post("/user/edit", data);
             Toast.success("User information updated successfully.");
             return response.data.user as User;
         } catch (error: any) {
-            Toast.error(error.response.data.message);
+            onError?.(
+                error.response.data.message ||
+                    "An error occurred, please try again."
+            );
             return null;
         }
     }
