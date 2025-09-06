@@ -82,6 +82,12 @@ export default {
             add: "Recruit Victim",
             cancel: "Abort Mission",
         },
+        history: {
+            gameHistory: "History of shame",
+            tournamentHistory: "History of shame 2",
+            noGames: "You're lazy.",
+            noTournaments: "You're not even trying.",
+        },
     },
     auth: {
         createAccount: "Sell Your Soul",

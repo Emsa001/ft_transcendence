@@ -1,31 +1,14 @@
+import React from "react";
 import { useLanguage } from "@features/language/model/useLanguage";
-import { useStats } from "@features/user/model/useStats";
-import React, { useEffect, useState } from "react";
 import { GetStatisticsResponse } from "shared";
 
 interface StatsProps {
-    userId: number;
+    stats: GetStatisticsResponse | null;
 }
 
-export const Stats = ({ userId }: StatsProps) => {
-    const { fetchUserStats } = useStats();
-    const [stats, setStats] = useState<GetStatisticsResponse | null>(null);
+export const Stats = ({ stats }: StatsProps) => {
     const { getText } = useLanguage();
     const texts = getText("profile.stats");
-
-    if (!userId) return <div />;
-
-    useEffect(() => {
-        if (userId) {
-            fetchUserStats(userId).then((data) => {
-                if (data) {
-                    setStats(data);
-                } else {
-                    console.error("Failed to fetch user stats");
-                }
-            });
-        }
-    }, [userId]);
 
     if (!stats) {
         return (

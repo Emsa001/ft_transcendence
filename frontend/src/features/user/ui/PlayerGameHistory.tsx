@@ -1,53 +1,102 @@
-import React, { useEffect, useState } from "react";
-import { useStats } from "../model/useStats";
-import { GameDTOType } from "shared";
+import React from "react";
+import { GameDTOType, TournamentDTOType } from "shared";
 import { PlayerCard } from "./PlayerCard";
+
+import { FaCrown } from "react-icons/fa";
+import { Icon } from "@shared/components/Icon";
 import { useLanguage } from "@features/language/model/useLanguage";
 
-/*
-    Test component to display game history.
-    usage: <GameHistory userId={1} /> // will fetch and display game history for user with ID 1
-*/
+interface PlayerGameHistoryProps {
+    games: GameDTOType[];
+}
 
-export const PlayerGameHistory = ({ userId }: { userId: string | number }) => {
-    const { fetchGameHistory, loading, error } = useStats();
-    const [gameHistory, setGameHistory] = useState<GameDTOType[]>([]);
+interface PlayerTournamentHistoryProps {
+    tournaments: TournamentDTOType[];
+}
 
-    useEffect(() => {
-        if (!userId) return;
-        fetchGameHistory(userId).then((data) => data && setGameHistory(data));
-    }, [userId]);
-
-    if (loading) return <div>Loading...</div>;
-    if (error)
-        return (
-            <div>
-                <p className="text-red-400 text-center">
-                    Failed to load game history. Please try again later.
-                </p>
-            </div>
-        );
-    if (!gameHistory.length)
-        return (
-            <div>
-                <h2 className="text-xl font-semibold mb-4 border-b border-gray-700 pb-2 text-gray-100">
-                    Game History
-                </h2>
-                <p className="h-124 text-gray-300 text-center">
-                    No games found for this user.
-                </p>
-            </div>
-        );
+export const PlayerGameHistory = ({ games }: PlayerGameHistoryProps) => {
+    const { getText } = useLanguage();
+    const text = getText("profile.history");
 
     return (
         <div>
             <h2 className="text-xl font-bold mb-4 border-b border-gray-700 pb-2">
-                Game History
+                {text.gameHistory}
             </h2>
-            <div className="h-124 overflow-y-auto rounded-lg scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-800">
-                {gameHistory.map((game) => (
+            <div className="max-h-140 min-h-55 overflow-y-auto rounded-lg scrollbar-minimal px-2">
+                {games.map((game) => (
                     <GameCard key={game.id} game={game} />
                 ))}
+                {games.length === 0 && (
+                    <p className="h-124 text-gray-300 text-center">
+                        {text.noGames}
+                    </p>
+                )}
+            </div>
+        </div>
+    );
+};
+
+export const PlayerTournamentHistory = ({
+    tournaments,
+}: PlayerTournamentHistoryProps) => {
+    const { getText } = useLanguage();
+    const text = getText("profile.history");
+
+    return (
+        <div>
+            <h2 className="text-xl font-bold mb-4 border-b border-gray-700 pb-2">
+                {text.tournamentHistory}
+            </h2>
+            <div className="max-h-140 min-h-55 overflow-y-auto rounded-lg scrollbar-minimal px-2">
+                {tournaments.map((tournament) => (
+                    <TournamentCard
+                        key={tournament.id}
+                        tournament={tournament}
+                    />
+                ))}
+                {tournaments.length === 0 && (
+                    <p className="h-124 text-gray-300 text-center">
+                        {text.noTournaments}
+                    </p>
+                )}
+            </div>
+        </div>
+    );
+};
+
+const getTime = (date: Date) => {
+    const d = new Date(date);
+    const day = String(d.getDate()).padStart(2, "0");
+    const month = String(d.getMonth() + 1).padStart(2, "0");
+    const hours = String(d.getHours()).padStart(2, "0");
+    const minutes = String(d.getMinutes()).padStart(2, "0");
+    return `${day}/${month} ${hours}:${minutes}`;
+};
+
+const TournamentCard = ({ tournament }: { tournament: TournamentDTOType }) => {
+    return (
+        <div className="bg-gray-700/50 rounded-lg p-3 my-2 shadow-sm">
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-gray-600 pb-1 mb-2">
+                <h3 className="text-lg font-semibold text-gray-100">
+                    {tournament.name}
+                </h3>
+                <span className="text-sm text-gray-400">
+                    {getTime(tournament.createdAt)}
+                </span>
+            </div>
+
+            {/* Info */}
+            <div className="flex justify-between gap-2 text-sm text-gray-300">
+                <div>
+                    <span className="font-medium text-gray-200">Players:</span>{" "}
+                    {tournament.players.length}/{tournament.maxPlayers}
+                </div>
+                <div className="flex items-center">
+                    <Icon icon={FaCrown} className="text-yellow-400 mr-1" />
+                    <span>{tournament.winner || "—"}</span>
+                </div>
             </div>
         </div>
     );
@@ -57,7 +106,7 @@ const GameCard = ({ game }: { game: GameDTOType }) => {
     const winner = game.winner || "No Winner";
 
     return (
-        <div className="bg-gray-700/50 rounded-lg pl-2">
+        <div className="bg-gray-700/50 rounded-lg pl-2 my-2">
             <GameHeader winner={winner} date={game.createdAt} />
             <div className="flex items-center justify-evenly p-2">
                 {game.players.map((player) => (
@@ -70,11 +119,10 @@ const GameCard = ({ game }: { game: GameDTOType }) => {
 
 const GameHeader = ({ winner, date }: { winner: string; date: Date }) => (
     <div className="flex justify-between px-4 pt-2 ">
-        <span className="font-semibold">
-            Winner: <span className="text-green-500/80 pl-1">{winner}</span>
-        </span>
-        <span className="text-sm text-white/70">
-            {new Date(date).toLocaleDateString()}
-        </span>
+        <div className="flex items-center">
+            <Icon icon={FaCrown} className="text-yellow-400 mr-1" />
+            <span>{winner || "—"}</span>
+        </div>
+        <span className="text-sm text-white/70">{getTime(date)}</span>
     </div>
 );

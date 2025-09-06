@@ -19,6 +19,8 @@ export class TournamentDTO implements TournamentDTOType {
     uuid: string;
     hostId: number | null;
     randomEvents: boolean;
+    createdAt: Date;
+    updatedAt: Date;
 
     private tournament: Tournament;
 
@@ -41,6 +43,8 @@ export class TournamentDTO implements TournamentDTOType {
         this.hostId = tournament.hostId;
         this.tournament = tournament;
         this.randomEvents = tournament.randomEvents;
+        this.createdAt = tournament.createdAt;
+        this.updatedAt = tournament.updatedAt;
 
         Object.defineProperty(this, "tournament", {
             value: tournament,

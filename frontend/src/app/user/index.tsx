@@ -1,22 +1,36 @@
 import React, { useEffect, useNavigate, useState } from "react";
 import { FaBan } from "react-icons/fa";
 import { Stats } from "@features/profile/ui/Stats";
-import { PlayerGameHistory } from "@features/user/ui/PlayerGameHistory";
-import ProfileApi from "@features/user/service/profileApi";
+import {
+    PlayerGameHistory,
+    PlayerTournamentHistory,
+} from "@features/user/ui/PlayerGameHistory";
 import { UserDTOType } from "shared";
 import { Icon } from "@shared/components/Icon";
 import { UserInfoDisplay } from "@features/user/ui/UserInfoDisplay";
 import { UserInfo } from "@features/user/ui/UserInfo";
+import { useUser } from "@features/auth/model/useUser";
+import { useStats } from "@features/user/model/useStats";
+
 import blockUserApi from "@features/user/service/blockUserApi";
 import FriendsApi from "@features/user/service/friendsApi";
 
 export default function User({ username }: { username?: string }) {
-    const [user, setUser] = useState<UserDTOType | null>(null);
+    const navigate = useNavigate();
+    const { user } = useUser();
+    const [profileUser, setProfileUser] = useState<UserDTOType | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [isBlocked, setIsBlocked] = useState(false);
 
-    const navigate = useNavigate();
+    const { history, stats, fetchGameHistory, fetchUserStats } = useStats();
+
+    useEffect(() => {
+        if (profileUser) {
+            fetchGameHistory(profileUser.id);
+            fetchUserStats(profileUser.id);
+        }
+    }, [profileUser]);
 
     useEffect(() => {
         if (!username) return;
@@ -27,24 +41,44 @@ export default function User({ username }: { username?: string }) {
                 setError(null);
                 const newUser =
                     await FriendsApi.getUserByIdOrUsername(username);
-                setUser(newUser);
+                setProfileUser(newUser);
             } catch (err) {
                 setError("Failed to load user profile");
                 console.error("Error fetching user:", err);
             } finally {
                 setLoading(false);
             }
-
-            const blockedUsers = await blockUserApi.getAll();
-            if (
-                blockedUsers &&
-                blockedUsers.some((blocked) => blocked.id === user?.id)
-            )
-                setIsBlocked(true);
         };
 
         fetchUser();
     }, [username]);
+
+    useEffect(() => {
+        if (user && profileUser && user.id === profileUser.id) {
+            console.log("navigating to profile");
+            navigate("/profile");
+        }
+    }, [user, profileUser]);
+
+    useEffect(() => {
+        const checkBlockedStatus = async () => {
+            if (profileUser) {
+                try {
+                    const blocked = await blockUserApi.amIBlockedByUser(
+                        profileUser.id
+                    );
+                    console.log("Blocked status:", blocked);
+                    setIsBlocked(blocked);
+                } catch (error) {
+                    console.error("Error fetching blocked users:", error);
+                }
+            }
+        };
+
+        if (profileUser) {
+            checkBlockedStatus();
+        }
+    }, [profileUser]);
 
     if (loading) {
         return (
@@ -59,7 +93,7 @@ export default function User({ username }: { username?: string }) {
         );
     }
 
-    if (error || !user) {
+    if (error || !profileUser) {
         return (
             <div className="min-h-screen flex items-center justify-center p-4 bg-gradient-to-b from-black via-zinc-900 to-black">
                 <section className="max-w-md w-full backdrop-blur-xl bg-white/5 rounded-2xl p-8 border border-red-500/20 text-center">
@@ -112,30 +146,25 @@ export default function User({ username }: { username?: string }) {
             <div className=" text-gray-100 px-4 w-full max-w-7xl">
                 <div className="flex flex-col md:flex-row gap-6 mb-6">
                     <div className="bg-gray-800/50 rounded-lg p-6 shadow-lg w-full md:w-1/3 flex items-center justify-center">
-                        <UserInfoDisplay user={user} />
+                        <UserInfoDisplay user={profileUser} />
                     </div>
                     <div className="bg-gray-800/50 rounded-lg p-6 shadow-lg w-full md:w-2/3 ">
-                        <UserInfo user={user} />
+                        <UserInfo user={profileUser} />
                     </div>
                 </div>
 
                 <div className="flex flex-col md:flex-row gap-6">
                     <div className="bg-gray-800/50 rounded-lg p-6 shadow-lg w-full md:w-1/3 flex flex-col">
-                        <Stats userId={user?.id} />
+                        <Stats stats={stats} />
                     </div>
                     <div className="flex flex-col md:flex-row gap-6 w-full md:w-2/3">
                         <div className="bg-gray-800/50 rounded-lg p-6 shadow-lg w-full md:w-1/2 flex flex-col">
-                            <h2 className="text-xl font-bold mb-4 border-b border-gray-700 pb-2">
-                                Achivements
-                            </h2>
-                            <p>
-                                what should we put here?
-                                <br />
-                                maybe devide the game history in 2 sections?
-                            </p>
+                            <PlayerGameHistory games={history?.games || []} />
                         </div>
                         <div className="bg-gray-800/50 rounded-lg p-6 shadow-lg w-full md:w-1/2 flex flex-col">
-                            <PlayerGameHistory userId={user?.id} />
+                            <PlayerTournamentHistory
+                                tournaments={history?.tournaments || []}
+                            />
                         </div>
                     </div>
                 </div>
