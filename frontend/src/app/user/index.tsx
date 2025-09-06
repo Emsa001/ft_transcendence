@@ -36,7 +36,10 @@ export default function User({ username }: { username?: string }) {
             }
 
             const blockedUsers = await blockUserApi.getAll();
-            if (blockedUsers.some((blocked) => blocked.id === user?.id))
+            if (
+                blockedUsers &&
+                blockedUsers.some((blocked) => blocked.id === user?.id)
+            )
                 setIsBlocked(true);
         };
 

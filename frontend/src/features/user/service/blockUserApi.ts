@@ -4,14 +4,14 @@ import { UserDTOType } from "shared";
 import { Toast } from "@shared/lib/Toast";
 
 class BlockUserApi extends APIService {
-    async getAll(): Promise<UserDTOType[]> {
+    async getAll(): Promise<UserDTOType[] | null> {
         try {
             const response: AxiosResponse<UserDTOType[]> =
                 await this.api.get("/blocked/all");
             return response.data;
         } catch (error) {
             console.error("Error fetching all blocked users:", error);
-            return Promise.reject(error);
+            return null;
         }
     }
 
@@ -28,7 +28,6 @@ class BlockUserApi extends APIService {
             await this.api.post(`/unblock/${userId}`);
         } catch (error) {
             console.error("Error unblocking user:", error);
-            return Promise.reject(error);
         }
     }
 }

@@ -20,20 +20,24 @@ export const AllUsers = () => {
                     FriendsApi.getFriendRequests(),
                     blockUserApi.getAll(),
                 ]);
-            setFriends(newFriends);
-            setFriendRequests(newFriendRequests);
-            setBlockedUsers(newBlockedUsers);
+            if (newFriendRequests) setFriendRequests(newFriendRequests);
 
-            const friendUsernames = new Set(newFriends.map((f) => f.username));
-            const blockedUsernames = new Set(
-                newBlockedUsers.map((b) => b.username)
-            );
-            const filteredUsers = newUsers.filter(
-                (user) =>
-                    !friendUsernames.has(user.username) &&
-                    !blockedUsernames.has(user.username)
-            );
-            setAllUsers(filteredUsers);
+            if (newFriends && newBlockedUsers) {
+                setBlockedUsers(newBlockedUsers);
+                setFriends(newFriends);
+                const friendUsernames = new Set(
+                    newFriends.map((f) => f.username)
+                );
+                const blockedUsernames = new Set(
+                    newBlockedUsers.map((b) => b.username)
+                );
+                const filteredUsers = newUsers.filter(
+                    (user) =>
+                        !friendUsernames.has(user.username) &&
+                        !blockedUsernames.has(user.username)
+                );
+                setAllUsers(filteredUsers);
+            }
         };
         fetchData();
     }, []);

@@ -30,7 +30,7 @@ export const SearchModal = ({ onClose, isOpen }: SearchModalProps) => {
         }
         const handler = setTimeout(async () => {
             const sent = await FriendsApi.getAllSentRequests();
-            setSentRequests(sent);
+            if (sent) setSentRequests(sent);
             const filtered = await ProfileApi.searchUsers(query);
             const filteredWithoutSelf = filtered.filter(
                 (u: UserDTOType) => u.id !== user.id

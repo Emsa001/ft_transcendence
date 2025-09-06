@@ -40,11 +40,12 @@ export default function Root() {
             <BrowserRouter>
                 <Router src="/" component={<Home />} default />
                 <Router src="/auth" component={<Auth />} />
-                <Router src="/profile" component={<Profile />} />
-                <Router src="/chat/:userId?" component={<Chat />} />
 
-                <Router src="/game/:type?/:mode?/:code?" component={<Game />} />
+                <Router src="/profile" component={<Profile />} />
                 <Router src="/profile/:username?" component={<User />} />
+
+                <Router src="/chat/:userId?" component={<Chat />} />
+                <Router src="/game/:type?/:mode?/:code?" component={<Game />} />
             </BrowserRouter>
         </div>
     );
