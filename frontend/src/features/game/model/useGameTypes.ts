@@ -1,4 +1,4 @@
-import { GameMessage, GameUserDTOType } from "shared";
+import { GameMessage, GameUserDTOType, MessageData } from "shared";
 import { GameState } from "../types";
 
 export interface GameContextType {
@@ -14,7 +14,7 @@ export interface GameContextType {
     state: GameState;
     setState: SetState<GameState>;
 
-    messages: RefObject<GameMessage[] | null>;
+    messages: RefObject<MessageData | null>;
     countdown: RefObject<number | null>;
 
     /** --- Game Control Methods --- */

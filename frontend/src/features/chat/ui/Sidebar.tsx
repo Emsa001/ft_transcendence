@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { UserPicture } from "@features/user/ui/UserPicture";
 import { useOnlineUsers } from "@features/user/model/useOnlineUsers";
 import { useChat } from "../model/ChatContext";
@@ -12,7 +12,7 @@ interface UserCardProps {
     onClick: () => void;
 }
 
-function UserCard({ user, isOnline, selectedUser, onClick }: UserCardProps) {
+const UserCard = ({ user, isOnline, selectedUser, onClick }: UserCardProps) => {
     return (
         <div
             onClick={onClick}
@@ -23,6 +23,7 @@ function UserCard({ user, isOnline, selectedUser, onClick }: UserCardProps) {
             <div className="relative">
                 <UserPicture
                     userId={user.id}
+                    size={8}
                     className="w-10 h-10 rounded-full shadow-[0_0_8px_rgba(0,255,255,0.7)]"
                 />
                 <span
@@ -36,11 +37,19 @@ function UserCard({ user, isOnline, selectedUser, onClick }: UserCardProps) {
             </span>
         </div>
     );
-}
+};
 
-export function Sidebar() {
-    const { users, selectedUser, setSelectedUser } = useChat();
+export const Sidebar = ({ userId }: { userId?: string }) => {
+    const { users, selectedUser, setSelectedUser, handleSelectUser } =
+        useChat();
     const { onlineUsers } = useOnlineUsers();
+    useEffect(() => {
+        if (userId) {
+            console.log(users);
+            const user = users.find((u) => u.id === parseInt(userId));
+            if (user) setSelectedUser(user);
+        }
+    }, [userId, users]);
 
     const { getText } = useLanguage();
     const text = getText("chat.friends");
@@ -59,11 +68,11 @@ export function Sidebar() {
                             user={user}
                             isOnline={onlineUsers.includes(user.id)}
                             selectedUser={selectedUser}
-                            onClick={() => setSelectedUser(user)}
+                            onClick={() => handleSelectUser(user)}
                         />
                     </div>
                 ))}
             </div>
         </div>
     );
-}
+};

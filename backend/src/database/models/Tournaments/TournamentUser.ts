@@ -10,6 +10,7 @@ import {
     AutoIncrement,
     BeforeCreate,
     BeforeBulkCreate,
+    AfterBulkDestroy,
 } from "sequelize-typescript";
 import { User } from "../User/User";
 import { Tournament } from "./Tournament";
@@ -57,5 +58,15 @@ export class TournamentUser extends Model {
     @BeforeBulkCreate
     static async verifyBulkAddPlayer(TournamentUser: TournamentUser[]) {
         await TournamentUserHooks.verifyBulkAddPlayer(TournamentUser);
+    }
+
+    @AfterBulkDestroy
+    static async AfterBulkDestroy(options: any) {
+        const { where } = options;
+        if (where.tournamentId && where.userId) {
+            const tournamentId = where.tournamentId;
+            const userId = where.userId;
+            await TournamentUserHooks.setTournamentHost(tournamentId, userId);
+        }
     }
 }

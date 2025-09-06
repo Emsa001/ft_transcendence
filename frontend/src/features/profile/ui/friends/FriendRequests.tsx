@@ -12,12 +12,12 @@ interface FriendRequestsProps {
     friends: UserDTOType[];
 }
 
-export function FriendRequests({
+export const FriendRequests = ({
     friendRequests,
     setFriendRequests,
     setFriends,
     friends,
-}: FriendRequestsProps) {
+}: FriendRequestsProps) => {
     const { getText } = useLanguage();
     const texts = getText("profile.friends");
 
@@ -44,6 +44,7 @@ export function FriendRequests({
                     <div className="flex items-center gap-3">
                         <UserPicture
                             userId={user.id}
+                            size={8}
                             className="w-9 h-9 rounded-full"
                         />
                         <span className="font-medium text-gray-200">
@@ -69,4 +70,4 @@ export function FriendRequests({
             ))}
         </div>
     );
-}
+};

@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { ShinyText } from "@shared/components/Shiny";
-import { AddPlayerInput } from "./components/AddPlayer";
-import { RegisterPlayerList } from "./components/PlayerList";
-import { useLocalTournament } from "../model/useLocalTournament";
+import { AddPlayerInput } from "./AddPlayer";
+import { RegisterPlayerList } from "./PlayerList";
+import { useLocalTournament } from "../../model/useLocalTournament";
 
 export const TournamentRegister = () => {
     const { players, maxPlayers, addPlayer, removePlayer, startTournament } =
@@ -49,10 +49,12 @@ export const TournamentRegister = () => {
                     {status?.message || " "}
                 </p>
 
-                <RegisterPlayerList
-                    players={players}
-                    onRemovePlayer={handleRemovePlayer}
-                />
+                <div className="h-[25vh]">
+                    <RegisterPlayerList
+                        players={players}
+                        onRemovePlayer={handleRemovePlayer}
+                    />
+                </div>
 
                 <button
                     onClick={startTournament}

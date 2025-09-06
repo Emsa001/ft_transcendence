@@ -6,11 +6,11 @@ interface UseGameKeysProps {
     onKeyUp?: (key: string) => void;
 }
 
-export function useGameKeys({
+export const useGameKeys = ({
     onSpacePress,
     onKeyDown,
     onKeyUp,
-}: UseGameKeysProps = {}) {
+}: UseGameKeysProps = {}) => {
     const keysRef = useRef<Record<string, boolean>>({});
 
     useEffect(() => {
@@ -42,4 +42,4 @@ export function useGameKeys({
     }, [onSpacePress, onKeyDown, onKeyUp]);
 
     return keysRef.current;
-}
+};

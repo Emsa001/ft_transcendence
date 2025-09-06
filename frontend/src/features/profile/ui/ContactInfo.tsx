@@ -4,7 +4,7 @@ import React, { useState } from "react";
 import { SettingsModal } from "./Settings";
 import { useLanguage } from "@features/language/model/useLanguage";
 
-export function ContactInfo() {
+export const ContactInfo = () => {
     const { user } = useUser();
     const [isSettingsOpen, setIsSettingsOpen] = useState(false);
 
@@ -42,4 +42,4 @@ export function ContactInfo() {
             />
         </div>
     );
-}
+};

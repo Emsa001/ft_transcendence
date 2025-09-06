@@ -116,13 +116,23 @@ export const GameProvider = ({
             return;
         }
 
-        showMessage(GameMessages.score(scorer.username), 1000, () =>
-            startCountdown().then(() => {
-                gameEngine.resetPositions();
-                gameEngine.stopped = false;
-                lockRef.current = false;
-            })
-        );
+        showMessage({
+            message: GameMessages.score(scorer.username),
+            duration: 1000,
+            after: () =>
+                startCountdown().then(() => {
+                    gameEngine.resetPositions();
+                    gameEngine.stopped = false;
+                    lockRef.current = false;
+                }),
+        });
+    };
+
+    const onRandomEvent = (event: string) => {
+        showMessage({
+            message: GameMessages.event(event),
+            duration: 1000,
+        });
     };
 
     // keep handleScore up to date
@@ -132,6 +142,7 @@ export const GameProvider = ({
 
     useEffect(() => {
         messages.current = GameMessages.start();
+        gameEngine.onRandomEvent = onRandomEvent;
 
         return () => {
             gameEngine.resetPositions();

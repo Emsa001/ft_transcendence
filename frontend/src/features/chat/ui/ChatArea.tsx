@@ -7,7 +7,7 @@ import { MessageCard } from "./MessageCard";
 import ChatApi from "@features/chat/service/api";
 import { useLanguage } from "@features/language/model/useLanguage";
 
-export function ChatArea() {
+export const ChatArea = () => {
     const blockScroll = useRef(false);
     const { setMessages, setIsBlocked, selectedUser, messages } = useChat();
     const [offset, setOffset] = useState(0);
@@ -107,4 +107,4 @@ export function ChatArea() {
             )}
         </div>
     );
-}
+};

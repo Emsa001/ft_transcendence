@@ -8,7 +8,7 @@ import cors from "@fastify/cors";
 import cookie from "@fastify/cookie";
 import middie from "@fastify/middie";
 
-import fs from "fs"
+import fs from "fs";
 
 import { registerDB } from "./database/client";
 import { UserController } from "./modules/user/user.controller";
@@ -82,11 +82,13 @@ export default async function App() {
         ],
     });
 
-    await app.setErrorHandler((error: HttpException, request, reply) => {
+    app.setErrorHandler((error: any, request, reply) => {
         request.log.error(error);
-        reply.status(error.statusCode || 500).send({
-            error: error.message || "Internal Server Error",
-        });
+
+        const status = error.statusCode ?? 500;
+        const message = error.message ?? "Internal Server Error";
+
+        reply.status(status).send({ error: message });
     });
 
     // Register Database client and models
@@ -99,10 +101,9 @@ export default async function App() {
         routeMetrics: { enabled: true },
     });
 
-
     // health endpoint here
-    app.get('/api/health', async (request, reply) => {
-    return { status: 'ok' };
+    app.get("/api/health", async (request, reply) => {
+        return { status: "ok" };
     });
 
     return app;

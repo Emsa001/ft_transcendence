@@ -10,7 +10,7 @@ interface SettingsModalProps {
     isOpen: boolean;
 }
 
-export function SettingsModal({ onClose, isOpen }: SettingsModalProps) {
+export const SettingsModal = ({ onClose, isOpen }: SettingsModalProps) => {
     const { user, setUser } = useUser();
     const [username, setUsername] = useState(user?.username || "");
     const [currentPassword, setCurrentPassword] = useState("");
@@ -122,4 +122,4 @@ export function SettingsModal({ onClose, isOpen }: SettingsModalProps) {
             </Modal>
         </div>
     );
-}
+};

@@ -25,7 +25,7 @@ export default function Game({ type, mode, code }: GameProps) {
 
     return (
         <div className="select-none h-full w-full flex items-center justify-center p-16 pt-24">
-            <div className="w-full h-full rounded-2xl shadow-2xl bg-fuchsia-900/5 relative">
+            <div className="w-full h-full rounded-2xl shadow-2xl bg-fuchsia-900/5 relative pb-24">
                 {/* Header stays at the top */}
                 <GameHeader type={type} mode={mode} code={code} />
 
@@ -40,7 +40,6 @@ export default function Game({ type, mode, code }: GameProps) {
                 {type === "remote" && mode === "tournament" && (
                     <TournamentRemote code={code} />
                 )}
-
                 <GameBackground />
             </div>
         </div>

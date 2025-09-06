@@ -1,6 +1,6 @@
 import React from "react";
 
-export function GameBackground() {
+export const GameBackground = () => {
     return (
         <div>
             {/* Decorative glows */}
@@ -8,4 +8,4 @@ export function GameBackground() {
             <div className="absolute -bottom-24 -right-24 w-64 h-64 rounded-full bg-sky-500/30 blur-3xl" />
         </div>
     );
-}
+};

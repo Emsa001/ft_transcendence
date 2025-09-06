@@ -176,17 +176,19 @@ export class GameRenderer {
         ctx.restore();
     }
 
-    drawMessages(message: GameMessage[] | null) {
+    drawMessages(message: GameMessage[] | null, cover: boolean = true) {
         if (!message || message.length === 0) return;
 
         const ctx = this.ctx;
         if (!ctx) return;
         const canvas = ctx.canvas;
 
-        ctx.save();
-        ctx.fillStyle = "rgba(15, 10, 40, 0.8)";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.restore();
+        if (cover) {
+            ctx.save();
+            ctx.fillStyle = "rgba(15, 10, 40, 0.8)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.restore();
+        }
 
         let currentY = canvas.height / 2;
         message.forEach((msg, index) => {

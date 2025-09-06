@@ -17,7 +17,7 @@ interface BallFieldProps {
     delay?: number;
 }
 
-export function BallField({ amount = 30, delay = 0 }: BallFieldProps) {
+export const BallField = ({ amount = 30, delay = 0 }: BallFieldProps) => {
     const bound = useRef<HTMLDivElement | null>(null);
     const [maxX, setMaxX] = useState(window.innerWidth);
     const [maxY, setMaxY] = useState(window.innerHeight);
@@ -78,4 +78,4 @@ export function BallField({ amount = 30, delay = 0 }: BallFieldProps) {
             </div>
         </div>
     );
-}
+};

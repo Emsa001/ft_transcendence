@@ -1,59 +1,115 @@
 import { FastifyReply, FastifyRequest } from "fastify";
-import { Controller, GET } from "fastify-decorators";
+import { Controller, GET, POST } from "fastify-decorators";
 
 import { BaseController } from "../base";
 import { HttpException } from "@/utils/exceptions";
 import { Tournament } from "@/database/models/Tournaments/Tournament";
-import { UserGenerate } from "@/database/models/User/UserGenerate";
 import { GameStatus } from "shared";
+import { AUTHORIZED, WS_AUTHORIZED } from "../auth/auth.middleware";
+import { TournamentRooms } from "./services/registry.service";
+import { WebSocket } from "@fastify/websocket";
 
 @Controller("/tournament")
 export class TournamentController extends BaseController {
     @GET("/all")
-    async getTournaments(_: FastifyRequest, reply: FastifyReply) {
-        const tournaments = await Tournament.findAll();
-        return reply.send(tournaments.map((tournament) => tournament.toDTO()));
+    async getAll(request: FastifyRequest, reply: FastifyReply) {
+        const { status, offset } = request.query as {
+            status?: GameStatus;
+            offset?: string;
+        };
+
+        const where = status ? { status } : undefined;
+        const limit = 20;
+        const offsetNum = offset ? Number(offset) : 0;
+
+        const tournaments = await Tournament.findAll({
+            order: [["createdAt", "DESC"]],
+            limit: limit + 1,
+            offset: offsetNum,
+            where,
+        });
+
+        const hasMore = tournaments.length > limit;
+        const tournamentsToSend = hasMore
+            ? tournaments.slice(0, limit)
+            : tournaments;
+
+        return reply.send({
+            tournaments: tournamentsToSend.map((tournament) =>
+                tournament.toDTO()
+            ),
+            hasMore,
+        });
     }
 
-    @GET("/:id")
-    async getTournamentById(request: FastifyRequest, reply: FastifyReply) {
-        const tournamentId = Number((request.params as { id: string }).id);
-        const tournament = await Tournament.findByPk(tournamentId);
+    @GET("/:uuid")
+    async getTournamentByUUID(request: FastifyRequest, reply: FastifyReply) {
+        const uuid = (request.params as { uuid: string }).uuid;
+        const tournament = await Tournament.findByUUID(uuid);
         if (!tournament) throw new HttpException(404, "Tournament not found");
 
         return reply.send(await tournament.toDTO().withGames());
     }
 
-    @GET("/join/:id")
-    async joinTournament(request: FastifyRequest, reply: FastifyReply) {
-        const tournamentId = Number((request.params as { id: string }).id);
-        const tournament = await Tournament.findByPk(tournamentId);
-        if (!tournament) throw new HttpException(404, "Tournament not found");
+    @POST("/create")
+    @AUTHORIZED
+    async createTournament(request: FastifyRequest, reply: FastifyReply) {
+        const { name, maxPlayers, maxScore, isPrivate } = request.body as {
+            name: string;
+            maxPlayers: number;
+            maxScore: number;
+            isPrivate: boolean;
+        };
 
-        const user = await UserGenerate.createExample();
-        await tournament.addPlayer(user);
-
-        return reply.send({
-            message: `User ${user.username} joined tournament ${tournament.name}`,
-            tournament: await tournament.toDTO().withGames(),
+        const tournament = await Tournament.create({
+            name,
+            maxPlayers,
+            maxScore,
+            isPrivate,
+            hostId: request.user.id,
         });
+
+        await tournament.reload({ include: ["players"] });
+        TournamentRooms.create(tournament);
+
+        return reply.status(201).send(tournament.toDTO());
     }
 
-    @GET("/start/:id")
+    @POST("/:uuid/start")
+    @AUTHORIZED
     async startTournament(request: FastifyRequest, reply: FastifyReply) {
-        const tournamentId = Number((request.params as { id: string }).id);
-        const tournament = await Tournament.findByPk(tournamentId);
-        if (!tournament) throw new HttpException(404, "Tournament not found");
+        const { uuid } = request.params as { uuid: string };
 
-        if (tournament.status === GameStatus.WAITING) {
-            tournament.status = GameStatus.IN_PROGRESS;
+        const room = TournamentRooms.get(uuid);
+        if (!room) throw new HttpException(500, "Tournament room not found");
+        if (room.tournament.hostId !== request.user.id) {
+            throw new HttpException(
+                403,
+                "Only the host can start the tournament"
+            );
         }
 
-        const round = await tournament.createRound();
-        await tournament.exampleRoundFlow();
-        return reply.send({
-            message: `Round started for tournament ${tournament.name}`,
-            games: round,
-        });
+        await room.start();
+
+        return reply.send({ message: "Tournament started" });
+    }
+
+    @GET("/:uuid/join", { websocket: true })
+    @WS_AUTHORIZED
+    async joinGame(connection: WebSocket, request: FastifyRequest) {
+        const { uuid } = request.params as { uuid: string };
+
+        const room = TournamentRooms.get(uuid);
+        if (!room) {
+            connection.close(4004, "Room not found");
+            return;
+        }
+
+        if (room.tournament.status === GameStatus.FINISHED) {
+            connection.close(4004, "Game has already finished");
+            return;
+        }
+
+        await room.addPlayer(connection, request.user);
     }
 }

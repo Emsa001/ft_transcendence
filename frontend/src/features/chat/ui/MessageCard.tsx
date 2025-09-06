@@ -65,7 +65,7 @@ interface MessageProps {
     user: UserDTOType;
 }
 
-export function MessageCard({ msg, user }: MessageProps) {
+export const MessageCard = ({ msg, user }: MessageProps) => {
     const [isInvite, setIsInvite] = useState(false);
     const [code, setCode] = useState("");
 
@@ -108,4 +108,4 @@ export function MessageCard({ msg, user }: MessageProps) {
             </span>
         </div>
     );
-}
+};

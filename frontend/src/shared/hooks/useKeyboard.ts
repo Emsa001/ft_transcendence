@@ -5,7 +5,7 @@ interface UseGameKeysProps {
     onSpacePress: () => void;
 }
 
-export function useGameKeys({ onSpacePress }: UseGameKeysProps) {
+export const useGameKeys = ({ onSpacePress }: UseGameKeysProps) => {
     const keysRef = useRef<Record<string, boolean>>({});
 
     useEffect(() => {
@@ -32,4 +32,4 @@ export function useGameKeys({ onSpacePress }: UseGameKeysProps) {
     }, [keysRef]);
 
     return keysRef.current;
-}
+};
