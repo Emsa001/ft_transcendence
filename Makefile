@@ -8,9 +8,6 @@ run: frontend backend
 
 dev: run
 
-build:
-	npm run build --prefix ./frontend
-
 clean:
 	rm -rf ./*/node_modules
 	rm -rf ./*/dist
