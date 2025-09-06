@@ -13,7 +13,7 @@ interface FriendRequestsProps {
 }
 
 
-export function FriendRequests ({
+export function FriendRequests({
     friendRequests,
     setFriendRequests,
     setFriends,

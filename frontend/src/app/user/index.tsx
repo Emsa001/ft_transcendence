@@ -13,6 +13,10 @@ import { useUser } from "@features/auth/model/useUser";
 import { Toast } from "@shared/lib/Toast";
 import { set } from "lodash";
 import { useChat } from "@features/chat/model/ChatContext";
+import { useUser } from "@features/auth/model/useUser";
+import { Toast } from "@shared/lib/Toast";
+import { set } from "lodash";
+import { useChat } from "@features/chat/model/ChatContext";
 
 
 export default function User({ username }: { username?: string }) {
