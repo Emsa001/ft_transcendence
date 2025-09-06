@@ -28,9 +28,11 @@ interface RegisteredPlayerListProps {
     isLocal?: boolean;
     players: TournamentUserDTOType[];
     onRemovePlayer?: (username: string) => void;
+    showPlayerStatus?: boolean;
 }
 
 export const RegisterPlayerList = ({
+    showPlayerStatus = true,
     isLocal = true,
     players,
     onRemovePlayer,
@@ -69,15 +71,17 @@ export const RegisterPlayerList = ({
                         )}
                         <span className="text-gray-200">{p.username}</span>
                         <div className="ml-auto">
-                            <span
-                                className={`text-sm font-medium px-2 py-1 rounded-full ${
-                                    p.eliminated
-                                        ? "bg-red-500/30 text-red-300"
-                                        : "bg-green-500/30 text-green-200"
-                                }`}
-                            >
-                                {p.eliminated ? "Eliminated" : "Active"}
-                            </span>
+                            {showPlayerStatus && (
+                                <span
+                                    className={`text-sm font-medium px-2 py-1 rounded-full ${
+                                        p.eliminated
+                                            ? "bg-red-500/30 text-red-300"
+                                            : "bg-green-500/30 text-green-200"
+                                    }`}
+                                >
+                                    {p.eliminated ? "Eliminated" : "Active"}
+                                </span>
+                            )}
                             {onRemovePlayer && (
                                 <button
                                     onClick={() => onRemovePlayer(p.username)}

@@ -19,7 +19,7 @@ interface RandomEvent {
 export class GameEvents {
     private isEvent: boolean;
     private events: RandomEvent[];
-    private timeoutId: ReturnType<typeof setTimeout> | null = null;
+    private timeoutIds: ReturnType<typeof setTimeout>[] = [];
     private snapshot: { ball: Ball; paddles: Record<number, Paddle> } | null =
         null;
 
@@ -38,18 +38,23 @@ export class GameEvents {
 
     reset(): void {
         this.isEvent = false;
-        this.isOnCooldown = false;
+        this.isOnCooldown = true;
         const gameEngine = this.gameEngine;
 
-        if (this.timeoutId) {
-            clearTimeout(this.timeoutId);
-            this.timeoutId = null;
-        }
+        this.timeoutIds.forEach((id) => clearTimeout(id));
+        this.timeoutIds = [];
+
         if (this.snapshot) {
             gameEngine.ball = this.snapshot.ball;
             gameEngine.paddles = this.snapshot.paddles;
             this.snapshot = null;
         }
+
+        this.timeoutIds.push(
+            setTimeout(() => {
+                this.isOnCooldown = false;
+            }, this.cooldown)
+        );
     }
 
     tryEvent(): void {
@@ -79,19 +84,24 @@ export class GameEvents {
         selectedEvent.action();
         this.isEvent = true;
 
-        this.timeoutId = setTimeout(() => {
+        const id = setTimeout(() => {
             this.isEvent = false;
             if (this.snapshot) {
                 gameEngine.ball = this.snapshot.ball;
                 gameEngine.paddles = this.snapshot.paddles;
             }
             this.snapshot = null;
-
-            this.isOnCooldown = true;
-            setTimeout(() => {
+            
+            const id2 = setTimeout(() => {
                 this.isOnCooldown = false;
             }, this.cooldown);
+            this.timeoutIds.push(id2);
+            
+            this.isOnCooldown = true;
         }, selectedEvent.time);
+        
+
+        this.timeoutIds.push(id);
     }
 
     registerEvent(event: RandomEvent): void {
@@ -138,14 +148,16 @@ export class GameEvents {
                         id,
                         {
                             ...p,
-                            controls: { up: p.controls.down, down: p.controls.up },
+                            controls: {
+                                up: p.controls.down,
+                                down: p.controls.up,
+                            },
                         },
                     ])
                 );
                 gameEngine.onRandomEvent?.("REVERSE CONTROLS! [5s]");
             },
         });
-
 
         this.registerEvent({
             name: "STUCK",

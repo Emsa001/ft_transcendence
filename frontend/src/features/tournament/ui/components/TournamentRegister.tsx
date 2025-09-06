@@ -55,6 +55,7 @@ export const TournamentRegister = () => {
                     <RegisterPlayerList
                         players={players}
                         onRemovePlayer={handleRemovePlayer}
+                        showPlayerStatus={false}
                     />
                 </div>
 
