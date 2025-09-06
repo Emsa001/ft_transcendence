@@ -36,6 +36,7 @@ export const registerDB = async (app: FastifyInstance) => {
     await GameRooms.init();
     await TournamentRooms.init();
 
+    // await DatabaseExampleFeed.feedUser(1);
     // Feed database with example data
     // await DatabaseExampleFeed.feed({
     //     users: 50,
