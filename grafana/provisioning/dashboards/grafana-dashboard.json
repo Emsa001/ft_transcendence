@@ -24,18 +24,79 @@
   "editable": true,
   "fiscalYearStartMonth": 0,
   "graphTooltip": 0,
-  "id": 2,
-  "iteration": 1755437594500,
+  "iteration": 1757100190533,
   "links": [],
   "liveNow": false,
   "panels": [
+    {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "thresholds"
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              }
+            ]
+          },
+          "unit": "s"
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 3,
+        "w": 4,
+        "x": 0,
+        "y": 0
+      },
+      "id": 2,
+      "options": {
+        "colorMode": "background",
+        "graphMode": "none",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "lastNotNull"
+          ],
+          "fields": "",
+          "values": false
+        },
+        "textMode": "auto"
+      },
+      "pluginVersion": "9.0.0",
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "time() - process_start_time_seconds{job='$job'}",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Process Uptime",
+      "type": "stat"
+    },
     {
       "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 0
+        "y": 3
       },
       "id": 17,
       "panels": [],
@@ -48,7 +109,7 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 1
+        "y": 4
       },
       "id": 15,
       "panels": [],
@@ -56,12 +117,101 @@
       "type": "row"
     },
     {
+      "datasource": {
+        "type": "prometheus",
+        "uid": "prometheus"
+      },
+      "fieldConfig": {
+        "defaults": {
+          "color": {
+            "mode": "palette-classic"
+          },
+          "custom": {
+            "axisLabel": "",
+            "axisPlacement": "auto",
+            "barAlignment": 0,
+            "drawStyle": "line",
+            "fillOpacity": 0,
+            "gradientMode": "none",
+            "hideFrom": {
+              "legend": false,
+              "tooltip": false,
+              "viz": false
+            },
+            "lineInterpolation": "linear",
+            "lineWidth": 1,
+            "pointSize": 5,
+            "scaleDistribution": {
+              "type": "linear"
+            },
+            "showPoints": "auto",
+            "spanNulls": false,
+            "stacking": {
+              "group": "A",
+              "mode": "none"
+            },
+            "thresholdsStyle": {
+              "mode": "off"
+            }
+          },
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "red",
+                "value": 80
+              }
+            ]
+          }
+        },
+        "overrides": []
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 11,
+        "x": 0,
+        "y": 5
+      },
+      "id": 19,
+      "options": {
+        "legend": {
+          "calcs": [],
+          "displayMode": "list",
+          "placement": "bottom"
+        },
+        "tooltip": {
+          "mode": "single",
+          "sort": "none"
+        }
+      },
+      "targets": [
+        {
+          "datasource": {
+            "type": "prometheus",
+            "uid": "prometheus"
+          },
+          "editorMode": "code",
+          "expr": "process_cpu_seconds_total",
+          "legendFormat": "__auto",
+          "range": true,
+          "refId": "A"
+        }
+      ],
+      "title": "Panel Title",
+      "type": "timeseries"
+    },
+    {
       "collapsed": false,
       "gridPos": {
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 2
+        "y": 11
       },
       "id": 10,
       "panels": [],
@@ -71,7 +221,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "sxzKL3lHz"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -121,10 +271,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 7,
-        "w": 11,
+        "h": 6,
+        "w": 9,
         "x": 0,
-        "y": 3
+        "y": 12
       },
       "id": 6,
       "options": {
@@ -142,7 +292,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "sxzKL3lHz"
+            "uid": "prometheus"
           },
           "expr": "100 * (process_open_fds{job='$job'} / process_max_fds{job='$job'})",
           "refId": "A"
@@ -154,7 +304,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "sxzKL3lHz"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -178,8 +328,8 @@
       "gridPos": {
         "h": 4,
         "w": 4,
-        "x": 11,
-        "y": 3
+        "x": 9,
+        "y": 12
       },
       "id": 12,
       "options": {
@@ -201,7 +351,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "sxzKL3lHz"
+            "uid": "prometheus"
           },
           "expr": "process_open_fds{job='$job'}",
           "refId": "A"
@@ -213,7 +363,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "sxzKL3lHz"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -235,10 +385,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 7,
+        "h": 6,
         "w": 5,
-        "x": 15,
-        "y": 3
+        "x": 13,
+        "y": 12
       },
       "id": 11,
       "options": {
@@ -260,7 +410,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "sxzKL3lHz"
+            "uid": "prometheus"
           },
           "expr": "100 * (process_open_fds{job='$job'} / process_max_fds{job='$job'})",
           "refId": "A"
@@ -272,7 +422,7 @@
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "sxzKL3lHz"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -294,10 +444,10 @@
         "overrides": []
       },
       "gridPos": {
-        "h": 3,
+        "h": 2,
         "w": 4,
-        "x": 11,
-        "y": 7
+        "x": 9,
+        "y": 16
       },
       "id": 13,
       "options": {
@@ -319,13 +469,13 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "sxzKL3lHz"
+            "uid": "prometheus"
           },
           "expr": "process_max_fds{job='$job'}",
           "refId": "A"
         }
       ],
-      "title": "File Descriptors Usage",
+      "title": "Max # File Descriptors",
       "type": "stat"
     },
     {
@@ -334,79 +484,17 @@
         "h": 1,
         "w": 24,
         "x": 0,
-        "y": 10
+        "y": 18
       },
       "id": 8,
       "panels": [],
-      "title": "Row title",
+      "title": "HTTP / Request Metrics",
       "type": "row"
     },
     {
       "datasource": {
         "type": "prometheus",
-        "uid": "sxzKL3lHz"
-      },
-      "fieldConfig": {
-        "defaults": {
-          "color": {
-            "mode": "thresholds"
-          },
-          "mappings": [],
-          "thresholds": {
-            "mode": "absolute",
-            "steps": [
-              {
-                "color": "green",
-                "value": null
-              }
-            ]
-          },
-          "unit": "s"
-        },
-        "overrides": []
-      },
-      "gridPos": {
-        "h": 3,
-        "w": 4,
-        "x": 0,
-        "y": 11
-      },
-      "id": 2,
-      "options": {
-        "colorMode": "background",
-        "graphMode": "none",
-        "justifyMode": "auto",
-        "orientation": "auto",
-        "reduceOptions": {
-          "calcs": [
-            "lastNotNull"
-          ],
-          "fields": "",
-          "values": false
-        },
-        "textMode": "auto"
-      },
-      "pluginVersion": "9.0.0",
-      "targets": [
-        {
-          "datasource": {
-            "type": "prometheus",
-            "uid": "sxzKL3lHz"
-          },
-          "editorMode": "code",
-          "expr": "time() - process_start_time_seconds{job='$job'}",
-          "legendFormat": "__auto",
-          "range": true,
-          "refId": "A"
-        }
-      ],
-      "title": "Process Uptime",
-      "type": "stat"
-    },
-    {
-      "datasource": {
-        "type": "prometheus",
-        "uid": "sxzKL3lHz"
+        "uid": "prometheus"
       },
       "fieldConfig": {
         "defaults": {
@@ -430,8 +518,8 @@
       "gridPos": {
         "h": 3,
         "w": 4,
-        "x": 4,
-        "y": 11
+        "x": 0,
+        "y": 19
       },
       "id": 4,
       "options": {
@@ -453,7 +541,7 @@
         {
           "datasource": {
             "type": "prometheus",
-            "uid": "sxzKL3lHz"
+            "uid": "prometheus"
           },
           "expr": "sum(increase(http_request_summary_seconds_count{job='fastify-app'}[$__range]))",
           "refId": "A"
@@ -470,13 +558,13 @@
     "list": [
       {
         "current": {
-          "selected": false,
-          "text": "fastify-app",
-          "value": "fastify-app"
+          "selected": true,
+          "text": "prometheus",
+          "value": "prometheus"
         },
         "datasource": {
           "type": "prometheus",
-          "uid": "sxzKL3lHz"
+          "uid": "prometheus"
         },
         "definition": "label_values(job)",
         "hide": 0,
@@ -497,13 +585,13 @@
     ]
   },
   "time": {
-    "from": "now-6h",
+    "from": "now-15m",
     "to": "now"
   },
   "timepicker": {},
   "timezone": "",
   "title": "Web Application Monitoring Dashboard",
   "uid": "Gkjy8qlNk",
-  "version": 6,
+  "version": 4,
   "weekStart": ""
 }

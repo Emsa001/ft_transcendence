@@ -17,6 +17,46 @@ services:
     networks:
       - monitoring
 
+  prometheus:
+    image: prom/prometheus:v2.37.0
+    container_name: prometheus
+    volumes:
+      - prometheus-data:/prometheus
+      - ./backend/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./backend/prometheus-alerts.yml:/etc/prometheus/prometheus-alerts.yml:ro
+    # data retention and storage strategies for historical metrics data
+    # command:
+    #   - '--storage.tsdb.path=/prometheus'
+    #   - '--storage.tsdb.retention.time=30d'
+    #   - '--storage.tsdb.retention.size=10GB'
+    depends_on:
+      - backend
+    networks:
+      - monitoring
+
+  alertmanager:
+    image: prom/alertmanager
+    container_name: alertmanager
+    volumes:
+      - alertmanager-data:/alertmanager
+      - ./backend/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
+    networks:
+      - monitoring
+
+  grafana:
+    image: grafana/grafana:9.0.0
+    container_name: grafana
+    env_file:
+      - ./grafana/.env
+    environment:
+      - GF_SERVER_HTTP_PORT=3001
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+    networks:
+      - monitoring
+
   nginx:
     build:
       context: .
@@ -25,11 +65,38 @@ services:
     ports:
       - "443:443"
       - "8080:8080"
+      - "9090:9090"
+      - "9101:9101"
+      - "3001:3001"
+      # - "9093:9093"
     networks:
       - monitoring
     depends_on:
       - backend
       - frontend
+      - prometheus
+      - grafana
+      # - alertmanager
+
+  # node-exporter:
+  #   image: prom/node-exporter:v1.6.1
+  #   container_name: node-exporter
+  #   restart: unless-stopped
+  #   networks:
+  #     - monitoring
+  #   command:
+  #     - '--path.rootfs=/host'
+  #   volumes:
+  #     - '/:/host:ro,rslave'
 
 networks:
   monitoring:
+
+volumes:
+  prometheus-data:
+    name: ft_transcendence_prometheus_data
+  grafana-data:
+    name: ft_transcendence_grafana_data
+  alertmanager-data:
+    name: ft_transcendence_alertmanager_data
+  

@@ -38,22 +38,11 @@ export const getApp = () => {
     return app;
 };
 
-const isProduction = process.env.NODE_ENV === "production";
 
 export default async function App() {
-    if (isProduction) {
-        app = Fastify({
-            logger: false,
-            https: {
-                key: fs.readFileSync("ssl/key.pem"),
-                cert: fs.readFileSync("ssl/cert.pem"),
-            }
-        });
-    } else {
-        app = Fastify({
-            logger: false
-        });
-    }
+    app = Fastify({
+        logger: false
+    });
 
     // WebSocket support
     await app.register(websocketPlugin);

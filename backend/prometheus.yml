@@ -1,11 +1,29 @@
 global:
-  scrape_interval: 5s
+  scrape_interval: 15s
 
 scrape_configs:
-  - job_name: 'prometheus'
-    static_configs:
-      - targets: ['prometheus:9090']
-
   - job_name: 'fastify-app'
+    scheme: https
     static_configs:
-      - targets: ['backend:8000']
+      - targets: ['nginx:8080']
+    metrics_path: /metrics/
+    tls_config:
+      insecure_skip_verify: true
+  
+  - job_name: 'prometheus'
+    scheme: https
+    static_configs:
+      - targets: ['nginx:9090']
+    metrics_path: /metrics
+    tls_config:
+      insecure_skip_verify: true
+
+  - job_name: 'node'
+    scheme: https
+    static_configs:
+      - targets: ['nginx:9101']
+    tls_config:
+      insecure_skip_verify: true
+
+rule_files:
+  - /etc/prometheus/prometheus-alerts.yml

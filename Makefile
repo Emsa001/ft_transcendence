@@ -36,7 +36,9 @@ test: backend
 	npm run test --prefix ./backend
 
 docker:
-	docker-compose down
-	docker-compose up --build
+	docker compose down -v --remove-orphans --rmi all
+	bash nginx/certs/generate.sh
+	@echo "Starting Docker..."
+	@bash -c 'trap "echo; echo Stopping containers...; docker compose down; exit" SIGINT; docker compose up --build'
 
 .PHONY: all run dev build clean frontend backend docker install shared
