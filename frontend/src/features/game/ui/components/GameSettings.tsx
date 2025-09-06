@@ -74,6 +74,7 @@ export function Options() {
     const isRunning = state != "created" && state != "finished";
 
     const handleOpen = () => {
+        if (state !== "created") return;
         setIsOpen(true);
     };
 
