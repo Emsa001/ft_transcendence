@@ -10,7 +10,6 @@ export const useWebSocket = (url: string) => {
     const [isConnected, setIsConnected] = useState(false);
     const wsRef = useRef<WebSocket | null>(null);
     const hooksRef = useRef<Hook[]>([]);
-    const reconnectRef = useRef<NodeJS.Timeout | null>(null);
 
     const addHook = (hook: Hook) => {
         hooksRef.current.push(hook);

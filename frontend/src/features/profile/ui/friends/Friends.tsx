@@ -5,8 +5,7 @@ import { SearchModal } from "./Search";
 import { MyFriends } from "./MyFriends";
 import { FriendRequests } from "./FriendRequests";
 import { useLanguage } from "@features/language/model/useLanguage";
-
-let ws: WebSocket | undefined;
+import { useWebSocket } from "@shared/hooks/useWebSocket";
 
 export const Friends = () => {
     const [friends, setFriends] = useState<UserDTOType[]>([]);
@@ -19,33 +18,37 @@ export const Friends = () => {
         const fetchData = async () => {
             const newFriends = await FriendsApi.getAllFriends();
             const newFriendRequests = await FriendsApi.getFriendRequests();
-            setFriends(newFriends);
-            setFriendRequests(newFriendRequests);
+            if (newFriends) setFriends(newFriends);
+            if (newFriendRequests) setFriendRequests(newFriendRequests);
         };
         fetchData();
     }, []);
 
-    useEffect(() => {
-        ws = new WebSocket(`ws://localhost:8000/friends`);
-        ws.onmessage = async (event) => {
-            const data = JSON.parse(event.data);
-            if (data.type === "NEW_FRIEND_REQUEST") {
-                const newFriendRequests = await FriendsApi.getFriendRequests();
-                setFriendRequests(newFriendRequests);
-            } else if (data.type === "FRIEND_REQUEST_ACCEPTED") {
-                const newFriends = await FriendsApi.getAllFriends();
-                setFriends(newFriends);
-            } else if (data.type === "FRIEND_REMOVED") {
-                const newFriends = await FriendsApi.getAllFriends();
-                const newFriendRequests = await FriendsApi.getFriendRequests();
-                setFriends(newFriends);
-                setFriendRequests(newFriendRequests);
-            }
-        };
+    const { addHook } = useWebSocket(`/friends`);
 
-        return () => {
-            if (ws) ws.close();
-        };
+    const handleSocketMessage = async (msg: MessageEvent) => {
+        const payload = JSON.parse(msg.data);
+
+        if (payload.type === "NEW_FRIEND_REQUEST") {
+            const newFriendRequests = await FriendsApi.getFriendRequests();
+            if (newFriendRequests) setFriendRequests(newFriendRequests);
+        } else if (payload.type === "FRIEND_REQUEST_ACCEPTED") {
+            const newFriends = await FriendsApi.getAllFriends();
+            if (newFriends) setFriends(newFriends);
+        } else if (payload.type === "FRIEND_REMOVED") {
+            const newFriends = await FriendsApi.getAllFriends();
+            const newFriendRequests = await FriendsApi.getFriendRequests();
+            if (newFriends) setFriends(newFriends);
+            if (newFriendRequests) setFriendRequests(newFriendRequests);
+        }
+    };
+
+    useEffect(() => {
+        addHook({ type: "onMessage", callback: handleSocketMessage });
+        addHook({
+            type: "onConnect",
+            callback: () => console.log("WebSocket connected"),
+        });
     }, []);
 
     return (

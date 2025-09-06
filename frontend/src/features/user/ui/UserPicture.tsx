@@ -110,7 +110,6 @@ export const OtherUserPicture = ({
 }) => {
     const [user, setUser] = useState<UserDTOType | null>(null);
     const { onlineUsers } = useOnlineUsers();
-    console.log("Online Users:", onlineUsers);
 
     let onlineSize: number = Math.round(size / 5);
     if (onlineSize < 5) onlineSize = 5;
@@ -133,6 +132,9 @@ export const OtherUserPicture = ({
     if (!userId) return <div />;
     if (!user) return <div />;
 
+    const isOnline = onlineUsers.includes(userId);
+    const color = isOnline ? "bg-green-500" : "bg-red-500";
+
     return (
         <div className={`relative group w-${size} h-${size}`}>
             {user.avatar ? (
@@ -147,16 +149,10 @@ export const OtherUserPicture = ({
                     className="text-gray-400 w-full h-full"
                 />
             )}
-            {/* online status icon */}
-            {onlineUsers.includes(userId) ? (
-                <div
-                    className={`absolute top-0.5 right-0.5 bg-green-500 rounded-full w-7 h-7 border border-white`}
-                />
-            ) : (
-                <div
-                    className={`absolute top-0.5 right-0.5 bg-red-500 rounded-full w-${onlineSize} h-${onlineSize} border border-white`}
-                />
-            )}
+
+            <div
+                className={`absolute top-0.5 right-0.5 ${color} rounded-full w-7 h-7 border border-white`}
+            />
         </div>
     );
 };

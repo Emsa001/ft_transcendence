@@ -26,6 +26,7 @@ export const Stats = ({ userId }: StatsProps) => {
             });
         }
     }, [userId]);
+
     if (!stats) {
         return (
             <div className="w-full h-full flex items-center justify-center">
