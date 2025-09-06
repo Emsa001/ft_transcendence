@@ -8,10 +8,18 @@ export interface LocalTournamentState {
     round: number;
     winner: string | null;
     currentGame: GameDTOType | null;
+
+    randomEvents: boolean;
+    maxScore: number;
 }
 
 export interface LocalTournamentContextType extends LocalTournamentState {
     maxPlayers: number;
+
+    maxScore: number;
+    randomEvents: boolean;
+    setMaxScore: (score: number) => void;
+    setRandomEvents: (enabled: boolean) => void;
 
     getActivePlayers: () => TournamentUserDTOType[];
     setCurrentGame: (game: GameDTOType | null) => void;

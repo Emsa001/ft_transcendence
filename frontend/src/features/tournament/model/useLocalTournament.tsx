@@ -40,6 +40,8 @@ export const LocalTournamentProvider = ({
         round: 1,
         winner: null,
         currentGame: null,
+        randomEvents: false,
+        maxScore: 5,
     });
 
     const updateState = (updates: Partial<LocalTournamentState>) => {
@@ -256,6 +258,8 @@ export const LocalTournamentProvider = ({
                 round: 1,
                 winner: null,
                 currentGame: null,
+                randomEvents: false,
+                maxScore: 5,
             });
             setLocalTournamentData(null);
         }
@@ -264,6 +268,10 @@ export const LocalTournamentProvider = ({
     const contextValue: LocalTournamentContextType = {
         ...state,
         maxPlayers,
+
+        setMaxScore: (score: number) => updateState({ maxScore: score }),
+        setRandomEvents: (value: boolean) =>
+            updateState({ randomEvents: value }),
 
         addPlayer,
         removePlayer,

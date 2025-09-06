@@ -54,18 +54,18 @@ export class TournamentController extends BaseController {
     @POST("/create")
     @AUTHORIZED
     async createTournament(request: FastifyRequest, reply: FastifyReply) {
-        const { name, maxPlayers, maxScore, isPrivate } = request.body as {
+        const { name, maxPlayers, maxScore, randomEvents } = request.body as {
             name: string;
             maxPlayers: number;
             maxScore: number;
-            isPrivate: boolean;
+            randomEvents: boolean;
         };
 
         const tournament = await Tournament.create({
             name,
             maxPlayers,
             maxScore,
-            isPrivate,
+            randomEvents,
             hostId: request.user.id,
         });
 

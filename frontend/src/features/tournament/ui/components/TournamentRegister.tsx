@@ -3,6 +3,7 @@ import { ShinyText } from "@shared/components/Shiny";
 import { AddPlayerInput } from "./AddPlayer";
 import { RegisterPlayerList } from "./PlayerList";
 import { useLocalTournament } from "../../model/useLocalTournament";
+import { TournamentOptions } from "./TournamentOptions";
 
 export const TournamentRegister = () => {
     const { players, maxPlayers, addPlayer, removePlayer, startTournament } =
@@ -40,6 +41,7 @@ export const TournamentRegister = () => {
 
             <div className="h-full w-full max-w-xl p-6 rounded-3xl bg-white/5 backdrop-blur-lg shadow-xl text-white flex flex-col gap-6">
                 <AddPlayerInput onAddPlayer={handleAddPlayer} />
+                <TournamentOptions />
 
                 <p
                     className={`h-[1.25rem] text-center ${

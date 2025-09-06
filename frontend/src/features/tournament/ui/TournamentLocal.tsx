@@ -25,7 +25,7 @@ export const TournamentLocal = () => {
 };
 
 const TournamentView = () => {
-    const { status, currentGame, setCurrentGame, setWinner } =
+    const { randomEvents, status, currentGame, setCurrentGame, setWinner } =
         useLocalTournament();
 
     if (status === GameStatus.WAITING) {
@@ -55,10 +55,10 @@ const TournamentView = () => {
             <div className="w-full h-full">
                 <GameProvider
                     players={currentGame.players}
-                    maxScore={1}
                     onScore={onScore}
                     onEnd={onEnd}
                     onSpace={onSpace}
+                    randomEvents={randomEvents}
                 >
                     <div className="px-4 py-2" />
                     <GameElementLocal />

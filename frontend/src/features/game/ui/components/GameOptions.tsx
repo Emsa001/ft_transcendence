@@ -125,6 +125,7 @@ export function OptionsModal({ modalOpen, setModalOpen }: TwoFaModalProps) {
                         </span>
                         <label className="relative inline-flex items-center cursor-pointer">
                             <input
+                                checked={gameEngine.randomEvents}
                                 type="checkbox"
                                 onChange={handleRandomEvent}
                                 className="sr-only peer"

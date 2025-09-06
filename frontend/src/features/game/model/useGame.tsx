@@ -26,6 +26,7 @@ export const GameProvider = ({
     children,
     players,
     maxScore = 5,
+    randomEvents = false,
 
     onScore,
     onEnd,
@@ -35,6 +36,10 @@ export const GameProvider = ({
     const [maxScoreValue, setMaxScore] = useState(maxScore);
     const [state, setState] = useState<GameState>("created");
     const lockRef = useRef(false);
+
+    useEffect(() => {
+        gameEngine.randomEvents = randomEvents;
+    }, [randomEvents]);
 
     useEffect(() => {
         setPlayers(gameEngine.createPlayers(players));

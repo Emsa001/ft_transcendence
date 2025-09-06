@@ -15,6 +15,8 @@ export const LocalTournamentViewer = () => {
         startRound,
         playGame,
         deleteTournament,
+        randomEvents,
+        maxScore,
         winner,
     } = useLocalTournament();
 
@@ -36,6 +38,8 @@ export const LocalTournamentViewer = () => {
                     maxPlayers={maxPlayers}
                     onStart={startRound}
                     onDelete={deleteTournament}
+                    randomEvents={randomEvents}
+                    maxScore={maxScore}
                 />
             </div>
 
@@ -60,6 +64,8 @@ export const RemoteTournamentViewer = () => {
         maxPlayers,
         games,
         winner,
+        maxScore,
+        randomEvents,
     } = useRemoteTournament();
 
     if (currentGame) {
@@ -93,6 +99,8 @@ export const RemoteTournamentViewer = () => {
                     maxPlayers={maxPlayers}
                     onStart={host === player?.id ? start : undefined}
                     winner={winner}
+                    randomEvents={randomEvents}
+                    maxScore={maxScore}
                 />
             </div>
 
