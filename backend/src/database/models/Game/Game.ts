@@ -87,6 +87,11 @@ export class Game extends Model<InferAttributes<Game>, GameCreationAttributes> {
     @Column(DataType.BOOLEAN)
     declare isPrivate: boolean;
 
+    @AllowNull(false)
+    @Default(false)
+    @Column(DataType.BOOLEAN)
+    declare randomEvents: boolean;
+
     // Gameplay settings
     @AllowNull(false)
     @Default(2)

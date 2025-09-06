@@ -34,9 +34,9 @@ export class GameController extends BaseController {
         const game = await Game.create({
             hostId: request.user.id,
             isPrivate: data.isPrivate || false,
+            randomEvents: data.randomEvents || false,
             maxScore: data.maxScore || 7,
         });
-
         await GameRooms.create(game);
 
         return reply.send(game.toDTO());

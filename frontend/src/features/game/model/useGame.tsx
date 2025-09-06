@@ -118,7 +118,6 @@ export const GameProvider = ({
 
         showMessage({
             message: GameMessages.score(scorer.username),
-            duration: 1000,
             after: () =>
                 startCountdown().then(() => {
                     gameEngine.resetPositions();
@@ -131,7 +130,6 @@ export const GameProvider = ({
     const onRandomEvent = (event: string) => {
         showMessage({
             message: GameMessages.event(event),
-            duration: 1000,
         });
     };
 
