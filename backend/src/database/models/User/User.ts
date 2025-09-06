@@ -173,6 +173,8 @@ export class User extends Model<InferAttributes<User>, CreationAttributes> {
         BlockUserService.unblockUser(this, userId);
     isBlocked = async (userId: number) =>
         BlockUserService.isBlocked(this.id, userId);
+    isUserBlocked = async (userId: number) =>
+        BlockUserService.isUserBlocked(this.id, userId);
 
     // TODO: check for other uses of username and change to slug
 

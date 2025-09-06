@@ -66,8 +66,14 @@ export function UserInfo({ user }: { user: UserDTOType }) {
     };
 
     const handleBlockUser = async () => {
-        await blockUserApi.blockUser(user.id);
+        if (!await blockUserApi.blockUser(user.id)){
+            Toast.error("Failed to block user.");
+            return;
+        }
         setIsBlocked(true);
+        setIsFriend(false);
+        setIsPending(false);
+        setSentRequests(sentRequests.filter((req) => req.id !== user.id));
         Toast.success("User has been blocked.");
     };
 
@@ -133,25 +139,24 @@ export function UserInfo({ user }: { user: UserDTOType }) {
                         onClick={handleChat}
                     />
 
-                    {isPending ? (
-                        <Icon
-                            icon={FaUserClock}
-                            className="mx-2 text-emerald-400/80 w-9 h-9 hover:w-10 hover:h-10 hover:cursor-pointer"
-                            onClick={handleCancelRequest}
-                        />
-                    ) : isFriend ? (
-                        <Icon
-                            icon={FaUserMinus}
-                            className="ml-2 text-amber-500/70 w-9 h-9 hover:w-10 hover:h-10 hover:cursor-pointer"
-                            onClick={handleRemoveFriend}
-                        />
-                    ) : (
-                        <Icon
-                            icon={FaUserPlus}
-                            className="mx-2 text-indigo-300/80 w-9 h-9 hover:w-10 hover:h-10 hover:cursor-pointer"
-                            onClick={handleAddFriend}
-                        />
-                    )}
+                        {isPending ? (
+                            <Icon   icon={FaUserClock} 
+                                className="mx-2 text-emerald-400/80 w-9 h-9 hover:w-10 hover:h-10 hover:cursor-pointer" 
+                                onClick={handleCancelRequest} 
+                                />
+                            ) 
+                        : isFriend? (
+                            <Icon   icon={FaUserMinus} 
+                                    className="ml-2 text-amber-500/70 w-9 h-9 hover:w-10 hover:h-10 hover:cursor-pointer" 
+                                    onClick={handleRemoveFriend} 
+                                />) 
+                        : (
+                            <Icon   icon={FaUserPlus} 
+                                    className={`mx-2 ${isBlocked ? "text-gray-400/70" : "text-indigo-300/80"} w-9 h-9 hover:w-10 hover:h-10 hover:cursor-pointer`} 
+                                    onClick={handleAddFriend} 
+                                />
+                            )
+                        }
 
                     {!isBlocked ? (
                         <Icon

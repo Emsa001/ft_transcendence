@@ -19,7 +19,28 @@ export class BlockUserService {
         return false;
     }
 
+    static async isUserBlocked(me: number, user: number) {
+        const blockedUser = await BlockedUsers.findOne({
+            where: {
+                [Op.or]: [
+                    { userId: user, blockedUserId: me },
+                ],
+            },
+        });
+        if (blockedUser) {
+            return true;
+        }
+        return false;
+    }
+
     static async blockUser(user: User, userId: number) {
+
+        try {
+            await user.removeFriend(userId);
+        }
+        catch (error) {
+            console.error("Error removing friend before blocking:", error);
+        }
         if (await this.isBlocked(user.id, userId)) {
             throw new HttpException(400, "User is blocked");
         }
@@ -31,10 +52,9 @@ export class BlockUserService {
         if (!blockedUser) {
             throw new HttpException(400, "Failed to block user");
         }
-
-        user.removeFriend(userId);
         return { message: "User blocked successfully" };
     }
+
     static async unblockUser(user: User, userId: number) {
         const unblockedUser = await BlockedUsers.destroy({
             where: {
@@ -49,6 +69,7 @@ export class BlockUserService {
 
         return { message: "User unblocked successfully" };
     }
+
     static async getBlockedUsers(user: User) {
         const blockedUsers = await BlockedUsers.findAll({
             where: {
