@@ -5,8 +5,6 @@ services:
       dockerfile: ./backend/Dockerfile
     env_file:
       - ./backend/.env
-    environment:
-      - NODE_ENV=development
     networks:
       - monitoring
 
@@ -17,19 +15,76 @@ services:
     networks:
       - monitoring
 
+  prometheus:
+    image: prom/prometheus:v2.37.0
+    container_name: prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--storage.tsdb.retention.time=10d" # Prometheus stores data in blocks,-> 2 hours by default
+      - "--storage.tsdb.retention.size=100MB"
+      # - "--storage.tsdb.min-block-duration=1m" # not recommend -> mainly for production
+      # - "--storage.tsdb.max-block-duration=1m"
+    volumes:
+      - prometheus-data:/prometheus
+      - ./backend/prometheus.yml:/etc/prometheus/prometheus.yml:ro
+      - ./backend/prometheus-alerts.yml:/etc/prometheus/prometheus-alerts.yml:ro
+    depends_on:
+      - backend
+    networks:
+      - monitoring
+
+  grafana:
+    image: grafana/grafana:9.0.0
+    container_name: grafana
+    env_file:
+      - ./grafana/.env
+    environment:
+      - GF_SERVER_HTTP_PORT=3001
+    volumes:
+      - grafana-data:/var/lib/grafana
+      - ./grafana/provisioning/dashboards:/etc/grafana/provisioning/dashboards:ro
+      - ./grafana/provisioning/datasources:/etc/grafana/provisioning/datasources:ro
+    networks:
+      - monitoring
+
   nginx:
     build:
       context: .
       dockerfile: ./frontend/Dockerfile
     container_name: nginx
     ports:
-      - "443:443"
+      - "3000:3000"
+      - "3001:3001"
       - "8080:8080"
+      - "9090:9090"
+      - "9101:9101"
     networks:
       - monitoring
     depends_on:
       - backend
       - frontend
+      - prometheus
+      - grafana
+      - node-exporter
+
+  node-exporter:
+    image: prom/node-exporter:v1.6.1
+    container_name: node-exporter
+    restart: unless-stopped
+    networks:
+      - monitoring
+    command:
+      - '--path.rootfs=/'
+    # volumes:
+    #   - '/:/host:ro,rslave'
 
 networks:
   monitoring:
+
+volumes:
+  prometheus-data:
+    name: ft_transcendence_prometheus_data
+  grafana-data:
+    name: ft_transcendence_grafana_data
+  

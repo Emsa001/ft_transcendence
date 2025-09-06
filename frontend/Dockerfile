@@ -1,14 +1,15 @@
 # Stage 1: Build React app
-FROM node:24-alpine AS build
+FROM node:22-alpine AS build
 WORKDIR /app/frontend
 
-COPY frontend/package*.json ./
-RUN npm install
-
+# Stage 1: Copy and install
 COPY frontend ./
 COPY shared ../shared
+RUN npm install --prefix ../shared
+RUN npm run build --prefix ../shared
+
+RUN npm install
 RUN npm run build   
-# produces /dist
 
 # Stage 2: NGINX
 FROM nginx:alpine

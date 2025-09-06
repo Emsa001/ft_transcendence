@@ -1,14 +1,15 @@
-FROM node:22
+FROM node:22-alpine
 
 WORKDIR /app/backend
 
-COPY backend/package*.json ./
+COPY backend ./
+COPY shared ../shared
+RUN npm install --prefix ../shared
+RUN npm run build --prefix ../shared
 
 RUN npm install
 
 # Copy backend and shared
-COPY backend ./
-COPY shared ../shared
 
 EXPOSE 8000
 
