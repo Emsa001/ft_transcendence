@@ -1,4 +1,7 @@
 import { Game } from "@/database/models/Game/Game";
+import { GameDTO } from "@/database/models/Game/GameDTO";
+import { Tournament } from "@/database/models/Tournaments/Tournament";
+import { TournamentDTO } from "@/database/models/Tournaments/TournamentDTO";
 import { User } from "@/database/models/User/User";
 import { Op } from "sequelize";
 import { GameHistoryFilter, GameStatus, GetStatisticsResponse } from "shared";
@@ -7,7 +10,7 @@ export class UserGamesService {
     static async getHistory(
         user: User | number,
         { start, end, limit = 30 }: GameHistoryFilter = {}
-    ): Promise<Game[]> {
+    ): Promise<GameDTO[]> {
         if (typeof user === "number") user = await User.findById(user);
 
         const now = new Date();
@@ -23,9 +26,35 @@ export class UserGamesService {
             },
             order: [["createdAt", "DESC"]],
             limit,
+            include: ["players"],
         });
 
-        return games;
+        return games.map((game) => game.toDTO());
+    }
+
+    static async getTournaments(
+        user: User | number,
+        { start, end, limit = 30 }: GameHistoryFilter = {}
+    ): Promise<TournamentDTO[]> {
+        if (typeof user === "number") user = await User.findById(user);
+
+        const now = new Date();
+        if (!start) start = new Date(now.getTime() - 24 * 60 * 60 * 1000); // 24h ago
+        if (!end) end = now;
+
+        const tournaments = await user.getTournaments({
+            where: {
+                createdAt: {
+                    [Op.gte]: start,
+                    [Op.lte]: end,
+                },
+            },
+            order: [["createdAt", "DESC"]],
+            limit,
+            include: ["players"],
+        });
+
+        return tournaments.map((tournament) => tournament.toDTO());
     }
 
     static async getStatistics(
