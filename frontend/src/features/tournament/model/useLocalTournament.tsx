@@ -4,7 +4,10 @@ import { useState } from "react";
 import { GameDTOType, GameStatus, TournamentUserDTOType } from "shared";
 import { LocalTournamentContextType, LocalTournamentState } from "../types";
 import { TournamentEngine } from "../service/TournamentEngine";
-import { useLocalTournamentStore } from "./useLocalTournamentStore";
+import {
+    DefaultTournamentState,
+    useLocalTournamentStore,
+} from "./useLocalTournamentStore";
 import Swal from "sweetalert2";
 
 const LocalTournamentContext = createContext<
@@ -32,17 +35,9 @@ export const LocalTournamentProvider = ({
     children,
     maxPlayers = 16,
 }: LocalTournamentProviderProps) => {
-    const [state, setState] = useState<LocalTournamentState>({
-        tournamentId: Date.now(),
-        status: GameStatus.WAITING,
-        players: [],
-        games: [],
-        round: 1,
-        winner: null,
-        currentGame: null,
-        randomEvents: false,
-        maxScore: 5,
-    });
+    const [state, setState] = useState<LocalTournamentState>(
+        DefaultTournamentState
+    );
 
     const updateState = (updates: Partial<LocalTournamentState>) => {
         setState((prev) => ({ ...prev, ...updates }));
@@ -250,17 +245,7 @@ export const LocalTournamentProvider = ({
         });
 
         if (result.isConfirmed) {
-            setState({
-                tournamentId: Date.now(),
-                status: GameStatus.WAITING,
-                players: [],
-                games: [],
-                round: 1,
-                winner: null,
-                currentGame: null,
-                randomEvents: false,
-                maxScore: 5,
-            });
+            setState(DefaultTournamentState);
             setLocalTournamentData(null);
         }
     };

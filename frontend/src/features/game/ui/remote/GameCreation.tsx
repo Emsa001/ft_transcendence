@@ -118,13 +118,13 @@ export const GameCreationModal = ({ onClose, onCreate }: GameModalProps) => {
                         id="maxScore"
                         type="number"
                         min={1}
-                        max={99}
+                        max={21}
                         value={maxScore}
                         onChange={(e: any) => {
                             setMaxScore(Number(e.target.value));
                         }}
                         className="w-full rounded-xl bg-indigo-800/20 border border-white/10 px-4 py-3 text-purple-200 placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition"
-                        placeholder="Enter max score (1-99)"
+                        placeholder="Enter max score (1-21)"
                     />
 
                     {error && (
