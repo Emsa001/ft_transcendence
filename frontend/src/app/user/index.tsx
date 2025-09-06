@@ -138,12 +138,11 @@ export default function User({ username }: { username?: string }) {
                     <div className="flex flex-col md:flex-row gap-6 w-full md:w-2/3">
                         <div className="bg-gray-800/50 rounded-lg p-6 shadow-lg w-full md:w-1/2 flex flex-col">
                             <h2 className="text-xl font-bold mb-4 border-b border-gray-700 pb-2">
-                                Placeholder
+                                Tournament History
                             </h2>
                             <p>
-                                what should we put here?
+                                Maybe we can put the Tournament history here later?
                                 <br />
-                                maybe devide the game history in 2 sections?
                             </p>
                         </div>
                         <div className="bg-gray-800/50 rounded-lg p-6 shadow-lg w-full md:w-1/2 flex flex-col">
