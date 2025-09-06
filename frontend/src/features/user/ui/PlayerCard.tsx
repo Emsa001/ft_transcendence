@@ -11,8 +11,9 @@ export const PlayerCard = ({ player }: { player: GameUserDTOType }) => {
         <div className="group flex items-center justify-center w-full m-1 p-1 bg-gray-700/50 rounded-lg">
             <UserPicture userId={player.id} size={8} />
             <div className="ml-3 ">
-                <button className="font-semibold group-hover:underline cursor-pointer"
-                onClick={() => navigate(`/profile/${player.username}`)}
+                <button
+                    className="font-semibold group-hover:underline cursor-pointer"
+                    onClick={() => navigate(`/profile/${player.username}`)}
                 >
                     {player.username}
                 </button>

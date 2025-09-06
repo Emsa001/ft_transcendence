@@ -42,7 +42,6 @@ class BlockUserApi extends APIService {
             return Promise.reject(error);
         }
     }
-
 }
 
 const service = new BlockUserApi({ path: "/user" });

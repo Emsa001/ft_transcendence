@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useStats } from "../model/useStats";
 import { GetStatisticsResponse } from "shared";
 import { Icon } from "@shared/components/Icon";
-import { FaTrophy, FaGamepad, FaChartLine, FaFire } from "react-icons/fa";
+import { FaChartLine } from "react-icons/fa";
 
 export const UserStats = ({ userId }: { userId: string | number }) => {
     const { fetchUserStats, loading, error } = useStats();

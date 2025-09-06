@@ -65,14 +65,14 @@ export const Friends = () => {
                 </button>
             </div>
 
-            <div className="max-h-140 min-h-55 overflow-y-auto rounded-lg scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-800">
+            <div className="max-h-140 min-h-55 overflow-y-auto rounded-lg scrollbar-minimal">
                 <div>
                     {friendRequests.length > 0 && (
                         <FriendRequests
-                        friendRequests={friendRequests}
-                        setFriendRequests={setFriendRequests}
-                        setFriends={setFriends}
-                        friends={friends}
+                            friendRequests={friendRequests}
+                            setFriendRequests={setFriendRequests}
+                            setFriends={setFriends}
+                            friends={friends}
                         />
                     )}
                 </div>

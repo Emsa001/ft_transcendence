@@ -18,6 +18,8 @@ export interface TournamentDTOType {
     hostId: number | null;
     uuid: string;
     randomEvents: boolean;
+    createdAt: Date;
+    updatedAt: Date;
 }
 
 export interface TournamentCreateType {

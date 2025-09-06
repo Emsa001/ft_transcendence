@@ -1,3 +1,4 @@
+import { TournamentDTOType } from "./tournament";
 import { UserDTOType } from "./user";
 
 export enum GameStatus {
@@ -37,6 +38,11 @@ export interface GameHistoryFilter {
     start?: Date;
     end?: Date;
     limit?: number;
+}
+
+export interface GameHistory {
+    games: GameDTOType[];
+    tournaments: TournamentDTOType[];
 }
 
 export interface GameCreationRequest {

@@ -5,7 +5,6 @@ import { UserPicture } from "@features/user/ui/UserPicture";
 import { useLanguage } from "@features/language/model/useLanguage";
 import { Modal } from "@shared/components/Modal";
 
-
 interface BlockedUsersModalProps {
     onClose: () => void;
     isOpen: boolean;
@@ -23,7 +22,6 @@ interface BlockedUsersModalProps {
 //     { id: 9, username: "BlockedUser9" },
 //     { id: 10, username: "BlockedUser10" },
 // ];
-
 
 export function BlockedUsersModal({ onClose, isOpen }: BlockedUsersModalProps) {
     const [blockedUsers, setBlockedUsers] = useState<UserDTOType[]>([]);
@@ -58,11 +56,15 @@ export function BlockedUsersModal({ onClose, isOpen }: BlockedUsersModalProps) {
                             <div className="group flex items-center gap-3">
                                 <UserPicture
                                     userId={user.id}
-                                    size={8} 
+                                    size={8}
                                     className="w-9 h-9 rounded-full"
                                 />
-                                <span className="font-medium text-gray-200 group-hover:underline group-hover:cursor-pointer"
-                                    onClick={() => navigate(`/profile/${user.id}`)}>
+                                <span
+                                    className="font-medium text-gray-200 group-hover:underline group-hover:cursor-pointer"
+                                    onClick={() =>
+                                        navigate(`/profile/${user.id}`)
+                                    }
+                                >
                                     {user.username}
                                 </span>
                             </div>
@@ -79,4 +81,4 @@ export function BlockedUsersModal({ onClose, isOpen }: BlockedUsersModalProps) {
             </Modal>
         </div>
     );
-};
+}

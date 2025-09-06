@@ -25,7 +25,7 @@ export const ContactInfo = () => {
                         className="px-3 py-1 rounded bg-gray-700/50 text-white hover:bg-gray-600/50 transition"
                         aria-label="Settings"
                         onClick={() => setIsSettingsOpen(true)}
-                        >
+                    >
                         {texts.settings}
                     </button>
                 </div>
@@ -43,18 +43,18 @@ export const ContactInfo = () => {
                     type="button"
                     className="w-35 items-left mt-4 px-3 py-1 rounded bg-rose-400/50 text-white hover:bg-gray-600/50 transition"
                     onClick={() => setIsBlocklistOpen(true)}
-                    >
+                >
                     Blocked Users
                 </button>
             </div>
             <SettingsModal
                 isOpen={isSettingsOpen}
                 onClose={() => setIsSettingsOpen(false)}
-                />
+            />
             <BlockedUsersModal
                 isOpen={isBlocklistOpen}
                 onClose={() => setIsBlocklistOpen(false)}
-                />
+            />
         </div>
     );
 };

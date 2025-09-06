@@ -82,6 +82,12 @@ export default {
             add: "Dodaj",
             cancel: "Anuluj",
         },
+        history: {
+            gameHistory: "Historia gier",
+            tournamentHistory: "Historia turniejów",
+            noGames: "Nie znaleziono gier dla tego użytkownika.",
+            noTournaments: "Nie znaleziono turniejów dla tego użytkownika.",
+        },
     },
     auth: {
         createAccount: "Utwórz konto",

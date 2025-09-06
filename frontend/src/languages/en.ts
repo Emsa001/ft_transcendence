@@ -82,6 +82,12 @@ export default {
             add: "Add",
             cancel: "Cancel",
         },
+        history: {
+            gameHistory: "Game History",
+            tournamentHistory: "Tournament History",
+            noGames: "No games found for this user.",
+            noTournaments: "No tournaments found for this user.",
+        },
     },
     auth: {
         createAccount: "Create Account",

@@ -101,8 +101,14 @@ export const SearchModal = ({ onClose, isOpen }: SearchModalProps) => {
                                                     size={8}
                                                     className="w-9 h-9 rounded-full"
                                                 />
-                                                <span className="font-medium text-gray-200 group-hover:underline group-hover:cursor-pointer"
-                                                    onClick={() => navigate(`/profile/${user.id}`)}>
+                                                <span
+                                                    className="font-medium text-gray-200 group-hover:underline group-hover:cursor-pointer"
+                                                    onClick={() =>
+                                                        navigate(
+                                                            `/profile/${user.id}`
+                                                        )
+                                                    }
+                                                >
                                                     {user.username}
                                                 </span>
                                             </div>

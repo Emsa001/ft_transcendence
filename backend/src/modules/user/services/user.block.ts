@@ -22,9 +22,7 @@ export class BlockUserService {
     static async isUserBlocked(me: number, user: number) {
         const blockedUser = await BlockedUsers.findOne({
             where: {
-                [Op.or]: [
-                    { userId: user, blockedUserId: me },
-                ],
+                [Op.or]: [{ userId: user, blockedUserId: me }],
             },
         });
         if (blockedUser) {
@@ -34,11 +32,9 @@ export class BlockUserService {
     }
 
     static async blockUser(user: User, userId: number) {
-
         try {
             await user.removeFriend(userId);
-        }
-        catch (error) {
+        } catch (error) {
             console.error("Error removing friend before blocking:", error);
         }
         if (await this.isBlocked(user.id, userId)) {
