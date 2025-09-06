@@ -22,7 +22,7 @@ export const AllUsers = () => {
                 ]);
             if (newFriendRequests) setFriendRequests(newFriendRequests);
 
-            if (newFriends && newBlockedUsers) {
+            if (newUsers && newFriends && newBlockedUsers) {
                 setBlockedUsers(newBlockedUsers);
                 setFriends(newFriends);
                 const friendUsernames = new Set(
