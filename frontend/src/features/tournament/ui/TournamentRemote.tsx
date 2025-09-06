@@ -24,7 +24,7 @@ export const TournamentRemote = ({ code }: TournamentRemoteProps) => {
 
     return (
         <div className="w-full h-full flex flex-col items-center justify-center pt-12">
-            <div className="relative w-[90vw] h-full flex flex-col">
+            <div className="relative w-full h-full flex flex-col">
                 <TournamentCreate />
                 <TournamentList
                     title="New Tournaments"
