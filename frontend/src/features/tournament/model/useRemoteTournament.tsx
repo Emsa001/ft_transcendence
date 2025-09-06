@@ -30,6 +30,8 @@ interface RemoteTournamentContextType {
     maxPlayers: number;
     error: string | null;
     winner: string | null;
+    randomEvents: boolean;
+    maxScore: number;
 
     start: () => Promise<void>;
     joinGame: (code: string) => void;
@@ -71,6 +73,9 @@ export const RemoteTournamentProvider = ({
     const [maxPlayers, setMaxPlayers] = useState<number>(16);
     const [winner, setWinner] = useState<string | null>(null);
 
+    const [randomEvents, setRandomEvents] = useState<boolean>(false);
+    const [maxScore, setMaxScore] = useState<number>(5);
+
     const [currentGame, setCurrentGame] = useState<GameDTOType | null>(null);
 
     const { addHook, sendMessage } = useWebSocket(`/tournament/${uuid}/join`);
@@ -98,6 +103,10 @@ export const RemoteTournamentProvider = ({
                 if (state.winner) {
                     setWinner(state.winner);
                 }
+
+                if (state.randomEvents !== randomEvents)
+                    setRandomEvents(state.randomEvents);
+                if (state.maxScore !== maxScore) setMaxScore(state.maxScore);
                 break;
             }
 
@@ -200,6 +209,9 @@ export const RemoteTournamentProvider = ({
         error,
         games,
         winner,
+
+        maxScore,
+        randomEvents,
 
         maxPlayers,
         currentGame,

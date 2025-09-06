@@ -66,6 +66,7 @@ export class TournamentCreationService {
                     status: GameStatus.LOCKED, // locked until players get assigned
                     hostId: null, // set when assigning
                     maxScore: tournament.maxScore,
+                    randomEvents: tournament.randomEvents,
                     round: currentRound,
                 });
                 allGames.push(game);

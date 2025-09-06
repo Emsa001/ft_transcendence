@@ -168,17 +168,14 @@ export class GameEngine implements GameEngineType {
         if (this.ball.pos.x < -20) {
             // Right player scores
             this.onScore?.(rightPlayerId);
-            this.gameEvents.reset();
-            this.resetPositions();
         } else if (this.ball.pos.x > this.baseW + 20) {
             // Left player scores
             this.onScore?.(leftPlayerId);
-            this.gameEvents.reset();
-            this.resetPositions();
         }
     }
 
     resetPositions() {
+        this.gameEvents.reset();
         const centerY = this.baseH / 2;
 
         for (const id in this.paddles) {

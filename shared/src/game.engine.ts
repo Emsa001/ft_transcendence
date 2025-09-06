@@ -19,56 +19,89 @@ interface RandomEvent {
 export class GameEvents {
     private isEvent: boolean;
     private events: RandomEvent[];
-    private timeoutId: ReturnType<typeof setTimeout> | null = null;
+    private timeoutIds: ReturnType<typeof setTimeout>[] = [];
     private snapshot: { ball: Ball; paddles: Record<number, Paddle> } | null =
         null;
 
     private gameEngine: GameEngineType;
+    private cooldown: number;
+    private isOnCooldown: boolean;
 
-    constructor(gameEngine: GameEngineType) {
+    constructor(gameEngine: GameEngineType, cooldown: number = 10000) {
         this.events = [];
         this.isEvent = false;
+        this.isOnCooldown = false;
+        this.cooldown = cooldown;
         this.gameEngine = gameEngine;
         this.initEvents();
     }
 
     reset(): void {
         this.isEvent = false;
+        this.isOnCooldown = true;
         const gameEngine = this.gameEngine;
 
-        if (this.timeoutId) {
-            clearTimeout(this.timeoutId);
-            this.timeoutId = null;
-        }
+        this.timeoutIds.forEach((id) => clearTimeout(id));
+        this.timeoutIds = [];
+
         if (this.snapshot) {
             gameEngine.ball = this.snapshot.ball;
             gameEngine.paddles = this.snapshot.paddles;
             this.snapshot = null;
         }
+
+        this.timeoutIds.push(
+            setTimeout(() => {
+                this.isOnCooldown = false;
+            }, this.cooldown)
+        );
     }
 
     tryEvent(): void {
-        if (this.isEvent) return;
+        if (this.isEvent || this.isOnCooldown) return;
         const gameEngine = this.gameEngine;
+
+        const totalChance = this.events.reduce((sum, e) => sum + e.chance, 0);
+        if (totalChance !== 100) {
+            return;
+        }
+
+        let roll = Math.random() * 100;
+        let selectedEvent: RandomEvent | null = null;
+
+        for (const event of this.events) {
+            if (roll < event.chance) {
+                selectedEvent = event;
+                break;
+            }
+            roll -= event.chance;
+        }
+
+        if (!selectedEvent) return;
 
         this.snapshot = { ball: gameEngine.ball, paddles: gameEngine.paddles };
 
-        this.events.forEach((event) => {
-            if (gameEngine.stopped) return;
-            if (Math.random() < event.chance) {
-                event.action();
-                this.isEvent = true;
+        selectedEvent.action();
+        this.isEvent = true;
 
-                this.timeoutId = setTimeout(() => {
-                    this.isEvent = false;
-                    if (this.snapshot) {
-                        gameEngine.ball = this.snapshot.ball;
-                        gameEngine.paddles = this.snapshot.paddles;
-                    }
-                    this.snapshot = null;
-                }, event.time);
+        const id = setTimeout(() => {
+            this.isEvent = false;
+            if (this.snapshot) {
+                gameEngine.ball = this.snapshot.ball;
+                gameEngine.paddles = this.snapshot.paddles;
             }
-        });
+            this.snapshot = null;
+            
+            const id2 = setTimeout(() => {
+                this.isOnCooldown = false;
+            }, this.cooldown);
+            this.timeoutIds.push(id2);
+            
+            this.isOnCooldown = true;
+        }, selectedEvent.time);
+        
+
+        this.timeoutIds.push(id);
     }
 
     registerEvent(event: RandomEvent): void {
@@ -76,12 +109,59 @@ export class GameEvents {
     }
 
     initEvents(): void {
-
         const gameEngine = this.gameEngine;
+        const chances = [12.5, 12.5, 12.5, 12.5, 12.5, 12.5, 12.5, 12.5];
+
+        this.registerEvent({
+            name: "BIG_BALL",
+            chance: chances[0],
+            time: 10000,
+            action: () => {
+                gameEngine.ball = {
+                    ...gameEngine.ball,
+                    size: gameEngine.ball.size * 3,
+                };
+                gameEngine.onRandomEvent?.("BIG BALL! [10s]");
+            },
+        });
+
+        this.registerEvent({
+            name: "SMALL_BALL",
+            chance: chances[1],
+            time: 10000,
+            action: () => {
+                gameEngine.ball = {
+                    ...gameEngine.ball,
+                    size: gameEngine.ball.size * 0.3,
+                };
+                gameEngine.onRandomEvent?.("SMALL BALL! [10s]");
+            },
+        });
+
+        this.registerEvent({
+            name: "REVERSE_CONTROLS",
+            chance: chances[2],
+            time: 5000,
+            action: () => {
+                gameEngine.paddles = Object.fromEntries(
+                    Object.entries(gameEngine.paddles).map(([id, p]) => [
+                        id,
+                        {
+                            ...p,
+                            controls: {
+                                up: p.controls.down,
+                                down: p.controls.up,
+                            },
+                        },
+                    ])
+                );
+                gameEngine.onRandomEvent?.("REVERSE CONTROLS! [5s]");
+            },
+        });
 
         this.registerEvent({
             name: "STUCK",
-            chance: 0.001,
+            chance: chances[3],
             time: 1000,
             action: () => {
                 gameEngine.paddles = Object.fromEntries(
@@ -94,57 +174,9 @@ export class GameEvents {
             },
         });
 
-        // big ball for 1 second
-        this.registerEvent({
-            name: "BIG_BALL",
-            chance: 0.001,
-            time: 10000,
-            action: () => {
-                gameEngine.ball = {
-                    ...gameEngine.ball,
-                    size: gameEngine.ball.size * 3,
-                };
-                gameEngine.onRandomEvent?.("BIG BALL! [10s]");
-            },
-        });
-
-        // small ball for 10 seconds
-        this.registerEvent({
-            name: "SMALL_BALL",
-            chance: 0.001,
-            time: 10000,
-            action: () => {
-                gameEngine.ball = {
-                    ...gameEngine.ball,
-                    size: gameEngine.ball.size * 0.3,
-                };
-                gameEngine.onRandomEvent?.("SMALL BALL! [10s]");
-            },
-        });
-
-        // reverse controls for 5 seconds
-        this.registerEvent({
-            name: "REVERSE_CONTROLS",
-            chance: 0.001,
-            time: 5000,
-            action: () => {
-                gameEngine.paddles = Object.fromEntries(
-                    Object.entries(gameEngine.paddles).map(([id, p]) => [
-                        id,
-                        {
-                            ...p,
-                            controls: { up: p.controls.down, down: p.controls.up },
-                        },
-                    ])
-                );
-                gameEngine.onRandomEvent?.("REVERSE CONTROLS! [5s]");
-            },
-        });
-
-        // tiny paddles for 10 seconds
         this.registerEvent({
             name: "TINY_PADDLES",
-            chance: 0.001,
+            chance: chances[4],
             time: 10000,
             action: () => {
                 gameEngine.paddles = Object.fromEntries(
@@ -157,10 +189,9 @@ export class GameEvents {
             },
         });
 
-        // // huge paddles for 10 seconds
         this.registerEvent({
             name: "HUGE_PADDLES",
-            chance: 0.001,
+            chance: chances[5],
             time: 10000,
             action: () => {
                 gameEngine.paddles = Object.fromEntries(
@@ -173,5 +204,34 @@ export class GameEvents {
             },
         });
 
+        this.registerEvent({
+            name: "POWER UP PADDLES",
+            chance: chances[6],
+            time: 10000,
+            action: () => {
+                gameEngine.paddles = Object.fromEntries(
+                    Object.entries(gameEngine.paddles).map(([id, p]) => [
+                        id,
+                        { ...p, speed: p.speed * 2 },
+                    ])
+                );
+                gameEngine.onRandomEvent?.("POWER UP PADDLES! [10s]");
+            },
+        });
+
+        this.registerEvent({
+            name: "SLOW PADDLES",
+            chance: chances[7],
+            time: 10000,
+            action: () => {
+                gameEngine.paddles = Object.fromEntries(
+                    Object.entries(gameEngine.paddles).map(([id, p]) => [
+                        id,
+                        { ...p, speed: p.speed * 0.5 },
+                    ])
+                );
+                gameEngine.onRandomEvent?.("SLOW PADDLES! [10s]");
+            },
+        });
     }
 }

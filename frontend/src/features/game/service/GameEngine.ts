@@ -37,7 +37,6 @@ export class GameEngine implements GameEngineType {
         };
         this.paddles = {};
         this.gameEvents = new GameEvents(this);
-        console.log("GameEngine created");
     }
 
     // Initialization
@@ -89,6 +88,7 @@ export class GameEngine implements GameEngineType {
     // Resetting
 
     resetPositions(): void {
+        this.gameEvents.reset();
         this.resetPaddles();
         this.resetBall();
     }
@@ -117,7 +117,6 @@ export class GameEngine implements GameEngineType {
 
     update(): void {
         if (this.stopped) return;
-
         if (this.randomEvents) this.gameEvents.tryEvent();
 
         this.updatePaddles();
@@ -189,10 +188,8 @@ export class GameEngine implements GameEngineType {
         const { baseW } = GameRenderer;
         const paddleIds = Object.keys(this.paddles).map(Number);
         if (this.ball.pos.x < -20) {
-            this.gameEvents.reset();
             this.onScore?.(paddleIds[1]); // Right player scores
         } else if (this.ball.pos.x > baseW + 20) {
-            this.gameEvents.reset();
             this.onScore?.(paddleIds[0]); // Left player scores
         }
     }

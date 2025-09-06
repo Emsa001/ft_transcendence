@@ -14,7 +14,7 @@ export const TournamentCreate = () => {
         const name = formData.get("name")?.toString().trim() || "";
         const maxPlayers = Number(formData.get("maxPlayers"));
         const maxScore = Number(formData.get("maxScore"));
-        const isPrivate = formData.get("isPrivate") === "on";
+        const randomEvents = formData.get("randomEvents") === "on";
 
         if (!name) return setError("Tournament name is required");
         if (maxPlayers < 2 || maxPlayers > 16)
@@ -26,7 +26,7 @@ export const TournamentCreate = () => {
             name,
             maxPlayers,
             maxScore,
-            isPrivate,
+            randomEvents,
         });
 
         if (!tournament) return setError("Failed to create tournament");
@@ -96,18 +96,16 @@ export const TournamentCreate = () => {
                         />
                     </div>
 
-                    {/* Private Toggle */}
+                    {/* Random Events */}
                     <div>
-                        <label className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer">
-                            <span className="font-medium text-purple-300">
-                                Private Tournament
-                            </span>
-                            <input
-                                type="checkbox"
-                                name="isPrivate"
-                                className="h-5 w-5"
-                            />
+                        <label className="block text-sm font-semibold text-purple-300 mb-1">
+                            Random Events
                         </label>
+                        <input
+                            type="checkbox"
+                            name="randomEvents"
+                            className="h-5 w-5"
+                        />
                     </div>
 
                     {/* Error */}

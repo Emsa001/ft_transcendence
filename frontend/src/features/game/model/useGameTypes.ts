@@ -36,6 +36,7 @@ export interface GameProviderProps {
     /** --- Initial Values --- */
     players?: GameUserDTOType[];
     maxScore?: number;
+    randomEvents?: boolean;
 
     /** --- Event Callbacks --- */
     onScore?: (scorer: GameUserDTOType) => void;

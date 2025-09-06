@@ -191,6 +191,7 @@ export class GameRoom extends WebSocketService {
 
     async onScore(scorerId: number) {
         try {
+            this.engine.resetPositions();
             this.engine.togglePause();
             await this.game.playerScore(scorerId, 1);
             await this.game.reload({ include: ["players"] });

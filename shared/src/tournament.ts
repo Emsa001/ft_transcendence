@@ -17,12 +17,13 @@ export interface TournamentDTOType {
     winner: string | null;
     hostId: number | null;
     uuid: string;
+    randomEvents: boolean;
 }
 
 export interface TournamentCreateType {
     name?: string;
     maxPlayers?: number;
     maxScore?: number;
-    isPrivate?: boolean;
+    randomEvents?: boolean;
     hostId?: number | null;
 }

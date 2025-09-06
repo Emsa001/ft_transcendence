@@ -82,6 +82,10 @@ export class Tournament extends Model<
     @Column(DataType.INTEGER)
     declare maxScore: number;
 
+    @Default(false)
+    @Column(DataType.BOOLEAN)
+    declare randomEvents: boolean;
+
     @HasMany(() => Game)
     declare games: Game[];
 

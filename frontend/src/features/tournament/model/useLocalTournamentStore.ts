@@ -24,6 +24,8 @@ export const useLocalTournamentStore = (
             games: state.games,
             round: state.round,
             winner: state.winner,
+            maxScore: state.maxScore,
+            randomEvents: state.randomEvents,
         };
 
         setLocalTournamentData(data as TournamentDTOType);
@@ -39,6 +41,8 @@ export const useLocalTournamentStore = (
                 games: localTournamentData.games ?? [],
                 round: localTournamentData.round,
                 winner: localTournamentData.winner,
+                maxScore: localTournamentData.maxScore ?? 5,
+                randomEvents: localTournamentData.randomEvents ?? false,
             });
         }
     }, []);
