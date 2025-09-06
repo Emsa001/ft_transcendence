@@ -10,6 +10,36 @@ interface FeedOptions {
 }
 
 export class DatabaseExampleFeed {
+    static async feedUser(userId: number) {
+        const user = await User.findById(userId);
+        // const user2 = await UserGenerate.createExample();
+
+        // await Promise.all(
+        //     Array.from({ length: 10 }).map(async () => {
+        //         const game = await Game.create();
+        //         await game.addPlayer(user);
+        //         await game.addPlayer(user2);
+        //         await game.update({ status: GameStatus.IN_PROGRESS });
+        //         await game.playerScore(Math.random() < 0.5 ? user.id : user2.id, 1);
+        //         await game.end();
+        //     })
+        // );
+
+        const tournament = await Tournament.create({ maxPlayers: 4 });
+        await tournament.addPlayer(user);
+        for (let i = 0; i < 3; i++) {
+            const user = await UserGenerate.createExample();
+            await tournament.addPlayer(user);
+        }
+
+        await tournament.start();
+
+        for (let i = 0; i < 4; i++) {
+            await tournament.startRound();
+            await tournament.exampleRoundFlow();
+        }
+    }
+
     static async feed(options: FeedOptions = {}): Promise<void> {
         const { users = 10, games = 5 } = options;
 
@@ -30,12 +60,12 @@ export class DatabaseExampleFeed {
     static async createExampleGames(games: number): Promise<void> {
         const modes = Object.values(GameMode);
 
-        // for (let i = 0; i < games; i++) {
-        //     const mode = modes[Math.floor(Math.random() * modes.length)];
-        //     await Game.create({
-        //         mode,
-        //     });
-        // }
+        for (let i = 0; i < games; i++) {
+            const mode = modes[Math.floor(Math.random() * modes.length)];
+            await Game.create({
+                mode,
+            });
+        }
     }
 
     static async assignGamesToUsers(): Promise<void> {

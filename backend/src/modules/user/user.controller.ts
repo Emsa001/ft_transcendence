@@ -55,7 +55,8 @@ export class UserController extends BaseController {
             return reply.send(user.toDTO());
         }
         const user = await User.findById(Number(id));
-        return reply.send(user?.toDTO());
+        if (!user) throw new HttpException(404, "User not found");
+        return reply.send(user.toDTO());
     }
 
     @GET("/:id/history")
@@ -76,7 +77,13 @@ export class UserController extends BaseController {
             end: end ? new Date(end) : undefined,
         });
 
-        return reply.send(games.map((game) => game.toDTO()));
+        const tournaments = await UserGamesService.getTournaments(Number(id), {
+            limit: limit ? Number(limit) : undefined,
+            start: start ? new Date(start) : undefined,
+            end: end ? new Date(end) : undefined,
+        });
+
+        return reply.send({ games, tournaments });
     }
 
     @GET("/:id/stats")

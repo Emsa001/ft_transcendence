@@ -145,10 +145,10 @@ class AuthService {
         if (existingUser)
             throw new HttpException(409, "Conflict: User already exists");
 
-        const error = Validators.validatePassword(password);
-        if (error) {
-            throw new HttpException(400, error);
-        }
+        // const error = Validators.validatePassword(password);
+        // if (error) {
+        //     throw new HttpException(400, error);
+        // }
 
         const hashedPassword = await bcrypt.hash(password, 10);
 

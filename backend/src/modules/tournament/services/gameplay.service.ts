@@ -46,6 +46,8 @@ export class TournamentGamePlayService {
             await game.end();
         }
 
+        await tournament.reload();
+
         // TODO: There is smarter way check if it's last round
         const activePlayers = await tournament.getActivePlayers();
         if (activePlayers.length === 1) await tournament.end();
