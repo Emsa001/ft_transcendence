@@ -4,6 +4,8 @@ import { Game } from "../models/Game/Game";
 import { GameUser } from "../models/Game/GameUser";
 import { Tournament } from "../models/Tournaments/Tournament";
 import { TournamentUser } from "../models/Tournaments/TournamentUser";
+import { Op } from "sequelize";
+import { User } from "../models/User/User";
 
 interface GameLike {
     id: number;
@@ -66,5 +68,35 @@ export class Validators {
             additionalPlayers,
             "tournament"
         );
+    }
+
+    static validateUserName(name: string): string | null {
+        name = name.trim();
+        if (name.length < 2 || name.length > 32) {
+            return "Username must be between 2 and 32 characters";
+        }
+        if (!/^[a-zA-Z0-9_]+$/.test(name)) {
+            return "Username can only contain letters, numbers, and underscores";
+        }
+        return null;
+    }
+
+    static validatePassword(password: string): string | null {
+        const minLength = 8;
+        const hasUpperCase = /[A-Z]/.test(password);
+        const hasLowerCase = /[a-z]/.test(password);
+        const hasNumber = /\d/.test(password);
+        const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password);
+
+        if (password.length < minLength)
+            return `Password must be at least ${minLength} characters long.`;
+        if (!hasUpperCase)
+            return "Password must contain at least one uppercase letter.";
+        if (!hasLowerCase)
+            return "Password must contain at least one lowercase letter.";
+        if (!hasNumber) return "Password must contain at least one number.";
+        if (!hasSpecialChar)
+            return "Password must contain at least one special character.";
+        return null;
     }
 }

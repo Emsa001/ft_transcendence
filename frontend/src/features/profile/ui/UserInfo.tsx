@@ -19,6 +19,7 @@ export const UserInfo = () => {
     const text = getText("profile.playerStats");
 
     if (!user || !user.id) return <div />;
+
     return (
         <div className="relative w-full h-full text-center">
             <div className="flex justify-center">

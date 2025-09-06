@@ -12,6 +12,8 @@ interface SettingsModalProps {
 
 export const SettingsModal = ({ onClose, isOpen }: SettingsModalProps) => {
     const { user, setUser } = useUser();
+
+    const [error, setError] = useState<string | null>(null);
     const [username, setUsername] = useState(user?.username || "");
     const [currentPassword, setCurrentPassword] = useState("");
     const [newPassword, setNewPassword] = useState("");
@@ -23,9 +25,10 @@ export const SettingsModal = ({ onClose, isOpen }: SettingsModalProps) => {
         const data = {
             username,
         };
-        const user = await ProfileApi.updateUser(data);
+        const user = await ProfileApi.updateUser(data, setError);
         if (user) {
             onClose();
+            setError(null);
             setUser(user);
         }
     };
@@ -35,8 +38,11 @@ export const SettingsModal = ({ onClose, isOpen }: SettingsModalProps) => {
             oldPassword: currentPassword,
             newPassword,
         };
-        await ProfileApi.updateUser(data);
-        onClose();
+        const user = await ProfileApi.updateUser(data, setError);
+        if (user) {
+            setError(null);
+            onClose();
+        }
     };
 
     const handleDelete = async () => {
@@ -108,7 +114,9 @@ export const SettingsModal = ({ onClose, isOpen }: SettingsModalProps) => {
                     </button>
                 </div>
 
-                <div className="mb-4">
+                <p className="text-red-500">{error}</p>
+
+                <div className="mt-4">
                     <label className="block text-sm font-medium mb-1">
                         {texts.deleteAccount}
                     </label>

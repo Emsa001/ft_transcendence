@@ -16,6 +16,8 @@ export default {
         title: "ft_transcendence.exe",
         login: "Just Log In Already",
         profile: "Your Sad Profile",
+        chat: "Attention seeker",
+        play: "Be nerd",
     },
     chat: {
         friends: "People Who Tolerate You",

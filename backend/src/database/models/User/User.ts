@@ -58,7 +58,7 @@ export class User extends Model<InferAttributes<User>, CreationAttributes> {
     @AllowNull(false)
     @Column({
         type: DataType.STRING,
-        validate: { len: [2, 100] },
+        validate: { len: [2, 32] },
     })
     declare username: string;
 
