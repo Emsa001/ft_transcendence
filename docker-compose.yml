@@ -56,11 +56,11 @@ services:
       dockerfile: ./frontend/Dockerfile
     container_name: nginx
     ports:
-      - "8443:443" # 8443 to avoid rootless problem -> ports < 1024 are reserved
+      - "3000:3000"
+      - "3001:3001"
       - "8080:8080"
       - "9090:9090"
       - "9101:9101"
-      - "3001:3001"
     networks:
       - monitoring
     depends_on:
