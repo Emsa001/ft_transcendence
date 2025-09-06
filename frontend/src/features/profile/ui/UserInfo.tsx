@@ -15,8 +15,8 @@ export const UserInfo = () => {
     const [modalOpen, setModalOpen] = useState(false);
     const navigate = useNavigate();
     const { getText } = useLanguage();
-    const text = getText("profile.playerStats");
     const { handleLogout } = useAuth();
+    const text = getText("profile.playerStats");
 
     if (!user || !user.id) return <div />;
     return (

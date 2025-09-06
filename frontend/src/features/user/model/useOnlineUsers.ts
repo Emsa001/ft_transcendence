@@ -10,7 +10,9 @@ export const useOnlineUsers = () => {
 
     const subscribeToOnline = () => {
         if (ws) return ws;
-        ws = new WebSocket(`ws://localhost:8000/user/status`);
+        ws = new WebSocket(
+            process.env.FT_REACT_PUBLIC_API_HOST + "/user/status"
+        );
         console.log("Subscribing to online users WebSocket");
 
         ws.onmessage = (event) => {

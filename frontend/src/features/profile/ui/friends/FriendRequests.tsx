@@ -1,9 +1,9 @@
 import React from "react";
 import { UserDTOType } from "shared";
-import FriendsApi from "../../../user/service/friendsApi";
 import { UserPicture } from "@features/user/ui/UserPicture";
 import { Toast } from "@shared/lib/Toast";
 import { useLanguage } from "@features/language/model/useLanguage";
+import FriendsApi from "../../../user/service/friendsApi";
 
 interface FriendRequestsProps {
     friendRequests: UserDTOType[];

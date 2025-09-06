@@ -9,15 +9,9 @@ export function ReceivedRequests() {
     const [receivedRequests, setReceivedRequests] = useState<UserDTOType[]>([]);
 
     useEffect(() => {
-        const fetchRequests = async () => {
-            try {
-                const allRequests = await FriendsApi.getFriendRequests();
-                setReceivedRequests(allRequests);
-            } catch (error) {
-                console.error("Error fetching friend requests:", error);
-            }
-        };
-        fetchRequests();
+        FriendsApi.getFriendRequests().then((requests) => {
+            if (requests) setReceivedRequests(requests);
+        });
     }, []);
 
     const handleAcceptRequest = async (requestId: number) => {

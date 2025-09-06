@@ -80,21 +80,28 @@ export function UserInfo({ user }: { user: UserDTOType }) {
     useEffect(() => {
         const fetchSentRequests = async () => {
             const sent = await FriendsApi.getAllSentRequests();
-            setSendedRequest(sent);
-            if (sent.some((req) => req.id === user.id)) setIsPending(true);
+            if (sent) {
+                setSendedRequest(sent);
+                if (sent.some((req) => req.id === user.id)) setIsPending(true);
+            }
         };
 
         const fetchFriendStatus = async () => {
             const allFriends = await FriendsApi.getAllFriends();
-            if (allFriends.some((friend) => friend.id === user.id)) {
-                setIsPending(false);
-                setIsFriend(true);
+            if (allFriends) {
+                if (allFriends.some((friend) => friend.id === user.id)) {
+                    setIsPending(false);
+                    setIsFriend(true);
+                }
             }
         };
 
         const fetchBlockStatus = async () => {
             const blockedUsers = await blockUserApi.getAll();
-            if (blockedUsers.some((blocked) => blocked.id === user.id))
+            if (
+                blockedUsers &&
+                blockedUsers.some((blocked) => blocked.id === user.id)
+            )
                 setIsBlocked(true);
         };
 

@@ -52,6 +52,7 @@ export interface GameCreationAttributes extends GameCreationRequest {
     round?: number | null;
     tournamentId?: number;
     winnerId?: number | null;
+    randomEvents?: boolean;
 }
 
 export type Vec2 = { x: number; y: number };
@@ -92,7 +93,9 @@ export interface GameMessage {
 export interface MessageData {
     messages: GameMessage[];
     cover: boolean;
+    duration?: number;
 }
+
 
 export class GameMessages {
     static win(scorer: string, canRestart?: boolean): MessageData {
@@ -200,3 +203,4 @@ export class GameMessages {
         return { messages, cover: false };
     }
 }
+

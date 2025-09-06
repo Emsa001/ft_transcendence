@@ -10,11 +10,9 @@ export const BlockedUsers = () => {
     const texts = getText("profile.blockedUsers");
 
     useEffect(() => {
-        const fetchData = async () => {
-            const newBlockedUsers = await blockUserApi.getAll();
-            setBlockedUsers(newBlockedUsers);
-        };
-        fetchData();
+        blockUserApi.getAll().then((users) => {
+            if (users) setBlockedUsers(users);
+        });
     }, []);
 
     const handleUnblockUser = async (userId: number) => {

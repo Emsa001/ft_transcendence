@@ -4,29 +4,29 @@ import { UserDTOType } from "shared";
 import { Toast } from "@shared/lib/Toast";
 
 class FriendsApi extends APIService {
-    async getAllFriends(): Promise<UserDTOType[]> {
+    async getAllFriends(): Promise<UserDTOType[] | null> {
         try {
             const response: AxiosResponse<UserDTOType[]> =
                 await this.api.get("/friends/all");
             return response.data;
         } catch (error) {
             console.error("Error fetching all friends:", error);
-            return Promise.reject(error);
+            return null;
         }
     }
 
-    async getFriendRequests(): Promise<UserDTOType[]> {
+    async getFriendRequests(): Promise<UserDTOType[] | null> {
         try {
             const response: AxiosResponse<UserDTOType[]> =
                 await this.api.get("/friends/requests");
             return response.data;
         } catch (error) {
             console.error("Error fetching friend requests:", error);
-            return Promise.reject(error);
+            return null;
         }
     }
 
-    async getAllSentRequests(): Promise<UserDTOType[]> {
+    async getAllSentRequests(): Promise<UserDTOType[] | null> {
         try {
             const response: AxiosResponse<UserDTOType[]> = await this.api.get(
                 "/friends/requests/sent"
@@ -34,7 +34,7 @@ class FriendsApi extends APIService {
             return response.data;
         } catch (error) {
             console.error("Error fetching all sent friend requests:", error);
-            return Promise.reject(error);
+            return null;
         }
     }
 
@@ -75,7 +75,7 @@ class FriendsApi extends APIService {
             return response.data;
         } catch (error) {
             console.error("Error fetching user by ID or username:", error);
-            return Promise.reject(error);
+            return null;
         }
     }
 }

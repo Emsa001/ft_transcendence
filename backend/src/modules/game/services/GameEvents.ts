@@ -1,16 +1,17 @@
 import { Ball, Paddle } from "shared";
-import { gameEngine } from "./GameEngine";
+import { GameEngine } from "./engine.service";
 
 interface RandomEvent {
-    action: () => void;
+    action: (gameEngine: GameEngine) => void;
     time: number;
     name: string;
     chance: number;
 }
 
+let isEvent = false;
+
 class GameEvents {
     private events: RandomEvent[];
-    private isEvent = false;
     private timeoutId: ReturnType<typeof setTimeout> | null = null;
     private snapshot: { ball: Ball; paddles: Record<number, Paddle> } | null =
         null;
@@ -19,8 +20,8 @@ class GameEvents {
         this.events = [];
     }
 
-    reset(): void {
-        this.isEvent = false;
+    reset(gameEngine: GameEngine): void {
+        isEvent = false;
         if (this.timeoutId) {
             clearTimeout(this.timeoutId);
             this.timeoutId = null;
@@ -32,18 +33,18 @@ class GameEvents {
         }
     }
 
-    tryEvent(): void {
-        if (this.isEvent) return;
+    tryEvent(gameEngine: GameEngine): void {
+        if (isEvent) return;
 
         this.snapshot = { ball: gameEngine.ball, paddles: gameEngine.paddles };
 
         this.events.forEach((event) => {
             if (Math.random() < event.chance) {
-                event.action();
-                this.isEvent = true;
+                event.action(gameEngine);
+                isEvent = true;
 
                 this.timeoutId = setTimeout(() => {
-                    this.isEvent = false;
+                    isEvent = false;
                     if (this.snapshot) {
                         gameEngine.ball = this.snapshot.ball;
                         gameEngine.paddles = this.snapshot.paddles;
@@ -68,7 +69,7 @@ gameEvents.registerEvent({
     name: "STUCK",
     chance: 0.001,
     time: 1000,
-    action: () => {
+    action: (gameEngine) => {
         gameEngine.paddles = Object.fromEntries(
             Object.entries(gameEngine.paddles).map(([id, p]) => [
                 id,
@@ -84,7 +85,7 @@ gameEvents.registerEvent({
     name: "BIG_BALL",
     chance: 0.001,
     time: 10000,
-    action: () => {
+    action: (gameEngine) => {
         gameEngine.ball = {
             ...gameEngine.ball,
             size: gameEngine.ball.size * 3,
@@ -98,7 +99,7 @@ gameEvents.registerEvent({
     name: "SMALL_BALL",
     chance: 0.001,
     time: 10000,
-    action: () => {
+    action: (gameEngine) => {
         gameEngine.ball = {
             ...gameEngine.ball,
             size: gameEngine.ball.size * 0.3,
@@ -112,7 +113,7 @@ gameEvents.registerEvent({
     name: "REVERSE_CONTROLS",
     chance: 0.001,
     time: 5000,
-    action: () => {
+    action: (gameEngine) => {
         gameEngine.paddles = Object.fromEntries(
             Object.entries(gameEngine.paddles).map(([id, p]) => [
                 id,
@@ -131,7 +132,7 @@ gameEvents.registerEvent({
     name: "TINY_PADDLES",
     chance: 0.001,
     time: 10000,
-    action: () => {
+    action: (gameEngine) => {
         gameEngine.paddles = Object.fromEntries(
             Object.entries(gameEngine.paddles).map(([id, p]) => [
                 id,
@@ -147,7 +148,7 @@ gameEvents.registerEvent({
     name: "HUGE_PADDLES",
     chance: 0.001,
     time: 10000,
-    action: () => {
+    action: (gameEngine) => {
         gameEngine.paddles = Object.fromEntries(
             Object.entries(gameEngine.paddles).map(([id, p]) => [
                 id,

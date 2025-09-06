@@ -85,13 +85,12 @@ export const RemoteGameProvider = ({
 
     const frameRef = useRef<GameFrame | null>(null);
 
-    const { messages } = useGameMessages();
+    const { messages, showMessage } = useGameMessages();
     const { addHook, sendMessage } = useWebSocket(`/game/join/${code}`);
 
     useGameKeys({
         onKeyDown: (key) => {
             sendMessage({ type: "PLAYER_INPUT", key, state: "down" });
-            console.log("Key down:", key);
         },
         onKeyUp: (key) => {
             sendMessage({ type: "PLAYER_INPUT", key, state: "up" });
@@ -134,7 +133,7 @@ export const RemoteGameProvider = ({
             }
 
             case "GAME_MESSAGE": {
-                messages.current = payload.message;
+                showMessage({ message: payload.message });
                 break;
             }
 

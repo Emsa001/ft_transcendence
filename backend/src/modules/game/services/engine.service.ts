@@ -1,13 +1,22 @@
-import { Ball, GameFrame, GameUserDTOType, Paddle } from "shared";
+import {
+    Ball,
+    GameEngineType,
+    GameEvents,
+    GameFrame,
+    GameUserDTOType,
+    Paddle,
+} from "shared";
 
-export class GameEngine {
+export class GameEngine implements GameEngineType {
     private readonly baseW = 1280;
     private readonly baseH = 720;
 
     ball: Ball;
     paddles: Record<number, Paddle>;
+    randomEvents = false;
     stopped = true;
     onScore?: (scorerId: number) => void;
+    onRandomEvent?: (event: string) => void;
 
     private readonly defaultBallSpeed = 7.5;
     private readonly paddleWidth = 14;
@@ -17,6 +26,7 @@ export class GameEngine {
 
     static readonly fps = 60;
     static readonly dt = 1 / GameEngine.fps;
+    private gameEvents;
 
     constructor() {
         this.ball = {
@@ -26,6 +36,7 @@ export class GameEngine {
             speed: this.defaultBallSpeed,
         };
         this.paddles = {};
+        this.gameEvents = new GameEvents(this);
     }
 
     getFrame(): GameFrame {
@@ -74,6 +85,7 @@ export class GameEngine {
 
     update() {
         if (this.stopped) return false;
+        if (this.randomEvents) this.gameEvents.tryEvent();
 
         this.updatePaddles();
         this.updateBall();
@@ -156,10 +168,12 @@ export class GameEngine {
         if (this.ball.pos.x < -20) {
             // Right player scores
             this.onScore?.(rightPlayerId);
+            this.gameEvents.reset();
             this.resetPositions();
         } else if (this.ball.pos.x > this.baseW + 20) {
             // Left player scores
             this.onScore?.(leftPlayerId);
+            this.gameEvents.reset();
             this.resetPositions();
         }
     }

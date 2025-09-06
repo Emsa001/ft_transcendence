@@ -2,7 +2,7 @@ import { WebSocket } from "@fastify/websocket";
 import { User } from "@/database/models/User/User";
 import { Game } from "@/database/models/Game/Game";
 import { WebSocketService } from "@/lib/WebSocketService";
-import { GameMessage, GameMessages, GameStatus } from "shared";
+import { GameMessages, GameStatus, MessageData } from "shared";
 import { GameRooms } from "./registry.service";
 import { GameEngine } from "./engine.service";
 import { HttpException } from "@/utils/exceptions";
@@ -13,7 +13,7 @@ import { TournamentRooms } from "@/modules/tournament/services/registry.service"
  * Utility for handling countdown messages.
  */
 class CountdownService {
-    constructor(private send: (msg: GameMessage[] | null) => void) {}
+    constructor(private send: (msg: MessageData | null) => void) {}
 
     run(count = 3, interval = 1000): Promise<void> {
         return new Promise<void>((resolve) => {
@@ -48,6 +48,7 @@ export class GameRoom extends WebSocketService {
         this.game = game;
         this.engine = new GameEngine();
         this.engine.onScore = this.onScore.bind(this);
+        this.engine.onRandomEvent = this.onRandomEvent.bind(this);
         this.countdownService = new CountdownService(
             this.gameMessage.bind(this)
         );
@@ -160,6 +161,7 @@ export class GameRoom extends WebSocketService {
         const players = this.game.getGameUsers();
 
         this.engine.initPaddles(players);
+        this.engine.randomEvents = this.game.randomEvents;
         this.updateState();
         this.startGameLoop();
 
@@ -170,11 +172,9 @@ export class GameRoom extends WebSocketService {
             GameMessages.intro(player1, player2, this.game.maxScore)
         );
 
-        setTimeout(async () => {
-            await this.countdownService.run(3);
-            this.engine.resetPositions();
-            this.engine.togglePause();
-        }, 1000);
+        await this.countdownService.run(3);
+        this.engine.resetPositions();
+        this.engine.togglePause();
     }
 
     private async endGame(delay: number) {
@@ -191,26 +191,35 @@ export class GameRoom extends WebSocketService {
 
     async onScore(scorerId: number) {
         try {
+            this.engine.togglePause();
             await this.game.playerScore(scorerId, 1);
             await this.game.reload({ include: ["players"] });
+
+            const player = this.game.players.find((p) => p.id === scorerId);
+            if (!player) return;
+
+            this.updateState();
+
+            if (player.GameUser.score >= this.game.maxScore) {
+                this.gameMessage(GameMessages.win(player.username));
+                await this.endGame(2);
+            } else {
+                this.gameMessage(GameMessages.score(player.username));
+                await this.countdownService.run(3);
+                this.engine.togglePause();
+            }
         } catch {
+            this.engine.togglePause();
             throw new HttpException(500, "Failed to update player score");
         }
+    }
 
-        const player = this.game.players.find((p) => p.id === scorerId);
-        if (!player) return;
+    /* -------------------- Random Events -------------------- */
 
-        this.updateState();
-        this.engine.togglePause();
-
-        if (player.GameUser.score >= this.game.maxScore) {
-            this.gameMessage(GameMessages.win(player.username));
-            await this.endGame(2);
-        } else {
-            this.gameMessage(GameMessages.score(player.username));
-            await this.countdownService.run(3);
-            this.engine.togglePause();
-        }
+    onRandomEvent(event: string) {
+        if (this.engine.stopped) return;
+        this.gameMessage(GameMessages.event(event));
+        // this.broadcast({ type: "GAME_EVENT", event });
     }
 
     /* -------------------- Game Loop -------------------- */
@@ -237,7 +246,7 @@ export class GameRoom extends WebSocketService {
 
     /* -------------------- Messaging -------------------- */
 
-    private gameMessage(message: GameMessage[] | null) {
+    private gameMessage(message: MessageData | null) {
         this.broadcast({ type: "GAME_MESSAGE", message });
     }
 
