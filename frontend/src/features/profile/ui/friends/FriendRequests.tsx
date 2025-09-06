@@ -12,8 +12,7 @@ interface FriendRequestsProps {
     friends: UserDTOType[];
 }
 
-
-export function FriendRequests({
+export const FriendRequests = ({
     friendRequests,
     setFriendRequests,
     setFriends,

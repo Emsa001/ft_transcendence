@@ -43,15 +43,6 @@ class BlockUserApi extends APIService {
         }
     }
 
-    async amIBlockedByUser(userId: number): Promise<boolean> {
-        try {
-            const response = await this.api.get(`/blocked/${userId}`);
-            return response.data;
-        } catch (error) {
-            console.error("Error checking if user is blocked:", error);
-            return Promise.reject(error);
-        }
-    }
 }
 
 const service = new BlockUserApi({ path: "/user" });

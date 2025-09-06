@@ -2,7 +2,6 @@ import React, { useEffect, useNavigate, useState } from "react";
 import { FaBan } from "react-icons/fa";
 import { Stats } from "@features/profile/ui/Stats";
 import { PlayerGameHistory } from "@features/user/ui/PlayerGameHistory";
-import ProfileApi from "@features/user/service/profileApi";
 import { UserDTOType } from "shared";
 import { Icon } from "@shared/components/Icon";
 import { UserInfoDisplay } from "@features/user/ui/UserInfoDisplay";
@@ -10,13 +9,6 @@ import { UserInfo } from "@features/user/ui/UserInfo";
 import blockUserApi from "@features/user/service/blockUserApi";
 import FriendsApi from "@features/user/service/friendsApi";
 import { useUser } from "@features/auth/model/useUser";
-import { Toast } from "@shared/lib/Toast";
-import { set } from "lodash";
-import { useChat } from "@features/chat/model/ChatContext";
-import { useUser } from "@features/auth/model/useUser";
-import { Toast } from "@shared/lib/Toast";
-import { set } from "lodash";
-import { useChat } from "@features/chat/model/ChatContext";
 
 
 export default function User({ username }: { username?: string }) {
