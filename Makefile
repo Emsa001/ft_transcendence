@@ -12,6 +12,7 @@ clean:
 	rm -rf ./*/node_modules
 	rm -rf ./*/dist
 	rm -rf ./*/package-lock.json
+	docker compose down -v --remove-orphans --rmi all
 
 frontend: shared
 	npm install --prefix ./frontend
@@ -32,10 +33,12 @@ format:
 test: backend
 	npm run test --prefix ./backend
 
-docker:
+docker: clean
 	docker compose down -v --remove-orphans --rmi all
-	bash nginx/certs/generate.sh
-	@echo "Starting Docker..."
-	@bash -c 'trap "echo; echo Stopping containers...; docker compose down; exit" SIGINT; docker compose up --build'
+	@bash nginx/certs/generate.sh
+	@echo "\nStarting Docker in the background...\n"
+	-@docker compose up --build -d || true
+	@echo "\nAll services launched. Logs with: docker compose logs -f\n"
+
 
 .PHONY: all run dev build clean frontend backend docker install shared

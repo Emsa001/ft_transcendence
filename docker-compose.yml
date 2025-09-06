@@ -20,26 +20,19 @@ services:
   prometheus:
     image: prom/prometheus:v2.37.0
     container_name: prometheus
+    command:
+      - "--config.file=/etc/prometheus/prometheus.yml"
+      - "--storage.tsdb.path=/prometheus"
+      - "--storage.tsdb.retention.time=10d" # Prometheus stores data in blocks,-> 2 hours by default
+      - "--storage.tsdb.retention.size=100MB"
+      # - "--storage.tsdb.min-block-duration=1m" # not recommend -> mainly for production
+      # - "--storage.tsdb.max-block-duration=1m"
     volumes:
       - prometheus-data:/prometheus
       - ./backend/prometheus.yml:/etc/prometheus/prometheus.yml:ro
       - ./backend/prometheus-alerts.yml:/etc/prometheus/prometheus-alerts.yml:ro
-    # data retention and storage strategies for historical metrics data
-    # command:
-    #   - '--storage.tsdb.path=/prometheus'
-    #   - '--storage.tsdb.retention.time=30d'
-    #   - '--storage.tsdb.retention.size=10GB'
     depends_on:
       - backend
-    networks:
-      - monitoring
-
-  alertmanager:
-    image: prom/alertmanager
-    container_name: alertmanager
-    volumes:
-      - alertmanager-data:/alertmanager
-      - ./backend/alertmanager.yml:/etc/alertmanager/alertmanager.yml:ro
     networks:
       - monitoring
 
@@ -63,12 +56,11 @@ services:
       dockerfile: ./frontend/Dockerfile
     container_name: nginx
     ports:
-      - "443:443"
+      - "8443:443" # 8443 to avoid rootless problem -> ports < 1024 are reserved
       - "8080:8080"
       - "9090:9090"
       - "9101:9101"
       - "3001:3001"
-      # - "9093:9093"
     networks:
       - monitoring
     depends_on:
@@ -76,18 +68,18 @@ services:
       - frontend
       - prometheus
       - grafana
-      # - alertmanager
+      - node-exporter
 
-  # node-exporter:
-  #   image: prom/node-exporter:v1.6.1
-  #   container_name: node-exporter
-  #   restart: unless-stopped
-  #   networks:
-  #     - monitoring
-  #   command:
-  #     - '--path.rootfs=/host'
-  #   volumes:
-  #     - '/:/host:ro,rslave'
+  node-exporter:
+    image: prom/node-exporter:v1.6.1
+    container_name: node-exporter
+    restart: unless-stopped
+    networks:
+      - monitoring
+    command:
+      - '--path.rootfs=/'
+    # volumes:
+    #   - '/:/host:ro,rslave'
 
 networks:
   monitoring:
@@ -97,6 +89,4 @@ volumes:
     name: ft_transcendence_prometheus_data
   grafana-data:
     name: ft_transcendence_grafana_data
-  alertmanager-data:
-    name: ft_transcendence_alertmanager_data
   

@@ -1,8 +1,8 @@
 global:
-  scrape_interval: 15s
+  scrape_interval: 5s
 
 scrape_configs:
-  - job_name: 'fastify-app'
+  - job_name: 'fastify-app: backend + database'
     scheme: https
     static_configs:
       - targets: ['nginx:8080']
@@ -10,7 +10,7 @@ scrape_configs:
     tls_config:
       insecure_skip_verify: true
   
-  - job_name: 'prometheus'
+  - job_name: 'prometheus: monitoring'
     scheme: https
     static_configs:
       - targets: ['nginx:9090']
@@ -18,7 +18,7 @@ scrape_configs:
     tls_config:
       insecure_skip_verify: true
 
-  - job_name: 'node'
+  - job_name: 'node-exporter: host/system'
     scheme: https
     static_configs:
       - targets: ['nginx:9101']
