@@ -20,11 +20,11 @@ groups:
       #     description: "The instance has not responded for more than 1 minute."
       
       - alert: TooManyUsers
-        expr: sqlite_user_count > 102
+        expr: sqlite_user_count > 1
         for:  15s
         labels:
           severity: warning
         annotations:
           summary: "High User Count"
-          description: "There are more than 102 users in the database."
+          description: "There are more than 1 users in the database."
         

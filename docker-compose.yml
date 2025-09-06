@@ -5,8 +5,6 @@ services:
       dockerfile: ./backend/Dockerfile
     env_file:
       - ./backend/.env
-    environment:
-      - NODE_ENV=development
     networks:
       - monitoring
 
