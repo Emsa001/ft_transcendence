@@ -7,8 +7,6 @@ import { FriendRequests } from "./FriendRequests";
 import { useLanguage } from "@features/language/model/useLanguage";
 import { useWebSocket } from "@shared/hooks/useWebSocket";
 
-let ws: WebSocket | undefined;
-
 export const Friends = () => {
     const [friends, setFriends] = useState<UserDTOType[]>([]);
     const [friendRequests, setFriendRequests] = useState<UserDTOType[]>([]);
