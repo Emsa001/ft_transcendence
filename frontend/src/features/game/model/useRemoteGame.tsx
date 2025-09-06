@@ -85,7 +85,7 @@ export const RemoteGameProvider = ({
 
     const frameRef = useRef<GameFrame | null>(null);
 
-    const { messages } = useGameMessages();
+    const { messages, showMessage } = useGameMessages();
     const { addHook, sendMessage } = useWebSocket(`/game/join/${code}`);
 
     useGameKeys({
@@ -133,7 +133,7 @@ export const RemoteGameProvider = ({
             }
 
             case "GAME_MESSAGE": {
-                messages.current = payload.message;
+                showMessage({ message: payload.message });
                 break;
             }
 

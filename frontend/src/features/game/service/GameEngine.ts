@@ -1,10 +1,15 @@
 import { clamp, set } from "lodash";
 import { GameRenderer } from "./GameRender";
-import { Ball, GameUserDTOType, Paddle } from "shared";
+import {
+    Ball,
+    GameEngineType,
+    GameEvents,
+    GameUserDTOType,
+    Paddle,
+} from "shared";
 import { aiEngine } from "./AiEngine";
-import { gameEvents } from "./GameEvents";
 
-export class GameEngine {
+export class GameEngine implements GameEngineType {
     ball: Ball;
     paddles: Record<number, Paddle>;
     aiPaddle?: boolean;
@@ -21,6 +26,8 @@ export class GameEngine {
     readonly paddleSpeed = 9;
     readonly paddlePadding = 40;
 
+    private gameEvents;
+
     constructor() {
         this.ball = {
             pos: { x: -10, y: -10 },
@@ -29,6 +36,7 @@ export class GameEngine {
             speed: this.defaultBallSpeed,
         };
         this.paddles = {};
+        this.gameEvents = new GameEvents(this);
         console.log("GameEngine created");
     }
 
@@ -110,7 +118,7 @@ export class GameEngine {
     update(): void {
         if (this.stopped) return;
 
-        if (this.randomEvents) gameEvents.tryEvent(this);
+        if (this.randomEvents) this.gameEvents.tryEvent();
 
         this.updatePaddles();
         this.updateBall();
@@ -181,11 +189,11 @@ export class GameEngine {
         const { baseW } = GameRenderer;
         const paddleIds = Object.keys(this.paddles).map(Number);
         if (this.ball.pos.x < -20) {
+            this.gameEvents.reset();
             this.onScore?.(paddleIds[1]); // Right player scores
-            gameEvents.reset(this);
         } else if (this.ball.pos.x > baseW + 20) {
+            this.gameEvents.reset();
             this.onScore?.(paddleIds[0]); // Left player scores
-            gameEvents.reset(this);
         }
     }
 }

@@ -3,7 +3,6 @@ import { GameMessage, MessageData } from "shared";
 
 interface showMessageProps {
     message: MessageData;
-    duration?: number;
     after?: () => void;
 }
 
@@ -15,13 +14,13 @@ export const useGameMessages = () => {
     const messageTimeoutRef = useRef<NodeJS.Timeout | null>(null);
     const countdownTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-    const showMessage = ({ message, duration, after }: showMessageProps) => {
+    const showMessage = ({ message, after }: showMessageProps) => {
         messages.current = message;
         if (messageTimeoutRef.current) clearTimeout(messageTimeoutRef.current);
         messageTimeoutRef.current = setTimeout(() => {
             messages.current = null;
             after?.();
-        }, duration);
+        }, message?.duration || 1000);
     };
 
     const startCountdown = (): Promise<void> =>
