@@ -1,10 +1,10 @@
-import React, { useEffect, useNavigate } from "react";
+import React, { useEffect, useNavigate, useState } from "react";
 import { ContactInfo } from "@features/profile/ui/ContactInfo";
 import { UserInfo } from "@features/profile/ui/UserInfo";
 import { Stats } from "@features/profile/ui/Stats";
 import { Friends } from "@features/profile/ui/friends/Friends";
-import { BlockedUsers } from "@features/profile/ui/BlockedUsers";
 import { useUser } from "@features/auth/model/useUser";
+import { PlayerGameHistory } from "@features/user/ui/PlayerGameHistory";
 
 export const Profile = () => {
     const { user, loading } = useUser();
@@ -38,7 +38,7 @@ export const Profile = () => {
                             <Friends />
                         </div>
                         <div className="bg-gray-800/50 rounded-lg p-6 shadow-lg w-full md:w-1/2 flex flex-col">
-                            <BlockedUsers />
+                            <PlayerGameHistory userId={user?.id} />
                         </div>
                     </div>
                 </div>

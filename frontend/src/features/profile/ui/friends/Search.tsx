@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useNavigate, useState } from "react";
 import { UserDTOType } from "shared";
 import FriendsApi from "../../../user/service/friendsApi";
 import { UserPicture } from "@features/user/ui/UserPicture";
@@ -20,6 +20,8 @@ export function SearchModal({ onClose, isOpen }: SearchModalProps) {
     const [sentRequests, setSentRequests] = useState<UserDTOType[]>([]);
     const { getText } = useLanguage();
     const texts = getText("profile.friends");
+
+    const navigate = useNavigate();
 
     if (!user) return <div />;
 
@@ -93,13 +95,14 @@ export function SearchModal({ onClose, isOpen }: SearchModalProps) {
                                             key={user.id}
                                             className="flex items-center justify-between gap-3 py-2 px-3 bg-gray-700/60 hover:bg-gray-700 mb-2 rounded-lg transition"
                                         >
-                                            <div className="flex items-center gap-3">
+                                            <div className="group flex items-center gap-3">
                                                 <UserPicture
                                                     userId={user.id}
                                                     size={8} 
                                                     className="w-9 h-9 rounded-full"
                                                 />
-                                                <span className="font-medium text-gray-200">
+                                                <span className="font-medium text-gray-200 group-hover:underline group-hover:cursor-pointer"
+                                                    onClick={() => navigate(`/profile/${user.id}`)}>
                                                     {user.username}
                                                 </span>
                                             </div>

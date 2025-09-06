@@ -9,6 +9,7 @@ import { useLanguage } from "@features/language/model/useLanguage";
     usage: <GameHistory userId={1} /> // will fetch and display game history for user with ID 1
 */
 
+
 export const PlayerGameHistory = ({ userId }: { userId: string | number }) => {
     const { fetchGameHistory, loading, error } = useStats();
     const [gameHistory, setGameHistory] = useState<GameDTOType[]>([]);
@@ -44,7 +45,7 @@ export const PlayerGameHistory = ({ userId }: { userId: string | number }) => {
             <h2 className="text-xl font-bold mb-4 border-b border-gray-700 pb-2">
                 Game History
             </h2>
-            <div className="h-124 overflow-y-auto rounded-lg scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-800">
+            <div className="max-h-140 min-h-55 overflow-y-auto rounded-lg scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-gray-800">
                 {gameHistory.map((game) => (
                     <GameCard key={game.id} game={game} />
                 ))}
@@ -57,7 +58,7 @@ const GameCard = ({ game }: { game: GameDTOType }) => {
     const winner = game.winner ||  "No Winner";
 
     return (
-            <div className="bg-gray-700/50 rounded-lg pl-2">
+            <div className="bg-gray-700/50 rounded-lg pl-2 my-2">
                 <GameHeader winner={winner} date={game.createdAt} />
                 <div className="flex items-center justify-evenly p-2">
                     {game.players.map((player) => (

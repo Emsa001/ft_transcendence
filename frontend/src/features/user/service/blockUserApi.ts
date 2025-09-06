@@ -15,11 +15,13 @@ class BlockUserApi extends APIService {
         }
     }
 
-    async blockUser(userId: number): Promise<void> {
+    async blockUser(userId: number): Promise<boolean> {
         try {
             await this.api.post(`/block/${userId}`);
+            return true;
         } catch (error: any) {
             Toast.error(error.response.data.message);
+            return false;
         }
     }
 
@@ -28,6 +30,16 @@ class BlockUserApi extends APIService {
             await this.api.post(`/unblock/${userId}`);
         } catch (error) {
             console.error("Error unblocking user:", error);
+            return Promise.reject(error);
+        }
+    }
+
+    async amIBlockedByUser(userId: number): Promise<boolean> {
+        try {
+            const response = await this.api.get(`/blocked/${userId}`);
+            return response.data;
+        } catch (error) {
+            console.error("Error checking if user is blocked:", error);
             return Promise.reject(error);
         }
     }
