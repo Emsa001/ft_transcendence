@@ -14,7 +14,8 @@ interface TwoFaModalProps {
 type Mode = "versus" | "ai_easy" | "ai_hard" | "ai_impossible";
 
 export function OptionsModal({ modalOpen, setModalOpen }: TwoFaModalProps) {
-    const { state, setPlayers } = useGame();
+    const { state, maxScore, setMaxScore, setPlayers } = useGame();
+
     const [selectedMode, setSelectedMode] = useState<Mode | null>(null);
 
     const isRunning = state != "created" && state != "finished";
@@ -72,7 +73,7 @@ export function OptionsModal({ modalOpen, setModalOpen }: TwoFaModalProps) {
                         Game Options
                     </h2>
 
-                    <div className="flex flex-col gap-3">
+                    <div className="flex flex-col gap-3 mb-2">
                         <button
                             onClick={() => handleChange("versus")}
                             className={buttonClasses("versus")}
@@ -102,8 +103,24 @@ export function OptionsModal({ modalOpen, setModalOpen }: TwoFaModalProps) {
                         </button>
                     </div>
 
-                    <div className="mt-6 flex items-center justify-between">
-                        <span className="text-pink-300 font-medium">
+                    <div>
+                        <h3 className="text-lg font-semibold text-pink-400 mb-2">
+                            Max Score
+                        </h3>
+                        <input
+                            type="number"
+                            min="1"
+                            max="21"
+                            value={maxScore}
+                            onChange={(e: any) =>
+                                setMaxScore(Number(e.target.value))
+                            }
+                            className="w-full px-4 py-2 rounded-xl border border-gray-700 bg-gray-800 text-white"
+                        />
+                    </div>
+
+                    <div className="mt-4 flex items-center justify-between">
+                        <span className="text-lg font-semibold text-pink-400 mb-2">
                             Random Events
                         </span>
                         <label className="relative inline-flex items-center cursor-pointer">
@@ -112,7 +129,7 @@ export function OptionsModal({ modalOpen, setModalOpen }: TwoFaModalProps) {
                                 onChange={handleRandomEvent}
                                 className="sr-only peer"
                             />
-                            <div className="w-11 h-6 bg-purple-800 peer-focus:outline-none rounded-full peer peer-checked:bg-pink-600 transition-all"></div>
+                            <div className="w-11 h-6 bg-gray-700 peer-focus:outline-none rounded-full peer peer-checked:bg-pink-600 transition-all"></div>
                             <div className="absolute left-0.5 top-0.5 w-5 h-5 bg-white rounded-full shadow-md transform transition-all peer-checked:translate-x-5"></div>
                         </label>
                     </div>
