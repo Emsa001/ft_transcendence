@@ -2,11 +2,10 @@ import { User } from "@/database/models/User/User";
 import { HttpException } from "@/utils/exceptions";
 import { UserFriends } from "@/database/models/User/UserFriends";
 import { Op } from "sequelize";
-import { BlockedUsers } from "@/database/models/User/BlockedUsers";
 import { BlockUserService } from "@/modules/user/services/user.block";
 
 export class FriendsService {
-    static async getFriendship(id1: number, id2: number) {
+    static async getFriendship(id1: number, id2: number, acceptedOnly = true) {
         if ((await User.findByPk(id2)) === null) {
             throw new HttpException(404, "User not found");
         }
@@ -16,7 +15,7 @@ export class FriendsService {
                     { userId1: id1, userId2: id2 },
                     { userId1: id2, userId2: id1 },
                 ],
-                accepted: true,
+                accepted: acceptedOnly,
             },
         });
         return friendship;
@@ -37,8 +36,11 @@ export class FriendsService {
             );
         }
 
-        if (await this.getFriendship(userId1, userId2)) {
-            throw new HttpException(409, "You are already friends");
+        if (await this.getFriendship(userId1, userId2, false)) {
+            throw new HttpException(
+                409,
+                "You are already friends or have a pending request"
+            );
         }
 
         const friendship = await UserFriends.create({ userId1, userId2 });

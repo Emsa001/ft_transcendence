@@ -140,6 +140,16 @@ export class UserController extends BaseController {
         return reply.send(blockedUsers);
     }
 
+    @GET("/blocked/:id")
+    @AUTHORIZED
+    async isUserBlocked(request: FastifyRequest, reply: FastifyReply) {
+        const { id } = request.params as { id: number };
+
+        const blocked = await request.user.isUserBlocked(id);
+        console.log("isUserBlocked:", blocked); // Debug log
+        return reply.send(blocked);
+    }
+
     @POST("/block/:id")
     @AUTHORIZED
     async blockUser(request: FastifyRequest, reply: FastifyReply) {

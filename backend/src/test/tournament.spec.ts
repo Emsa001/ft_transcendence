@@ -1,7 +1,8 @@
 import { startClean } from "@/database/client";
-import { Op, Sequelize } from "sequelize";
+import { Sequelize } from "sequelize";
 import { UserGenerate } from "@/database/models/User/UserGenerate";
 import { Tournament } from "@/database/models/Tournaments/Tournament";
+import { GameStatus } from "shared";
 
 describe("Tournament Tests", () => {
     let sequelize: Sequelize;
@@ -37,6 +38,10 @@ describe("Tournament Tests", () => {
 
         await tournament.start();
 
+        const games = await tournament.getGames();
+        expect(tournament.status).toBe("in_progress");
+        expect(games.length).toBe(9);
+
         const round1 = await tournament.startRound();
         expect(round1.length).toBe(2);
         await tournament.exampleRoundFlow();
@@ -55,143 +60,126 @@ describe("Tournament Tests", () => {
         const final = await tournament.startRound();
         expect(final.length).toBe(1);
         await tournament.exampleRoundFlow();
-
-        const games = await tournament.getGames();
-        expect(games.length).toBe(9);
     });
 
-    // it("should create games and assign players for each round", async () => {
-    //     const tournament = await Tournament.create({ maxPlayers: 10 });
-    //     for (let i = 0; i < 10; i++) {
-    //         const user = await UserGenerate.createExample();
-    //         await tournament.addPlayer(user);
-    //     }
+    it("should create games and assign players for each round", async () => {
+        const tournament = await Tournament.create({ maxPlayers: 10 });
+        for (let i = 0; i < 10; i++) {
+            const user = await UserGenerate.createExample();
+            await tournament.addPlayer(user);
+        }
 
-    //     await tournament.start();
+        await tournament.start();
 
-    //     // round 1: 2 games
-    //     // round 2: 4 games
-    //     // round 3: 2 games
-    //     // final: 1 game
+        // round 1: 2 games
+        // round 2: 4 games
+        // round 3: 2 games
+        // final: 1 game
 
-    //     // Round 1
-    //     const round1 = await tournament.startRound();
-    //     expect(round1.length).toBe(2);
-    //     await tournament.exampleRoundFlow();
+        // Round 1
+        const round1 = await tournament.startRound();
+        expect(round1.length).toBe(2);
+        await tournament.exampleRoundFlow();
 
-    //     // Round 2
-    //     const round2 = await tournament.startRound();
-    //     expect(round2.length).toBe(4);
-    //     await tournament.exampleRoundFlow();
+        // Round 2
+        const round2 = await tournament.startRound();
+        expect(round2.length).toBe(4);
+        await tournament.exampleRoundFlow();
 
-    //     // Round 3
-    //     const round3 = await tournament.startRound();
-    //     expect(round3.length).toBe(2);
-    //     await tournament.exampleRoundFlow();
+        // Round 3
+        const round3 = await tournament.startRound();
+        expect(round3.length).toBe(2);
+        await tournament.exampleRoundFlow();
 
-    //     // Final
-    //     const final = await tournament.startRound();
-    //     expect(final.length).toBe(1);
-    //     await tournament.exampleRoundFlow();
-    // });
+        // Final
+        const final = await tournament.startRound();
+        expect(final.length).toBe(1);
+        await tournament.exampleRoundFlow();
+    });
 
-    // it("should declare winner and all eliminated players", async () => {
-    //     const tournament = await Tournament.create({ maxPlayers: 8 });
-    //     for (let i = 0; i < 8; i++) {
-    //         const user = await UserGenerate.createExample();
-    //         await tournament.addPlayer(user);
-    //     }
+    it("should declare winner and all eliminated players", async () => {
+        const tournament = await Tournament.create({ maxPlayers: 8 });
+        for (let i = 0; i < 8; i++) {
+            const user = await UserGenerate.createExample();
+            await tournament.addPlayer(user);
+        }
 
-    //     await tournament.start();
+        await tournament.start();
 
-    //     while (tournament.status === GameStatus.IN_PROGRESS) {
-    //         await tournament.startRound();
-    //         await tournament.exampleRoundFlow();
-    //     }
+        while (tournament.status === GameStatus.IN_PROGRESS) {
+            await tournament.startRound();
+            await tournament.exampleRoundFlow();
+        }
 
-    //     const eliminatedPlayers = (await tournament.getPlayers()).filter(
-    //         (player) => player.TournamentUser.eliminated
-    //     );
+        const eliminatedPlayers = (await tournament.getPlayers()).filter(
+            (player) => player.TournamentUser.eliminated
+        );
 
-    //     expect(eliminatedPlayers.length).toBe(7);
+        expect(eliminatedPlayers.length).toBe(7);
 
-    //     const winner = tournament.winnerId;
-    //     const winnerGames = await tournament.getGames({
-    //         where: {
-    //             winnerId: winner,
-    //         },
-    //     });
+        const winner = tournament.winnerId;
+        const winnerGames = await tournament.getGames({
+            where: {
+                winnerId: winner,
+            },
+        });
 
-    //     expect(winner).not.toBeNull();
-    //     expect(winnerGames.length).toBe(3);
-    //     expect(tournament.status).toBe(GameStatus.FINISHED);
-    // });
+        expect(winner).not.toBeNull();
+        expect(winnerGames.length).toBe(3);
+        expect(tournament.status).toBe(GameStatus.FINISHED);
+    });
 
-    // it("should handle tournament with insufficient players", async () => {
-    //     const tournament = await Tournament.create({ maxPlayers: 2 });
-    //     const user1 = await UserGenerate.createExample();
-    //     await tournament.addPlayer(user1);
+    it("should handle tournament with insufficient players", async () => {
+        const tournament = await Tournament.create({ maxPlayers: 2 });
+        const user1 = await UserGenerate.createExample();
+        await tournament.addPlayer(user1);
 
-    //     await expect(tournament.start()).rejects.toThrow(
-    //         "Not enough players to start a tournament"
-    //     );
+        await expect(tournament.start()).rejects.toThrow(
+            "Not enough players to start a tournament"
+        );
 
-    //     const players = await tournament.getPlayers();
-    //     expect(players.length).toBe(1);
-    // });
+        const players = await tournament.getPlayers();
+        expect(players.length).toBe(1);
+    });
 
-    // it("should handle tournament with too many players", async () => {
-    //     const tournament = await Tournament.create({ maxPlayers: 4 });
-    //     for (let i = 0; i < 4; i++) {
-    //         const user = await UserGenerate.createExample();
-    //         await tournament.addPlayer(user);
-    //     }
+    it("should handle tournament with too many players", async () => {
+        const tournament = await Tournament.create({ maxPlayers: 4 });
+        for (let i = 0; i < 4; i++) {
+            const user = await UserGenerate.createExample();
+            await tournament.addPlayer(user);
+        }
 
-    //     const user5 = await UserGenerate.createExample();
-    //     await expect(tournament.addPlayer(user5)).rejects.toThrow(
-    //         "Maximum number of players reached"
-    //     );
+        const user5 = await UserGenerate.createExample();
+        await expect(tournament.addPlayer(user5)).rejects.toThrow(
+            "Maximum number of players reached"
+        );
 
-    //     const players = await tournament.getPlayers();
-    //     expect(players.length).toBe(4);
-    // });
+        const players = await tournament.getPlayers();
+        expect(players.length).toBe(4);
+    });
 
-    // it("should handle a lot of players in a tournament", async () => {
-    //     const tournament = await Tournament.create({ maxPlayers: 64 });
-    //     for (let i = 0; i < 64; i++) {
-    //         const user = await UserGenerate.createExample();
-    //         await tournament.addPlayer(user);
-    //     }
+    it("should handle a lot of players in a tournament", async () => {
+        const tournament = await Tournament.create({ maxPlayers: 64 });
+        for (let i = 0; i < 64; i++) {
+            const user = await UserGenerate.createExample();
+            await tournament.addPlayer(user);
+        }
 
-    //     const players = await tournament.getPlayers();
+        const players = await tournament.getPlayers();
 
-    //     expect(players.length).toBe(64);
-    //     expect(tournament.status).toBe(GameStatus.WAITING);
+        expect(players.length).toBe(64);
+        expect(tournament.status).toBe(GameStatus.WAITING);
 
-    //     await tournament.start();
-    //     expect(tournament.status).toBe(GameStatus.IN_PROGRESS);
+        await tournament.start();
+        expect(tournament.status).toBe(GameStatus.IN_PROGRESS);
 
-    //     while (tournament.status === GameStatus.IN_PROGRESS) {
-    //         await tournament.startRound();
-    //         await tournament.exampleRoundFlow();
-    //     }
+        while (tournament.status === GameStatus.IN_PROGRESS) {
+            await tournament.startRound();
+            await tournament.exampleRoundFlow();
+        }
 
-    //     expect(tournament.round).toBe(6);
-    //     expect(tournament.status).toBe(GameStatus.FINISHED);
-    //     expect(tournament.winnerId).not.toBeNull();
-    // });
-
-    // it("should prevent creating round when current round not finished", async () => {
-    //     const tournament = await Tournament.create({ maxPlayers: 8 });
-    //     for (let i = 0; i < 8; i++) {
-    //         const user = await UserGenerate.createExample();
-    //         await tournament.addPlayer(user);
-    //     }
-
-    //     await tournament.start();
-    //     await tournament.startRound();
-    //     await expect(tournament.startRound()).rejects.toThrow(
-    //         "Current round is not finished yet"
-    //     );
-    // });
+        expect(tournament.round).toBe(6);
+        expect(tournament.status).toBe(GameStatus.FINISHED);
+        expect(tournament.winnerId).not.toBeNull();
+    });
 });

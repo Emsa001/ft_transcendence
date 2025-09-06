@@ -1,6 +1,12 @@
 import { AxiosResponse } from "axios";
 import { APIService } from "@shared/lib/api";
-import { GameDTOType, GameHistoryFilter, GetStatisticsResponse } from "shared";
+import {
+    GameDTOType,
+    GameHistory,
+    GameHistoryFilter,
+    GetStatisticsResponse,
+    TournamentDTOType,
+} from "shared";
 
 class StatsApiService extends APIService {
     /**
@@ -19,8 +25,8 @@ class StatsApiService extends APIService {
     async getUserGameHistory(
         userId: string | number,
         options?: GameHistoryFilter
-    ): Promise<GameDTOType[]> {
-        const response: AxiosResponse<GameDTOType[]> = await this.api.get(
+    ): Promise<GameHistory> {
+        const response: AxiosResponse<GameHistory> = await this.api.get(
             `/${userId}/history`,
             { params: options }
         );

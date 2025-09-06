@@ -8,11 +8,11 @@ export const PlayerCard = ({ player }: { player: GameUserDTOType }) => {
     const navigate = useNavigate();
 
     return (
-        <div className="flex items-center justify-center w-full m-1 p-1 bg-gray-700/50 rounded-lg">
+        <div className="group flex items-center justify-center w-full m-1 p-1 bg-gray-700/50 rounded-lg">
             <UserPicture userId={player.id} size={8} />
             <div className="ml-3 ">
                 <button
-                    className="font-semibold hover:underline cursor-pointer"
+                    className="font-semibold group-hover:underline cursor-pointer"
                     onClick={() => navigate(`/profile/${player.username}`)}
                 >
                     {player.username}

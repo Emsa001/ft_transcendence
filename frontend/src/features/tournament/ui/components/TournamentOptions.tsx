@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useLocalTournament } from "../../model/useLocalTournament";
 
 function TournamentOptions() {
-    const { randomEvents, setRandomEvents, setMaxScore } = useLocalTournament();
+    const { setRandomEvents, setMaxScore } = useLocalTournament();
     const [isEnabled, setIsEnabled] = useState(false);
 
     const handleMaxScoreChange = (e: any) => {

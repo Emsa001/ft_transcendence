@@ -102,9 +102,7 @@ describe("Game Tests", () => {
         await game.playerScore(user3.id, 15);
         await game.playerScore(user4.id, 5);
 
-        game.status = GameStatus.FINISHED;
-
-        await game.save();
+        await game.end();
 
         expect(game.winnerId).toBe(user2.id);
     });

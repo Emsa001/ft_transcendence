@@ -150,6 +150,7 @@ export class TournamentCreationService {
             startedGames.push(game);
         }
 
+        console.log("Started games:", startedGames.length);
         return startedGames;
     }
 }

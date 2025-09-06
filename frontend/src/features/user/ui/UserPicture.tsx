@@ -34,7 +34,7 @@ export const UserPicture = ({ userId, className, size }: UserPictureProps) => {
     return (
         <button
             onClick={() => navigate(`/profile/${user?.username}`)}
-            className="focus:outline-none rounded-full hover:shadow-[0_0_8px_rgba(0,255,255,0.7)]"
+            className="focus:outline-none rounded-full hover:shadow-[0_0_8px_rgba(0,255,255,0.7)] group-hover:shadow-[0_0_8px_rgba(0,255,255,0.7)]"
         >
             {user && user.avatar ? (
                 <img
