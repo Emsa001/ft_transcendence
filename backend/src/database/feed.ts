@@ -15,8 +15,7 @@ export class DatabaseExampleFeed {
 
         console.log("Feeding database with example data...");
         await this.createExampleUsers(users);
-        // await this.createExampleGames(games);
-        // await this.assignGamesToUsers();
+        await this.createExampleGames(games);
         await this.createExampleTournament();
         console.log("Database example data created successfully.");
     }
@@ -30,12 +29,12 @@ export class DatabaseExampleFeed {
     static async createExampleGames(games: number): Promise<void> {
         const modes = Object.values(GameMode);
 
-        // for (let i = 0; i < games; i++) {
-        //     const mode = modes[Math.floor(Math.random() * modes.length)];
-        //     await Game.create({
-        //         mode,
-        //     });
-        // }
+        for (let i = 0; i < games; i++) {
+            const mode = modes[Math.floor(Math.random() * modes.length)];
+            await Game.create({
+                mode,
+            });
+        }
     }
 
     static async assignGamesToUsers(): Promise<void> {
