@@ -5,11 +5,14 @@ import { GameJoiningModal } from "../remote/GameJoin";
 import { GameCreationRequest } from "shared";
 import { useGameLobby } from "@features/game/model/useGameLobby";
 import GameApi from "../../service/GameApi";
+import { useLanguage } from "@features/language/model/useLanguage";
 
 export const GameLobby = () => {
     const navigate = useNavigate();
     const { isConnected, isLoading, games, modal, setModal, sendMessage } =
         useGameLobby();
+    const { getText } = useLanguage();
+    const text = getText("remoteCasual");
 
     const handleCreateGame = async (data: GameCreationRequest) => {
         try {
@@ -35,16 +38,16 @@ export const GameLobby = () => {
     return (
         <div className="w-full h-full flex flex-col items-center justify-center gap-12">
             <ShinyText
-                text="Remote Casual"
+                text={text.remoteCasual}
                 gradient="bg-logo-gradient"
                 className="text-6xl font-extrabold text-center mb-6"
             />
 
             {!isLoading && !isConnected && (
                 <div className="text-red-500 font-semibold">
-                    Disconnected from server.
+                    {text.disconnected}
                     <br />
-                    Trying to reconnect...
+                    {text.tryingToReconnect}
                 </div>
             )}
 
@@ -60,11 +63,11 @@ export const GameLobby = () => {
                                 : "bg-gray-700/40 text-gray-400 cursor-not-allowed"
                         }`}
                 >
-                    Play Random
+                    {text.playRandom}
                     <span className="mt-2 text-sm opacity-80">
                         {games > 0
-                            ? `${games} game${games > 1 ? "s" : ""} available`
-                            : "No games"}
+                            ? `${games} ${text.game} ${games > 1 ? "s" : ""} ${text.available}`
+                            : text.noGames}
                     </span>
                     {games > 0 && (
                         <span className="absolute top-4 right-4 px-3 py-1 text-xs font-bold rounded-full bg-fuchsia-500 text-white shadow">
@@ -78,7 +81,7 @@ export const GameLobby = () => {
                     onClick={() => setModal("creating")}
                     className="h-64 w-64 rounded-2xl font-semibold text-xl bg-emerald-200/10 hover:bg-emerald-300/10 text-white shadow-lg transition flex items-center justify-center"
                 >
-                    Create A Game
+                    {text.createGame}
                 </button>
 
                 {/* Join With Code */}
@@ -86,7 +89,7 @@ export const GameLobby = () => {
                     onClick={() => setModal("joining")}
                     className="h-64 w-64 rounded-2xl font-semibold text-xl bg-indigo-200/10 hover:bg-indigo-300/10 text-white shadow-lg transition flex items-center justify-center"
                 >
-                    Join With Code
+                    {text.joinWithCode}
                 </button>
             </div>
 
