@@ -107,7 +107,7 @@ export default {
         continueWithGoogle: "Let Google Own You",
     },
     charts: {
-        transcendencePlayer: "Transcendence • Wannabe Gamer",
+        transcendencePlayer: "Transcendence • 'Gamer'",
         games: "Games You Barely Played",
         wins: "Accidental Wins",
         losses: "Epic Fails",
