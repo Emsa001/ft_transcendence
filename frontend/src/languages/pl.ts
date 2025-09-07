@@ -18,6 +18,7 @@ export default {
         profile: "Profil",
         chat: "Czat",
         play: "Graj",
+        stats: "Statystyki",
     },
     chat: {
         friends: "Przyjaciele",

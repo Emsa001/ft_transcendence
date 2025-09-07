@@ -18,6 +18,7 @@ export default {
         profile: "Your Sad Profile",
         chat: "Attention seeker",
         play: "Be nerd",
+        stats: "Your Numbers",
     },
     chat: {
         friends: "People Who Tolerate You",

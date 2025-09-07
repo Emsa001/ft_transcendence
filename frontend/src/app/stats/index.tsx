@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useNavigate, useState } from "react";
 import FriendsApi from "@features/user/service/friendsApi";
 import { UserDTOType } from "shared/dist";
 import { useStats } from "@features/user/model/useStats";
@@ -9,10 +9,14 @@ import { StatsCard } from "@features/stats/ui/Stats";
 
 export default function StatsDashboard({ id }: { id?: string }) {
     const { stats, history, fetchGameHistory, fetchUserStats } = useStats();
-    const [user, setUser] = useState<UserDTOType | null>(null);
+    const [statsUser, setStatsUser] = useState<UserDTOType | null>(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
-        if (!id) return;
+        if (!id) {
+            navigate("/");
+            return;
+        }
         let mounted = true;
         (async () => {
             try {
@@ -20,7 +24,7 @@ export default function StatsDashboard({ id }: { id?: string }) {
                 if (!mounted) return;
                 fetchUserStats(id);
                 fetchGameHistory(id);
-                setUser(newUser);
+                setStatsUser(newUser);
             } catch (err) {
                 console.error(err);
             }
@@ -30,19 +34,23 @@ export default function StatsDashboard({ id }: { id?: string }) {
         };
     }, [id]);
 
-    if (!id || !user || !stats) return <div />;
+    if (!id || !statsUser || !stats) return <div />;
 
     return (
         <div className="text-white p-6 lg:p-12 max-h-screen overflow-auto">
             <div className="max-w-6xl mx-auto space-y-8">
                 {/* Header */}
-                <Head user={user} />
+                <Head user={statsUser} />
 
                 {/* Stats cards */}
                 <StatsCard allStats={stats} />
 
                 {/* Charts */}
-                <Charts allStats={stats} games={history.games} user={user} />
+                <Charts
+                    allStats={stats}
+                    games={history.games}
+                    user={statsUser}
+                />
 
                 {/* Match history */}
                 <MatchHistory games={history.games} />
