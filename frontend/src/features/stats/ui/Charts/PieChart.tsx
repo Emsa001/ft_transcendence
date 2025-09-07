@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import Chart from "chart.js/auto";
 import { GameDTOType, GetStatisticsResponse, UserDTOType } from "shared/dist";
+import { useLanguage } from "@features/language/model/useLanguage";
 
 const PIE_CHART_BASE = {
     type: "doughnut" as const,
@@ -22,8 +23,8 @@ const PIE_CHART_BASE = {
     },
 };
 
-const DATA = (wins: number, losses: number) => ({
-    labels: ["Wins", "Losses"],
+const DATA = (wins: number, losses: number, labels: string[]) => ({
+    labels: labels,
     datasets: [
         {
             data: [wins, losses],
@@ -34,8 +35,8 @@ const DATA = (wins: number, losses: number) => ({
     ],
 });
 
-const NO_DATA = {
-    labels: ["No Data"],
+const NO_DATA = (labels: string[]) => ({
+    labels: labels,
     datasets: [
         {
             data: [1],
@@ -44,7 +45,7 @@ const NO_DATA = {
             borderColor: "#2a2045",
         },
     ],
-};
+});
 
 function getAllGamesCount(
     games: GameDTOType[],
@@ -83,6 +84,8 @@ export function PieChart({ stats, games, user }: PieChartProps) {
     const casualChartRef = useRef<HTMLCanvasElement | null>(null);
     const randomChartRef = useRef<HTMLCanvasElement | null>(null);
     const chartInstances = useRef<Chart[]>([]);
+    const { getText } = useLanguage();
+    const text = getText("charts");
 
     useEffect(() => {
         // Destroy old charts on cleanup before creating new ones
@@ -101,7 +104,9 @@ export function PieChart({ stats, games, user }: PieChartProps) {
 
             const chart = new Chart(ctx, {
                 ...PIE_CHART_BASE,
-                data: empty ? NO_DATA : DATA(wins, losses),
+                data: empty
+                    ? NO_DATA([text.noData])
+                    : DATA(wins, losses, [text.wins, text.losses]),
             });
             chartInstances.current.push(chart);
         }
@@ -163,11 +168,13 @@ export function PieChart({ stats, games, user }: PieChartProps) {
             chartInstances.current.forEach((chart) => chart.destroy());
             chartInstances.current = [];
         };
-    }, [stats, games]);
+    }, [stats, games, text]);
 
     return (
         <div className="glass-panel p-4 rounded-2xl">
-            <h2 className="mb-3 font-semibold text-white">Win / Loss Ratio</h2>
+            <h2 className="mb-3 font-semibold text-white">
+                {text.winLossRatio}
+            </h2>
             <div className="grid grid-cols-2 gap-4 mb-4">
                 {/* Big overall chart */}
                 <div
@@ -183,7 +190,7 @@ export function PieChart({ stats, games, user }: PieChartProps) {
                     style={{ position: "relative", height: "100px" }}
                 >
                     <h3 className="text-center text-sm text-white mb-2">
-                        Casual
+                        {text.casual}
                     </h3>
                     <canvas ref={casualChartRef}></canvas>
                 </div>
@@ -194,7 +201,7 @@ export function PieChart({ stats, games, user }: PieChartProps) {
                     style={{ position: "relative", height: "100px" }}
                 >
                     <h3 className="text-center text-sm text-white mb-2">
-                        Random Events
+                        {text.randomEvents}
                     </h3>
                     <canvas ref={randomChartRef}></canvas>
                 </div>
