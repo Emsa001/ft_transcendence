@@ -35,12 +35,12 @@ export const TournamentCreate = () => {
     };
 
     return (
-        <div className="absolute right-4">
+        <div className="align-middle text-center">
             <button
-                onClick={() => setIsOpen(true)}
-                className="px-3 py-2 rounded-2xl font-semibold bg-emerald-200/10 hover:bg-emerald-300/10 text-white shadow-lg transition"
+            onClick={() => setIsOpen(true)}
+            className="px-8 py-6 rounded-3xl font-bold bg-emerald-500/30 hover:bg-emerald-400/20 text-white shadow-xl transition text-xl"
             >
-                Create Tournament
+            Create Tournament
             </button>
             <Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
                 <div className="text-center mb-6">
