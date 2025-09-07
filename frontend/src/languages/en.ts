@@ -1,5 +1,3 @@
-import { random } from "lodash";
-
 export default {
     landScreen: {
         label: "ft_transcendence",
@@ -109,7 +107,7 @@ export default {
         continueWithGoogle: "Continue with Google",
     },
     charts: {
-        transcendencePlayer: "Transcendence • Player'",
+        transcendencePlayer: "Transcendence • 'Player'",
         games: "Games",
         wins: "Wins",
         losses: "Losses",
