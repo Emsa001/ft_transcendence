@@ -27,7 +27,7 @@ export function StatsCard({ allStats }: { allStats: GetStatisticsResponse }) {
                     <Icon icon={FaAward} className="text-white w-8 h-8" />
                 </div>
                 <div>
-                    <div className="text-xs text-purple-200">wins</div>
+                    <div className="text-xs text-purple-200">Wins</div>
                     <div className="text-2xl font-bold">{stats.wins}</div>
                 </div>
             </div>

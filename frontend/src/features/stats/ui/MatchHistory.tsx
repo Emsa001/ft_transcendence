@@ -1,4 +1,4 @@
-import { getTime } from "@shared/lib/utisl";
+import { getTime } from "@shared/lib/utils";
 import React from "react";
 import { GameDTOType, GameUserDTOType } from "shared/dist";
 import { FaRegClock } from "react-icons/fa";

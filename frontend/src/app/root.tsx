@@ -41,7 +41,7 @@ export default function Root() {
             <BrowserRouter>
                 <Router src="/" component={<Home />} default />
                 <Router src="/auth" component={<Auth />} />
-                <Router src="/stats/:id?" component={<Stats />} />"
+                <Router src="/stats/:id?" component={<Stats />} />
                 <Router src="/profile" component={<Profile />} />
                 <Router src="/profile/:username?" component={<User />} />
                 <Router src="/chat/:userId?" component={<Chat />} />

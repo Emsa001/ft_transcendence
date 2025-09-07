@@ -5,7 +5,7 @@ import { PlayerCard } from "./PlayerCard";
 import { FaCrown } from "react-icons/fa";
 import { Icon } from "@shared/components/Icon";
 import { useLanguage } from "@features/language/model/useLanguage";
-import { getTime } from "@shared/lib/utisl";
+import { getTime } from "@shared/lib/utils";
 
 interface PlayerGameHistoryProps {
     games: GameDTOType[];
