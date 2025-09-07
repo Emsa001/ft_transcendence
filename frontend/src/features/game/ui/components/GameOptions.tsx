@@ -5,7 +5,6 @@ import { gameEngine } from "@features/game/service/GameEngine";
 import { aiEngine, AiLevel } from "@features/game/service/AiEngine";
 
 import { Modal } from "@shared/components/Modal";
-import { useLanguage } from "@features/language/model/useLanguage";
 
 interface TwoFaModalProps {
     modalOpen: boolean;
@@ -16,8 +15,6 @@ type Mode = "versus" | "ai_easy" | "ai_hard" | "ai_impossible";
 
 export function OptionsModal({ modalOpen, setModalOpen }: TwoFaModalProps) {
     const { state, maxScore, setMaxScore, setPlayers } = useGame();
-    const { getText } = useLanguage();
-    const text = getText("options");
 
     const [selectedMode, setSelectedMode] = useState<Mode | null>(null);
 
@@ -73,7 +70,7 @@ export function OptionsModal({ modalOpen, setModalOpen }: TwoFaModalProps) {
             <Modal isOpen={modalOpen} onClose={() => setModalOpen(false)}>
                 <div>
                     <h2 className="text-2xl font-bold text-center text-pink-400 mb-4 drop-shadow-lg">
-                        {text.gameOptions}
+                        Game Options
                     </h2>
 
                     <div className="flex flex-col gap-3 mb-2">
@@ -81,34 +78,34 @@ export function OptionsModal({ modalOpen, setModalOpen }: TwoFaModalProps) {
                             onClick={() => handleChange("versus")}
                             className={buttonClasses("versus")}
                         >
-                            {text.playerVsPlayer}
+                            Player vs Player
                         </button>
 
                         <button
                             onClick={() => handleChange("ai_easy")}
                             className={buttonClasses("ai_easy")}
                         >
-                            {text.easyAI}
+                            Easy AI
                         </button>
 
                         <button
                             onClick={() => handleChange("ai_hard")}
                             className={buttonClasses("ai_hard")}
                         >
-                            {text.hardAI}
+                            Hard AI
                         </button>
 
                         <button
                             onClick={() => handleChange("ai_impossible")}
                             className={buttonClasses("ai_impossible")}
                         >
-                            {text.impossibleAI}
+                            Impossible AI
                         </button>
                     </div>
 
                     <div>
                         <h3 className="text-lg font-semibold text-pink-400 mb-2">
-                            {text.maxScore}
+                            Max Score
                         </h3>
                         <input
                             type="number"
@@ -124,7 +121,7 @@ export function OptionsModal({ modalOpen, setModalOpen }: TwoFaModalProps) {
 
                     <div className="mt-4 flex items-center justify-between">
                         <span className="text-lg font-semibold text-pink-400 mb-2">
-                            {text.randomEvents}
+                            Random Events
                         </span>
                         <label className="relative inline-flex items-center cursor-pointer">
                             <input
@@ -142,7 +139,7 @@ export function OptionsModal({ modalOpen, setModalOpen }: TwoFaModalProps) {
                         onClick={() => setModalOpen(false)}
                         className="mt-6 w-full px-4 py-2 rounded-xl bg-gradient-to-r from-pink-500/60 to-purple-500/60 text-white font-semibold hover:scale-105 transition shadow-lg shadow-purple-900/40"
                     >
-                        {text.confirm}
+                        Confirm
                     </button>
                 </div>
             </Modal>

@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import { GameCreationAttributes } from "shared";
 import { Modal } from "@shared/components/Modal";
-import { useLanguage } from "@features/language/model/useLanguage";
 
 type GameModalProps = {
     onClose?: () => void;
@@ -13,12 +12,10 @@ export const GameCreationModal = ({ onClose, onCreate }: GameModalProps) => {
     const [randomEvents, setRandomEvents] = useState(false);
     const [maxScore, setMaxScore] = useState(10);
     const [error, setError] = useState<string | null>(null);
-    const { getText } = useLanguage();
-    const text = getText("remoteCasual.CreateGame");
 
     const handleSubmit = () => {
         if (!maxScore || maxScore < 1 || maxScore > 99) {
-            setError(text.validMaxScore);
+            setError("Please enter a valid max score in range 1-99");
             return;
         }
         onCreate?.({ isPrivate, randomEvents, maxScore });
@@ -30,9 +27,11 @@ export const GameCreationModal = ({ onClose, onCreate }: GameModalProps) => {
             <Modal isOpen={true} onClose={onClose}>
                 <div className="text-center mb-8">
                     <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-400 via-fuchsia-400 to-pink-400 bg-clip-text text-transparent mb-2">
-                        {text.createGame}
+                        Create Game
                     </h2>
-                    <p className="text-white/70 text-sm">{text.setup}</p>
+                    <p className="text-white/70 text-sm">
+                        Set up your game preferences
+                    </p>
                 </div>
 
                 {/* Private Game Toggle */}
@@ -40,10 +39,10 @@ export const GameCreationModal = ({ onClose, onCreate }: GameModalProps) => {
                     <label className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer group">
                         <div>
                             <span className="font-medium text-purple-300 group-hover:text-purple-200 transition-colors">
-                                {text.privateGame}
+                                Private Game
                             </span>
                             <p className="text-xs text-white/50 mt-1">
-                                {text.privateGame}
+                                Only friends can join with code
                             </p>
                         </div>
                         <div className="relative">
@@ -77,10 +76,10 @@ export const GameCreationModal = ({ onClose, onCreate }: GameModalProps) => {
                     <label className="flex items-center justify-between p-4 rounded-xl bg-white/5 border border-white/10 hover:bg-white/10 transition-colors cursor-pointer group">
                         <div>
                             <span className="font-medium text-purple-300 group-hover:text-purple-200 transition-colors">
-                                {text.randomEvents}
+                                Random Events
                             </span>
                             <p className="text-xs text-white/50 mt-1">
-                                {text.enableEvents}
+                                Enable random events during the game
                             </p>
                         </div>
                         <div className="relative">
@@ -113,7 +112,7 @@ export const GameCreationModal = ({ onClose, onCreate }: GameModalProps) => {
                 {/* Max Score Input */}
                 <div className="mb-6">
                     <label className="block text-sm font-semibold text-purple-300 mb-2">
-                        {text.maxScore}
+                        Max Score
                     </label>
                     <input
                         id="maxScore"
@@ -142,13 +141,13 @@ export const GameCreationModal = ({ onClose, onCreate }: GameModalProps) => {
                         onClick={onClose}
                         className="flex-1 px-4 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-medium transition-all duration-200 border border-white/10"
                     >
-                        {text.cancel}
+                        Cancel
                     </button>
                     <button
                         onClick={handleSubmit}
                         className="flex-1 px-4 py-3 rounded-xl bg-gradient-to-r from-purple-600 via-fuchsia-600 to-pink-600 hover:from-purple-500 hover:via-fuchsia-500 hover:to-pink-500 text-white font-medium transition-all duration-200 shadow-lg hover:shadow-purple-500/25"
                     >
-                        {text.createGame}
+                        Create Game
                     </button>
                 </div>
             </Modal>

@@ -1,7 +1,6 @@
 import React from "react";
 import { useGame } from "@features/game/model/useGame";
 import { gameEngine } from "@features/game/service/GameEngine";
-import { useLanguage } from "@features/language/model/useLanguage";
 
 const symbols: Record<string, string> = {
     arrowup: "↑",
@@ -15,8 +14,6 @@ const symbols: Record<string, string> = {
 export const GameFooter = () => {
     const { players } = useGame();
     const paddles = gameEngine.paddles;
-    const { getText } = useLanguage();
-    const text = getText("options");
 
     return (
         <div className="w-full max-w-[800px] flex justify-between items-center px-6">
@@ -44,7 +41,7 @@ export const GameFooter = () => {
 
             {/* Pause */}
             <div className="flex flex-col items-center gap-2">
-                <p>{text.pause}</p>
+                <p>Pause:</p>
                 <div className="flex items-center gap-2">
                     <kbd className="px-2 py-1 bg-white/10 rounded-md">
                         {symbols["space"]}

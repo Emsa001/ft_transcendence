@@ -6,7 +6,6 @@
 @import "tailwindcss/utilities.css" layer(utilities);
 @import "./theme.css" layer(theme);
 @import "./animations.css" layer(utilities);
-@import "./toast.css" layer(components);
 
 * {
     scroll-behavior: smooth;
@@ -51,8 +50,8 @@ input:-webkit-autofill,
 input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
 input:-webkit-autofill:active {
-    -webkit-box-shadow: 0 0 0 1000px rgba(30, 41, 59, 0.2) inset !important; /* bg-indigo-800/20 */
-    -webkit-text-fill-color: #e9d5ff !important; /* text-purple-200 */
-    caret-color: #e9d5ff !important; /* match text color */
-    transition: background-color 5000s ease-in-out 0s !important;
+  -webkit-box-shadow: 0 0 0 1000px rgba(30, 41, 59, 0.2) inset !important; /* bg-indigo-800/20 */
+  -webkit-text-fill-color: #e9d5ff !important; /* text-purple-200 */
+  caret-color: #e9d5ff !important; /* match text color */
+  transition: background-color 5000s ease-in-out 0s !important;
 }

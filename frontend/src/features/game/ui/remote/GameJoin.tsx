@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { Modal } from "@shared/components/Modal";
 import GameApi from "../../service/GameApi";
 import { Button } from "@shared/components/Button";
-import { useLanguage } from "@features/language/model/useLanguage";
 
 type GameJoiningModalProps = {
     onClose?: () => void;
@@ -15,8 +14,6 @@ export const GameJoiningModal = ({
 }: GameJoiningModalProps) => {
     const [gameCode, setGameCode] = useState("");
     const [error, setError] = useState<string | null>(null);
-    const { getText } = useLanguage();
-    const text = getText("remoteCasual.JoinGame");
 
     const handleSubmit = async () => {
         const code = gameCode.trim().toUpperCase();
@@ -25,7 +22,7 @@ export const GameJoiningModal = ({
         // TODO: api request to check if game exists
         const game = await GameApi.getGameByCode(code);
         if (!game) {
-            setError(text.gameNotFound);
+            setError("Game not found. Please check the code and try again.");
             return;
         }
 
@@ -44,17 +41,17 @@ export const GameJoiningModal = ({
             <Modal isOpen={true} onClose={onClose}>
                 <div className="text-center mb-8">
                     <h2 className="text-2xl font-bold bg-gradient-to-r from-purple-400 via-fuchsia-400 to-pink-400 bg-clip-text text-transparent mb-2">
-                        {text.joinGame}
+                        Join Game
                     </h2>
                     <p className="text-white/70 text-sm">
-                        {text.enterGameCode}
+                        Enter the game code to join
                     </p>
                 </div>
 
                 {/* Game Code Input */}
                 <div className="mb-8">
                     <label className="block text-sm font-semibold text-purple-300 mb-2">
-                        {text.gameCode}
+                        Game Code
                     </label>
                     <input
                         id="gameCode"
@@ -85,14 +82,14 @@ export const GameJoiningModal = ({
                         onClick={onClose}
                         className="flex-1 px-4 py-3 rounded-xl bg-white/10 hover:bg-white/20 text-white font-medium transition-all duration-200 border border-white/10"
                     >
-                        {text.cancel}
+                        Cancel
                     </button>
                     <Button
                         onClick={handleSubmit}
                         disabled={gameCode.trim().length !== 6}
                         className="flex-1 px-4 py-3 rounded-xl bg-gradient-to-r from-purple-600 via-fuchsia-600 to-pink-600 hover:from-purple-500 hover:via-fuchsia-500 hover:to-pink-500 disabled:opacity-50 disabled:cursor-not-allowed text-white font-medium transition-all duration-200 shadow-lg hover:shadow-purple-500/25"
                     >
-                        {text.joinGame}
+                        Join Game
                     </Button>
                 </div>
             </Modal>

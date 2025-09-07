@@ -1,11 +1,8 @@
 import React, { Link } from "react";
 import { BallField } from "@features/balls/ui/BallField";
 import { ShinyText } from "@shared/components/Shiny";
-import { useLanguage } from "@features/language/model/useLanguage";
 
 export default function GameMenu() {
-    const { getText } = useLanguage();
-    const text = getText("game");
     const baseButtonClasses =
         "group relative flex items-center justify-center " +
         "aspect-square min-w-[6rem] max-w-[16rem] rounded-2xl " +
@@ -19,25 +16,25 @@ export default function GameMenu() {
 
     const buttons = [
         {
-            label: text.localCasual,
+            label: "Local Casual",
             href: "local/casual",
             overlay: "bg-gradient-to-tr from-purple-500/40 to-blue-500/40",
             rotate: "hover:rotate-3",
         },
         {
-            label: text.localTournament,
+            label: "Local Tournament",
             href: "local/tournament",
             overlay: "bg-gradient-to-tr from-pink-500/40 to-orange-500/40",
             rotate: "hover:-rotate-3",
         },
         {
-            label: text.remoteCasual,
+            label: "Remote Casual",
             href: "remote/casual",
             overlay: "bg-gradient-to-tr from-indigo-500/40 to-blue-500/40",
             rotate: "hover:-rotate-3",
         },
         {
-            label: text.remoteTournament,
+            label: "Remote Tournament",
             href: "remote/tournament",
             overlay: "bg-gradient-to-tr from-fuchsia-500/40 to-pink-500/40",
             rotate: "hover:rotate-3",
@@ -47,7 +44,7 @@ export default function GameMenu() {
     return (
         <section className="w-full h-full text-center flex flex-col items-center justify-center">
             <ShinyText
-                text={text.label}
+                text="Game Selector"
                 gradient="bg-logo-gradient"
                 className="text-[clamp(3rem,6vw,10rem)] font-extrabold select-none text-white drop-shadow-xl"
             />

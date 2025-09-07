@@ -21,8 +21,7 @@ export const useOnlineUsers = () => {
             if (msg.type === "online_users") {
                 setOnlineUsers(msg.onlineUsers);
             } else if (msg.type === "message") {
-                const message = `${msg.sender}: ${msg.message}`;
-                Toast.info({ message, timeout: 3000 });
+                Toast.success(`${msg.sender}: ${msg.message}`);
             }
         };
 

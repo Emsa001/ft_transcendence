@@ -1,4 +1,3 @@
-import { useLanguage } from "@features/language/model/useLanguage";
 import React, { useNavigate } from "react";
 
 interface GameHeaderProps {
@@ -9,8 +8,6 @@ interface GameHeaderProps {
 
 export const GameHeader = ({ type, mode, code }: GameHeaderProps) => {
     const navigate = useNavigate();
-    const { getText } = useLanguage();
-    const text = getText("game");
 
     const handleBack = () => {
         if (code) {
@@ -31,23 +28,23 @@ export const GameHeader = ({ type, mode, code }: GameHeaderProps) => {
                 <h1 className="text-lg md:text-xl font-semibold tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-fuchsia-400 to-sky-300">
                     {type === "local" &&
                         mode === "casual" &&
-                        text.localCasualMode}
+                        "Local Casual Mode"}
                     {type === "local" &&
                         mode === "tournament" &&
-                        text.localTournamentMode}
+                        "Local Tournament Mode"}
                     {type === "remote" &&
                         mode === "casual" &&
-                        text.remoteCasualMode}
+                        "Remote Casual Mode"}
                     {type === "remote" &&
                         mode === "tournament" &&
-                        text.remoteTournamentMode}
+                        "Remote Tournament Mode"}
                 </h1>
             </div>
             <button
                 onClick={handleBack}
                 className="px-4 py-2 rounded-2xl bg-white/10 hover:bg-white/20 transition-all duration-200 shadow-lg text-sm md:text-base"
             >
-                {text.backToMenu}
+                Back to Menu
             </button>
         </div>
     );

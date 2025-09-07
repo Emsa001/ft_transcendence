@@ -3,8 +3,6 @@ import { useRemoteGame } from "@features/game/model/useRemoteGame";
 import { GameStatus } from "shared";
 import { GameElementRemote } from "../components/GameElement";
 import { GameWaiting } from "./GameWaiting";
-import { useLanguage } from "@features/language/model/useLanguage";
-import { Toast } from "@shared/lib/Toast";
 
 export const GameRemoteRoom = () => {
     const {
@@ -22,19 +20,16 @@ export const GameRemoteRoom = () => {
         isTournament,
     } = useRemoteGame();
 
-    const { getText } = useLanguage();
-    const text = getText("remoteCasual.gameRemoteRoom");
-
     const renderStatus = () => {
         switch (status) {
             case GameStatus.WAITING:
-                return text.waitingForPlayers;
+                return "Waiting for players...";
             case GameStatus.IN_PROGRESS:
-                return `${text.round} ${round} / ${text.maxScore} ${maxScore}`;
+                return `Round ${round} / Max Score ${maxScore}`;
             case GameStatus.FINISHED:
-                return winner ? `${text.winner} ${winner}` : text.gameFinished;
+                return winner ? `Winner: ${winner}` : "Game finished!";
             default:
-                return text.connecting;
+                return "Connecting...";
         }
     };
 
@@ -64,35 +59,23 @@ export const GameRemoteRoom = () => {
         );
     }
 
-    const handleCopy = () => {
-        navigator.clipboard.writeText(code);
-        Toast.success("Game code copied to clipboard");
-    };
-
     return (
         <div className="w-full h-full flex flex-col items-center justify-center p-6">
             <div className="w-full max-w-md bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl shadow-lg p-6 mb-6 text-center">
                 <h2 className="text-3xl font-bold text-white mb-2 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-blue-400">
-                    {text.gameRoom}
+                    Game Room: {code}
                 </h2>
-                <div
-                    onClick={handleCopy}
-                    className="w-full cursor-pointer bg-gray-900 rounded-lg px-6 py-4 text-2xl text-purple-300 font-mono flex items-center justify-center hover:bg-gray-800 transition tracking-[0.7em]"
-                >
-                    {code}
-                </div>
-
                 <p className="text-gray-200 mb-2">{renderStatus()}</p>
                 {isPrivate && (
                     <span className="text-sm text-yellow-300 font-medium">
-                        {text.privateGame}
+                        Private Game
                     </span>
                 )}
             </div>
 
             <div className="w-full max-w-md bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl shadow-sm p-4 mb-6">
                 <h3 className="text-lg font-semibold text-white mb-2">
-                    {text.players}: {players.length}/{maxPlayers}
+                    Players: {players.length}/{maxPlayers}
                 </h3>
                 <ul className="space-y-2">
                     {players.map((player) => (
@@ -123,26 +106,31 @@ const GameActionButtons = () => {
     const playerSize = players.length;
     const isHost = player?.id === host;
 
-    const { getText } = useLanguage();
-    const text = getText("remoteCasual.gameRemoteRoom");
-
     if (status === GameStatus.FINISHED) {
         return (
             <Link
                 to="/game/remote/casual"
                 className="px-6 py-3 bg-gradient-to-r from-purple-500 to-blue-500 text-white font-semibold rounded-xl shadow-lg hover:scale-105 transition-transform"
             >
-                {text.returnToLobby}
+                Return to Lobby
             </Link>
         );
     }
 
     if (!isHost) {
-        return <div className="text-gray-400">{text.waitingForHost}</div>;
+        return (
+            <div className="text-gray-400">
+                Waiting for host to start the game...
+            </div>
+        );
     }
 
     if (playerSize < 2) {
-        return <p className="text-gray-400 mb-4">{text.waitingForPlayers}</p>;
+        return (
+            <p className="text-gray-400 mb-4">
+                Waiting for more players to join...
+            </p>
+        );
     }
 
     return (
@@ -150,7 +138,7 @@ const GameActionButtons = () => {
             className="px-6 py-3 bg-gradient-to-r from-purple-500 to-blue-500 text-white font-semibold rounded-xl shadow-lg hover:scale-105 transition-transform"
             onClick={handleStartGame}
         >
-            {text.startGame}
+            Start Game
         </button>
     );
 };

@@ -12,7 +12,6 @@ interface AlertParamObject {
         | "bottom"
         | "bottom-start"
         | "bottom-end";
-    timeout?: number;
 }
 
 export class Toast {
@@ -20,11 +19,8 @@ export class Toast {
         params: AlertParamObject | string,
         type: "info" | "success" | "error"
     ) {
-        const message = typeof params === "string" ? params : params.message;
-        const place =
-            typeof params === "string" ? "top-end" : params?.place || "top-end";
-        const timeout =
-            typeof params === "string" ? 1500 : params?.timeout || 1500;
+        const message = typeof params === "string" ? params : params?.message;
+        const place = typeof params === "string" ? "top-end" : params?.place;
 
         const base = Swal.mixin({
             toast: true,
@@ -32,8 +28,7 @@ export class Toast {
             icon: type,
             title: message,
             showConfirmButton: false,
-            timer: timeout,
-            timerProgressBar: true,
+            timer: 1500,
             theme: "dark",
         });
 
