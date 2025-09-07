@@ -14,6 +14,7 @@ export class GameEngine implements GameEngineType {
     ball: Ball;
     paddles: Record<number, Paddle>;
     randomEvents = false;
+    gameEvents: GameEvents;
     stopped = true;
     onScore?: (scorerId: number) => void;
     onRandomEvent?: (event: string) => void;
@@ -26,7 +27,6 @@ export class GameEngine implements GameEngineType {
 
     static readonly fps = 60;
     static readonly dt = 1 / GameEngine.fps;
-    private gameEvents;
 
     constructor() {
         this.ball = {
@@ -43,6 +43,7 @@ export class GameEngine implements GameEngineType {
         return {
             ball: this.ball,
             paddles: this.paddles,
+            selectedEvent: this.gameEvents.selectedEvent,
         };
     }
 

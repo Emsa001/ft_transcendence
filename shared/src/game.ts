@@ -1,3 +1,4 @@
+import { RandomEvent } from "./game.engine";
 import { TournamentDTOType } from "./tournament";
 import { UserDTOType } from "./user";
 
@@ -82,6 +83,7 @@ export interface Ball {
 export interface GameFrame {
     ball?: Ball;
     paddles?: Record<number, Paddle>;
+    selectedEvent: RandomEvent | null;
 }
 
 export interface GameMessage {

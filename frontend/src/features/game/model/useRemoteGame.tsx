@@ -128,7 +128,9 @@ export const RemoteGameProvider = ({
                         ...frameRef.current?.paddles,
                         ...payload.frame.paddles,
                     },
+                    selectedEvent: payload.frame.selectedEvent ?? null,
                 };
+                console.log(frameRef.current.selectedEvent);
                 break;
             }
 

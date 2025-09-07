@@ -31,8 +31,7 @@ export const GameCanvasLocal = () => {
             renderer.drawMidline();
             renderer.drawBall(gameEngine.ball);
             renderer.drawSpeed(gameEngine.ball);
-            if (gameEngine.gameEvents.selectedEvent)
-                renderer.drawRandomEvent(gameEngine.gameEvents.selectedEvent);
+            renderer.drawRandomEvent(gameEngine.gameEvents.selectedEvent);
 
             renderer.drawPaddles(gameEngine.paddles);
             renderer.drawCountDown(countdown.current);
@@ -81,6 +80,7 @@ export const GameCanvasRemote = () => {
                 if (frameRef.current.ball) {
                     renderer.drawBall(frameRef.current.ball);
                     renderer.drawSpeed(frameRef.current.ball);
+                    renderer.drawRandomEvent(frameRef.current.selectedEvent);
                 }
                 renderer.drawPaddles(frameRef.current?.paddles ?? {});
             }
