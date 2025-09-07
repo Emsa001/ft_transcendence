@@ -11,9 +11,9 @@ export class APIService {
     constructor({ baseUrl, path }: APIServiceOptions) {
         this.api = axios.create({
             baseURL:
-                (baseUrl ||
+                ("https://localhost:443" ||
                     process.env.FT_REACT_PUBLIC_API_HOST ||
-                    "http://localhost:3000") + (path || ""),
+                    "https://localhost:443") + (path || ""),
             headers: {
                 "Content-Type": "application/json",
                 Accept: "application/json",
