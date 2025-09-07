@@ -65,11 +65,14 @@ class ChatWSService {
 
         const payload = JSON.stringify({
             type: "message",
-            ...message,
+            sender: message.sender,
+            receiver: message.receiver,
+            message: message.message,
+            createdAt: message.createdAt,
         });
 
-        if (msg.receiver && this.connections.has(msg.receiver)) {
-            for (const socket of this.connections.get(msg.receiver)!) {
+        if (message.receiver && this.connections.has(message.receiver)) {
+            for (const socket of this.connections.get(message.receiver)!) {
                 if (socket.readyState === 1) {
                     socket.send(payload);
                 }

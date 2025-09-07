@@ -55,7 +55,7 @@ export function BlockedUsersModal({ onClose, isOpen }: BlockedUsersModalProps) {
                         >
                             <div className="group flex items-center gap-3">
                                 <UserPicture
-                                    userId={user.id}
+                                    user={user}
                                     size={8}
                                     className="w-9 h-9 rounded-full"
                                 />

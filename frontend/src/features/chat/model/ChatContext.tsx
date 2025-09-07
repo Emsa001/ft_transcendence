@@ -58,7 +58,7 @@ export const ChatProvider = ({ children }: { children?: ReactNode }) => {
             setMessages((prev) => prev.slice(0, -1));
             setIsBlocked(true);
             Toast.error("You have been blocked by this user.");
-        } else {
+        } else if (payload.sender === selectedUser?.id) {
             setIsBlocked(false);
             setMessages((prev) => [...prev, payload]);
         }

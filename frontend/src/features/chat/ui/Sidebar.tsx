@@ -22,7 +22,7 @@ const UserCard = ({ user, isOnline, selectedUser, onClick }: UserCardProps) => {
         >
             <div className="relative">
                 <UserPicture
-                    userId={user.id}
+                    user={user}
                     size={8}
                     className="w-10 h-10 rounded-full shadow-[0_0_8px_rgba(0,255,255,0.7)]"
                 />
@@ -67,7 +67,7 @@ export const Sidebar = ({ userId }: { userId?: string }) => {
             <div className="border-b-2 border-cyan-600 mb-2 shadow-[0_0_12px_rgba(0,255,255,0.8)]" />
 
             <div className="space-y-2 max-h-[calc(100vh-120px)] overflow-y-auto pr-1">
-                {[...users, systemUser].map((user) => (
+                {[systemUser, ...users].map((user) => (
                     <div key={user.id}>
                         <UserCard
                             user={user}
