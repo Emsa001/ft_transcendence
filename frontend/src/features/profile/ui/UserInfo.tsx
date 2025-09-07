@@ -9,6 +9,7 @@ import { CiLogout } from "react-icons/ci";
 
 import { FaRegMessage } from "react-icons/fa6";
 import { TwoFaModal } from "@features/auth/ui/TwoFaModal";
+import { sliceText } from "@shared/lib/utils";
 
 export const UserInfo = () => {
     const { user } = useUser();
@@ -25,7 +26,9 @@ export const UserInfo = () => {
             <div className="flex justify-center">
                 <MyPicture />
             </div>
-            <h2 className="text-xl font-bold">{user?.username}</h2>
+            <h2 className="text-xl font-bold">
+                {sliceText(user.username, 10)}
+            </h2>
             <p className="text-gray-400">{text}</p>
             <div className="absolute top-0 left-0 flex flex-col gap-4">
                 <Icon

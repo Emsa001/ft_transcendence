@@ -3,6 +3,7 @@ import { UserDTOType } from "shared";
 import FriendsApi from "../../../user/service/friendsApi";
 import { UserPicture } from "@features/user/ui/UserPicture";
 import { useLanguage } from "@features/language/model/useLanguage";
+import { sliceText } from "@shared/lib/utils";
 
 interface MyFriendsProps {
     friends: UserDTOType[];
@@ -37,7 +38,7 @@ export const MyFriends = ({ friends, setFriends }: MyFriendsProps) => {
                             className="font-medium text-gray-200 group-hover:underline group-hover:cursor-pointer"
                             onClick={() => navigate(`/profile/${user.id}`)}
                         >
-                            {user.username}
+                            {sliceText(user.username, 10)}
                         </span>
                     </div>
 

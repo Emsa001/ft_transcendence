@@ -7,6 +7,7 @@ import ProfileApi from "../../../user/service/profileApi";
 import { useUser } from "@features/auth/model/useUser";
 import { Toast } from "@shared/lib/Toast";
 import { useLanguage } from "@features/language/model/useLanguage";
+import { sliceText } from "@shared/lib/utils";
 
 interface SearchModalProps {
     onClose: () => void;
@@ -109,7 +110,10 @@ export const SearchModal = ({ onClose, isOpen }: SearchModalProps) => {
                                                         )
                                                     }
                                                 >
-                                                    {user.username}
+                                                    {sliceText(
+                                                        user.username,
+                                                        10
+                                                    )}
                                                 </span>
                                             </div>
                                             {isSent ? (

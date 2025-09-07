@@ -1,4 +1,5 @@
 import { useLanguage } from "@features/language/model/useLanguage";
+import { sliceText } from "@shared/lib/utils";
 import React, { useNavigate } from "react";
 import { GameStatus, TournamentDTOType } from "shared";
 
@@ -19,7 +20,7 @@ export const TournamentCard = ({ tournament }: TournamentCardProps) => {
         >
             <div className="flex justify-between items-center mb-3">
                 <h3 className="text-lg font-semibold text-white">
-                    {tournament.name}
+                    {sliceText(tournament.name, 20)}
                 </h3>
                 <span
                     className={`px-3 py-1 rounded-full text-xs font-medium backdrop-blur-sm

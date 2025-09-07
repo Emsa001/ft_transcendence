@@ -14,6 +14,7 @@ export class GameEngine implements GameEngineType {
     paddles: Record<number, Paddle>;
     aiPaddle?: boolean;
     randomEvents = false;
+    gameEvents;
     keys: Record<string, boolean> = {};
     stopped = true;
 
@@ -25,8 +26,6 @@ export class GameEngine implements GameEngineType {
     readonly paddleHeight = 120;
     readonly paddleSpeed = 9;
     readonly paddlePadding = 40;
-
-    private gameEvents;
 
     constructor() {
         this.ball = {

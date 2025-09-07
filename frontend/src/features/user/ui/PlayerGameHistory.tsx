@@ -5,7 +5,8 @@ import { PlayerCard } from "./PlayerCard";
 import { FaCrown } from "react-icons/fa";
 import { Icon } from "@shared/components/Icon";
 import { useLanguage } from "@features/language/model/useLanguage";
-import { getTime } from "@shared/lib/utils";
+import { getTime, sliceText } from "@shared/lib/utils";
+import { slice } from "lodash";
 
 interface PlayerGameHistoryProps {
     games: GameDTOType[];
@@ -113,7 +114,7 @@ const GameHeader = ({ winner, date }: { winner: string; date: Date }) => (
     <div className="flex justify-between px-4 pt-2 ">
         <div className="flex items-center">
             <Icon icon={FaCrown} className="text-yellow-400 mr-1" />
-            <span>{winner || "—"}</span>
+            <span>{sliceText(winner, 10) || "—"}</span>
         </div>
         <span className="text-sm text-white/70">{getTime(date)}</span>
     </div>

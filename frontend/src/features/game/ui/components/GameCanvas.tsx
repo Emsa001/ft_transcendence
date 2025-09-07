@@ -31,6 +31,9 @@ export const GameCanvasLocal = () => {
             renderer.drawMidline();
             renderer.drawBall(gameEngine.ball);
             renderer.drawSpeed(gameEngine.ball);
+            if (gameEngine.gameEvents.selectedEvent)
+                renderer.drawRandomEvent(gameEngine.gameEvents.selectedEvent);
+
             renderer.drawPaddles(gameEngine.paddles);
             renderer.drawCountDown(countdown.current);
 

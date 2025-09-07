@@ -3,6 +3,7 @@ import { UserPicture } from "@features/user/ui/UserPicture";
 import blockUserApi from "@features/user/service/blockUserApi";
 import { useChat } from "../model/ChatContext";
 import { useLanguage } from "@features/language/model/useLanguage";
+import { sliceText } from "@shared/lib/utils";
 
 export const UserInfo = () => {
     const navigate = useNavigate();
@@ -29,7 +30,7 @@ export const UserInfo = () => {
                 className="w-10 h-10 rounded-full shadow-[0_0_8px_rgba(0,255,255,0.7)]"
             />
             <h3 className="font-semibold text-cyan-300 drop-shadow-[0_0_8px_rgba(0,255,255,0.8)]">
-                {selectedUser.username}
+                {sliceText(selectedUser.username, 10)}
             </h3>
             {selectedUser.id !== -1 && (
                 <button

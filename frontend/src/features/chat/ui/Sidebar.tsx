@@ -4,6 +4,7 @@ import { useOnlineUsers } from "@features/user/model/useOnlineUsers";
 import { useChat } from "../model/ChatContext";
 import { UserDTOType } from "shared";
 import { useLanguage } from "@features/language/model/useLanguage";
+import { sliceText } from "@shared/lib/utils";
 
 interface UserCardProps {
     user: UserDTOType;
@@ -33,7 +34,7 @@ const UserCard = ({ user, isOnline, selectedUser, onClick }: UserCardProps) => {
                 />
             </div>
             <span className="font-medium text-cyan-300 drop-shadow-[0_0_6px_rgba(0,255,255,0.7)]">
-                {user.username}
+                {sliceText(user.username, 10)}
             </span>
         </div>
     );
