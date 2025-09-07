@@ -38,6 +38,7 @@ export class TournamentEngine {
                     winner: null,
                     round: currentRound,
                     isPrivate: false,
+                    randomEvents: false,
                     tournamentId: -1,
                     code: Math.floor(1000 + Math.random() * 9000).toString(),
                     createdAt: new Date(),

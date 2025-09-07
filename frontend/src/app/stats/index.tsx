@@ -33,7 +33,7 @@ export default function StatsDashboard({ id }: { id?: string }) {
     if (!id || !user || !stats) return <div />;
 
     return (
-        <div className="text-white overflow-auto mt-16 p-6 lg:p-12 max-h-screen overflow-auto">
+        <div className="text-white overflow-auto p-6 lg:p-12 max-h-screen overflow-auto">
             <div className="max-w-6xl mx-auto space-y-8">
                 {/* Header */}
                 <Head user={user} />
@@ -45,7 +45,7 @@ export default function StatsDashboard({ id }: { id?: string }) {
                 <Charts allStats={stats} games={history.games} user={user} />
 
                 {/* Match history */}
-                <MatchHistory history={history} />
+                <MatchHistory games={history.games} />
             </div>
 
             <style jsx>{`

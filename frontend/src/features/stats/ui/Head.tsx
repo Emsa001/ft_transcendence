@@ -3,7 +3,7 @@ import { UserDTOType } from "shared/dist";
 
 export function Head({ user }: { user: UserDTOType }) {
     return (
-        <div className="flex items-center gap-6">
+        <div className="mt-16 flex items-center gap-6">
             <div className="w-20 h-20 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center shadow-xl glass-border">
                 <span className="text-xl font-bold">{user.username}</span>
             </div>
