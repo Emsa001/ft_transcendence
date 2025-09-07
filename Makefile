@@ -1,4 +1,4 @@
-all: docker
+all: build
 
 run: frontend backend
 	# TODO: changes this for general compatibility
@@ -33,12 +33,17 @@ format:
 test: backend
 	npm run test --prefix ./backend
 
-docker:
-	docker compose down -v --remove-orphans --rmi all
-	@bash nginx/certs/generate.sh
+build: clean
+	@nginx/certs/generate.sh
 	@echo "\nStarting Docker in the background...\n"
-	-@docker compose up --build -d || true
+	@docker compose up --build -d
 	@echo "\nAll services launched. Logs with: docker compose logs -f\n"
+
+up:
+	@docker compose up
+
+down:
+	@docker compose down
 
 re: clean docker
 
