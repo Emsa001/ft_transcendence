@@ -1,9 +1,9 @@
 ### Variables
-FRONTEND_DIR := ./frontend
-BACKEND_DIR	:= ./backend
-SHARED_DIR	:= ./shared
-
-DOCKER_COMPOSE := docker compose
+FRONTEND_DIR	= ./frontend
+BACKEND_DIR		= ./backend
+SHARED_DIR		= ./shared
+DOCKER_COMPOSE	= docker compose \
+	--project-name ft_inception
 
 ### Main Targets
 .PHONY: all dev run build clean install format test up down re frontend backend shared
