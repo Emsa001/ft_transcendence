@@ -4,10 +4,14 @@ import { AddPlayerInput } from "./AddPlayer";
 import { RegisterPlayerList } from "./PlayerList";
 import { useLocalTournament } from "../../model/useLocalTournament";
 import { TournamentOptions } from "./TournamentOptions";
+import { useLanguage } from "@features/language/model/useLanguage";
 
 export const TournamentRegister = () => {
     const { players, maxPlayers, addPlayer, removePlayer, startTournament } =
         useLocalTournament();
+
+    const { getText } = useLanguage();
+    const text = getText("tournament");
 
     const [status, setStatus] = useState<StatusMessage | null>(null);
 
@@ -34,7 +38,7 @@ export const TournamentRegister = () => {
     return (
         <div className="flex flex-col gap-12 w-full items-center">
             <ShinyText
-                text="Tournament Registration"
+                text={text.tournamentRegistration}
                 gradient="bg-logo-gradient"
                 className="text-5xl font-extrabold text-center mb-6"
             />
@@ -63,7 +67,7 @@ export const TournamentRegister = () => {
                     onClick={startTournament}
                     className="py-3 rounded-2xl font-semibold bg-fuchsia-200/10 hover:bg-fuchsia-300/10 transition text-white shadow-md"
                 >
-                    Start Tournament {players.length}/{maxPlayers}
+                    {text.startTournament} {players.length}/{maxPlayers}
                 </button>
             </div>
         </div>

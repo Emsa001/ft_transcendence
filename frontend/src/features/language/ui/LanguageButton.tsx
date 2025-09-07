@@ -2,7 +2,7 @@ import React, { useLocalStorage } from "react";
 
 export const LanguageButton = () => {
     const [language, setLanguage] = useLocalStorage<string>("language");
-    const languages = ["en", "pl", "slangs"];
+    const languages = ["en", "pl", "de", "es", "ge", "ch", "slangs"];
 
     function handleClick() {
         const current = languages.indexOf(language || "en");

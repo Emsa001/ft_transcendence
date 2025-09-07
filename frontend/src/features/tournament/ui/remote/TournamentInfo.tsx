@@ -1,3 +1,4 @@
+import { useLanguage } from "@features/language/model/useLanguage";
 import React, { useNavigate } from "react";
 import { GameStatus } from "shared";
 
@@ -25,42 +26,45 @@ export const TournamentInfo = ({
     onDelete,
 }: TournamentInfoProps) => {
     const navigate = useNavigate();
+    const { getText } = useLanguage();
+    const text = getText("tournament");
 
     const isLocal = onDelete === undefined;
 
     return (
         <section className="w-full col-span-2 h-full bg-white/10 p-4 rounded-2xl flex flex-col">
             <h3 className="text-xl font-bold text-gray-200 mb-2 text-center">
-                Tournament info
+                {text.tournamentInfo}
             </h3>
             <p className="text-white/80">
-                Status: <span className="font-medium text-white">{status}</span>
+                {text.status}:{" "}
+                <span className="font-medium text-white">{status}</span>
             </p>
             <p className="text-white/80">
-                Host:{" "}
+                {text.host}:{" "}
                 <span className="font-medium text-white">{host || "N/A"}</span>
             </p>
 
             <p className="text-white/80">
-                Random Events:{" "}
+                {text.randomEvents}:{" "}
                 <span className="font-medium text-white">
-                    {randomEvents ? "Enabled" : "Disabled"}
+                    {randomEvents ? text.enabled : text.disabled}
                 </span>
             </p>
 
             <p className="text-white/80">
-                Max Score:{" "}
+                {text.maxScore}:{" "}
                 <span className="font-medium text-white">{maxScore}</span>
             </p>
 
             <p className="text-white/80">
-                Players:{" "}
+                {text.players}:{" "}
                 <span className="font-medium text-white">
                     {`${players}`} / {`${maxPlayers}`}
                 </span>
             </p>
             <p className="text-white/80 mb-4">
-                Winner:{" "}
+                {text.winner}:{" "}
                 <span className="font-medium text-white">
                     {winner || "N/A"}
                 </span>
@@ -73,7 +77,15 @@ export const TournamentInfo = ({
                             onClick={onDelete}
                             className="px-6 py-2 bg-gradient-to-r from-black to-black/60 text-white font-semibold rounded-xl shadow hover:opacity-90 transition w-full h-full"
                         >
-                            Delete Tournament
+                            {text.deleteTournament}
+                        </button>
+                    )}
+                    {onStart && status === GameStatus.WAITING && (
+                        <button
+                            onClick={onStart}
+                            className="px-6 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold rounded-xl shadow hover:opacity-90 transition w-full"
+                        >
+                            {text.startTournament}
                         </button>
                     )}
                 </div>
@@ -83,18 +95,8 @@ export const TournamentInfo = ({
                     }
                     className="px-6 py-2 bg-gradient-to-r from-red-800 to-red-600 text-white font-semibold rounded-xl shadow hover:opacity-90 transition"
                 >
-                    Leave Tournament
+                    {text.leaveTournament}
                 </button>
-                <div className="w-full h-full">
-                    {onStart && status === GameStatus.WAITING && (
-                        <button
-                            onClick={onStart}
-                            className="px-6 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold rounded-xl shadow hover:opacity-90 transition w-full"
-                        >
-                            Start Tournament
-                        </button>
-                    )}
-                </div>
             </div>
         </section>
     );

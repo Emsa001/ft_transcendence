@@ -1,3 +1,4 @@
+import { useLanguage } from "@features/language/model/useLanguage";
 import React, { useNavigate } from "react";
 import { GameStatus, TournamentDTOType } from "shared";
 
@@ -7,6 +8,8 @@ interface TournamentCardProps {
 
 export const TournamentCard = ({ tournament }: TournamentCardProps) => {
     const navigate = useNavigate();
+    const { getText } = useLanguage();
+    const text = getText("remoteTournament");
 
     return (
         <div
@@ -34,19 +37,19 @@ export const TournamentCard = ({ tournament }: TournamentCardProps) => {
 
             <div className="text-sm text-gray-300 space-y-1 mb-5">
                 <p>
-                    Players:{" "}
+                    {text.players}:{" "}
                     <span className="font-medium text-white">
                         {tournament.players.length} / {tournament.maxPlayers}
                     </span>
                 </p>
                 <p>
-                    Max Score:{" "}
+                    {text.maxScore}:{" "}
                     <span className="font-medium text-white">
                         {tournament.maxScore}
                     </span>
                 </p>
                 <p>
-                    Round:{" "}
+                    {text.round}:{" "}
                     <span className="font-medium text-white">
                         {tournament.round}
                     </span>
@@ -62,7 +65,7 @@ export const TournamentCard = ({ tournament }: TournamentCardProps) => {
                            text-white hover:from-purple-500 hover:to-blue-500 
                            transition"
             >
-                Join
+                {text.join}
             </button>
         </div>
     );
