@@ -142,7 +142,9 @@ const GameActionButtons = () => {
     }
 
     if (playerSize < 2) {
-        return <p className="text-gray-400 mb-4">{text.waitingForPlayers}</p>;
+        return (
+            <p className="text-gray-400 mb-4">{text.waitingForMorePlayers}</p>
+        );
     }
 
     return (

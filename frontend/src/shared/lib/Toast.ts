@@ -20,7 +20,7 @@ export class Toast {
         params: AlertParamObject | string,
         type: "info" | "success" | "error"
     ) {
-        const message = typeof params === "string" ? params : params.message;
+        const message = typeof params === "string" ? params : params?.message;
         const place =
             typeof params === "string" ? "top-end" : params?.place || "top-end";
         const timeout =
