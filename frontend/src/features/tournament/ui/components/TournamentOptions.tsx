@@ -1,9 +1,12 @@
 import React, { useState } from "react";
 import { useLocalTournament } from "../../model/useLocalTournament";
+import { useLanguage } from "@features/language/model/useLanguage";
 
 function TournamentOptions() {
     const { setRandomEvents, setMaxScore } = useLocalTournament();
     const [isEnabled, setIsEnabled] = useState(false);
+    const { getText } = useLanguage();
+    const text = getText("tournament");
 
     const handleMaxScoreChange = (e: any) => {
         const score = parseInt(e.target.value, 10);
@@ -23,7 +26,7 @@ function TournamentOptions() {
                     htmlFor="max-score-input"
                     className="text-lg text-center font-semibold text-pink-400 mb-2"
                 >
-                    Max Score
+                    {text.maxScore} (1-21)
                 </label>
                 <input
                     id="max-score-input"
@@ -39,7 +42,7 @@ function TournamentOptions() {
             {/* Random Events Toggle */}
             <div className="flex flex-col flex-1">
                 <label className="text-lg text-center font-semibold text-pink-400 mb-2">
-                    Random Events
+                    {text.randomEvents}
                 </label>
                 <button
                     type="button"
@@ -51,7 +54,7 @@ function TournamentOptions() {
                                 : "bg-gray-700 hover:bg-gray-600 text-gray-200"
                         }`}
                 >
-                    {isEnabled ? "enabled" : "disabled"}
+                    {isEnabled ? text.enabled : text.disabled}
                 </button>
             </div>
         </div>

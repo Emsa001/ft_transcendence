@@ -1,3 +1,4 @@
+import { useLanguage } from "@features/language/model/useLanguage";
 import {
     GameDTOType,
     GameMode,
@@ -131,14 +132,16 @@ export class TournamentEngine {
         maxPlayers: number,
         status: GameStatus
     ): string | null {
+        const { getText } = useLanguage();
+        const text = getText("tournament");
         if (players.length >= maxPlayers) {
-            return "Maximum number of players reached.";
+            return text.maximumReached;
         }
         if (status !== GameStatus.WAITING) {
-            return "Cannot add players after the tournament has started.";
+            return text.cantAddAfterStart;
         }
         if (players.find((p) => p.username === username)) {
-            return "Player with this username already exists.";
+            return text.playerExists;
         }
         return null;
     }
