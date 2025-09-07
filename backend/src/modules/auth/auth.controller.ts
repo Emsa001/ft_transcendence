@@ -54,8 +54,6 @@ export class AuthController extends BaseController {
         request: FastifyRequest,
         reply: FastifyReply
     ) {
-        const url = process.env.FRONTEND_URL || "http://localhost:3000";
-
         const { code, error } = request.query as {
             code?: string;
             error?: string;
@@ -63,7 +61,7 @@ export class AuthController extends BaseController {
 
         if (error || !code)
             return reply.redirect(
-                `${url}/auth?error=${encodeURIComponent(error || "no_code")}`
+                `${process.env.FRONTEND_URL}/auth?error=${encodeURIComponent(error || "no_code")}`
             );
 
         const { user, token: session } =
@@ -72,7 +70,7 @@ export class AuthController extends BaseController {
         reply.setCookie("session", session, cookieService.createSession());
 
         return reply.redirect(
-            `${url}/auth?success=true&require2fa=${user.is2FAEnabled}`
+            `${process.env.FRONTEND_URL}/auth?success=true&require2fa=${user.is2FAEnabled}`
         );
     }
 
