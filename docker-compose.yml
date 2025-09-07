@@ -54,7 +54,7 @@ services:
       dockerfile: ./frontend/Dockerfile
     container_name: nginx
     ports:
-      - "3000:3000"
+      - "443:3000"
       - "3001:3001"
       - "8000:8000"
       - "9090:9090"
