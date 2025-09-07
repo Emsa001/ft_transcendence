@@ -1,4 +1,5 @@
 import { stat } from "fs";
+import { useLanguage } from "@features/language/model/useLanguage";
 import React, { useNavigate } from "react";
 import { GameStatus } from "shared";
 import { finished } from "stream";
@@ -27,6 +28,8 @@ export const TournamentInfo = ({
     onDelete,
 }: TournamentInfoProps) => {
     const navigate = useNavigate();
+    const { getText } = useLanguage();
+    const text = getText("tournament");
 
     const isLocal = onDelete === undefined;
 
@@ -34,7 +37,7 @@ export const TournamentInfo = ({
         <div className="w-full col-span-2 h-full bg-white/10 p-4 rounded-2xl flex flex-col justify-between">
             <div>
                 <h3 className="text-xl font-bold text-gray-200 mb-2 text-center">
-                    Tournament info
+                    {text.tournamentInfo}
                 </h3>
             </div>
             <div className="">
@@ -48,7 +51,7 @@ export const TournamentInfo = ({
                     </h2>
                 ) : status === GameStatus.FINISHED ? (
                     <h2 className="text-2xl font-bold text-yellow-300 mb-2 text-center">
-                        WINNER - {winner}
+                        {text.winner}:{" "} - {winner}
                     </h2>
                 ) : null}
             </div>
@@ -62,9 +65,17 @@ export const TournamentInfo = ({
                         onClick={onDelete}
                         className="px-6 py-2 bg-gradient-to-r from-black to-black/60 text-white font-semibold rounded-xl shadow hover:opacity-90 transition w-full h-full"
                         >
-                            Delete Tournament
+                            {text.deleteTournament}
                         </button>
                     )}
+                    {/* {onStart && status === GameStatus.WAITING && (
+                        <button
+                            onClick={onStart}
+                            className="px-6 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold rounded-xl shadow hover:opacity-90 transition w-full"
+                        >
+                            {text.startTournament}
+                        </button>
+                    )} */}
                 </div>
                 <button
                     onClick={() =>
@@ -72,14 +83,14 @@ export const TournamentInfo = ({
                     }
                     className="px-6 py-2 bg-gradient-to-r from-red-800/80 to-red-600/80 text-white font-semibold rounded-xl shadow hover:opacity-90 transition"
                     >
-                    Leave Tournament
+                    {text.leaveTournament}
                 </button>
                 {onStart && status === GameStatus.WAITING && (
                     <button
                     onClick={onStart}
                     className="px-6 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold rounded-xl shadow hover:opacity-90 transition"
                     >
-                        Start Tournament
+                        {text.startTournament}
                     </button>
                 )}
 
@@ -90,21 +101,21 @@ export const TournamentInfo = ({
                     Tournament Settings
                 </h3>
                 <p className="text-white/80">
-                    Host:{" "}
+                    {text.host}:{" "}
                     <span className="font-medium text-white">{host || "N/A"}</span>
                 </p>
                 <p className="text-white/80">
-                    Players:{" "}
+                    {text.players}:{" "}
                     <span className="font-medium text-white">
                         {`${players}`} / {`${maxPlayers}`}
                     </span>
                 </p>
                 <p className="text-white/80">
-                    Max Score:{" "}
+                    {text.maxScore}:{" "}
                     <span className="font-medium text-white">{maxScore}</span>
                 </p>
                 <p className="text-white/80">
-                    Random Events:{" "}
+                    {text.randomEvents}:{" "}
                     <span className="font-medium text-white">
                         {randomEvents ? "Enabled" : "Disabled"}
                     </span>

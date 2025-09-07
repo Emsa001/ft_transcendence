@@ -12,32 +12,21 @@ interface FeedOptions {
 export class DatabaseExampleFeed {
     static async feedUser(userId: number) {
         const user = await User.findById(userId);
-        // const user2 = await UserGenerate.createExample();
+        const user2 = await UserGenerate.createExample();
 
-        // await Promise.all(
-        //     Array.from({ length: 10 }).map(async () => {
-        //         const game = await Game.create();
-        //         await game.addPlayer(user);
-        //         await game.addPlayer(user2);
-        //         await game.update({ status: GameStatus.IN_PROGRESS });
-        //         await game.playerScore(Math.random() < 0.5 ? user.id : user2.id, 1);
-        //         await game.end();
-        //     })
-        // );
-
-        const tournament = await Tournament.create({ maxPlayers: 4 });
-        await tournament.addPlayer(user);
-        for (let i = 0; i < 3; i++) {
-            const user = await UserGenerate.createExample();
-            await tournament.addPlayer(user);
-        }
-
-        await tournament.start();
-
-        for (let i = 0; i < 4; i++) {
-            await tournament.startRound();
-            await tournament.exampleRoundFlow();
-        }
+        await Promise.all(
+            Array.from({ length: 10 }).map(async () => {
+                const game = await Game.create();
+                await game.addPlayer(user);
+                await game.addPlayer(user2);
+                await game.update({ status: GameStatus.IN_PROGRESS });
+                await game.playerScore(
+                    Math.random() < 0.5 ? user.id : user2.id,
+                    1
+                );
+                await game.end();
+            })
+        );
     }
 
     static async feed(options: FeedOptions = {}): Promise<void> {
@@ -45,8 +34,7 @@ export class DatabaseExampleFeed {
 
         console.log("Feeding database with example data...");
         await this.createExampleUsers(users);
-        // await this.createExampleGames(games);
-        // await this.assignGamesToUsers();
+        await this.createExampleGames(games);
         await this.createExampleTournament();
         console.log("Database example data created successfully.");
     }

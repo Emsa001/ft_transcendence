@@ -5,6 +5,7 @@ import { FaRegMessage } from "react-icons/fa6";
 import { useUser } from "@features/auth/model/useUser";
 import { useLanguage } from "@features/language/model/useLanguage";
 import { LanguageButton } from "@features/language/ui/LanguageButton";
+import { ImStatsBars2 } from "react-icons/im";
 import { IconType } from "react-icons";
 
 interface MenuItem {
@@ -23,6 +24,7 @@ export default function MainMenu() {
     const center: MenuItem[] = [
         { label: text.chat, icon: FaRegMessage, link: "/chat" },
         { label: text.play, icon: FaGamepad, link: "/game" },
+        { label: text.stats, icon: ImStatsBars2, link: `/stats/${user?.id}` },
     ];
 
     const username =

@@ -54,6 +54,7 @@ export class UserController extends BaseController {
             if (!user) throw new HttpException(404, "User not found");
             return reply.send(user.toDTO());
         }
+
         const user = await User.findById(Number(id));
         if (!user) throw new HttpException(404, "User not found");
         return reply.send(user.toDTO());
@@ -61,24 +62,26 @@ export class UserController extends BaseController {
 
     @GET("/:id/history")
     async getUserGameHistory(request: FastifyRequest, reply: FastifyReply) {
-        const { id } = request.params as { id?: string };
-        const { limit, start, end } = request.query as {
-            limit?: string;
+        const { id } = request.params as { id: string };
+        const { start, end } = request.query as {
             start?: string;
             end?: string;
         };
 
-        if (!id || Number.isNaN(Number(id)))
-            throw new HttpException(400, "Invalid user ID");
+        let userId = Number(id);
 
-        const games = await UserGamesService.getHistory(Number(id), {
-            limit: limit ? Number(limit) : undefined,
+        if (Number.isNaN(Number(id))) {
+            const user = await User.findByUsername(id);
+            if (!user) throw new HttpException(404, "User not found");
+            userId = user.id;
+        }
+
+        const games = await UserGamesService.getHistory(userId, {
             start: start ? new Date(start) : undefined,
             end: end ? new Date(end) : undefined,
         });
 
-        const tournaments = await UserGamesService.getTournaments(Number(id), {
-            limit: limit ? Number(limit) : undefined,
+        const tournaments = await UserGamesService.getTournaments(userId, {
             start: start ? new Date(start) : undefined,
             end: end ? new Date(end) : undefined,
         });
@@ -88,11 +91,16 @@ export class UserController extends BaseController {
 
     @GET("/:id/stats")
     async getUserStats(request: FastifyRequest, reply: FastifyReply) {
-        const { id } = request.params as { id?: string };
-        if (!id || Number.isNaN(Number(id)))
-            throw new HttpException(400, "Invalid user ID");
+        const { id } = request.params as { id: string };
+        let userId = Number(id);
 
-        const stats = await UserGamesService.getStatistics(Number(id));
+        if (Number.isNaN(Number(id))) {
+            const user = await User.findByUsername(id);
+            if (!user) throw new HttpException(404, "User not found");
+            userId = user.id;
+        }
+
+        const stats = await UserGamesService.getStatistics(userId);
         return reply.send(stats);
     }
 

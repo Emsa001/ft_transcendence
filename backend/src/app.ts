@@ -8,15 +8,12 @@ import cors from "@fastify/cors";
 import cookie from "@fastify/cookie";
 import middie from "@fastify/middie";
 
-import fs from "fs";
-
 import { registerDB } from "./database/client";
 import { UserController } from "./modules/user/user.controller";
 import { AuthController } from "./modules/auth/auth.controller";
 
 import metricsPlugin from "fastify-metrics";
 import { GameController } from "./modules/game/game.controller";
-import { HttpException } from "./utils/exceptions";
 import websocketPlugin from "@fastify/websocket";
 
 import fastifyMultipart from "@fastify/multipart";
@@ -28,6 +25,10 @@ import { FriendsController } from "./modules/friends/friends.controller";
 import { TournamentController } from "./modules/tournament/tournament.controller";
 import { ChatController } from "./modules/chat/chat.controller";
 
+// import sqlite3 from "sqlite3";
+import { register as prometheusRegister } from "prom-client";
+import { MetricsGauge } from "./modules/metrics/metrics.service";
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const publicPath = path.join(__dirname, "../public");
@@ -38,22 +39,14 @@ export const getApp = () => {
     return app;
 };
 
-const isProduction = process.env.NODE_ENV === "production";
+// --- Prometheus Gauges ---
+
+// --- Prometheus Gauges ---
 
 export default async function App() {
-    if (isProduction) {
-        app = Fastify({
-            logger: false,
-            https: {
-                key: fs.readFileSync("ssl/key.pem"),
-                cert: fs.readFileSync("ssl/cert.pem"),
-            },
-        });
-    } else {
-        app = Fastify({
-            logger: false,
-        });
-    }
+    app = Fastify({
+        logger: false,
+    });
 
     // WebSocket support
     await app.register(websocketPlugin);
@@ -82,6 +75,7 @@ export default async function App() {
         secret: process.env.COOKIE_SECRET || "very-secret-cookie-key",
     });
     await app.register(middie);
+
     await app.register(bootstrap, {
         controllers: [
             UserController,
@@ -105,17 +99,17 @@ export default async function App() {
     // Register Database client and models
     await registerDB(app);
 
-    // fastify-metrics for Prometheus Database
     await app.register(metricsPlugin, {
         endpoint: "/metrics",
         defaultMetrics: { enabled: true },
         routeMetrics: { enabled: true },
     });
 
-    // health endpoint here
-    app.get("/api/health", async (request, reply) => {
-        return { status: "ok" };
-    });
+    const metrics = new MetricsGauge();
+
+    setInterval(async () => {
+        await metrics.collect();
+    }, 10000);
 
     return app;
 }

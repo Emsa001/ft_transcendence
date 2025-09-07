@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import { UserAvatar } from "@features/user/ui/UserAvatar";
 import { TournamentUserDTOType } from "shared";
+import { useLanguage } from "@features/language/model/useLanguage";
 
 export const sortPlayersByWins = (
     players: TournamentUserDTOType[],
@@ -39,6 +40,9 @@ export const RegisterPlayerList = ({
 }: RegisteredPlayerListProps) => {
     const listRef = useRef<HTMLUListElement | null>(null);
 
+    const { getText } = useLanguage();
+    const text = getText("tournament");
+
     useEffect(() => {
         listRef.current?.scrollTo({
             top: listRef.current.scrollHeight,
@@ -49,7 +53,7 @@ export const RegisterPlayerList = ({
     return (
         <section className="w-full col-span-2 h-full bg-white/10 p-4 rounded-2xl flex flex-col">
             <h3 className="text-xl font-bold text-gray-200 mb-2 text-center">
-                Players
+                {text.players} ({players.length})
             </h3>
             <ul
                 className="overflow-y-auto w-full col-span-2 h-full p-4 rounded-2xl flex flex-col scrollbar-minimal space-y-2"
@@ -57,7 +61,7 @@ export const RegisterPlayerList = ({
             >
                 {players.length === 0 && (
                     <li className="text-gray-400 text-center">
-                        No players registered yet.
+                        {text.noPlayers}
                     </li>
                 )}
 
@@ -79,7 +83,9 @@ export const RegisterPlayerList = ({
                                             : "bg-green-500/30 text-green-200"
                                     }`}
                                 >
-                                    {p.eliminated ? "Eliminated" : "Active"}
+                                    {p.eliminated
+                                        ? text.eliminated
+                                        : text.active}
                                 </span>
                             )}
                             {onRemovePlayer && (

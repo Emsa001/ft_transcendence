@@ -9,6 +9,7 @@ import {
     useLocalTournamentStore,
 } from "./useLocalTournamentStore";
 import Swal from "sweetalert2";
+import { useLanguage } from "@features/language/model/useLanguage";
 
 const LocalTournamentContext = createContext<
     LocalTournamentContextType | undefined
@@ -38,6 +39,8 @@ export const LocalTournamentProvider = ({
     const [state, setState] = useState<LocalTournamentState>(
         DefaultTournamentState
     );
+    const { getText } = useLanguage();
+    const text = getText("tournament");
 
     const updateState = (updates: Partial<LocalTournamentState>) => {
         setState((prev) => ({ ...prev, ...updates }));
@@ -72,7 +75,7 @@ export const LocalTournamentProvider = ({
             players: [...prev.players, newPlayer],
         }));
 
-        return { message: `${username} added successfully.`, success: true };
+        return { message: `${username} ${text.added}`, success: true };
     };
 
     const removePlayer = (username: string) => {

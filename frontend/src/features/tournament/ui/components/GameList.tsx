@@ -1,3 +1,4 @@
+import { useLanguage } from "@features/language/model/useLanguage";
 import { useLocalTournament } from "@features/tournament/model/useLocalTournament";
 import { useRemoteTournament } from "@features/tournament/model/useRemoteTournament";
 import React from "react";
@@ -12,15 +13,18 @@ export const GameList = ({ isLocal, onGameClick }: GameListProps) => {
         ? useLocalTournament().games
         : useRemoteTournament().games;
 
+    const { getText } = useLanguage();
+    const text = getText("tournament");
+
     return (
         <section className="overflow-y-auto w-full col-span-2 h-full bg-white/10 p-4 rounded-2xl flex flex-col">
             <h3 className="text-xl font-bold text-gray-200 mb-2 text-center">
-                Games
+                {text.games}
             </h3>
 
             {games.length === 0 && (
                 <div className="w-full h-full flex items-center justify-center text-gray-400">
-                    Start the tournament to create games!
+                    {text.startToCreateGames}
                 </div>
             )}
 
@@ -33,12 +37,12 @@ export const GameList = ({ isLocal, onGameClick }: GameListProps) => {
                     >
                         <div className="flex justify-between items-center">
                             <span className="font-semibold text-gray-200">
-                                Game #{g.code} - {g.status.replace("_", " ")}{" "}
-                                {g.round}
+                                {text.game} #{g.code} -{" "}
+                                {g.status.replace("_", " ")} {g.round}
                             </span>
                             {g.winner && (
                                 <span className="text-green-400 font-medium text-sm">
-                                    Winner:{" "}
+                                    {text.winner}:{" "}
                                     {
                                         g.players.find(
                                             (pl) => pl.username === g.winner

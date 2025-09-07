@@ -8,28 +8,28 @@ import { useOnlineUsers } from "../model/useOnlineUsers";
 import { UserDTOType } from "shared";
 
 interface UserPictureProps {
-    userId: number;
+    user: UserDTOType | null;
     className?: string;
     size: number | string;
 }
 
-export const UserPicture = ({ userId, className, size }: UserPictureProps) => {
-    const [user, setUser] = useState<UserDTOType | null>(null);
+export const UserPicture = ({ user, className, size }: UserPictureProps) => {
+    // const [user, setUser] = useState<UserDTOType | null>(null);
 
     const navigate = useNavigate();
 
-    useEffect(() => {
-        const fetchUserData = async () => {
-            const userData = await FriendsApi.getUserByIdOrUsername(
-                userId.toString()
-            );
-            if (userData) {
-                setUser(userData);
-            }
-        };
+    // useEffect(() => {
+    //     const fetchUserData = async () => {
+    //         const userData = await FriendsApi.getUserByIdOrUsername(
+    //             userId.toString()
+    //         );
+    //         if (userData) {
+    //             setUser(userData);
+    //         }
+    //     };
 
-        fetchUserData();
-    }, [userId]);
+    //     fetchUserData();
+    // }, [userId]);
 
     return (
         <button

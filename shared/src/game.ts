@@ -24,6 +24,7 @@ export interface GameDTOType {
     status: GameStatus;
     mode: GameMode;
     isPrivate: boolean;
+    randomEvents: boolean;
     round?: number | null;
     maxScore?: number | null;
     players: GameUserDTOType[];

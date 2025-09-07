@@ -1,3 +1,4 @@
+import { Toast } from "@shared/lib/Toast";
 import { useStatic } from "react";
 
 let ws: WebSocket | undefined;
@@ -19,6 +20,9 @@ export const useOnlineUsers = () => {
             const msg = JSON.parse(event.data);
             if (msg.type === "online_users") {
                 setOnlineUsers(msg.onlineUsers);
+            } else if (msg.type === "message") {
+                const message = `${msg.sender}: ${msg.message}`;
+                Toast.info({ message, timeout: 3000 });
             }
         };
 

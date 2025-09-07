@@ -3,7 +3,10 @@ import { GameHistory, GetStatisticsResponse } from "shared";
 import StatsApi from "../service/api";
 
 export const useStats = () => {
-    const [history, setHistory] = useState<GameHistory | null>(null);
+    const [history, setHistory] = useState<GameHistory>({
+        games: [],
+        tournaments: [],
+    });
     const [stats, setStats] = useState<GetStatisticsResponse | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);

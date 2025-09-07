@@ -9,6 +9,7 @@ export class GameDTO implements GameDTOType {
     status: GameStatus;
     mode: GameMode;
     isPrivate: boolean;
+    randomEvents: boolean;
     round?: number | null;
     maxScore: number | null;
     players: GameUserDTOType[];
@@ -36,6 +37,7 @@ export class GameDTO implements GameDTOType {
         this.status = game.status;
         this.mode = game.mode;
         this.isPrivate = game.isPrivate;
+        this.randomEvents = game.randomEvents;
         this.round = game.round;
         this.maxScore = game.maxScore;
         this.maxPlayers = game.maxPlayers;

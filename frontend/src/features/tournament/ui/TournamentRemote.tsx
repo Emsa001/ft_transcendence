@@ -4,12 +4,15 @@ import { TournamentCreate } from "./remote/TournamentCreate";
 import { GameStatus } from "shared";
 import { RemoteTournamentProvider } from "../model/useRemoteTournament";
 import { RemoteTournamentViewer } from "./components/TournamentViewer";
+import { useLanguage } from "@features/language/model/useLanguage";
 
 interface TournamentRemoteProps {
     code?: string;
 }
 
 export const TournamentRemote = ({ code }: TournamentRemoteProps) => {
+    const { getText } = useLanguage();
+    const text = getText("remoteTournament");
     if (code) {
         return (
             <div className="w-full h-full">
@@ -28,13 +31,13 @@ export const TournamentRemote = ({ code }: TournamentRemoteProps) => {
                 <div className="w-full h-full flex flex-row flex-3 justify-evenly gap-6 items-stretch">
                     <div className="w-full border rounded-xl border-white/30 p-5">
                         <TournamentList
-                            title="New Tournaments"
+                            title={text.newTournaments}
                             status={GameStatus.WAITING}
                             />
                     </div>
                     <div className="w-full border rounded-xl border-white/30 p-5">
                         <TournamentList
-                            title="Ongoing Tournaments"
+                            title={text.ongoingTournaments}
                             status={GameStatus.IN_PROGRESS}
                             className="mt-auto"
                             />

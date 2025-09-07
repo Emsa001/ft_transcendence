@@ -65,7 +65,7 @@ class FriendsApi extends APIService {
     }
 
     async getUserByIdOrUsername(
-        idOrUsername: string
+        idOrUsername: string | number
     ): Promise<UserDTOType | null> {
         try {
             const response: AxiosResponse<UserDTOType> = await this.api.get(
