@@ -148,10 +148,9 @@ export class GameRenderer {
         ctx.restore();
     }
 
-    // top right corner
-    drawRandomEvent(event: RandomEvent) {
+    drawRandomEvent(event: RandomEvent | null) {
         const ctx = this.ctx;
-        if (!ctx) return;
+        if (!event || !ctx) return;
         const canvas = ctx.canvas;
 
         ctx.save();
