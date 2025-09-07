@@ -52,8 +52,13 @@ export const ChatProvider = ({ children }: { children?: ReactNode }) => {
         addHook,
     } = useWebSocket(`/chat`);
 
+    useEffect(() => {
+        console.log(selectedUser);
+    }, [selectedUser]);
+
     const handleSocketMessage = (msg: MessageEvent) => {
         const payload = JSON.parse(msg.data);
+        console.log(selectedUser);
         if (payload.type === "error" && payload.code === "BLOCKED_USER") {
             setMessages((prev) => prev.slice(0, -1));
             setIsBlocked(true);
@@ -66,7 +71,7 @@ export const ChatProvider = ({ children }: { children?: ReactNode }) => {
 
     useEffect(() => {
         addHook({ type: "onMessage", callback: handleSocketMessage });
-    }, []);
+    }, [selectedUser]);
 
     const sendMessage = (message: string) => {
         if (!message.trim() || !selectedUser || !isConnected || !currentUser)

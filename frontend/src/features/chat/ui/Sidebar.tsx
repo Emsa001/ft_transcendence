@@ -52,7 +52,9 @@ export const Sidebar = ({ userId }: { userId?: string }) => {
     useEffect(() => {
         if (userId) {
             const user = users.find((u) => u.id === parseInt(userId));
-            if (user) setSelectedUser(user);
+            if (user) {
+                setSelectedUser(user);
+            }
             if (userId === "-1") setSelectedUser(systemUser);
         }
     }, [userId, users]);
