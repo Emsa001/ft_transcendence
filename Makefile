@@ -33,12 +33,13 @@ format:
 test: backend
 	npm run test --prefix ./backend
 
-docker: clean
+docker:
 	docker compose down -v --remove-orphans --rmi all
 	@bash nginx/certs/generate.sh
 	@echo "\nStarting Docker in the background...\n"
 	-@docker compose up --build -d || true
 	@echo "\nAll services launched. Logs with: docker compose logs -f\n"
 
+re: clean docker
 
-.PHONY: all run dev build clean frontend backend docker install shared
+.PHONY: re all run dev build clean frontend backend docker install shared

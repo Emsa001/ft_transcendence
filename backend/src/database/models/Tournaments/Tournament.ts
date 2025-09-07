@@ -60,7 +60,10 @@ export class Tournament extends Model<
     @Column(DataType.INTEGER)
     declare id: number;
 
-    @Column(DataType.STRING)
+    @Column({
+        type: DataType.STRING,
+        validate: { len: [2, 32] },
+    })
     declare name: string;
 
     @AllowNull(false)

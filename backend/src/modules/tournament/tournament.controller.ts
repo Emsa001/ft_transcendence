@@ -61,6 +61,19 @@ export class TournamentController extends BaseController {
             randomEvents: boolean;
         };
 
+        if (name.length < 2 || name.length > 32) {
+            throw new HttpException(400, "Invalid tournament name");
+        }
+        if (maxPlayers < 2 || maxPlayers > 32) {
+            throw new HttpException(
+                400,
+                "Max players must be between 2 and 32"
+            );
+        }
+        if (maxScore < 1 || maxScore > 100) {
+            throw new HttpException(400, "Max score must be between 1 and 100");
+        }
+
         const tournament = await Tournament.create({
             name,
             maxPlayers,
