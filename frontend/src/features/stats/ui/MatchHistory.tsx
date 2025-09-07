@@ -22,20 +22,20 @@ function GameCard({ game }: { game: GameDTOType }) {
     return (
         <div
             key={game.id}
-            className="py-4 px-4 flex flex-col gap-3 hover:bg-white/5 rounded-xl transition-all duration-200 border border-purple-900/30 mb-3 last:mb-0"
+            className="py-4 px-4 flex flex-col hover:bg-white/5 rounded-xl transition-all duration-200 border border-purple-900/30 mb-3"
         >
             <div className="flex justify-between items-center">
-                <div className="text-xs font-medium text-purple-300 bg-purple-900/30 px-2 py-1 rounded">
+                <div className="text-sm font-medium text-purple-300 bg-purple-900/30 px-2 py-1 rounded">
                     #{game.id} • {gameMode}
                 </div>
-                <div className="text-xs text-purple-200">
+                <div className="text-sm text-purple-200">
                     {getTime(game.createdAt)}
                 </div>
             </div>
 
             <div className="grid grid-cols-7 items-center gap-2">
                 {/* Player 1 */}
-                <div className="col-span-3 text-right">
+                <div className="col-span-3 text-right text-lg">
                     <div
                         className={`font-medium ${player1Won ? "text-green-300" : "text-white"}`}
                     >
@@ -45,7 +45,7 @@ function GameCard({ game }: { game: GameDTOType }) {
 
                 {/* VS separator */}
                 <div className="flex flex-col items-center justify-center col-span-1">
-                    <div className="w-6 h-6 rounded-full bg-purple-800 flex items-center justify-center text-xs font-bold">
+                    <div className="w-10 h-10 rounded-full bg-purple-800 flex items-center justify-center font-bold">
                         VS
                     </div>
                 </div>
@@ -64,19 +64,19 @@ function GameCard({ game }: { game: GameDTOType }) {
             <div className="grid grid-cols-7 items-center gap-2">
                 <div className="col-span-3 text-right">
                     <div
-                        className={`text-lg font-bold ${player1Won ? "text-green-400" : "text-purple-200"}`}
+                        className={`text-xl font-bold ${player1Won ? "text-green-400" : "text-purple-200"}`}
                     >
                         {player1Score}
                     </div>
                 </div>
 
-                <div className="col-span-1 text-center text-xs text-purple-400">
+                <div className="col-span-1 text-center text-sm text-purple-400">
                     Score
                 </div>
 
                 <div className="col-span-3">
                     <div
-                        className={`text-lg font-bold ${player2Won ? "text-green-400" : "text-purple-200"}`}
+                        className={`text-xl font-bold ${player2Won ? "text-green-400" : "text-purple-200"}`}
                     >
                         {player2Score}
                     </div>
@@ -84,14 +84,12 @@ function GameCard({ game }: { game: GameDTOType }) {
             </div>
 
             {/* Winner banner */}
-            {game.winner && (
-                <div className="mt-2 pt-2 border-t border-purple-800/50 flex justify-center">
-                    <div className="text-xs font-semibold bg-gradient-to-r from-purple-900/40 to-pink-900/40 px-3 py-1 rounded-full">
-                        Winner:{" "}
-                        <span className="text-green-300">{game.winner}</span>
-                    </div>
+            <div className="mt-2 pt-2 border-t border-purple-800/50 flex justify-center">
+                <div className="text-xs font-semibold bg-gradient-to-r from-purple-900/40 to-pink-900/40 px-3 py-1 rounded-full">
+                    Winner:{" "}
+                    <span className="text-green-300">{game.winner}</span>
                 </div>
-            )}
+            </div>
         </div>
     );
 }
