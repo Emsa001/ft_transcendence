@@ -14,11 +14,13 @@ export const ChatArea = () => {
     const [hasMore, setHasMore] = useState(false);
     const messageBoxRef = useRef<HTMLDivElement | null>(null);
 
+    const { user } = useUser();
     const { getText } = useLanguage();
     const text = getText("chat");
 
-    const { user } = useUser();
-    if (!user) return <div />;
+    useEffect(() => {
+        scrollToBottom();
+    }, [messages]);
 
     const scrollToBottom = () => {
         if (blockScroll.current) {
@@ -38,10 +40,6 @@ export const ChatArea = () => {
         blockScroll.current = true;
         getMessages();
     };
-
-    useEffect(() => {
-        scrollToBottom();
-    }, [messages]);
 
     const getMessages = async (init?: boolean) => {
         if (!selectedUser) return;
@@ -68,9 +66,16 @@ export const ChatArea = () => {
         }
     }, [selectedUser]);
 
+    if (!user) return <div />;
     return (
         <div className="flex flex-col w-2/3 bg-black/50 relative z-10">
-            {selectedUser ? (
+            {!selectedUser && (
+                <div className="flex items-center justify-center h-full">
+                    {text.noChat}
+                </div>
+            )}
+
+            {selectedUser && (
                 <div className="flex flex-col h-full">
                     {/* User Info */}
                     <UserInfo />
@@ -99,10 +104,6 @@ export const ChatArea = () => {
 
                     {/* Input */}
                     <ChatInput />
-                </div>
-            ) : (
-                <div className="flex items-center justify-center h-full">
-                    {text.noChat}
                 </div>
             )}
         </div>

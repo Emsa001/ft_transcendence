@@ -1,9 +1,11 @@
 // src/modules/tournament/services/tournament-creation.service.ts
 import { Game } from "@/database/models/Game/Game";
+import { Message } from "@/database/models/Message/Message";
 import { Tournament } from "@/database/models/Tournaments/Tournament";
+import { chatWSService } from "@/modules/chat/service/ws.service";
 import { GameRooms } from "@/modules/game/services/registry.service";
 import { HttpException } from "@/utils/exceptions";
-import { GameStatus } from "shared";
+import { GameStatus, MessageDTOType } from "shared";
 
 // Mirrors the frontend TournamentEngine semantics:
 // - Pre-create ALL games with status = LOCKED, tagged with round
@@ -146,6 +148,29 @@ export class TournamentCreationService {
 
             // only create a room when the game actually starts
             await GameRooms.create(game);
+
+            const message1 = {
+                sender: -1,
+                receiver: p1.id,
+                message: `It's your turn to play in tournament '${tournament.name}'!`,
+                createdAt: new Date(),
+            } as MessageDTOType;
+
+            const message2 = {
+                sender: -1,
+                receiver: p1.id,
+                message: `/invite ${game.code}`,
+                createdAt: new Date(),
+            } as MessageDTOType;
+
+            await chatWSService.handleMessage(message1);
+            await chatWSService.handleMessage(message2);
+
+            message1.receiver = p2.id;
+            message2.receiver = p2.id;
+
+            await chatWSService.handleMessage(message1);
+            await chatWSService.handleMessage(message2);
 
             startedGames.push(game);
         }

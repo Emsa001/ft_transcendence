@@ -11,16 +11,12 @@ import {
 } from "sequelize-typescript";
 
 import { User } from "../User/User";
-import { MessageDTOType } from "shared";
 
 @Table
-export class Message
-    extends Model<
-        InferAttributes<Message>,
-        InferCreationAttributes<Message, { omit: "id" }>
-    >
-    implements MessageDTOType
-{
+export class Message extends Model<
+    InferAttributes<Message>,
+    InferCreationAttributes<Message, { omit: "id" }>
+> {
     @PrimaryKey
     @AutoIncrement
     @Column(DataType.INTEGER)
@@ -36,7 +32,4 @@ export class Message
 
     @Column(DataType.TEXT)
     declare message: string;
-
-    @Column(DataType.DATE)
-    declare createdAt: Date;
 }

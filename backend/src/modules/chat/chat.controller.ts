@@ -1,7 +1,6 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { Controller, GET } from "fastify-decorators";
 import { BaseController } from "../base";
-import jwtService from "../auth/services/jwt.service";
 import { WebSocket } from "@fastify/websocket";
 import { chatWSService } from "./service/ws.service";
 import { AUTHORIZED, WS_AUTHORIZED } from "../auth/auth.middleware";
