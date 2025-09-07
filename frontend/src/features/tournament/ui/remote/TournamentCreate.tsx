@@ -17,8 +17,8 @@ export const TournamentCreate = () => {
         const randomEvents = formData.get("randomEvents") === "on";
 
         if (!name) return setError("Tournament name is required");
-        if (maxPlayers < 2 || maxPlayers > 16)
-            return setError("Max players must be between 2 and 16");
+        if (maxPlayers < 2 || maxPlayers > 32)
+            return setError("Max players must be between 2 and 32");
         if (maxScore < 1 || maxScore > 99)
             return setError("Max score must be between 1 and 99");
 
@@ -75,7 +75,7 @@ export const TournamentCreate = () => {
                             type="number"
                             name="maxPlayers"
                             min={2}
-                            max={16}
+                            max={32}
                             defaultValue={4}
                             className="w-full rounded-xl bg-indigo-800/20 border border-white/10 px-4 py-3 text-purple-200 placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition"
                         />

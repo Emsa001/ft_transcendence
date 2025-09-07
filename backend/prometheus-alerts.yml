@@ -1,0 +1,30 @@
+groups:
+  - name: ft_transcendence_alerts
+    rules:
+      # - alert: HighCPUUsage
+      #   expr: 100 - (avg by(instance) (rate(node_cpu_seconds_total{mode="idle"}[5m])) * 100) > 80
+      #   for: 2m
+      #   labels:
+      #     severity: warning
+      #   annotations:
+      #     summary: "CPU usage is above 80% on {{ $labels.instance }}"
+      #     description: "CPU usage is high for more than 2 minutes."
+
+      # - alert: InstanceDown
+      #   expr: up == 0
+      #   for: 1m
+      #   labels:
+      #     severity: critical
+      #   annotations:
+      #     summary: "Instance {{ $labels.instance }} is down"
+      #     description: "The instance has not responded for more than 1 minute."
+      
+      - alert: TooManyUsers
+        expr: sqlite_user_count > 1
+        for:  15s
+        labels:
+          severity: warning
+        annotations:
+          summary: "High User Count"
+          description: "There are more than 1 users in the database."
+        

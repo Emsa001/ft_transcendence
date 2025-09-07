@@ -34,8 +34,7 @@ export class DatabaseExampleFeed {
 
         console.log("Feeding database with example data...");
         await this.createExampleUsers(users);
-        // await this.createExampleGames(games);
-        // await this.assignGamesToUsers();
+        await this.createExampleGames(games);
         await this.createExampleTournament();
         console.log("Database example data created successfully.");
     }

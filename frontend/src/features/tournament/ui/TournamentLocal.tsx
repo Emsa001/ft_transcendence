@@ -15,7 +15,7 @@ import { LocalTournamentViewer } from "./components/TournamentViewer";
 export const TournamentLocal = () => {
     return (
         <div className="w-full h-full">
-            <LocalTournamentProvider maxPlayers={16}>
+            <LocalTournamentProvider maxPlayers={32}>
                 <div className="w-full h-full">
                     <TournamentView />
                 </div>

@@ -8,13 +8,11 @@ run: frontend backend
 
 dev: run
 
-build:
-	npm run build --prefix ./frontend
-
 clean:
 	rm -rf ./*/node_modules
 	rm -rf ./*/dist
 	rm -rf ./*/package-lock.json
+	docker compose down -v --remove-orphans --rmi all
 
 frontend: shared
 	npm install --prefix ./frontend
@@ -36,7 +34,12 @@ test: backend
 	npm run test --prefix ./backend
 
 docker:
-	docker-compose down
-	docker-compose up --build
+	docker compose down -v --remove-orphans --rmi all
+	@bash nginx/certs/generate.sh
+	@echo "\nStarting Docker in the background...\n"
+	-@docker compose up --build -d || true
+	@echo "\nAll services launched. Logs with: docker compose logs -f\n"
 
-.PHONY: all run dev build clean frontend backend docker install shared
+re: clean docker
+
+.PHONY: re all run dev build clean frontend backend docker install shared
