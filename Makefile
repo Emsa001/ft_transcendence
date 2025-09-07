@@ -1,4 +1,4 @@
-all: run
+all: docker
 
 run: frontend backend
 	# TODO: changes this for general compatibility
