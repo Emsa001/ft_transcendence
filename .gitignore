@@ -7,3 +7,4 @@ dist
 test*
 backend/index.js
 *.pem
+todo.txt
