@@ -1,5 +1,3 @@
-import { join } from "path";
-
 export default {
     landScreen: {
         label: "ft_transcendence",

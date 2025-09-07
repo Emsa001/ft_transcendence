@@ -43,7 +43,7 @@ export const GameCreationModal = ({ onClose, onCreate }: GameModalProps) => {
                                 {text.privateGame}
                             </span>
                             <p className="text-xs text-white/50 mt-1">
-                                {text.privateGame}
+                                {text.onlyFriends}
                             </p>
                         </div>
                         <div className="relative">
