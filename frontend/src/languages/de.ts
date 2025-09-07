@@ -107,7 +107,7 @@ export default {
         continueWithGoogle: "Mit Google fortfahren",
     },
     charts: {
-        transzendenzPlayer: "Transcendence • 'Spieler'",
+        transcendencePlayer: "Transcendence • 'Spieler'",
         games: "Spiele",
         wins: "Siege",
         losses: "Niederlagen",
