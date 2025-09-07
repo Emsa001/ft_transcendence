@@ -4,6 +4,7 @@ import { BaseController } from "../base";
 import { WebSocket } from "@fastify/websocket";
 import { chatWSService } from "./service/ws.service";
 import { AUTHORIZED, WS_AUTHORIZED } from "../auth/auth.middleware";
+import { UserStatusService } from "../user/services/user.status";
 
 @Controller("/chat")
 export class ChatController extends BaseController {
@@ -18,6 +19,11 @@ export class ChatController extends BaseController {
                 try {
                     const msg = JSON.parse(raw.toString());
                     chatWSService.handleMessage(msg);
+                    UserStatusService.sendMessageToUser(
+                        req.user.username,
+                        msg.receiver,
+                        msg.message
+                    );
                 } catch (err) {
                     console.error("Invalid message format:", err);
                 }

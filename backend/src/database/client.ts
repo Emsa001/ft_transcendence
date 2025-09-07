@@ -10,6 +10,7 @@ import { Message } from "./models/Message/Message";
 import { BlockedUsers } from "./models/User/BlockedUsers";
 import { GameRooms } from "@/modules/game/services/registry.service";
 import { TournamentRooms } from "@/modules/tournament/services/registry.service";
+import { DatabaseExampleFeed } from "./feed";
 
 const models = [
     User,
