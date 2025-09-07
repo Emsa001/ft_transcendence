@@ -60,11 +60,16 @@ down:
 
 re: clean build
 
-docker:
-	docker compose down -v --remove-orphans --rmi all
+build: clean
 	@nginx/certs/generate.sh
 	@echo "\nStarting Docker in the background...\n"
-	-@docker compose up --build -d || true
+	@docker compose up --build -d
 	@echo "\nAll services launched. Logs with: docker compose logs -f\n"
+
+up:
+	@docker compose up
+
+down:
+	@docker compose down
 
 .PHONY: re all run dev build clean frontend backend docker install shared
