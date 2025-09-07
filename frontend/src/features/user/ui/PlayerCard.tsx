@@ -2,6 +2,7 @@ import React from "react";
 import { useNavigate } from "react";
 import { GameUserDTOType } from "shared";
 import { UserPicture } from "./UserPicture";
+import { sliceText } from "@shared/lib/utils";
 
 export const PlayerCard = ({ player }: { player: GameUserDTOType }) => {
     const navigate = useNavigate();
@@ -14,7 +15,7 @@ export const PlayerCard = ({ player }: { player: GameUserDTOType }) => {
                     className="font-semibold group-hover:underline cursor-pointer"
                     onClick={() => navigate(`/profile/${player.username}`)}
                 >
-                    {player.username}
+                    {sliceText(player.username, 10)}
                 </button>
 
                 <p className="text-indigo-400 font-bold">

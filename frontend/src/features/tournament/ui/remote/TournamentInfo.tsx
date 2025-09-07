@@ -1,5 +1,6 @@
 import { stat } from "fs";
 import { useLanguage } from "@features/language/model/useLanguage";
+import { sliceText } from "@shared/lib/utils";
 import React, { useNavigate } from "react";
 import { GameStatus } from "shared";
 import { finished } from "stream";

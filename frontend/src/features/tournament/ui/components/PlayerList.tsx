@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { UserAvatar } from "@features/user/ui/UserAvatar";
 import { TournamentUserDTOType } from "shared";
 import { useLanguage } from "@features/language/model/useLanguage";
+import { sliceText } from "@shared/lib/utils";
 
 export const sortPlayersByWins = (
     players: TournamentUserDTOType[],
@@ -73,7 +74,9 @@ export const RegisterPlayerList = ({
                         {!isLocal && (
                             <UserAvatar name={p.username} src={p.avatar} />
                         )}
-                        <span className="text-gray-200">{p.username}</span>
+                        <span className="text-gray-200">
+                            {sliceText(p.username, 10)}
+                        </span>
                         <div className="ml-auto">
                             {showPlayerStatus && (
                                 <span

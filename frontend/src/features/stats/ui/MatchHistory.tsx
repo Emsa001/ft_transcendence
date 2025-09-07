@@ -1,4 +1,4 @@
-import { getTime } from "@shared/lib/utils";
+import { getTime, sliceText } from "@shared/lib/utils";
 import React from "react";
 import { GameDTOType, GameUserDTOType } from "shared/dist";
 import { FaRegClock } from "react-icons/fa";
@@ -43,7 +43,7 @@ function GameCard({ game }: { game: GameDTOType }) {
                     <div
                         className={`font-medium ${player1Won ? "text-green-300" : "text-white"}`}
                     >
-                        {player1Name}
+                        {sliceText(player1Name, 10)}
                     </div>
                 </div>
 
@@ -59,7 +59,7 @@ function GameCard({ game }: { game: GameDTOType }) {
                     <div
                         className={`font-medium ${player2Won ? "text-green-300" : "text-white"}`}
                     >
-                        {player2Name}
+                        {sliceText(player2Name, 10)}
                     </div>
                 </div>
             </div>
@@ -91,7 +91,9 @@ function GameCard({ game }: { game: GameDTOType }) {
             <div className="mt-2 pt-2 border-t border-purple-800/50 flex justify-center">
                 <div className="text-xs font-semibold bg-gradient-to-r from-purple-900/40 to-pink-900/40 px-3 py-1 rounded-full">
                     {text.winner}:{" "}
-                    <span className="text-green-300">{game.winner}</span>
+                    <span className="text-green-300">
+                        {sliceText(game.winner || "", 10)}
+                    </span>
                 </div>
             </div>
         </div>

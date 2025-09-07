@@ -1,5 +1,4 @@
-import { Ball, GameMessage, Paddle } from "shared";
-import { GameState } from "../types";
+import { Ball, GameMessage, Paddle, RandomEvent } from "shared";
 
 // Drawing and Calculation Class
 export class GameRenderer {
@@ -146,6 +145,21 @@ export class GameRenderer {
         ctx.textBaseline = "top";
         const speed = Math.hypot(ball.vel.x, ball.vel.y).toFixed(1);
         ctx.fillText(`Speed: ${speed}`, 24 * this.sx, 18 * this.sy);
+        ctx.restore();
+    }
+
+    // top right corner
+    drawRandomEvent(event: RandomEvent) {
+        const ctx = this.ctx;
+        if (!ctx) return;
+        const canvas = ctx.canvas;
+
+        ctx.save();
+        ctx.font = `${20 * this.sx}px ui-sans-serif, system-ui`;
+        ctx.fillStyle = "#c4b5fd";
+        ctx.textAlign = "right";
+        ctx.textBaseline = "top";
+        ctx.fillText(event.name, canvas.width - 24 * this.sx, 18 * this.sy);
         ctx.restore();
     }
 

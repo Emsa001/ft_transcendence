@@ -1,6 +1,7 @@
 import { useLanguage } from "@features/language/model/useLanguage";
 import { useLocalTournament } from "@features/tournament/model/useLocalTournament";
 import { useRemoteTournament } from "@features/tournament/model/useRemoteTournament";
+import { sliceText } from "@shared/lib/utils";
 import React from "react";
 
 interface GameListProps {
@@ -43,16 +44,19 @@ export const GameList = ({ isLocal, onGameClick }: GameListProps) => {
                             {g.winner && (
                                 <span className="text-green-400 font-medium text-sm">
                                     {text.winner}:{" "}
-                                    {
+                                    {sliceText(
                                         g.players.find(
                                             (pl) => pl.username === g.winner
-                                        )?.username
-                                    }
+                                        )?.username ?? "",
+                                        10
+                                    )}
                                 </span>
                             )}
                         </div>
                         <span className="text-gray-300 text-sm">
-                            {g.players.map((pl) => pl.username).join(" vs ")}
+                            {g.players
+                                .map((pl) => sliceText(pl.username, 10))
+                                .join(" vs ")}
                         </span>
                     </li>
                 ))}

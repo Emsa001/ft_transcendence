@@ -9,7 +9,7 @@ export interface GameEngineType {
     onRandomEvent?: (event: string) => void;
 }
 
-interface RandomEvent {
+export interface RandomEvent {
     action: () => void;
     time: number;
     name: string;
@@ -19,6 +19,7 @@ interface RandomEvent {
 export class GameEvents {
     private isEvent: boolean;
     private events: RandomEvent[];
+    selectedEvent: RandomEvent | null = null;
     private timeoutIds: ReturnType<typeof setTimeout>[] = [];
     private snapshot: { ball: Ball; paddles: Record<number, Paddle> } | null =
         null;
@@ -67,21 +68,21 @@ export class GameEvents {
         }
 
         let roll = Math.random() * 100;
-        let selectedEvent: RandomEvent | null = null;
+        this.selectedEvent = null;
 
         for (const event of this.events) {
             if (roll < event.chance) {
-                selectedEvent = event;
+                this.selectedEvent = event;
                 break;
             }
             roll -= event.chance;
         }
 
-        if (!selectedEvent) return;
+        if (!this.selectedEvent) return;
 
         this.snapshot = { ball: gameEngine.ball, paddles: gameEngine.paddles };
 
-        selectedEvent.action();
+        this.selectedEvent.action();
         this.isEvent = true;
 
         const id = setTimeout(() => {
@@ -91,15 +92,15 @@ export class GameEvents {
                 gameEngine.paddles = this.snapshot.paddles;
             }
             this.snapshot = null;
-            
+
             const id2 = setTimeout(() => {
                 this.isOnCooldown = false;
             }, this.cooldown);
             this.timeoutIds.push(id2);
-            
+
             this.isOnCooldown = true;
-        }, selectedEvent.time);
-        
+        }, this.selectedEvent.time);
+
 
         this.timeoutIds.push(id);
     }

@@ -4,6 +4,7 @@ import { UserPicture } from "@features/user/ui/UserPicture";
 import { Toast } from "@shared/lib/Toast";
 import { useLanguage } from "@features/language/model/useLanguage";
 import FriendsApi from "../../../user/service/friendsApi";
+import { sliceText } from "@shared/lib/utils";
 
 interface FriendRequestsProps {
     friendRequests: UserDTOType[];
@@ -52,7 +53,7 @@ export const FriendRequests = ({
                             className="font-medium text-gray-200 group-hover:underline group-hover:cursor-pointer"
                             onClick={() => navigate(`/profile/${user.id}`)}
                         >
-                            {user.username}
+                            {sliceText(user.username, 10)}
                         </span>
                     </div>
 

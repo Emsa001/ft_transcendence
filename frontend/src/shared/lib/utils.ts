@@ -6,3 +6,8 @@ export const getTime = (date: Date) => {
     const minutes = String(d.getMinutes()).padStart(2, "0");
     return `${day}/${month} ${hours}:${minutes}`;
 };
+
+export function sliceText(str: string, maxLength: number) {
+    if (str.length <= maxLength) return str;
+    return str.slice(0, maxLength) + "...";
+}

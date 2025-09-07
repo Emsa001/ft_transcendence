@@ -13,6 +13,7 @@ export const AddPlayerInput = ({ onAddPlayer }: AddPlayerInputProps) => {
             <input
                 type="text"
                 name="player"
+                maxLength={32}
                 placeholder={text.enterPlayerName}
                 className="flex-1 px-4 py-2 rounded-xl bg-fuchsia-200/10 placeholder-gray-200 focus:outline-none focus:bg-fuchsia-300/10 transition"
             />

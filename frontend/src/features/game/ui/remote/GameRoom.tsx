@@ -5,6 +5,7 @@ import { GameElementRemote } from "../components/GameElement";
 import { GameWaiting } from "./GameWaiting";
 import { useLanguage } from "@features/language/model/useLanguage";
 import { Toast } from "@shared/lib/Toast";
+import { sliceText } from "@shared/lib/utils";
 
 export const GameRemoteRoom = () => {
     const {
@@ -77,12 +78,12 @@ export const GameRemoteRoom = () => {
                 </h2>
                 <div
                     onClick={handleCopy}
-                    className="w-full cursor-pointer bg-gray-900 rounded-lg px-6 py-4 text-2xl text-purple-300 font-mono flex items-center justify-center hover:bg-gray-800 transition tracking-[0.7em]"
+                    className="w-full rounded-xl bg-indigo-800/40 border border-white/10 px-4 py-3 text-purple-200 cursor-pointer text-center text-lg font-mono tracking-[0.7em]"
                 >
                     {code}
                 </div>
 
-                <p className="text-gray-200 mb-2">{renderStatus()}</p>
+                <p className="text-gray-200 mt-2 mb-2">{renderStatus()}</p>
                 {isPrivate && (
                     <span className="text-sm text-yellow-300 font-medium">
                         {text.privateGame}
@@ -101,7 +102,7 @@ export const GameRemoteRoom = () => {
                             className="flex items-center justify-between px-3 py-2 bg-white/20 rounded-lg hover:bg-white/30 transition text-white"
                         >
                             <span>
-                                {player.username}{" "}
+                                {sliceText(player.username, 10)}{" "}
                                 {host === player.id && "(Host)"}
                             </span>
                             <span className="text-sm text-gray-200">
