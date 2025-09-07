@@ -70,8 +70,8 @@ export class TournamentController extends BaseController {
                 "Max players must be between 2 and 32"
             );
         }
-        if (maxScore < 1 || maxScore > 100) {
-            throw new HttpException(400, "Max score must be between 1 and 100");
+        if (maxScore < 1 || maxScore > 99) {
+            throw new HttpException(400, "Max score must be between 1 and 99");
         }
 
         const tournament = await Tournament.create({
