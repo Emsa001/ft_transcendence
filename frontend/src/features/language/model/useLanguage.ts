@@ -2,6 +2,7 @@ import { useLocalStorage } from "react";
 import en from "../../../languages/en";
 import pl from "../../../languages/pl";
 import de from "../../../languages/de";
+import pt from "../../../languages/pt";
 import es from "../../../languages/es";
 import ge from "../../../languages/ge";
 import ch from "../../../languages/ch";
@@ -40,6 +41,7 @@ export const useLanguage = () => {
             en: en,
             pl: pl,
             de: de,
+            pt: pt,
             es: es,
             ge: ge,
             ch: ch,
