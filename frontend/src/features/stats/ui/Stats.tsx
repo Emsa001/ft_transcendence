@@ -4,8 +4,11 @@ import { GetStatisticsResponse } from "shared/dist";
 import { MdOutlineGames } from "react-icons/md";
 import { FaAward } from "react-icons/fa";
 import { IoMdSad } from "react-icons/io";
+import { useLanguage } from "@features/language/model/useLanguage";
 
 export function StatsCard({ allStats }: { allStats: GetStatisticsResponse }) {
+    const { getText } = useLanguage();
+    const text = getText("charts");
     const stats = allStats.total;
 
     return (
@@ -18,7 +21,7 @@ export function StatsCard({ allStats }: { allStats: GetStatisticsResponse }) {
                     />
                 </div>
                 <div>
-                    <div className="text-xs text-purple-200">Games</div>
+                    <div className="text-xs text-purple-200">{text.games}</div>
                     <div className="text-2xl font-bold">{stats.amount}</div>
                 </div>
             </div>
@@ -27,7 +30,7 @@ export function StatsCard({ allStats }: { allStats: GetStatisticsResponse }) {
                     <Icon icon={FaAward} className="text-white w-8 h-8" />
                 </div>
                 <div>
-                    <div className="text-xs text-purple-200">Wins</div>
+                    <div className="text-xs text-purple-200">{text.wins}</div>
                     <div className="text-2xl font-bold">{stats.wins}</div>
                 </div>
             </div>
@@ -36,7 +39,7 @@ export function StatsCard({ allStats }: { allStats: GetStatisticsResponse }) {
                     <Icon icon={IoMdSad} className="text-white w-8 h-8" />
                 </div>
                 <div>
-                    <div className="text-xs text-purple-200">Losses</div>
+                    <div className="text-xs text-purple-200">{text.losses}</div>
                     <div className="text-2xl font-bold">{stats.losses}</div>
                 </div>
             </div>

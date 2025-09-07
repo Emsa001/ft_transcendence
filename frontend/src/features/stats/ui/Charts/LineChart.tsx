@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from "react";
 import Chart from "chart.js/auto";
 import { GameDTOType, GetStatisticsResponse, UserDTOType } from "shared/dist";
+import { useLanguage } from "@features/language/model/useLanguage";
 
 const LINE_CHART_BASE = {
     type: "line" as const,
@@ -67,6 +68,8 @@ interface LineChartProps {
 export function LineChart({ games, user }: LineChartProps) {
     const lineChartRef = useRef<HTMLCanvasElement | null>(null);
     const lineChartInstance = useRef<Chart | null>(null);
+    const { getText } = useLanguage();
+    const text = getText("charts");
 
     useEffect(() => {
         if (!lineChartRef.current) return;
@@ -89,7 +92,7 @@ export function LineChart({ games, user }: LineChartProps) {
                     labels: recentGames.map((g) => `#${g.id}`),
                     datasets: [
                         {
-                            label: "Your Score",
+                            label: text.yourScore,
                             data: userScores,
                             borderColor: "#ff6ab9",
                             backgroundColor: "rgba(255,106,185,0.3)",
@@ -99,7 +102,7 @@ export function LineChart({ games, user }: LineChartProps) {
                             pointHoverRadius: 7,
                         },
                         {
-                            label: "Average Score",
+                            label: text.averageScore,
                             data: avgScores,
                             borderColor: "#a259ff",
                             backgroundColor: "rgba(162,89,255,0.2)",
@@ -116,12 +119,12 @@ export function LineChart({ games, user }: LineChartProps) {
                 lineChartInstance.current.destroy();
             }
         };
-    }, [games, user]);
+    }, [games, user, text]);
 
     return (
         <div className="glass-panel p-4 rounded-2xl">
             <h2 className="mb-10 font-semibold text-white">
-                Score Progression
+                {text.scoreProgression}
             </h2>
             <div
                 className="chart-container"

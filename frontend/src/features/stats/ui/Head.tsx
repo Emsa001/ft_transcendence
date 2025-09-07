@@ -1,7 +1,11 @@
+import { useLanguage } from "@features/language/model/useLanguage";
 import React from "react";
 import { UserDTOType } from "shared/dist";
 
 export function Head({ user }: { user: UserDTOType }) {
+    const { getText } = useLanguage();
+    const text = getText("charts");
+
     return (
         <div className="mt-16 flex items-center gap-6">
             <div className="w-20 h-20 rounded-full bg-gradient-to-br from-pink-500 to-purple-600 flex items-center justify-center shadow-xl glass-border">
@@ -12,7 +16,7 @@ export function Head({ user }: { user: UserDTOType }) {
                     {user.username}
                 </h1>
                 <p className="text-sm text-purple-200">
-                    Transcendence • "Player"
+                    {text.transcendencePlayer}
                 </p>
             </div>
         </div>

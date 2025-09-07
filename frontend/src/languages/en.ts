@@ -1,3 +1,5 @@
+import { random } from "lodash";
+
 export default {
     landScreen: {
         label: "ft_transcendence",
@@ -105,6 +107,22 @@ export default {
         alreadyHaveAccount: "Already have an account?",
         dontHaveAccount: "Don't have an account?",
         continueWithGoogle: "Continue with Google",
+    },
+    charts: {
+        transcendencePlayer: "Transcendence • Player'",
+        games: "Games",
+        wins: "Wins",
+        losses: "Losses",
+        noData: "No data",
+        scoreProgression: "Score Progression",
+        yourScore: "Your Score",
+        averageScore: "Average Score",
+        winLossRatio: "Win / Loss Ratio",
+        casual: "Casual",
+        randomEvents: "Random Events",
+        matchHistory: "Match History",
+        score: "Score",
+        winner: "Winner",
     },
     game: {
         label: "Game Selector",

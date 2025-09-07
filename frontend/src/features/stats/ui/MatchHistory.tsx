@@ -3,8 +3,12 @@ import React from "react";
 import { GameDTOType, GameUserDTOType } from "shared/dist";
 import { FaRegClock } from "react-icons/fa";
 import { Icon } from "@shared/components/Icon";
+import { useLanguage } from "@features/language/model/useLanguage";
 
 function GameCard({ game }: { game: GameDTOType }) {
+    const { getText } = useLanguage();
+    const text = getText("charts");
+
     const player1: GameUserDTOType = game.players[0];
     const player2: GameUserDTOType = game.players[1];
 
@@ -71,7 +75,7 @@ function GameCard({ game }: { game: GameDTOType }) {
                 </div>
 
                 <div className="col-span-1 text-center text-sm text-purple-400">
-                    Score
+                    {text.score}
                 </div>
 
                 <div className="col-span-3">
@@ -86,7 +90,7 @@ function GameCard({ game }: { game: GameDTOType }) {
             {/* Winner banner */}
             <div className="mt-2 pt-2 border-t border-purple-800/50 flex justify-center">
                 <div className="text-xs font-semibold bg-gradient-to-r from-purple-900/40 to-pink-900/40 px-3 py-1 rounded-full">
-                    Winner:{" "}
+                    {text.winner}:{" "}
                     <span className="text-green-300">{game.winner}</span>
                 </div>
             </div>
@@ -95,11 +99,13 @@ function GameCard({ game }: { game: GameDTOType }) {
 }
 
 export function MatchHistory({ games }: { games: GameDTOType[] }) {
+    const { getText } = useLanguage();
+    const text = getText("charts");
     return (
         <div className="glass-panel p-5 rounded-2xl">
             <h3 className="text-xl font-bold mb-5 text-purple-100 flex items-center gap-2">
                 <Icon icon={FaRegClock} className="text-purple-300 w-5 h-5" />
-                Match History
+                {text.matchHistory}
             </h3>
             <div className="divide-y divide-purple-800 max-h-96 overflow-y-auto">
                 {games.map((game) => (
