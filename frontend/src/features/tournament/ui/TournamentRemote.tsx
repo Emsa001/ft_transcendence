@@ -5,7 +5,6 @@ import { GameStatus } from "shared";
 import { RemoteTournamentProvider } from "../model/useRemoteTournament";
 import { RemoteTournamentViewer } from "./components/TournamentViewer";
 import { useLanguage } from "@features/language/model/useLanguage";
-import _ from "lodash";
 
 interface TournamentRemoteProps {
     code?: string;
