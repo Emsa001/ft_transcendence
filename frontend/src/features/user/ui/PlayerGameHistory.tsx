@@ -5,6 +5,7 @@ import { PlayerCard } from "./PlayerCard";
 import { FaCrown } from "react-icons/fa";
 import { Icon } from "@shared/components/Icon";
 import { useLanguage } from "@features/language/model/useLanguage";
+import { getTime } from "@shared/lib/utisl";
 
 interface PlayerGameHistoryProps {
     games: GameDTOType[];
@@ -63,15 +64,6 @@ export const PlayerTournamentHistory = ({
             </div>
         </div>
     );
-};
-
-const getTime = (date: Date) => {
-    const d = new Date(date);
-    const day = String(d.getDate()).padStart(2, "0");
-    const month = String(d.getMonth() + 1).padStart(2, "0");
-    const hours = String(d.getHours()).padStart(2, "0");
-    const minutes = String(d.getMinutes()).padStart(2, "0");
-    return `${day}/${month} ${hours}:${minutes}`;
 };
 
 const TournamentCard = ({ tournament }: { tournament: TournamentDTOType }) => {
