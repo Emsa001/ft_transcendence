@@ -89,7 +89,7 @@ export const TournamentInfo = ({
                     {onStart && status === GameStatus.WAITING && (
                         <button
                             onClick={onStart}
-                            className="px-6 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold rounded-xl shadow hover:opacity-90 transition"
+                            className="px-6 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold rounded-xl shadow hover:opacity-90 transition w-full"
                         >
                             Start Tournament
                         </button>

@@ -43,11 +43,16 @@ export const Sidebar = ({ userId }: { userId?: string }) => {
     const { users, selectedUser, setSelectedUser, handleSelectUser } =
         useChat();
     const { onlineUsers } = useOnlineUsers();
+    const systemUser = {
+        id: -1,
+        username: "System",
+    };
+
     useEffect(() => {
         if (userId) {
-            console.log(users);
             const user = users.find((u) => u.id === parseInt(userId));
             if (user) setSelectedUser(user);
+            if (userId === "-1") setSelectedUser(systemUser);
         }
     }, [userId, users]);
 
@@ -62,11 +67,13 @@ export const Sidebar = ({ userId }: { userId?: string }) => {
             <div className="border-b-2 border-cyan-600 mb-2 shadow-[0_0_12px_rgba(0,255,255,0.8)]" />
 
             <div className="space-y-2 max-h-[calc(100vh-120px)] overflow-y-auto pr-1">
-                {users.map((user) => (
+                {[...users, systemUser].map((user) => (
                     <div key={user.id}>
                         <UserCard
                             user={user}
-                            isOnline={onlineUsers.includes(user.id)}
+                            isOnline={
+                                onlineUsers.includes(user.id) || user.id === -1
+                            }
                             selectedUser={selectedUser}
                             onClick={() => handleSelectUser(user)}
                         />
