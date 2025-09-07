@@ -13,7 +13,7 @@ export class APIService {
             baseURL:
                 (baseUrl ||
                     process.env.FT_REACT_PUBLIC_API_HOST ||
-                    "http://localhost:3000") + (path || ""),
+                    "http://localhost:443") + (path || ""),
             headers: {
                 "Content-Type": "application/json",
                 Accept: "application/json",
