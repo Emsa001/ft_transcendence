@@ -56,6 +56,7 @@ export class GameEvents {
                 this.isOnCooldown = false;
             }, this.cooldown)
         );
+        this.selectedEvent = null;
     }
 
     tryEvent(): void {
@@ -99,6 +100,7 @@ export class GameEvents {
             this.timeoutIds.push(id2);
 
             this.isOnCooldown = true;
+            this.selectedEvent = null;
         }, this.selectedEvent.time);
 
 
