@@ -25,11 +25,9 @@ import { FriendsController } from "./modules/friends/friends.controller";
 import { TournamentController } from "./modules/tournament/tournament.controller";
 import { ChatController } from "./modules/chat/chat.controller";
 
-
 // import sqlite3 from "sqlite3";
 import { register as prometheusRegister } from "prom-client";
 import { MetricsGauge } from "./modules/metrics/metrics.service";
-
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -47,7 +45,7 @@ export const getApp = () => {
 
 export default async function App() {
     app = Fastify({
-        logger: false
+        logger: false,
     });
 
     // WebSocket support
