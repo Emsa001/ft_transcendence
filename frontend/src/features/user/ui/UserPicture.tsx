@@ -73,11 +73,19 @@ export const MyPicture = () => {
         }
     };
 
+    const isLocalAvatar =
+        user.avatar?.includes(process.env.FT_REACT_PUBLIC_API_HOST || "") ===
+        true;
+
     return (
         <div className="min-w-[80px] relative group">
             {user.avatar ? (
                 <img
-                    src={`${user.avatar}?ver=${Date.now()}`}
+                    src={
+                        isLocalAvatar
+                            ? `${user.avatar}?ver=${Date.now()}`
+                            : user.avatar
+                    }
                     alt="Profile"
                     className="w-28 h-28 rounded-full object-cover border-4 border-blue-400"
                 />
