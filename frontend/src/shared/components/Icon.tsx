@@ -33,7 +33,7 @@ export const Icon = ({
     ...props
 }: IconProps) => {
     if (!icon) {
-        console.warn("Icon component: No icon provided");
+
         return <div />;
     }
 

@@ -25,7 +25,7 @@ export function ReceivedRequests() {
                 { id: requestId } as UserDTOType,
             ]);
         } catch (error) {
-            console.error("Error accepting friend request:", error);
+
         }
     };
 
@@ -36,7 +36,7 @@ export function ReceivedRequests() {
                 prev.filter((req) => req.id !== requestId)
             );
         } catch (error) {
-            console.error("Error declining friend request:", error);
+
         }
     };
 

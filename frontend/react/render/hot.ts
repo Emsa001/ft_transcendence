@@ -12,21 +12,21 @@ async function renderApp(clearCache = true) {
 
     const root = React.createElement(Root);
     React.render(root, container);
-    if (IS_DEVELOPMENT || true) {
+    if (IS_DEVELOPMENT) {
         console.log(React.components)
     }
 }
 
 if (import.meta.webpackHot) {
     import.meta.webpackHot.accept("../../src/app/root", async () => {
-        console.log("[HMR] Reloading App module...");
+
         await renderApp();
     });
 }
 
 // TODO: Handle popstate event properly, by re-rendering the current route
 window.addEventListener("popstate", async () => {
-    console.log("[HMR] Reloading App module...");
+
     React.setNavigating(true);
     await renderApp(false);
     React.setNavigating(false);

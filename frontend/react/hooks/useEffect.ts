@@ -2,7 +2,7 @@ import React from "..";
 
 const checkDependenciesChanged = (prevDeps: TDependencyList, deps: TDependencyList): boolean => {
     if (prevDeps.length !== deps.length) {
-        console.warn("The length of the dependencies array must remain consistent between renders.");
+
     }
     return deps.some((dep, index) => !Object.is(dep, prevDeps[index]));
 };
@@ -45,7 +45,7 @@ export function useEffectHook(callback: TEffectCallback, deps?: TDependencyList)
                 try {
                     cleanupRef.current();
                 } catch (err) {
-                    console.error("Error running cleanup:", err);
+
                 }
                 component.queueFunctions.delete(cleanupRef.current);
             }
@@ -54,7 +54,7 @@ export function useEffectHook(callback: TEffectCallback, deps?: TDependencyList)
             try {
                 cleanup = callback();
             } catch (err) {
-                console.error("useEffectHook callback threw:", err);
+
                 cleanup = undefined;
             }
 

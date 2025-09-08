@@ -44,7 +44,7 @@ export default function User({ username }: { username?: string }) {
                 setProfileUser(newUser);
             } catch (err) {
                 setError("Failed to load user profile");
-                console.error("Error fetching user:", err);
+
             } finally {
                 setLoading(false);
             }
@@ -55,7 +55,7 @@ export default function User({ username }: { username?: string }) {
 
     useEffect(() => {
         if (user && profileUser && user.id === profileUser.id) {
-            console.log("navigating to profile");
+
             navigate("/profile");
         }
     }, [user, profileUser]);
@@ -67,10 +67,10 @@ export default function User({ username }: { username?: string }) {
                     const blocked = await blockUserApi.amIBlockedByUser(
                         profileUser.id
                     );
-                    console.log("Blocked status:", blocked);
+
                     setIsBlocked(blocked);
                 } catch (error) {
-                    console.error("Error fetching blocked users:", error);
+
                 }
             }
         };

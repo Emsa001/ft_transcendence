@@ -26,7 +26,7 @@ export default function StatsDashboard({ id }: { id?: string }) {
                 fetchGameHistory(id);
                 setStatsUser(newUser);
             } catch (err) {
-                console.error(err);
+
             }
         })();
         return () => {

@@ -27,10 +27,10 @@ export function FindNewFriends() {
             }
         } catch (error) {
             setUserNotFound(`User not found or already added`);
-            console.error(
-                `Error adding friend by username: ${newFriend}`,
-                error
-            );
+            // console.error(
+            //     `Error adding friend by username: ${newFriend}`,
+            //     error
+            // );
         }
     };
 

@@ -16,7 +16,7 @@ class TournamentApi extends APIService {
 
             return response.data;
         } catch (error) {
-            console.error("Error fetching tournaments:", error);
+
             return null;
         }
     }
@@ -28,7 +28,7 @@ class TournamentApi extends APIService {
             const response = await this.api.post("/create", data);
             return response.data;
         } catch (error) {
-            console.error("Error creating tournament:", error);
+
             return null;
         }
     }
@@ -38,7 +38,7 @@ class TournamentApi extends APIService {
             const response = await this.api.get(`/${uuid}`);
             return response.data;
         } catch (error) {
-            console.error("Error fetching tournament:", error);
+
             return null;
         }
     }
@@ -51,7 +51,7 @@ class TournamentApi extends APIService {
             const response = await this.api.post(`/${uuid}/start`);
             return response.data;
         } catch (error) {
-            console.error("Error starting tournament:", error);
+
             return (error as any)?.response?.data;
         }
     }

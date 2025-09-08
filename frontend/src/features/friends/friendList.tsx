@@ -15,7 +15,7 @@ export function FriendsList() {
                 const allFriends = await FriendsApi.getAllFriends();
                 setFriends(allFriends);
             } catch (error) {
-                console.error("Error fetching friends:", error);
+
             }
         };
 
@@ -29,7 +29,7 @@ export function FriendsList() {
                 prev.filter((friend) => friend.id !== friendId)
             );
         } catch (error) {
-            console.error("Error removing friend:", error);
+
         }
     };
 

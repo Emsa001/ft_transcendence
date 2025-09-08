@@ -13,7 +13,7 @@ export function SentRequests() {
                 const allSentRequests = await FriendsApi.getAllSentRequests();
                 setSentRequests(allSentRequests);
             } catch (error) {
-                console.error("Error fetching sent friend requests:", error);
+
             }
         };
         fetchSentRequests();
@@ -26,7 +26,7 @@ export function SentRequests() {
                 prev.filter((req) => req.id !== requestId)
             );
         } catch (error) {
-            console.error("Error canceling friend request:", error);
+
         }
     };
 
