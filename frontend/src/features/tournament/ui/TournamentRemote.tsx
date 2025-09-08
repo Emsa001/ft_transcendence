@@ -17,7 +17,7 @@ export const TournamentRemote = ({ code }: TournamentRemoteProps) => {
         return (
             <div className="w-full h-full">
                 <RemoteTournamentProvider uuid={code}>
-                    <div className="w-full h-full flex items-center justify-center pt-12 background-blue-500">
+                    <div className="w-full h-full flex items-center justify-center pt-12">
                         <RemoteTournamentViewer />
                     </div>
                 </RemoteTournamentProvider>
