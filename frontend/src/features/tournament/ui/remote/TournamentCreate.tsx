@@ -40,8 +40,8 @@ export const TournamentCreate = () => {
     return (
         <div className="align-middle text-center">
             <button
-            onClick={() => setIsOpen(true)}
-            className="px-8 py-6 rounded-3xl font-bold bg-emerald-500/30 hover:bg-emerald-400/20 text-white shadow-xl transition text-xl"
+                onClick={() => setIsOpen(true)}
+                className="px-8 py-6 rounded-3xl font-bold bg-emerald-500/30 hover:bg-emerald-400/20 text-white shadow-xl transition text-xl"
             >
                 {text.createTournament}
             </button>

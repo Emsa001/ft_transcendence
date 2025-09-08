@@ -167,10 +167,8 @@ export const RemoteGameProvider = ({
             }
 
             case "error":
-
                 break;
             default:
-
         }
     };
 

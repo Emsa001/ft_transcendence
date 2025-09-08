@@ -33,14 +33,14 @@ export const TournamentRemote = ({ code }: TournamentRemoteProps) => {
                         <TournamentList
                             title={text.newTournaments}
                             status={GameStatus.WAITING}
-                            />
+                        />
                     </div>
                     <div className="w-full border rounded-xl border-white/30 p-5">
                         <TournamentList
                             title={text.ongoingTournaments}
                             status={GameStatus.IN_PROGRESS}
                             className="mt-auto"
-                            />
+                        />
                     </div>
                 </div>
                 <div className="w-full flex-1 justify-center items-baseline mt-auto mt-6 pt-5">

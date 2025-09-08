@@ -11,7 +11,6 @@ class ProfileApi extends APIService {
                 await this.api.get("/user/all");
             return response.data;
         } catch (error) {
-
             return Promise.reject(error);
         }
     }
@@ -24,7 +23,6 @@ class ProfileApi extends APIService {
             );
             return response.data;
         } catch (error) {
-
             return Promise.reject(error);
         }
     }
@@ -35,7 +33,6 @@ class ProfileApi extends APIService {
                 await this.api.get("/user");
             return response.data;
         } catch (error) {
-
             return null;
         }
     }
@@ -80,7 +77,6 @@ class ProfileApi extends APIService {
             const response = await this.api.post("/user/delete");
             return response.data.success;
         } catch (error) {
-
             return false;
         }
     }

@@ -32,7 +32,7 @@ export const ContactInfo = () => {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
                         <p className="text-gray-400">{texts.username}</p>
-                        <p>{sliceText(user.username, 10)}</p>
+                        <p>{sliceText(user.username || "", 10)}</p>
                     </div>
                     <div>
                         <p className="text-gray-400">{texts.userId}</p>

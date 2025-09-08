@@ -70,7 +70,6 @@ export const MyPicture = () => {
                 );
             }
         } else {
-
         }
     };
 
@@ -122,7 +121,6 @@ export const OtherUserPicture = ({
 
             if (fetchedUser) {
                 setUser(fetchedUser);
-
             }
         };
 

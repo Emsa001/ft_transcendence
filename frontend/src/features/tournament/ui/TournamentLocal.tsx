@@ -43,9 +43,7 @@ const TournamentView = () => {
     }
 
     if (currentGame) {
-        const onScore = (scorer: GameUserDTOType) => {
-
-        };
+        const onScore = (scorer: GameUserDTOType) => {};
 
         const onSpace = () => {
             if (!currentGame.winner) return true;

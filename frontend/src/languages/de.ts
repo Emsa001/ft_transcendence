@@ -199,6 +199,9 @@ export default {
     tournament: {
         tournamentRegistration: "Turnieranmeldung",
         enterPlayerName: "Spielernamen eingeben",
+        waiting: "Warte auf Spieler...",
+        progress: "Turnier in Arbeit...",
+        settings: "Turniereinstellungen",
         add: "Hinzufügen",
         maxScore: "Max. Punkte",
         randomEvents: "Zufällige Ereignisse",

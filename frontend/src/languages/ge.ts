@@ -200,6 +200,9 @@ export default {
     tournament: {
         tournamentRegistration: "ტურნირზე რეგისტრაცია",
         enterPlayerName: "მოთამაშის სახელის შეყვანა",
+        waiting: "მოთამაშეების მოლოდინი...",
+        progress: "ტურნირი მიმდინარეობს...",
+        settings: "ტურნირის პარამეტრები",
         add: "დამატება",
         maxScore: "მაქს ქულა",
         randomEvents: "შემთხვევითი მოვლენები",

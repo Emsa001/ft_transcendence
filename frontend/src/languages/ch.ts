@@ -197,6 +197,9 @@ export default {
     tournament: {
         tournamentRegistration: "锦标赛报名",
         enterPlayerName: "输入玩家名称",
+        waiting: "等待玩家...",
+        progress: "锦标赛进行中...",
+        settings: "锦标赛设置",
         add: "添加",
         maxScore: "最高得分",
         randomEvents: "随机事件",

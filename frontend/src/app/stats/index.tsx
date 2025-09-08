@@ -1,6 +1,6 @@
 import React, { useEffect, useNavigate, useState } from "react";
 import FriendsApi from "@features/user/service/friendsApi";
-import { UserDTOType } from "shared/dist";
+import { TournamentDTOType, UserDTOType } from "shared/dist";
 import { useStats } from "@features/user/model/useStats";
 import { MatchHistory } from "@features/stats/ui/MatchHistory";
 import { Charts } from "@features/stats/ui/Charts";
@@ -25,9 +25,7 @@ export default function StatsDashboard({ id }: { id?: string }) {
                 fetchUserStats(id);
                 fetchGameHistory(id);
                 setStatsUser(newUser);
-            } catch (err) {
-
-            }
+            } catch (err) {}
         })();
         return () => {
             mounted = false;
@@ -35,6 +33,15 @@ export default function StatsDashboard({ id }: { id?: string }) {
     }, [id]);
 
     if (!id || !statsUser || !stats) return <div />;
+
+    const allGames = [
+        ...history.games,
+        ...(history.tournaments
+            ? history.tournaments.flatMap(
+                  (tournament) => tournament.games || []
+              )
+            : []),
+    ];
 
     return (
         <div className="text-white p-6 lg:p-12 max-h-screen overflow-auto">
@@ -46,14 +53,10 @@ export default function StatsDashboard({ id }: { id?: string }) {
                 <StatsCard allStats={stats} />
 
                 {/* Charts */}
-                <Charts
-                    allStats={stats}
-                    games={history.games}
-                    user={statsUser}
-                />
+                <Charts allStats={stats} games={allGames} user={statsUser} />
 
                 {/* Match history */}
-                <MatchHistory games={history.games} />
+                <MatchHistory games={allGames} />
             </div>
 
             <style jsx>{`

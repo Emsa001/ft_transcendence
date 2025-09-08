@@ -15,7 +15,6 @@ export class ChatApi extends APIService {
             );
             return response.data;
         } catch (error) {
-
             return Promise.reject(error);
         }
     }
