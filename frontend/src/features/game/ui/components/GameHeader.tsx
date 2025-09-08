@@ -26,7 +26,7 @@ export const GameHeader = ({ type, mode, code }: GameHeaderProps) => {
     };
 
     return (
-        <div className="p-4 flex items-center justify-between">
+        <div className="p-4 flex items-center justify-between border border-white/10 bg-black/20 backdrop-blur-md rounded-t-2xl">
             <div className="px-4 py-2 rounded-2xl bg-white/10 shadow-lg">
                 <h1 className="text-lg md:text-xl font-semibold tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-fuchsia-400 to-sky-300">
                     {type === "local" &&
