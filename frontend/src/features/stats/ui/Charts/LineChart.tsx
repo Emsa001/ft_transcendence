@@ -53,9 +53,8 @@ function getUserScores(username: string, games: GameDTOType[]) {
 
 function getAverageScores(games: GameDTOType[]) {
     return games.map((game) => {
-        if (!game.players.length) return 0;
-        const total = game.players.reduce((sum, p) => sum + p.score, 0);
-        return Math.round(total / game.players.length);
+        const totalScore = game.players.reduce((sum, p) => sum + p.score, 0);
+        return Math.round(totalScore / game.players.length);
     });
 }
 
