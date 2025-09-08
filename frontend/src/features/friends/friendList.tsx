@@ -14,9 +14,7 @@ export function FriendsList() {
             try {
                 const allFriends = await FriendsApi.getAllFriends();
                 setFriends(allFriends);
-            } catch (error) {
-
-            }
+            } catch (error) {}
         };
 
         fetchFriends();
@@ -28,9 +26,7 @@ export function FriendsList() {
             setFriends((prev: UserDTOType[]) =>
                 prev.filter((friend) => friend.id !== friendId)
             );
-        } catch (error) {
-
-        }
+        } catch (error) {}
     };
 
     /* // make the overflow-y-auto (the scrolling) be AFTER the title and friends counter somehow */

@@ -16,8 +16,6 @@ export class GameRenderer {
         this.dpr = 1;
         this.sx = 1;
         this.sy = 1;
-
-
     }
 
     init(ctx: CanvasRenderingContext2D, dpr: number, sx: number, sy: number) {

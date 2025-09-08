@@ -12,9 +12,7 @@ export function SentRequests() {
             try {
                 const allSentRequests = await FriendsApi.getAllSentRequests();
                 setSentRequests(allSentRequests);
-            } catch (error) {
-
-            }
+            } catch (error) {}
         };
         fetchSentRequests();
     }, []);
@@ -25,9 +23,7 @@ export function SentRequests() {
             setSentRequests((prev: UserDTOType[]) =>
                 prev.filter((req) => req.id !== requestId)
             );
-        } catch (error) {
-
-        }
+        } catch (error) {}
     };
 
     return (

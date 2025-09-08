@@ -22,9 +22,7 @@ export const useAuth = () => {
             setTimeout(() => {
                 setUser(null);
             }, 0);
-        } catch (error) {
-
-        }
+        } catch (error) {}
     };
 
     /**
@@ -36,11 +34,8 @@ export const useAuth = () => {
             if (response?.authUrl) {
                 window.location.href = response.authUrl;
             } else {
-
             }
-        } catch (error) {
-
-        }
+        } catch (error) {}
     };
 
     /**
@@ -54,7 +49,6 @@ export const useAuth = () => {
         const require2fa = urlParams.get("require2fa");
 
         if (error) {
-
             // Handle different error types
             switch (error) {
                 case "access_denied":
@@ -96,7 +90,6 @@ export const useAuth = () => {
             const data = await AuthApi.login(username, password);
             setUser(data);
         } catch (error: any) {
-
             setError(
                 error.response.data.message || "Login failed. Try again later"
             );

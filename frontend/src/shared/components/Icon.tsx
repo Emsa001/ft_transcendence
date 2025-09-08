@@ -33,7 +33,6 @@ export const Icon = ({
     ...props
 }: IconProps) => {
     if (!icon) {
-
         return <div />;
     }
 

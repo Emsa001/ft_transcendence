@@ -15,7 +15,6 @@ export const useOnlineUsers = () => {
             process.env.FT_REACT_PUBLIC_API_HOST + "/user/status"
         );
 
-
         ws.onmessage = (event) => {
             const msg = JSON.parse(event.data);
             if (msg.type === "online_users") {

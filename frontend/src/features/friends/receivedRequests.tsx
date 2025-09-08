@@ -24,9 +24,7 @@ export function ReceivedRequests() {
                 ...prev,
                 { id: requestId } as UserDTOType,
             ]);
-        } catch (error) {
-
-        }
+        } catch (error) {}
     };
 
     const handleDeclineRequest = async (requestId: number) => {
@@ -35,9 +33,7 @@ export function ReceivedRequests() {
             setReceivedRequests((prev) =>
                 prev.filter((req) => req.id !== requestId)
             );
-        } catch (error) {
-
-        }
+        } catch (error) {}
     };
 
     return (

@@ -21,7 +21,6 @@ export const useStats = () => {
             setHistory(response);
             return response;
         } catch (err) {
-
             setError("An error occurred while fetching game history.");
             return null;
         } finally {

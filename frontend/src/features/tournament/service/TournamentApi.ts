@@ -16,7 +16,6 @@ class TournamentApi extends APIService {
 
             return response.data;
         } catch (error) {
-
             return null;
         }
     }
@@ -28,7 +27,6 @@ class TournamentApi extends APIService {
             const response = await this.api.post("/create", data);
             return response.data;
         } catch (error) {
-
             return null;
         }
     }
@@ -38,7 +36,6 @@ class TournamentApi extends APIService {
             const response = await this.api.get(`/${uuid}`);
             return response.data;
         } catch (error) {
-
             return null;
         }
     }
@@ -51,7 +48,6 @@ class TournamentApi extends APIService {
             const response = await this.api.post(`/${uuid}/start`);
             return response.data;
         } catch (error) {
-
             return (error as any)?.response?.data;
         }
     }

@@ -44,7 +44,6 @@ export default function User({ username }: { username?: string }) {
                 setProfileUser(newUser);
             } catch (err) {
                 setError("Failed to load user profile");
-
             } finally {
                 setLoading(false);
             }
@@ -55,7 +54,6 @@ export default function User({ username }: { username?: string }) {
 
     useEffect(() => {
         if (user && profileUser && user.id === profileUser.id) {
-
             navigate("/profile");
         }
     }, [user, profileUser]);
@@ -69,9 +67,7 @@ export default function User({ username }: { username?: string }) {
                     );
 
                     setIsBlocked(blocked);
-                } catch (error) {
-
-                }
+                } catch (error) {}
             }
         };
 

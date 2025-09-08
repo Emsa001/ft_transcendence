@@ -14,7 +14,6 @@ class AuthApi extends APIService {
                 await this.api.get("/google");
             return response.data;
         } catch (error) {
-
             return null;
         }
     }
@@ -62,7 +61,6 @@ class AuthApi extends APIService {
             });
             return response.data.success;
         } catch (error) {
-
             return false;
         }
     }

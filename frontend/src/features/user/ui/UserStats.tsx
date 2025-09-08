@@ -14,7 +14,6 @@ export const UserStats = ({ userId }: { userId: string | number }) => {
                 if (data) {
                     setStats(data);
                 } else {
-
                 }
             });
         }

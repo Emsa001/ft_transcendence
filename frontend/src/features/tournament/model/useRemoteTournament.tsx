@@ -83,7 +83,6 @@ export const RemoteTournamentProvider = ({
     const handleSocketMessage = (msg: MessageEvent) => {
         const payload = JSON.parse(msg.data);
 
-
         switch (payload.type) {
             case "STATE_UPDATE": {
                 const state: TournamentDTOType = payload.state;
@@ -182,8 +181,6 @@ export const RemoteTournamentProvider = ({
             setError("Failed to start tournament");
             return;
         }
-
-
     };
 
     const joinGame = (code: string) => {

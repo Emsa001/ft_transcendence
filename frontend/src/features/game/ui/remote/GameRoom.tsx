@@ -65,21 +65,13 @@ export const GameRemoteRoom = () => {
         );
     }
 
-    const handleCopy = () => {
-        navigator.clipboard.writeText(code);
-        Toast.success("Game code copied to clipboard");
-    };
-
     return (
         <div className="w-full h-full flex flex-col items-center justify-center p-6">
             <div className="w-full max-w-md bg-white/10 backdrop-blur-lg border border-white/20 rounded-xl shadow-lg p-6 mb-6 text-center">
                 <h2 className="text-3xl font-bold text-white mb-2 bg-clip-text text-transparent bg-gradient-to-r from-purple-400 to-blue-400">
                     {text.gameRoom}
                 </h2>
-                <div
-                    onClick={handleCopy}
-                    className="w-full rounded-xl bg-indigo-800/40 border border-white/10 px-4 py-3 text-purple-200 cursor-pointer text-center text-lg font-mono tracking-[0.7em]"
-                >
+                <div className="w-full rounded-xl bg-indigo-800/40 border border-white/10 px-4 py-3 text-purple-200 text-center text-lg font-mono tracking-[0.7em]">
                     {code}
                 </div>
 

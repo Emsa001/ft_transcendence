@@ -25,9 +25,7 @@ export default function StatsDashboard({ id }: { id?: string }) {
                 fetchUserStats(id);
                 fetchGameHistory(id);
                 setStatsUser(newUser);
-            } catch (err) {
-
-            }
+            } catch (err) {}
         })();
         return () => {
             mounted = false;

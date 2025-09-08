@@ -18,9 +18,7 @@ export const GameLobby = () => {
         try {
             const res = await GameApi.createGame(data);
             navigate(`/game/remote/casual/${res.data.code}`);
-        } catch (err) {
-
-        }
+        } catch (err) {}
     };
 
     const handleJoinRandom = async () => {

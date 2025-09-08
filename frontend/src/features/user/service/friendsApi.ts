@@ -10,7 +10,6 @@ class FriendsApi extends APIService {
                 await this.api.get("/friends/all");
             return response.data;
         } catch (error) {
-
             return null;
         }
     }
@@ -21,7 +20,6 @@ class FriendsApi extends APIService {
                 await this.api.get("/friends/requests");
             return response.data;
         } catch (error) {
-
             return null;
         }
     }
@@ -33,7 +31,6 @@ class FriendsApi extends APIService {
             );
             return response.data;
         } catch (error) {
-
             return null;
         }
     }
@@ -74,7 +71,6 @@ class FriendsApi extends APIService {
             if (!response.data) return null;
             return response.data;
         } catch (error) {
-
             return null;
         }
     }

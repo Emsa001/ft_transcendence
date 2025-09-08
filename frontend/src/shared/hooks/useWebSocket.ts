@@ -60,7 +60,6 @@ export const useWebSocket = (url: string) => {
         reconnect();
 
         return () => {
-
             wsRef.current?.close();
             wsRef.current = null;
             hooksRef.current = [];

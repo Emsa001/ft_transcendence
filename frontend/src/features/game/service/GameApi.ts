@@ -29,7 +29,6 @@ class GameApi extends APIService {
             const response = await this.api.get("/random");
             return response.data;
         } catch (err) {
-
             return null;
         }
     }

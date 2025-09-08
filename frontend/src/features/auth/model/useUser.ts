@@ -26,7 +26,6 @@ export const useUser = (force?: boolean) => {
             if (err instanceof Error && err.message === "2FA_REQUIRED") {
                 alert("Two-factor authentication is required.");
             } else {
-
             }
         }
 

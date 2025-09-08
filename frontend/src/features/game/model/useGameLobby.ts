@@ -13,7 +13,6 @@ export const useGameLobby = (code?: string) => {
         const payload = JSON.parse(msg.data);
 
         if (payload.type === "lobby_update") {
-
             setGames(payload.games);
         }
     };

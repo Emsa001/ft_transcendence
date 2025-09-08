@@ -10,7 +10,6 @@ class BlockUserApi extends APIService {
                 await this.api.get("/blocked/all");
             return response.data;
         } catch (error) {
-
             return null;
         }
     }
@@ -28,9 +27,7 @@ class BlockUserApi extends APIService {
     async unblockUser(userId: number): Promise<void> {
         try {
             await this.api.post(`/unblock/${userId}`);
-        } catch (error) {
-
-        }
+        } catch (error) {}
     }
 
     async amIBlockedByUser(userId: number): Promise<boolean> {
@@ -38,7 +35,6 @@ class BlockUserApi extends APIService {
             const response = await this.api.get(`/blocked/${userId}`);
             return response.data;
         } catch (error) {
-
             return Promise.reject(error);
         }
     }
