@@ -1,7 +1,6 @@
 import { Validators } from "@/database/other/Validators";
 import { Tournament } from "./Tournament";
 import { TournamentUser } from "./TournamentUser";
-import { GameStatus } from "shared";
 
 export class TournamentUserHooks {
     static async verifyAddPlayer(tournamentUser: TournamentUser) {
@@ -21,6 +20,21 @@ export class TournamentUserHooks {
                 tournamentId,
                 tournamentGroups[tournamentId]
             );
+        }
+    }
+
+    static async setTournamentHost(tournamentId: number, userIds: number[]) {
+        const tournament = await Tournament.findByPk(tournamentId);
+        if (!tournament) return;
+
+        if (tournament.hostId && !userIds.includes(tournament.hostId)) return;
+
+        if (tournament.players.length > 0) {
+            tournament.hostId = tournament.players[0].id;
+            console.log(
+                `Host left tournament ${tournament.uuid}, new host is ${tournament.hostId}`
+            );
+            await tournament.save();
         }
     }
 }

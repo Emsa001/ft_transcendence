@@ -1,31 +1,36 @@
 import { FastifyReply, FastifyRequest } from "fastify";
 import { Controller, GET } from "fastify-decorators";
 import { BaseController } from "../base";
-import jwtService from "../auth/services/jwt.service";
 import { WebSocket } from "@fastify/websocket";
 import { chatWSService } from "./service/ws.service";
-import { AUTHORIZED } from "../auth/auth.middleware";
+import { AUTHORIZED, WS_AUTHORIZED } from "../auth/auth.middleware";
+import { UserStatusService } from "../user/services/user.status";
 
 @Controller("/chat")
 export class ChatController extends BaseController {
     @GET("/", { websocket: true })
+    @WS_AUTHORIZED
     async chatSockets(connection: WebSocket, req: FastifyRequest) {
         try {
-            const token = req.cookies.session;
-            let userId = jwtService.verify(token).id;
+            const user = req.user.id;
 
-            chatWSService.addUser(userId, connection);
+            chatWSService.addUser(user, connection);
             connection.on("message", (raw: Buffer) => {
                 try {
                     const msg = JSON.parse(raw.toString());
                     chatWSService.handleMessage(msg);
+                    UserStatusService.sendMessageToUser(
+                        req.user.username,
+                        msg.receiver,
+                        msg.message
+                    );
                 } catch (err) {
                     console.error("Invalid message format:", err);
                 }
             });
 
             connection.on("close", () => {
-                chatWSService.removeUser(userId, connection);
+                chatWSService.removeUser(user, connection);
             });
         } catch (err) {
             connection.close();

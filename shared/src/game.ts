@@ -1,3 +1,5 @@
+import { RandomEvent } from "./game.engine";
+import { TournamentDTOType } from "./tournament";
 import { UserDTOType } from "./user";
 
 export enum GameStatus {
@@ -18,16 +20,18 @@ export type GameUserDTOType = UserDTOType & {
 
 export interface GameDTOType {
     id: number;
-    code: string | null;
-    hostId: number;
+    code: string;
+    hostId: number | null;
     status: GameStatus;
     mode: GameMode;
     isPrivate: boolean;
+    randomEvents: boolean;
     round?: number | null;
     maxScore?: number | null;
     players: GameUserDTOType[];
     maxPlayers: number;
     winner: string | null;
+    tournamentId: number | null;
     createdAt: Date;
     updatedAt: Date;
 }
@@ -36,6 +40,11 @@ export interface GameHistoryFilter {
     start?: Date;
     end?: Date;
     limit?: number;
+}
+
+export interface GameHistory {
+    games: GameDTOType[];
+    tournaments: TournamentDTOType[];
 }
 
 export interface GameCreationRequest {
@@ -47,10 +56,11 @@ export interface GameCreationRequest {
 }
 
 export interface GameCreationAttributes extends GameCreationRequest {
-    hostId: number;
+    hostId?: number | null;
     round?: number | null;
     tournamentId?: number;
     winnerId?: number | null;
+    randomEvents?: boolean;
 }
 
 export type Vec2 = { x: number; y: number };
@@ -73,6 +83,7 @@ export interface Ball {
 export interface GameFrame {
     ball?: Ball;
     paddles?: Record<number, Paddle>;
+    selectedEvent: RandomEvent | null;
 }
 
 export interface GameMessage {
@@ -88,9 +99,16 @@ export interface GameMessage {
 
 // Game messages
 
+export interface MessageData {
+    messages: GameMessage[];
+    cover: boolean;
+    duration?: number;
+}
+
+
 export class GameMessages {
-    static win(scorer: string, canRestart?: boolean): GameMessage[] {
-        const message: GameMessage[] = [
+    static win(scorer: string, canRestart?: boolean): MessageData {
+        const messages: GameMessage[] = [
             {
                 text: `${scorer} Wins!`,
                 shadow: { color: "#7a5cff", blur: 20 },
@@ -99,41 +117,43 @@ export class GameMessages {
         ];
 
         if (canRestart) {
-            message.push({
+            messages.push({
                 text: "Press Space to Restart",
                 size: 30,
             });
         }
 
-        return message;
+        return { messages, cover: true };
     }
 
-    static score(scorer: string): GameMessage[] {
-        return [
+    static score(scorer: string): MessageData {
+        const messages: GameMessage[] = [
             {
                 text: `${scorer} Scores!`,
                 shadow: { color: "#7a5cff", blur: 20 },
                 size: 50,
             },
         ];
+        return { messages, cover: true };
     }
 
-    static start(): GameMessage[] {
-        return [
+    static start(): MessageData {
+        const messages: GameMessage[] = [
             {
                 text: "Press Space to Start",
                 shadow: { color: "#7a5cff", blur: 20 },
                 size: 40,
             },
         ];
+        return { messages, cover: true };
     }
 
     static intro(
         player1: string,
         player2: string,
         points: number
-    ): GameMessage[] {
-        return [
+    ): MessageData {
+        const messages: GameMessage[] = [
             {
                 text: `${player1}  VS  ${player2}`,
                 shadow: { color: "#7a5cff", blur: 20 },
@@ -141,10 +161,12 @@ export class GameMessages {
             },
             { text: `First to ${points} points wins`, size: 30 },
         ];
+
+        return { messages, cover: true };
     }
 
-    static getReady(count: number): GameMessage[] {
-        return [
+    static getReady(count: number): MessageData {
+        const messages: GameMessage[] = [
             {
                 text: "Get Ready!",
                 shadow: { color: "#7a5cff", blur: 20 },
@@ -156,10 +178,11 @@ export class GameMessages {
                 marginTop: 10,
             },
         ];
+        return { messages, cover: true };
     }
 
-    static pause(): GameMessage[] {
-        return [
+    static pause(): MessageData {
+        const messages: GameMessage[] = [
             {
                 text: "Paused",
                 shadow: { color: "#f72585", blur: 20 },
@@ -170,5 +193,23 @@ export class GameMessages {
                 size: 30,
             },
         ];
+
+        return { messages, cover: true };
+    }
+
+    static event(event: string): MessageData {
+        const messages: GameMessage[] = [
+            {
+                text: "Random Event!",
+                shadow: { color: "#f72585", blur: 20 },
+                size: 40,
+            },
+            {
+                text: event,
+                size: 30,
+            }
+        ];
+        return { messages, cover: false };
     }
 }
+

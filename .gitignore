@@ -4,3 +4,7 @@ package-lock.json
 dist
 .env
 *.sqlite
+test*
+backend/index.js
+*.pem
+todo.txt

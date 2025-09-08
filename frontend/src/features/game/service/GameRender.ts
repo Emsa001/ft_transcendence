@@ -1,5 +1,4 @@
-import { Ball, GameMessage, Paddle } from "shared";
-import { GameState } from "../types";
+import { Ball, GameMessage, Paddle, RandomEvent } from "shared";
 
 // Drawing and Calculation Class
 export class GameRenderer {
@@ -18,7 +17,7 @@ export class GameRenderer {
         this.sx = 1;
         this.sy = 1;
 
-        console.log("GameRenderer initialized");
+
     }
 
     init(ctx: CanvasRenderingContext2D, dpr: number, sx: number, sy: number) {
@@ -149,6 +148,20 @@ export class GameRenderer {
         ctx.restore();
     }
 
+    drawRandomEvent(event: RandomEvent | null) {
+        const ctx = this.ctx;
+        if (!event || !ctx) return;
+        const canvas = ctx.canvas;
+
+        ctx.save();
+        ctx.font = `${20 * this.sx}px ui-sans-serif, system-ui`;
+        ctx.fillStyle = "#c4b5fd";
+        ctx.textAlign = "right";
+        ctx.textBaseline = "top";
+        ctx.fillText(event.name, canvas.width - 24 * this.sx, 18 * this.sy);
+        ctx.restore();
+    }
+
     // TODO: Get rid of it, handle countdown in messages
     drawCountDown(countDown: number | null) {
         if (countDown === null) return;
@@ -176,33 +189,49 @@ export class GameRenderer {
         ctx.restore();
     }
 
-    drawMessages(message: GameMessage[] | null) {
+    drawMessages(message: GameMessage[] | null, cover: boolean = true) {
         if (!message || message.length === 0) return;
 
         const ctx = this.ctx;
         if (!ctx) return;
         const canvas = ctx.canvas;
 
-        ctx.save();
-        ctx.fillStyle = "rgba(15, 10, 40, 0.8)";
-        ctx.fillRect(0, 0, canvas.width, canvas.height);
-        ctx.restore();
+        if (cover) {
+            ctx.save();
+            ctx.fillStyle = "rgba(15, 10, 40, 0.8)";
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.restore();
+        }
 
         let currentY = canvas.height / 2;
-        message.forEach((msg, index) => {
-            const size = msg.size ?? 48;
+
+        message.forEach((msg) => {
+            let size = msg.size ?? 48;
             const color = msg.color ?? "#c4b5fd";
             const marginTop = msg.marginTop ?? 0;
+
+            // pick a starting font
+            ctx.font = `${size * this.sx}px ui-sans-serif, system-ui`;
+
+            // shrink if text is too wide
+            let textWidth = ctx.measureText(msg.text).width;
+            const maxWidth = canvas.width * 0.9; // allow some padding
+            if (textWidth > maxWidth) {
+                size = Math.floor((size * maxWidth) / textWidth); // scale proportionally
+                ctx.font = `${size * this.sx}px ui-sans-serif, system-ui`;
+                textWidth = ctx.measureText(msg.text).width;
+            }
 
             ctx.save();
             ctx.fillStyle = color;
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
-            ctx.font = `${size * this.sx}px ui-sans-serif, system-ui`;
+
             if (msg.shadow) {
                 ctx.shadowColor = msg.shadow.color;
                 ctx.shadowBlur = (msg.shadow.blur || 30) * this.dpr;
             }
+
             currentY += marginTop * this.sy;
             ctx.fillText(msg.text, canvas.width / 2, currentY);
             currentY += (size + 10) * this.sy;

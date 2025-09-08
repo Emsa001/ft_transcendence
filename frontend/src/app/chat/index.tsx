@@ -4,7 +4,7 @@ import { ChatArea } from "@features/chat/ui/ChatArea";
 import { ChatProvider } from "@features/chat/model/ChatContext";
 import { useUser } from "@features/auth/model/useUser";
 
-export default function Chat() {
+export default function Chat({ userId }: { userId?: string }) {
     const navigate = useNavigate();
     const { user, loading } = useUser();
 
@@ -17,8 +17,8 @@ export default function Chat() {
     return (
         <div className="w-full h-full">
             <ChatProvider>
-                <div className="flex h-full text-white pt-16">
-                    <Sidebar />
+                <div className="flex h-full text-white pt-18">
+                    <Sidebar userId={userId} />
                     <ChatArea />
                 </div>
             </ChatProvider>

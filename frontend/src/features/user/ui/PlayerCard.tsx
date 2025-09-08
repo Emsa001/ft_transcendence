@@ -1,13 +1,27 @@
 import React from "react";
-import { UserAvatar } from "./UserAvatar";
+import { useNavigate } from "react";
 import { GameUserDTOType } from "shared";
+import { UserPicture } from "./UserPicture";
+import { sliceText } from "@shared/lib/utils";
 
-export const PlayerCard = ({ player }: { player: GameUserDTOType }) => (
-    <div className="p-3 rounded-lg bg-white/5 border border-white/10 flex items-center gap-3">
-        <UserAvatar name={player.username} src={player.avatar || ""} />
-        <div>
-            <p className="font-semibold">{player.username}</p>
-            <p className="text-sm text-white/70">Score: {player.score}</p>
+export const PlayerCard = ({ player }: { player: GameUserDTOType }) => {
+    const navigate = useNavigate();
+
+    return (
+        <div className="group flex items-center justify-center w-full m-1 p-1 bg-gray-700/50 rounded-lg">
+            <UserPicture user={player} size={8} />
+            <div className="ml-3 ">
+                <button
+                    className="font-semibold group-hover:underline cursor-pointer"
+                    onClick={() => navigate(`/profile/${player.username}`)}
+                >
+                    {sliceText(player.username, 10)}
+                </button>
+
+                <p className="text-indigo-400 font-bold">
+                    Score: {player.score}
+                </p>
+            </div>
         </div>
-    </div>
-);
+    );
+};

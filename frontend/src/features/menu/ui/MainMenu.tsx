@@ -1,87 +1,85 @@
-import React, { useRef, useEffect, useNavigate } from "react";
-import gsap from "gsap";
+import React, { useNavigate } from "react";
 import { Icon } from "@shared/components/Icon";
-import { FaUser } from "react-icons/fa";
+import { FaGamepad, FaUser } from "react-icons/fa";
+import { FaRegMessage } from "react-icons/fa6";
 import { useUser } from "@features/auth/model/useUser";
 import { useLanguage } from "@features/language/model/useLanguage";
 import { LanguageButton } from "@features/language/ui/LanguageButton";
+import { ImStatsBars2 } from "react-icons/im";
+import { IconType } from "react-icons";
 
-let loaded = false;
+interface MenuItem {
+    label: string;
+    icon: IconType;
+    link: string;
+}
 
 export default function MainMenu() {
+    const { user } = useUser();
     const navigate = useNavigate();
-    const menuRef = useRef<HTMLDivElement | null>(null);
+
     const { getText } = useLanguage();
     const text = getText("mainMenu");
-    const { user } = useUser();
 
-    useEffect(() => {
-        if (loaded) return;
-        if (menuRef.current) {
-            gsap.fromTo(
-                menuRef.current.children,
-                { y: -20, opacity: 0 },
-                {
-                    y: 0,
-                    opacity: 1,
-                    stagger: 0.08,
-                    ease: "power3.out",
-                    duration: 0.6,
-                }
-            );
-            loaded = true;
-        }
-    }, []);
-
-    const menuItems = [{ label: "", icon: null, link: "" }];
-
-    const profileItems = [
-        { label: text.profile, icon: FaUser, link: "/profile" },
+    const center: MenuItem[] = [
+        { label: text.chat, icon: FaRegMessage, link: "/chat" },
+        { label: text.play, icon: FaGamepad, link: "/game" },
+        { label: text.stats, icon: ImStatsBars2, link: `/stats/${user?.id}` },
     ];
 
-    const loginItems = [{ label: text.login, icon: FaUser, link: "/auth" }];
+    const username =
+        user && user.username
+            ? user.username.length > 10
+                ? user.username.slice(0, 10) + "..."
+                : user.username
+            : undefined;
 
-    const items = user ? profileItems : loginItems;
+    const logged: MenuItem[] = [
+        { label: username || "Login", icon: FaUser, link: "/profile" },
+    ];
+    const notlogged = [{ label: text.login, icon: FaUser, link: "/auth" }];
+
+    const items = user ? logged : notlogged;
 
     return (
-        <nav className="fixed top-0 left-0 w-full z-50 bg-gray-900/10 backdrop-blur-xl shadow-lg text-white px-6 py-4 flex">
-            <div className="flex w-full">
+        <nav className="fixed top-0 left-0 w-full z-50 bg-gray-900/30 backdrop-blur-lg border-b border-white/10 text-white px-6 py-5">
+            <div className="flex items-center justify-between  mx-auto">
+                {/* Logo */}
                 <button
                     onClick={() => navigate("/")}
-                    className="text-3xl font-bold bg-logo-gradient text-transparent bg-clip-text"
+                    className="text-3xl font-extrabold bg-gradient-to-r from-purple-400 via-pink-400 to-red-400 text-transparent bg-clip-text tracking-tight hover:scale-105 transition-transform"
                 >
                     {text.title}
                 </button>
-            </div>
 
-            <div className="flex justify-center w-full">
-                {menuItems.map((item, idx) => (
-                    <button
-                        key={idx}
-                        className="flex items-center gap-2 text-3xl font-medium text-purple-300 hover:text-pink-400 transition-colors duration-200"
-                    >
-                        <Icon icon={item.icon} className="text-3xl" />
-                        {item.label}
-                    </button>
-                ))}
-            </div>
+                {/* Center menu */}
+                <div>{user && <MenuItems items={center} />}</div>
 
-            <div
-                className="flex w-full justify-end space-x-4 pr-2"
-                ref={menuRef}
-            >
-                <LanguageButton />
-                {items.map((item, idx) => (
-                    <button
-                        key={idx}
-                        className="flex items-center gap-2 text-2xl font-medium text-purple-300 hover:text-pink-400 transition-colors duration-200"
-                        onClick={() => navigate(item.link)}
-                    >
-                        <Icon icon={item.icon} className="text-xl" />
-                        {item.label}
-                    </button>
-                ))}
+                {/* Right menu */}
+                <div className="flex gap-2">
+                    <MenuItems items={items} />
+                    <LanguageButton />
+                </div>
             </div>
         </nav>
     );
 }
+
+const MenuItems = ({ items }: { items: MenuItem[] }) => {
+    const navigate = useNavigate();
+
+    return (
+        <div className="flex items-center space-x-4">
+            {items.map((item, idx) => (
+                <button
+                    key={idx}
+                    onClick={() => navigate(item.link)}
+                    className="flex items-center gap-2 px-3 py-1.5 rounded-xl bg-white/5 hover:bg-white/10 text-purple-200 hover:text-pink-400 transition-colors duration-200"
+                >
+                    <Icon icon={item.icon} className="text-lg" />
+                    <span className="hidden sm:inline">{item.label}</span>
+                </button>
+            ))}
+        </div>
+    );
+};

@@ -1,20 +1,21 @@
 import React from "react";
-import { TournamentRegister } from "./TournamentRegister";
 import { GameStatus, GameUserDTOType } from "shared";
-import { TournamentViewer } from "./TournamentViewer";
+import { TournamentRegister } from "./components/TournamentRegister";
 
 import { GameFooter } from "@features/game/ui/components/GameFooter";
 import { GameProvider } from "@features/game/model/useGame";
+
+import { GameElementLocal } from "@features/game/ui/components/GameElement";
 import {
     LocalTournamentProvider,
     useLocalTournament,
-} from "../model/LocalTournamentProvider";
-import { GameElementLocal } from "@features/game/ui/components/GameElement";
+} from "../model/useLocalTournament";
+import { LocalTournamentViewer } from "./components/TournamentViewer";
 
-export const TournamentElement = ({ code }: { code?: string }) => {
+export const TournamentLocal = () => {
     return (
         <div className="w-full h-full">
-            <LocalTournamentProvider maxPlayers={1000}>
+            <LocalTournamentProvider maxPlayers={32}>
                 <div className="w-full h-full">
                     <TournamentView />
                 </div>
@@ -25,13 +26,12 @@ export const TournamentElement = ({ code }: { code?: string }) => {
 
 const TournamentView = () => {
     const {
+        randomEvents,
         status,
         currentGame,
         setCurrentGame,
         setWinner,
-        players,
-        winnerId,
-        deleteTournament,
+        maxScore,
     } = useLocalTournament();
 
     if (status === GameStatus.WAITING) {
@@ -44,7 +44,7 @@ const TournamentView = () => {
 
     if (currentGame) {
         const onScore = (scorer: GameUserDTOType) => {
-            console.log("scored", scorer);
+
         };
 
         const onSpace = () => {
@@ -54,7 +54,6 @@ const TournamentView = () => {
         };
 
         const onEnd = (winner: GameUserDTOType) => {
-            console.log("game ended, winner:", winner);
             setWinner(currentGame!.id, winner.username);
         };
 
@@ -62,10 +61,11 @@ const TournamentView = () => {
             <div className="w-full h-full">
                 <GameProvider
                     players={currentGame.players}
-                    maxScore={1}
                     onScore={onScore}
                     onEnd={onEnd}
                     onSpace={onSpace}
+                    randomEvents={randomEvents}
+                    maxScore={maxScore}
                 >
                     <div className="px-4 py-2" />
                     <GameElementLocal />
@@ -77,7 +77,7 @@ const TournamentView = () => {
 
     return (
         <div className="w-full h-full">
-            <TournamentViewer />
+            <LocalTournamentViewer />
         </div>
     );
 };

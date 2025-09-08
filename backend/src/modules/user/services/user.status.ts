@@ -31,6 +31,26 @@ export class UserStatusService {
         });
     }
 
+    static getMessagePayload(sender: string, message: string) {
+        return JSON.stringify({
+            type: "message",
+            sender,
+            message,
+        });
+    }
+
+    static sendMessageToUser(sender: string, userId: number, message: string) {
+        const payload = this.getMessagePayload(sender, message);
+        const sockets = this.connections.get(userId);
+        if (sockets) {
+            for (const socket of sockets) {
+                if (socket.readyState === 1) {
+                    socket.send(payload);
+                }
+            }
+        }
+    }
+
     static broadcastOnlineUsers() {
         const payload = this.getOnlineUsersPayload();
         for (const sockets of this.connections.values()) {

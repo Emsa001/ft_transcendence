@@ -8,8 +8,9 @@ import { UserEditableData } from "shared";
 import { Op } from "sequelize";
 import { HttpException } from "@/utils/exceptions";
 import { UserGenerate } from "@/database/models/User/UserGenerate";
+import { Validators } from "@/database/other/Validators";
 
-const imageDirUrl = `${process.env.BASE_URL}/public/uploads/`;
+const imageDirUrl = `${process.env.BACKEND_URL}/public/uploads/`;
 
 async function uploadImage(image: MultipartFile, fileName: string) {
     const imagesDir = path.join(process.cwd(), "public", "uploads");
@@ -19,10 +20,15 @@ async function uploadImage(image: MultipartFile, fileName: string) {
     }
 
     fileName += ".webp";
-
     const filePath = path.join(imagesDir, fileName);
 
-    await sharp(await image.toBuffer())
+    const buffer = await image.toBuffer();
+
+    const MAX_WIDTH = 512;
+    const MAX_HEIGHT = 512;
+
+    await sharp(buffer)
+        .resize({ width: MAX_WIDTH, height: MAX_HEIGHT, fit: "inside" })
         .webp({ quality: 80 })
         .toFile(filePath);
 
@@ -61,6 +67,11 @@ class UserAccountService {
             if (existingUser)
                 throw new HttpException(400, "Username already exists");
 
+            const error = Validators.validateUserName(data.username);
+            if (error) {
+                throw new HttpException(400, error);
+            }
+
             user.username = data.username || user.username;
         }
         if (data.newPassword) {
@@ -77,12 +88,17 @@ class UserAccountService {
             if (!isMatch)
                 throw new HttpException(400, "Old password is incorrect");
 
-            const newPassword = await bcrypt.hash(data.newPassword, 10);
+            const error = Validators.validatePassword(data.newPassword);
+            if (error) {
+                throw new HttpException(400, error);
+            }
 
+            const newPassword = await bcrypt.hash(data.newPassword, 10);
             const samePassword = await bcrypt.compare(
                 data.newPassword,
                 user.password
             );
+
             if (samePassword)
                 throw new HttpException(
                     400,
@@ -93,7 +109,6 @@ class UserAccountService {
         }
 
         await user.save();
-
         return user;
     }
 

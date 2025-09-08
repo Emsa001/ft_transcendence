@@ -12,11 +12,26 @@ export class UserGenerate {
     }
 
     static async createUsername(name: string): Promise<string> {
-        while (await User.findByUsername(name)) {
-            const randomSuffix = faker.string.alphanumeric(5);
-            name = `${name}_${randomSuffix}`;
+        const maxLength = 32;
+        let baseName = name.slice(0, maxLength);
+
+        if (!(await User.findByUsername(baseName))) {
+            return baseName;
         }
 
-        return name;
+        for (let suffixLength = 1; suffixLength <= 6; suffixLength++) {
+            const allowedLength = maxLength - (suffixLength + 1);
+            const basePrefix = name.slice(0, allowedLength);
+
+            for (let i = 0; i < 50; i++) {
+                const randomSuffix = faker.string.alphanumeric(suffixLength);
+                const candidate = `${basePrefix}_${randomSuffix}`;
+                if (!(await User.findByUsername(candidate))) {
+                    return candidate;
+                }
+            }
+        }
+
+        return faker.string.alphanumeric(32);
     }
 }

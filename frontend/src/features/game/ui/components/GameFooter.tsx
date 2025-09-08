@@ -1,6 +1,7 @@
 import React from "react";
 import { useGame } from "@features/game/model/useGame";
 import { gameEngine } from "@features/game/service/GameEngine";
+import { useLanguage } from "@features/language/model/useLanguage";
 
 const symbols: Record<string, string> = {
     arrowup: "↑",
@@ -8,11 +9,14 @@ const symbols: Record<string, string> = {
     w: "W",
     s: "S",
     space: "space",
+    ai: "🤖",
 };
 
-export function GameFooter() {
+export const GameFooter = () => {
     const { players } = useGame();
     const paddles = gameEngine.paddles;
+    const { getText } = useLanguage();
+    const text = getText("options");
 
     return (
         <div className="w-full max-w-[800px] flex justify-between items-center px-6">
@@ -40,7 +44,7 @@ export function GameFooter() {
 
             {/* Pause */}
             <div className="flex flex-col items-center gap-2">
-                <p>Pause:</p>
+                <p>{text.pause}</p>
                 <div className="flex items-center gap-2">
                     <kbd className="px-2 py-1 bg-white/10 rounded-md">
                         {symbols["space"]}
@@ -57,7 +61,9 @@ export function GameFooter() {
                             <kbd className="px-2 py-1 bg-white/10 rounded-md">
                                 {symbols[paddles[1].controls.up.toLowerCase()]}
                             </kbd>
-                            <kbd className="px-2 py-1 bg-white/10 rounded-md">
+                            <kbd
+                                className={`px-2 py-1 bg-white/10 rounded-md ${paddles[1].controls.down === "ai" && "hidden"}`}
+                            >
                                 {
                                     symbols[
                                         paddles[1].controls.down.toLowerCase()
@@ -70,4 +76,4 @@ export function GameFooter() {
             </div>
         </div>
     );
-}
+};

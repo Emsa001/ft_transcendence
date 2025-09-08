@@ -6,12 +6,9 @@ import {
     TournamentUserDTOType,
 } from "shared";
 
-export class LocalTournament {
-    static getActivePlayers(
-        players: TournamentUserDTOType[]
-    ): TournamentUserDTOType[] {
-        return players.filter((p) => !p.eliminated);
-    }
+export class TournamentEngine {
+    static getActivePlayers = (players: TournamentUserDTOType[]) =>
+        players.filter((p) => !p.eliminated);
 
     static createAllGames(playerCount: number): GameDTOType[] {
         const allGames: GameDTOType[] = [];
@@ -41,7 +38,9 @@ export class LocalTournament {
                     winner: null,
                     round: currentRound,
                     isPrivate: false,
-                    code: null,
+                    randomEvents: false,
+                    tournamentId: -1,
+                    code: Math.floor(1000 + Math.random() * 9000).toString(),
                     createdAt: new Date(),
                     updatedAt: new Date(),
                 });
@@ -56,7 +55,7 @@ export class LocalTournament {
         return allGames;
     }
 
-    static assignPlayersToGames(
+    static startRound(
         games: GameDTOType[],
         round: number,
         activePlayers: TournamentUserDTOType[]
@@ -78,6 +77,8 @@ export class LocalTournament {
 
         const gamesForRound: GameDTOType[] = [];
         const gamesNeeded = Math.floor(playersInThisRound.length / 2);
+
+        playersInThisRound.sort(() => Math.random() - 0.5);
 
         for (let i = 0; i < Math.min(gamesNeeded, roundGames.length); i++) {
             const game = roundGames[i];

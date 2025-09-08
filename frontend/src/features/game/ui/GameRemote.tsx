@@ -2,14 +2,16 @@ import React, { useEffect, useNavigate } from "react";
 import { GameRemoteRoom } from "./remote/GameRoom";
 import { GameLobby } from "./remote/GameLobby";
 import { useUser } from "@features/auth/model/useUser";
-import GameApi from "../service/GameAPI";
+import GameApi from "../service/GameApi";
 import { RemoteGameProvider } from "../model/useRemoteGame";
+import { Toast } from "@shared/lib/Toast";
 
 interface GameRemoteElementProps {
     code?: string;
+    onEnd?: () => void;
 }
 
-export const GameRemoteElement = ({ code }: GameRemoteElementProps) => {
+export const GameRemote = ({ code, onEnd }: GameRemoteElementProps) => {
     const { user } = useUser(true);
     const navigate = useNavigate();
 
@@ -17,14 +19,17 @@ export const GameRemoteElement = ({ code }: GameRemoteElementProps) => {
         if (!code) return;
 
         GameApi.getGameByCode(code).then((game) => {
-            if (!game) navigate("/game/remote");
+            if (!game) {
+                Toast.error("Game not found");
+                navigate("/game/remote");
+            }
         });
     }, [code]);
 
     if (code && user) {
         return (
             <div className="w-full h-full">
-                <RemoteGameProvider code={code}>
+                <RemoteGameProvider code={code} onEnd={onEnd}>
                     <div className="w-full h-full flex items-center justify-center pt-8">
                         <GameRemoteRoom />
                     </div>

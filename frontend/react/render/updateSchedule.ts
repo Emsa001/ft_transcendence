@@ -57,7 +57,7 @@ export async function updateSchedule(component: ReactComponentInstance, states: 
 
         if (IS_DEVELOPMENT) {
             console.log("New VNode:", newNode);
-            console.log("Old VNode:", component.vNode);
+
         }
 
         if (newNode && component.vNode) {

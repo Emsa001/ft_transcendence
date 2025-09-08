@@ -2,16 +2,18 @@ import { WebSocket } from "@fastify/websocket";
 import { User } from "@/database/models/User/User";
 import { Game } from "@/database/models/Game/Game";
 import { WebSocketService } from "@/lib/WebSocketService";
-import { GameMessage, GameMessages, GameStatus } from "shared";
+import { GameMessages, GameStatus, MessageData } from "shared";
 import { GameRooms } from "./registry.service";
 import { GameEngine } from "./engine.service";
 import { HttpException } from "@/utils/exceptions";
+import { Tournament } from "@/database/models/Tournaments/Tournament";
+import { TournamentRooms } from "@/modules/tournament/services/registry.service";
 
 /**
  * Utility for handling countdown messages.
  */
 class CountdownService {
-    constructor(private send: (msg: GameMessage[] | null) => void) {}
+    constructor(private send: (msg: MessageData | null) => void) {}
 
     run(count = 3, interval = 1000): Promise<void> {
         return new Promise<void>((resolve) => {
@@ -46,6 +48,7 @@ export class GameRoom extends WebSocketService {
         this.game = game;
         this.engine = new GameEngine();
         this.engine.onScore = this.onScore.bind(this);
+        this.engine.onRandomEvent = this.onRandomEvent.bind(this);
         this.countdownService = new CountdownService(
             this.gameMessage.bind(this)
         );
@@ -75,10 +78,19 @@ export class GameRoom extends WebSocketService {
             });
 
             this.addClient(user.id, connection);
-            this.updateState(connection);
+            await this.updateState(connection);
 
             if (this.game.players.length === this.game.maxPlayers) {
                 GameRooms.triggerHooks("onGameAvailabilityChange", this.game);
+
+                if (this.game.tournamentId) {
+                    // check if all players are connected
+                    const allConnected = this.game.players.every((p) => {
+                        const conns = this.getClient(p.id);
+                        return conns && conns.length > 0;
+                    });
+                    if (allConnected) await this.startGame();
+                }
             }
         } catch (error) {
             console.error(
@@ -97,6 +109,9 @@ export class GameRoom extends WebSocketService {
         const user = this.game.players.find((p) => p.id === userId);
         if (!user) return;
 
+        const userConnections = this.getClient(userId);
+        if (userConnections.length > 1) return;
+
         if (this.game.status !== GameStatus.WAITING) {
             this.broadcast({
                 type: "PLAYER_DISCONNECTED",
@@ -104,6 +119,8 @@ export class GameRoom extends WebSocketService {
             });
             return;
         }
+
+        if (this.game.tournamentId) return;
 
         await this.game.removePlayer(user);
         await this.game.reload({ include: ["players"] });
@@ -129,31 +146,40 @@ export class GameRoom extends WebSocketService {
     async startGame() {
         if (this.game.status != GameStatus.WAITING) return;
 
-        this.game.status = GameStatus.IN_PROGRESS;
-        await this.game.save();
+        await this.game.update({ status: GameStatus.IN_PROGRESS });
+        const tournament = await Tournament.findByPk(this.game.tournamentId);
+        if (tournament) {
+            const room = TournamentRooms.get(tournament.uuid);
+            if (room) {
+                room.broadcast({
+                    type: "GAME_UPDATE",
+                    game: this.game.toDTO(),
+                });
+            }
+        }
 
-        this.engine.initPaddles(this.game.getGameUsers());
+        const players = this.game.getGameUsers();
+
+        this.engine.initPaddles(players);
+        this.engine.randomEvents = this.game.randomEvents;
         this.updateState();
         this.startGameLoop();
 
-        const player1 = this.game.players[0].username;
-        const player2 = this.game.players[1].username;
+        const player1 = players[0].username;
+        const player2 = players[1].username;
 
         this.gameMessage(
             GameMessages.intro(player1, player2, this.game.maxScore)
         );
 
-        setTimeout(async () => {
-            await this.countdownService.run(3);
-            this.engine.resetPositions();
-            this.engine.togglePause();
-        }, 1000);
+        await this.countdownService.run(3);
+        this.engine.resetPositions();
+        this.engine.togglePause();
     }
 
     private async endGame(delay: number) {
+        await this.game.end();
         this.stopGameLoop();
-        this.game.status = GameStatus.FINISHED;
-        await this.game.save();
 
         setTimeout(async () => {
             this.updateState();
@@ -165,26 +191,36 @@ export class GameRoom extends WebSocketService {
 
     async onScore(scorerId: number) {
         try {
+            this.engine.resetPositions();
+            this.engine.togglePause();
             await this.game.playerScore(scorerId, 1);
             await this.game.reload({ include: ["players"] });
+
+            const player = this.game.players.find((p) => p.id === scorerId);
+            if (!player) return;
+
+            this.updateState();
+
+            if (player.GameUser.score >= this.game.maxScore) {
+                this.gameMessage(GameMessages.win(player.username));
+                await this.endGame(2);
+            } else {
+                this.gameMessage(GameMessages.score(player.username));
+                await this.countdownService.run(3);
+                this.engine.togglePause();
+            }
         } catch {
+            this.engine.togglePause();
             throw new HttpException(500, "Failed to update player score");
         }
+    }
 
-        const player = this.game.players.find((p) => p.id === scorerId);
-        if (!player) return;
+    /* -------------------- Random Events -------------------- */
 
-        this.updateState();
-        this.engine.togglePause();
-
-        if (player.GameUser.score >= this.game.maxScore) {
-            this.gameMessage(GameMessages.win(player.username));
-            await this.endGame(2);
-        } else {
-            this.gameMessage(GameMessages.score(player.username));
-            await this.countdownService.run(3);
-            this.engine.togglePause();
-        }
+    onRandomEvent(event: string) {
+        if (this.engine.stopped) return;
+        this.gameMessage(GameMessages.event(event));
+        // this.broadcast({ type: "GAME_EVENT", event });
     }
 
     /* -------------------- Game Loop -------------------- */
@@ -211,7 +247,7 @@ export class GameRoom extends WebSocketService {
 
     /* -------------------- Messaging -------------------- */
 
-    private gameMessage(message: GameMessage[] | null) {
+    private gameMessage(message: MessageData | null) {
         this.broadcast({ type: "GAME_MESSAGE", message });
     }
 

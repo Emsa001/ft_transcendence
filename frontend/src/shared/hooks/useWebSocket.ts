@@ -10,7 +10,6 @@ export const useWebSocket = (url: string) => {
     const [isConnected, setIsConnected] = useState(false);
     const wsRef = useRef<WebSocket | null>(null);
     const hooksRef = useRef<Hook[]>([]);
-    const reconnectRef = useRef<NodeJS.Timeout | null>(null);
 
     const addHook = (hook: Hook) => {
         hooksRef.current.push(hook);
@@ -18,9 +17,7 @@ export const useWebSocket = (url: string) => {
 
     // Reconnect function
     const reconnect = () => {
-        if (wsRef.current) {
-            return;
-        }
+        if (wsRef.current) return;
 
         setIsLoading(true);
         setIsConnected(false);
@@ -60,11 +57,10 @@ export const useWebSocket = (url: string) => {
     // Connect to WebSocket initially
     useEffect(() => {
         if (!url) return;
-
         reconnect();
 
         return () => {
-            console.log("Cleaning up WebSocket connection");
+
             wsRef.current?.close();
             wsRef.current = null;
             hooksRef.current = [];

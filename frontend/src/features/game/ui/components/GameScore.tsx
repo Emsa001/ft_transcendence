@@ -10,10 +10,11 @@ export const GameScore = ({ players }: { players: GameUserDTOType[] }) => {
             {players.map((player) => (
                 <div
                     key={player.id}
-                    className={`${scoreClass} text-center min-w-[80px]`}
+                    className={`${scoreClass} text-center w-[100px]`}
                 >
-                    <div className="text-xs text-white/70 mb-1">
-                        {player.username}
+                    <div className="text-xs text-white/70 mb-1 truncate">
+                        {player.username.slice(0, 16)}
+                        {player.username.length > 16 ? "..." : ""}
                     </div>
                     <div className="text-3xl">{player.score}</div>
                 </div>

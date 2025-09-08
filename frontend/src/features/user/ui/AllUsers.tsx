@@ -1,11 +1,10 @@
-"use client";
 import React, { useEffect, useState } from "react";
 import { UserDTOType } from "shared";
 import ProfileApi from "../service/profileApi";
 import FriendsApi from "../service/friendsApi";
 import blockUserApi from "../service/blockUserApi";
 
-export function AllUsers() {
+export const AllUsers = () => {
     const [allUsers, setAllUsers] = useState<UserDTOType[]>([]);
     const [friends, setFriends] = useState<UserDTOType[]>([]);
     const [blockedUsers, setBlockedUsers] = useState<UserDTOType[]>([]);
@@ -20,20 +19,24 @@ export function AllUsers() {
                     FriendsApi.getFriendRequests(),
                     blockUserApi.getAll(),
                 ]);
-            setFriends(newFriends);
-            setFriendRequests(newFriendRequests);
-            setBlockedUsers(newBlockedUsers);
+            if (newFriendRequests) setFriendRequests(newFriendRequests);
 
-            const friendUsernames = new Set(newFriends.map((f) => f.username));
-            const blockedUsernames = new Set(
-                newBlockedUsers.map((b) => b.username)
-            );
-            const filteredUsers = newUsers.filter(
-                (user) =>
-                    !friendUsernames.has(user.username) &&
-                    !blockedUsernames.has(user.username)
-            );
-            setAllUsers(filteredUsers);
+            if (newUsers && newFriends && newBlockedUsers) {
+                setBlockedUsers(newBlockedUsers);
+                setFriends(newFriends);
+                const friendUsernames = new Set(
+                    newFriends.map((f) => f.username)
+                );
+                const blockedUsernames = new Set(
+                    newBlockedUsers.map((b) => b.username)
+                );
+                const filteredUsers = newUsers.filter(
+                    (user) =>
+                        !friendUsernames.has(user.username) &&
+                        !blockedUsernames.has(user.username)
+                );
+                setAllUsers(filteredUsers);
+            }
         };
         fetchData();
     }, []);
@@ -136,4 +139,4 @@ export function AllUsers() {
             </div>
         </div>
     );
-}
+};

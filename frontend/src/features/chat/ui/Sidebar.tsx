@@ -1,9 +1,10 @@
 import React, { useEffect } from "react";
 import { UserPicture } from "@features/user/ui/UserPicture";
 import { useOnlineUsers } from "@features/user/model/useOnlineUsers";
-import { usechat } from "../model/ChatContext";
+import { useChat } from "../model/ChatContext";
 import { UserDTOType } from "shared";
 import { useLanguage } from "@features/language/model/useLanguage";
+import { sliceText } from "@shared/lib/utils";
 
 interface UserCardProps {
     user: UserDTOType;
@@ -12,7 +13,7 @@ interface UserCardProps {
     onClick: () => void;
 }
 
-function UserCard({ user, isOnline, selectedUser, onClick }: UserCardProps) {
+const UserCard = ({ user, isOnline, selectedUser, onClick }: UserCardProps) => {
     return (
         <div
             onClick={onClick}
@@ -22,7 +23,8 @@ function UserCard({ user, isOnline, selectedUser, onClick }: UserCardProps) {
         >
             <div className="relative">
                 <UserPicture
-                    userId={user.id}
+                    user={user}
+                    size={8}
                     className="w-10 h-10 rounded-full shadow-[0_0_8px_rgba(0,255,255,0.7)]"
                 />
                 <span
@@ -32,15 +34,30 @@ function UserCard({ user, isOnline, selectedUser, onClick }: UserCardProps) {
                 />
             </div>
             <span className="font-medium text-cyan-300 drop-shadow-[0_0_6px_rgba(0,255,255,0.7)]">
-                {user.username}
+                {sliceText(user.username, 10)}
             </span>
         </div>
     );
-}
+};
 
-export function Sidebar() {
-    const { users, selectedUser, setSelectedUser } = usechat();
+export const Sidebar = ({ userId }: { userId?: string }) => {
+    const { users, selectedUser, setSelectedUser, handleSelectUser } =
+        useChat();
     const { onlineUsers } = useOnlineUsers();
+    const systemUser = {
+        id: -1,
+        username: "System",
+    };
+
+    useEffect(() => {
+        if (userId) {
+            const user = users.find((u) => u.id === parseInt(userId));
+            if (user) {
+                setSelectedUser(user);
+            }
+            if (userId === "-1") setSelectedUser(systemUser);
+        }
+    }, [userId, users]);
 
     const { getText } = useLanguage();
     const text = getText("chat.friends");
@@ -53,17 +70,19 @@ export function Sidebar() {
             <div className="border-b-2 border-cyan-600 mb-2 shadow-[0_0_12px_rgba(0,255,255,0.8)]" />
 
             <div className="space-y-2 max-h-[calc(100vh-120px)] overflow-y-auto pr-1">
-                {users.map((user) => (
+                {[systemUser, ...users].map((user) => (
                     <div key={user.id}>
                         <UserCard
                             user={user}
-                            isOnline={onlineUsers.includes(user.id)}
+                            isOnline={
+                                onlineUsers.includes(user.id) || user.id === -1
+                            }
                             selectedUser={selectedUser}
-                            onClick={() => setSelectedUser(user)}
+                            onClick={() => handleSelectUser(user)}
                         />
                     </div>
                 ))}
             </div>
         </div>
     );
-}
+};

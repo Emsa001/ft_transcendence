@@ -1,5 +1,5 @@
 import { startClean } from "@/database/client";
-import { Op, Sequelize } from "sequelize";
+import { Sequelize } from "sequelize";
 import { UserGenerate } from "@/database/models/User/UserGenerate";
 import { Tournament } from "@/database/models/Tournaments/Tournament";
 import { GameStatus } from "shared";
@@ -38,28 +38,61 @@ describe("Tournament Tests", () => {
 
         await tournament.start();
 
+        const games = await tournament.getGames();
+        expect(tournament.status).toBe("in_progress");
+        expect(games.length).toBe(9);
+
+        const round1 = await tournament.startRound();
+        expect(round1.length).toBe(2);
+        await tournament.exampleRoundFlow();
+
+        // Round 2
+        const round2 = await tournament.startRound();
+        expect(round2.length).toBe(4);
+        await tournament.exampleRoundFlow();
+
+        // Round 3
+        const round3 = await tournament.startRound();
+        expect(round3.length).toBe(2);
+        await tournament.exampleRoundFlow();
+
+        // Final
+        const final = await tournament.startRound();
+        expect(final.length).toBe(1);
+        await tournament.exampleRoundFlow();
+    });
+
+    it("should create games and assign players for each round", async () => {
+        const tournament = await Tournament.create({ maxPlayers: 10 });
+        for (let i = 0; i < 10; i++) {
+            const user = await UserGenerate.createExample();
+            await tournament.addPlayer(user);
+        }
+
+        await tournament.start();
+
         // round 1: 2 games
         // round 2: 4 games
         // round 3: 2 games
         // final: 1 game
 
         // Round 1
-        const round1 = await tournament.createRound();
+        const round1 = await tournament.startRound();
         expect(round1.length).toBe(2);
         await tournament.exampleRoundFlow();
 
         // Round 2
-        const round2 = await tournament.createRound();
+        const round2 = await tournament.startRound();
         expect(round2.length).toBe(4);
         await tournament.exampleRoundFlow();
 
         // Round 3
-        const round3 = await tournament.createRound();
+        const round3 = await tournament.startRound();
         expect(round3.length).toBe(2);
         await tournament.exampleRoundFlow();
 
         // Final
-        const final = await tournament.createRound();
+        const final = await tournament.startRound();
         expect(final.length).toBe(1);
         await tournament.exampleRoundFlow();
     });
@@ -74,7 +107,7 @@ describe("Tournament Tests", () => {
         await tournament.start();
 
         while (tournament.status === GameStatus.IN_PROGRESS) {
-            await tournament.createRound();
+            await tournament.startRound();
             await tournament.exampleRoundFlow();
         }
 
@@ -141,26 +174,12 @@ describe("Tournament Tests", () => {
         expect(tournament.status).toBe(GameStatus.IN_PROGRESS);
 
         while (tournament.status === GameStatus.IN_PROGRESS) {
-            await tournament.createRound();
+            await tournament.startRound();
             await tournament.exampleRoundFlow();
         }
 
         expect(tournament.round).toBe(6);
         expect(tournament.status).toBe(GameStatus.FINISHED);
         expect(tournament.winnerId).not.toBeNull();
-    });
-
-    it("should prevent creating round when current round not finished", async () => {
-        const tournament = await Tournament.create({ maxPlayers: 8 });
-        for (let i = 0; i < 8; i++) {
-            const user = await UserGenerate.createExample();
-            await tournament.addPlayer(user);
-        }
-
-        await tournament.start();
-        await tournament.createRound();
-        await expect(tournament.createRound()).rejects.toThrow(
-            "Current round is not finished yet"
-        );
     });
 });

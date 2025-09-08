@@ -29,12 +29,13 @@ describe("User Tests", () => {
     });
 
     it("should set user with game history as deleted", async () => {
+        const user1 = await UserGenerate.createExample();
+        const user2 = await UserGenerate.createExample();
         const game = await Game.create({
             status: GameStatus.WAITING,
             maxPlayers: 2,
+            hostId: user1.id,
         });
-        const user1 = await UserGenerate.createExample();
-        const user2 = await UserGenerate.createExample();
 
         await game.addPlayers([user1, user2]);
 
@@ -143,7 +144,7 @@ describe("User Statistics Tests", () => {
         await tournament1.start();
 
         while (tournament1.status === GameStatus.IN_PROGRESS) {
-            await tournament1.createRound();
+            await tournament1.startRound();
             await tournament1.exampleRoundFlow(user1.id);
         }
 
@@ -183,7 +184,7 @@ describe("User Statistics Tests", () => {
         await tournament1.start();
 
         while (tournament1.status === GameStatus.IN_PROGRESS) {
-            await tournament1.createRound();
+            await tournament1.startRound();
             await tournament1.exampleRoundFlow(user1.id);
         }
 
@@ -212,8 +213,7 @@ const playGame = async (
     game.status = GameStatus.IN_PROGRESS;
     await game.playerScore(user.id, userScore);
     await game.playerScore(opponent.id, opponentScore);
-    game.status = GameStatus.FINISHED;
-    await game.save();
+    await game.end();
 };
 
 const winGame = async (user: User, game?: Game) => {

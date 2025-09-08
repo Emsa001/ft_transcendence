@@ -26,6 +26,7 @@ export const GameProvider = ({
     children,
     players,
     maxScore = 5,
+    randomEvents = false,
 
     onScore,
     onEnd,
@@ -35,6 +36,10 @@ export const GameProvider = ({
     const [maxScoreValue, setMaxScore] = useState(maxScore);
     const [state, setState] = useState<GameState>("created");
     const lockRef = useRef(false);
+
+    useEffect(() => {
+        gameEngine.randomEvents = randomEvents;
+    }, [randomEvents]);
 
     useEffect(() => {
         setPlayers(gameEngine.createPlayers(players));
@@ -116,13 +121,21 @@ export const GameProvider = ({
             return;
         }
 
-        showMessage(GameMessages.score(scorer.username), 1000, () =>
-            startCountdown().then(() => {
-                gameEngine.resetPositions();
-                gameEngine.stopped = false;
-                lockRef.current = false;
-            })
-        );
+        showMessage({
+            message: GameMessages.score(scorer.username),
+            after: () =>
+                startCountdown().then(() => {
+                    gameEngine.resetPositions();
+                    gameEngine.stopped = false;
+                    lockRef.current = false;
+                }),
+        });
+    };
+
+    const onRandomEvent = (event: string) => {
+        showMessage({
+            message: GameMessages.event(event),
+        });
     };
 
     // keep handleScore up to date
@@ -132,6 +145,7 @@ export const GameProvider = ({
 
     useEffect(() => {
         messages.current = GameMessages.start();
+        gameEngine.onRandomEvent = onRandomEvent;
 
         return () => {
             gameEngine.resetPositions();

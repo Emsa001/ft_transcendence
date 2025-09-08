@@ -55,10 +55,13 @@ describe("Game Tests", () => {
     });
 
     it("Should not add player to a game that is not waiting", async () => {
-        const game = await Game.create({ status: GameStatus.IN_PROGRESS });
         const user1 = await UserGenerate.createExample();
         const user2 = await UserGenerate.createExample();
         const user3 = await UserGenerate.createExample();
+        const game = await Game.create({
+            status: GameStatus.IN_PROGRESS,
+            hostId: user1.id,
+        });
 
         await expect(game.addPlayer(user1)).rejects.toThrow(
             "Cannot add players to a game that is not waiting"
@@ -69,9 +72,9 @@ describe("Game Tests", () => {
     });
 
     it("Should not add more players than maxPlayers", async () => {
-        const game = await Game.create({ maxPlayers: 1 });
         const user1 = await UserGenerate.createExample();
         const user2 = await UserGenerate.createExample();
+        const game = await Game.create({ maxPlayers: 1, hostId: user1.id });
 
         await game.addPlayer(user1);
         await expect(game.addPlayer(user2)).rejects.toThrow(
@@ -80,14 +83,15 @@ describe("Game Tests", () => {
     });
 
     it("Should correctly set the winner of a game when finished", async () => {
-        const game = await Game.create({
-            status: GameStatus.WAITING,
-            maxPlayers: 4,
-        });
         const user1 = await UserGenerate.createExample();
         const user2 = await UserGenerate.createExample();
         const user3 = await UserGenerate.createExample();
         const user4 = await UserGenerate.createExample();
+        const game = await Game.create({
+            status: GameStatus.WAITING,
+            maxPlayers: 4,
+            hostId: user1.id,
+        });
 
         await game.addPlayers([user1, user2, user3, user4]);
 
@@ -98,9 +102,7 @@ describe("Game Tests", () => {
         await game.playerScore(user3.id, 15);
         await game.playerScore(user4.id, 5);
 
-        game.status = GameStatus.FINISHED;
-
-        await game.save();
+        await game.end();
 
         expect(game.winnerId).toBe(user2.id);
     });

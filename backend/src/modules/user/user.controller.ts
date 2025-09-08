@@ -45,6 +45,7 @@ export class UserController extends BaseController {
     }
 
     @GET("/:id")
+    @AUTHORIZED
     async getUserById(request: FastifyRequest, reply: FastifyReply) {
         const { id } = request.params as { id: string };
 
@@ -53,38 +54,53 @@ export class UserController extends BaseController {
             if (!user) throw new HttpException(404, "User not found");
             return reply.send(user.toDTO());
         }
+
         const user = await User.findById(Number(id));
-        return reply.send(user?.toDTO());
+        if (!user) throw new HttpException(404, "User not found");
+        return reply.send(user.toDTO());
     }
 
     @GET("/:id/history")
     async getUserGameHistory(request: FastifyRequest, reply: FastifyReply) {
-        const { id } = request.params as { id?: string };
-        const { limit, start, end } = request.query as {
-            limit?: string;
+        const { id } = request.params as { id: string };
+        const { start, end } = request.query as {
             start?: string;
             end?: string;
         };
 
-        if (!id || Number.isNaN(Number(id)))
-            throw new HttpException(400, "Invalid user ID");
+        let userId = Number(id);
 
-        const games = await UserGamesService.getHistory(Number(id), {
-            limit: limit ? Number(limit) : undefined,
+        if (Number.isNaN(Number(id))) {
+            const user = await User.findByUsername(id);
+            if (!user) throw new HttpException(404, "User not found");
+            userId = user.id;
+        }
+
+        const games = await UserGamesService.getHistory(userId, {
             start: start ? new Date(start) : undefined,
             end: end ? new Date(end) : undefined,
         });
 
-        return reply.send(games.map((game) => game.toDTO()));
+        const tournaments = await UserGamesService.getTournaments(userId, {
+            start: start ? new Date(start) : undefined,
+            end: end ? new Date(end) : undefined,
+        });
+
+        return reply.send({ games, tournaments });
     }
 
     @GET("/:id/stats")
     async getUserStats(request: FastifyRequest, reply: FastifyReply) {
-        const { id } = request.params as { id?: string };
-        if (!id || Number.isNaN(Number(id)))
-            throw new HttpException(400, "Invalid user ID");
+        const { id } = request.params as { id: string };
+        let userId = Number(id);
 
-        const stats = await UserGamesService.getStatistics(Number(id));
+        if (Number.isNaN(Number(id))) {
+            const user = await User.findByUsername(id);
+            if (!user) throw new HttpException(404, "User not found");
+            userId = user.id;
+        }
+
+        const stats = await UserGamesService.getStatistics(userId);
         return reply.send(stats);
     }
 
@@ -132,6 +148,16 @@ export class UserController extends BaseController {
         return reply.send(blockedUsers);
     }
 
+    @GET("/blocked/:id")
+    @AUTHORIZED
+    async isUserBlocked(request: FastifyRequest, reply: FastifyReply) {
+        const { id } = request.params as { id: number };
+
+        const blocked = await request.user.isUserBlocked(id);
+        console.log("isUserBlocked:", blocked); // Debug log
+        return reply.send(blocked);
+    }
+
     @POST("/block/:id")
     @AUTHORIZED
     async blockUser(request: FastifyRequest, reply: FastifyReply) {
@@ -155,11 +181,11 @@ export class UserController extends BaseController {
     @GET("/status", { websocket: true })
     async getStatus(connection: WebSocket, req: FastifyRequest) {
         try {
-            let userId: string;
+            let userId: number;
             const token = req.cookies.session;
 
-            if (!token) userId = randomUUID();
-            else userId = jwtService.verify(token).id.toString();
+            if (!token) userId = Number(randomUUID());
+            else userId = jwtService.verify(token).id;
 
             UserStatusService.addUser(Number(userId), connection);
 

@@ -14,7 +14,7 @@ class ChatDBService {
         id1: number,
         id2: number,
         options: FindOptions
-    ): Promise<{ messages: MessageDTOType[]; hasMore: boolean }> {
+    ): Promise<{ messages: Message[]; hasMore: boolean }> {
         const limit = options.limit ?? 20;
         const offset = options.offset ?? 0;
 
@@ -50,11 +50,6 @@ class ChatDBService {
             messages: messages.reverse(),
             hasMore,
         };
-    }
-
-    public async saveMessage(msg: MessageDTOType) {
-        const message = await Message.create(msg);
-        await message.save();
     }
 }
 

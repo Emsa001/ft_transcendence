@@ -10,13 +10,31 @@ interface FeedOptions {
 }
 
 export class DatabaseExampleFeed {
+    static async feedUser(userId: number) {
+        const user = await User.findById(userId);
+        const user2 = await UserGenerate.createExample();
+
+        await Promise.all(
+            Array.from({ length: 10 }).map(async () => {
+                const game = await Game.create();
+                await game.addPlayer(user);
+                await game.addPlayer(user2);
+                await game.update({ status: GameStatus.IN_PROGRESS });
+                await game.playerScore(
+                    Math.random() < 0.5 ? user.id : user2.id,
+                    1
+                );
+                await game.end();
+            })
+        );
+    }
+
     static async feed(options: FeedOptions = {}): Promise<void> {
         const { users = 10, games = 5 } = options;
 
         console.log("Feeding database with example data...");
-        // await this.createExampleUsers(users);
-        // await this.createExampleGames(games);
-        // await this.assignGamesToUsers();
+        await this.createExampleUsers(users);
+        await this.createExampleGames(games);
         await this.createExampleTournament();
         console.log("Database example data created successfully.");
     }

@@ -1,25 +1,28 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useNavigate, useState } from "react";
 import { UserDTOType } from "shared";
 import FriendsApi from "../../../user/service/friendsApi";
 import { UserPicture } from "@features/user/ui/UserPicture";
 import { Modal } from "@shared/components/Modal";
 import ProfileApi from "../../../user/service/profileApi";
 import { useUser } from "@features/auth/model/useUser";
-import { Alert } from "@shared/components/Alert";
+import { Toast } from "@shared/lib/Toast";
 import { useLanguage } from "@features/language/model/useLanguage";
+import { sliceText } from "@shared/lib/utils";
 
 interface SearchModalProps {
     onClose: () => void;
     isOpen: boolean;
 }
 
-export function SearchModal({ onClose, isOpen }: SearchModalProps) {
+export const SearchModal = ({ onClose, isOpen }: SearchModalProps) => {
     const [query, setQuery] = useState("");
     const { user } = useUser();
     const [results, setResults] = useState<UserDTOType[]>([]);
     const [sentRequests, setSentRequests] = useState<UserDTOType[]>([]);
     const { getText } = useLanguage();
     const texts = getText("profile.friends");
+
+    const navigate = useNavigate();
 
     if (!user) return <div />;
 
@@ -30,7 +33,7 @@ export function SearchModal({ onClose, isOpen }: SearchModalProps) {
         }
         const handler = setTimeout(async () => {
             const sent = await FriendsApi.getAllSentRequests();
-            setSentRequests(sent);
+            if (sent) setSentRequests(sent);
             const filtered = await ProfileApi.searchUsers(query);
             const filteredWithoutSelf = filtered.filter(
                 (u: UserDTOType) => u.id !== user.id
@@ -52,13 +55,14 @@ export function SearchModal({ onClose, isOpen }: SearchModalProps) {
                 ...sentRequests,
                 { id: friend.id } as UserDTOType,
             ]);
+            onClose();
         }
     };
 
     const handleCancelRequest = async (friend: UserDTOType) => {
         await FriendsApi.removeFriend(friend.id);
         setSentRequests(sentRequests.filter((req) => req.id !== friend.id));
-        Alert.success("Friend request canceled successfully.");
+        Toast.success("Friend request canceled successfully.");
     };
 
     return (
@@ -92,13 +96,24 @@ export function SearchModal({ onClose, isOpen }: SearchModalProps) {
                                             key={user.id}
                                             className="flex items-center justify-between gap-3 py-2 px-3 bg-gray-700/60 hover:bg-gray-700 mb-2 rounded-lg transition"
                                         >
-                                            <div className="flex items-center gap-3">
+                                            <div className="group flex items-center gap-3">
                                                 <UserPicture
-                                                    userId={user.id}
+                                                    user={user}
+                                                    size={8}
                                                     className="w-9 h-9 rounded-full"
                                                 />
-                                                <span className="font-medium text-gray-200">
-                                                    {user.username}
+                                                <span
+                                                    className="font-medium text-gray-200 group-hover:underline group-hover:cursor-pointer"
+                                                    onClick={() =>
+                                                        navigate(
+                                                            `/profile/${user.id}`
+                                                        )
+                                                    }
+                                                >
+                                                    {sliceText(
+                                                        user.username,
+                                                        10
+                                                    )}
                                                 </span>
                                             </div>
                                             {isSent ? (
@@ -132,4 +147,4 @@ export function SearchModal({ onClose, isOpen }: SearchModalProps) {
             </Modal>
         </div>
     );
-}
+};

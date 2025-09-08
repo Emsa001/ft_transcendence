@@ -2,6 +2,7 @@ import { WebSocket } from "@fastify/websocket";
 import { MessageDTOType } from "shared";
 import { chatDBService } from "./db.service";
 import { BlockUserService } from "@/modules/user/services/user.block";
+import { Message } from "@/database/models/Message/Message";
 
 class ChatWSService {
     private connections: Map<number, Set<WebSocket>> = new Map();
@@ -26,8 +27,10 @@ class ChatWSService {
 
     public async handleMessage(msg: MessageDTOType) {
         const now = Date.now();
-
-        if (await BlockUserService.isBlocked(msg.sender, msg.receiver)) {
+        if (
+            (await BlockUserService.isBlocked(msg.sender, msg.receiver)) ||
+            msg.receiver === -1
+        ) {
             const errorPayload = JSON.stringify({
                 type: "error",
                 code: "BLOCKED_USER",
@@ -49,25 +52,27 @@ class ChatWSService {
             return;
         }
 
-        const last = this.lastMessageTime.get(msg.sender) || 0;
-        if (now - last < 100) {
-            return;
+        if (msg.sender != -1) {
+            const last = this.lastMessageTime.get(msg.sender) || 0;
+            if (now - last < 100) {
+                return;
+            }
+
+            this.lastMessageTime.set(msg.sender, now);
         }
 
-        this.lastMessageTime.set(msg.sender, now);
+        const message = await Message.create(msg);
 
         const payload = JSON.stringify({
             type: "message",
-            sender: msg.sender,
-            receiver: msg.receiver,
-            message: msg.message,
-            createdAt: msg.createdAt,
+            sender: message.sender,
+            receiver: message.receiver,
+            message: message.message,
+            createdAt: message.createdAt,
         });
 
-        chatDBService.saveMessage(msg);
-
-        if (msg.receiver && this.connections.has(msg.receiver)) {
-            for (const socket of this.connections.get(msg.receiver)!) {
+        if (message.receiver && this.connections.has(message.receiver)) {
+            for (const socket of this.connections.get(message.receiver)!) {
                 if (socket.readyState === 1) {
                     socket.send(payload);
                 }

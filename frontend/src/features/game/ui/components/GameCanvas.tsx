@@ -31,9 +31,17 @@ export const GameCanvasLocal = () => {
             renderer.drawMidline();
             renderer.drawBall(gameEngine.ball);
             renderer.drawSpeed(gameEngine.ball);
+            renderer.drawRandomEvent(gameEngine.gameEvents.selectedEvent);
+
             renderer.drawPaddles(gameEngine.paddles);
             renderer.drawCountDown(countdown.current);
-            renderer.drawMessages(messages.current);
+
+            if (messages.current) {
+                renderer.drawMessages(
+                    messages.current.messages,
+                    messages.current.cover
+                );
+            }
 
             rafRef.current = requestAnimationFrame(loop);
         };
@@ -72,10 +80,17 @@ export const GameCanvasRemote = () => {
                 if (frameRef.current.ball) {
                     renderer.drawBall(frameRef.current.ball);
                     renderer.drawSpeed(frameRef.current.ball);
+                    renderer.drawRandomEvent(frameRef.current.selectedEvent);
                 }
                 renderer.drawPaddles(frameRef.current?.paddles ?? {});
             }
-            renderer.drawMessages(messages.current);
+
+            if (messages.current) {
+                renderer.drawMessages(
+                    messages.current.messages,
+                    messages.current.cover
+                );
+            }
 
             rafRef.current = requestAnimationFrame(loop);
         };

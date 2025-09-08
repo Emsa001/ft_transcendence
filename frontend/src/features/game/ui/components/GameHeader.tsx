@@ -1,3 +1,4 @@
+import { useLanguage } from "@features/language/model/useLanguage";
 import React, { useNavigate } from "react";
 
 interface GameHeaderProps {
@@ -6,8 +7,10 @@ interface GameHeaderProps {
     code?: string;
 }
 
-export function GameHeader({ type, mode, code }: GameHeaderProps) {
+export const GameHeader = ({ type, mode, code }: GameHeaderProps) => {
     const navigate = useNavigate();
+    const { getText } = useLanguage();
+    const text = getText("game");
 
     const handleBack = () => {
         if (code) {
@@ -23,29 +26,29 @@ export function GameHeader({ type, mode, code }: GameHeaderProps) {
     };
 
     return (
-        <div className="absolute z-20 left-4 right-4 top-4 flex items-center justify-between">
+        <div className="p-4 flex items-center justify-between border border-white/10 bg-black/20 backdrop-blur-md rounded-t-2xl">
             <div className="px-4 py-2 rounded-2xl bg-white/10 shadow-lg">
                 <h1 className="text-lg md:text-xl font-semibold tracking-wide bg-clip-text text-transparent bg-gradient-to-r from-fuchsia-400 to-sky-300">
                     {type === "local" &&
                         mode === "casual" &&
-                        "Local Casual Mode"}
+                        text.localCasualMode}
                     {type === "local" &&
                         mode === "tournament" &&
-                        "Local Tournament Mode"}
+                        text.localTournamentMode}
                     {type === "remote" &&
                         mode === "casual" &&
-                        "Remote Casual Mode"}
+                        text.remoteCasualMode}
                     {type === "remote" &&
                         mode === "tournament" &&
-                        "Remote Tournament Mode"}
+                        text.remoteTournamentMode}
                 </h1>
             </div>
             <button
                 onClick={handleBack}
                 className="px-4 py-2 rounded-2xl bg-white/10 hover:bg-white/20 transition-all duration-200 shadow-lg text-sm md:text-base"
             >
-                Back to Menu
+                {text.backToMenu}
             </button>
         </div>
     );
-}
+};

@@ -38,6 +38,7 @@ import {
 import { HttpException } from "@/utils/exceptions";
 import { Tournament } from "../Tournaments/Tournament";
 import { GameHooks } from "./GameHooks";
+import { GameService } from "./GameService";
 
 type UserWithGameData = User & {
     GameUser: GameUser;
@@ -62,14 +63,15 @@ export class Game extends Model<InferAttributes<Game>, GameCreationAttributes> {
     declare id: number;
 
     @ForeignKey(() => User)
-    @AllowNull(false)
+    @AllowNull(true)
+    @Default(null) // game with no host
     @Column(DataType.INTEGER)
-    declare hostId: number;
+    declare hostId: number | null;
 
     @Unique
     @AllowNull(true)
     @Column(DataType.STRING)
-    declare code: string | null;
+    declare code?: string;
 
     // Core metadata
     @Default(GameStatus.WAITING)
@@ -84,6 +86,11 @@ export class Game extends Model<InferAttributes<Game>, GameCreationAttributes> {
     @Default(false)
     @Column(DataType.BOOLEAN)
     declare isPrivate: boolean;
+
+    @AllowNull(false)
+    @Default(false)
+    @Column(DataType.BOOLEAN)
+    declare randomEvents: boolean;
 
     // Gameplay settings
     @AllowNull(false)
@@ -134,14 +141,18 @@ export class Game extends Model<InferAttributes<Game>, GameCreationAttributes> {
         return new GameDTO(this);
     }
 
+    end = async () => GameService.end(this);
+
     getGameUsers(): GameUserDTOType[] {
         if (!this.players)
             throw new HttpException(500, "Players not loaded in Game instance");
 
-        return this.players.map((p) => ({
-            ...p.toDTO(),
-            score: p.GameUser.score,
-        }));
+        return this.players
+            .map((p) => ({
+                ...p.toDTO(),
+                score: p.GameUser.score,
+            }))
+            .sort((a, b) => a.id - b.id);
     }
 
     static findByCode = (code: string) => Game.findOne({ where: { code } });
@@ -156,12 +167,6 @@ export class Game extends Model<InferAttributes<Game>, GameCreationAttributes> {
                 where: { userId, gameId: this.id },
             }
         );
-    }
-
-    // Hooks
-    @AfterUpdate
-    static async setGameWinner(instance: Game) {
-        await GameHooks.setGameWinner(instance);
     }
 
     @BeforeCreate

@@ -1,21 +1,26 @@
+import { Icon } from "@shared/components/Icon";
 import React from "react";
+import { FaUserCircle } from "react-icons/fa";
 
 export const UserAvatar = ({
     src,
     name,
 }: {
-    src: string | null;
+    src?: string | null;
     name: string;
 }) => {
     return src ? (
         <img
             src={src}
             alt={name}
-            className="w-24 h-24 rounded-full object-cover border-4 border-white/30 shadow-lg"
+            className="w-16 h-16 rounded-full object-cover border-4 border-white/30 shadow-lg"
         />
     ) : (
-        <div className="w-24 h-24 rounded-full bg-gradient-to-br from-purple-400 to-blue-400 flex items-center justify-center text-white text-2xl font-bold border-4 border-white/30 shadow-lg">
-            {name[0]}
+        <div>
+            <Icon
+                icon={FaUserCircle}
+                className={`w-16 h-16 rounded-full object-cover border-4 border-white/30 shadow-lg`}
+            />
         </div>
     );
 };

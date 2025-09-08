@@ -1,13 +1,16 @@
-FROM node:24-alpine
+FROM node:22-alpine
 
-WORKDIR /app
+WORKDIR /app/backend
 
-COPY package.json ./
+COPY backend ./
+COPY shared ../shared
+RUN npm install --prefix ../shared
+RUN npm run build --prefix ../shared
+
 RUN npm install
 
-COPY . .
+# Copy backend and shared
 
 EXPOSE 8000
 
-# Start the app at runtime, not build time
 CMD ["npm", "start"]

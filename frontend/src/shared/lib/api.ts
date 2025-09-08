@@ -13,7 +13,7 @@ export class APIService {
             baseURL:
                 (baseUrl ||
                     process.env.FT_REACT_PUBLIC_API_HOST ||
-                    "http://localhost:3000") + (path || ""),
+                    "https://localhost:443") + (path || ""),
             headers: {
                 "Content-Type": "application/json",
                 Accept: "application/json",
@@ -24,10 +24,10 @@ export class APIService {
         this.api.interceptors.response.use(
             (response) => response,
             (error) => {
-                console.error(
-                    "API Error:",
-                    error.response?.data || error.message
-                );
+                // console.error(
+                //     "API Error:",
+                //     error.response?.data || error.message
+                // );
                 return Promise.reject(error);
             }
         );

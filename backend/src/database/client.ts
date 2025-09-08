@@ -9,6 +9,8 @@ import { TournamentUser } from "./models/Tournaments/TournamentUser";
 import { Message } from "./models/Message/Message";
 import { BlockedUsers } from "./models/User/BlockedUsers";
 import { GameRooms } from "@/modules/game/services/registry.service";
+import { TournamentRooms } from "@/modules/tournament/services/registry.service";
+import { DatabaseExampleFeed } from "./feed";
 
 const models = [
     User,
@@ -33,12 +35,14 @@ export const registerDB = async (app: FastifyInstance) => {
     app.decorate("sequelize", sequelize);
 
     await GameRooms.init();
+    await TournamentRooms.init();
 
+    // await DatabaseExampleFeed.feedUser(1);
     // Feed database with example data
-    // await DatabaseExampleFeed.feed({
-    //     users: 4,
-    //     games: 1,
-    // });
+    /*await DatabaseExampleFeed.feed({
+        users: 100,
+        games: 50,
+    });*/
 };
 
 export const startClean = async () => {

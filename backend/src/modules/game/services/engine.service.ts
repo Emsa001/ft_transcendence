@@ -1,13 +1,23 @@
-import { Ball, GameFrame, GameUserDTOType, Paddle } from "shared";
+import {
+    Ball,
+    GameEngineType,
+    GameEvents,
+    GameFrame,
+    GameUserDTOType,
+    Paddle,
+} from "shared";
 
-export class GameEngine {
+export class GameEngine implements GameEngineType {
     private readonly baseW = 1280;
     private readonly baseH = 720;
 
     ball: Ball;
     paddles: Record<number, Paddle>;
+    randomEvents = false;
+    gameEvents: GameEvents;
     stopped = true;
     onScore?: (scorerId: number) => void;
+    onRandomEvent?: (event: string) => void;
 
     private readonly defaultBallSpeed = 7.5;
     private readonly paddleWidth = 14;
@@ -26,12 +36,14 @@ export class GameEngine {
             speed: this.defaultBallSpeed,
         };
         this.paddles = {};
+        this.gameEvents = new GameEvents(this);
     }
 
     getFrame(): GameFrame {
         return {
             ball: this.ball,
             paddles: this.paddles,
+            selectedEvent: this.gameEvents.selectedEvent,
         };
     }
 
@@ -74,6 +86,7 @@ export class GameEngine {
 
     update() {
         if (this.stopped) return false;
+        if (this.randomEvents) this.gameEvents.tryEvent();
 
         this.updatePaddles();
         this.updateBall();
@@ -141,19 +154,29 @@ export class GameEngine {
     }
 
     private handleScoring() {
-        const paddleIds = Object.keys(this.paddles).map(Number);
+        const paddleEntries = Object.entries(this.paddles).map(([id, p]) => ({
+            id: parseInt(id),
+            x: p.pos.x,
+        }));
+
+        const leftPlayerId = paddleEntries.reduce((left, p) =>
+            p.x < left.x ? p : left
+        ).id;
+        const rightPlayerId = paddleEntries.reduce((right, p) =>
+            p.x > right.x ? p : right
+        ).id;
+
         if (this.ball.pos.x < -20) {
             // Right player scores
-            this.onScore?.(paddleIds[1]);
-            this.resetPositions();
+            this.onScore?.(rightPlayerId);
         } else if (this.ball.pos.x > this.baseW + 20) {
             // Left player scores
-            this.onScore?.(paddleIds[0]);
-            this.resetPositions();
+            this.onScore?.(leftPlayerId);
         }
     }
 
     resetPositions() {
+        this.gameEvents.reset();
         const centerY = this.baseH / 2;
 
         for (const id in this.paddles) {

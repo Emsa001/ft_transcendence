@@ -15,7 +15,7 @@ export class ChatApi extends APIService {
             );
             return response.data;
         } catch (error) {
-            console.error("Error fetching all friends:", error);
+
             return Promise.reject(error);
         }
     }

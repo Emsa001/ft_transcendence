@@ -1,20 +1,20 @@
-import { GameMessage, GameUserDTOType } from "shared";
+import { GameMessage, GameUserDTOType, MessageData } from "shared";
 import { GameState } from "../types";
 
 export interface GameContextType {
     /** --- Players --- */
     players: GameUserDTOType[];
-    setPlayers: ReactStateSetter<GameUserDTOType[]>;
+    setPlayers: SetState<GameUserDTOType[]>;
 
     /** --- Config --- */
     maxScore: number;
-    setMaxScore: ReactStateSetter<number>;
+    setMaxScore: SetState<number>;
 
     /** --- Runtime State --- */
     state: GameState;
-    setState: ReactStateSetter<GameState>;
+    setState: SetState<GameState>;
 
-    messages: RefObject<GameMessage[] | null>;
+    messages: RefObject<MessageData | null>;
     countdown: RefObject<number | null>;
 
     /** --- Game Control Methods --- */
@@ -36,6 +36,7 @@ export interface GameProviderProps {
     /** --- Initial Values --- */
     players?: GameUserDTOType[];
     maxScore?: number;
+    randomEvents?: boolean;
 
     /** --- Event Callbacks --- */
     onScore?: (scorer: GameUserDTOType) => void;

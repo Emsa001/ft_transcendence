@@ -26,11 +26,12 @@ export class TournamentGamePlayService {
         }
 
         const games = await tournament.getGames({
-            where: { status: GameStatus.IN_PROGRESS },
+            where: { status: GameStatus.WAITING },
         });
 
         for (const game of games) {
             const players = await game.getPlayers();
+            await game.update({ status: GameStatus.IN_PROGRESS });
 
             for (const player of players) {
                 await game.playerScore(
@@ -42,8 +43,17 @@ export class TournamentGamePlayService {
                 }
             }
 
-            await game.update({ status: GameStatus.FINISHED });
+            await game.end();
+
+            const eliminated = (await game.getPlayers()).filter(
+                (p) => p.id != game.winnerId
+            );
+            for (const player of eliminated) {
+                await tournament.eliminatePlayer(player.id);
+            }
         }
+
+        await tournament.reload();
 
         // TODO: There is smarter way check if it's last round
         const activePlayers = await tournament.getActivePlayers();

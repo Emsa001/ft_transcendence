@@ -10,6 +10,7 @@ import {
     BelongsToManyCountAssociationsMixin,
     HasManyCreateAssociationMixin,
     HasManyGetAssociationsMixin,
+    InferAttributes,
 } from "sequelize";
 import {
     Table,
@@ -29,11 +30,11 @@ import {
 import { User } from "../User/User";
 import { TournamentUser } from "./TournamentUser";
 import { Game } from "../Game/Game";
-import { GameStatus } from "shared";
+import { GameStatus, TournamentCreateType } from "shared";
 import { TournamentHooks } from "./TournamentHooks";
 import { TournamentDTO } from "./TournamentDTO";
-import { TournamentGamePlayService } from "@/modules/tournament/services/tournament.gameplay";
-import { TournamentCreationService } from "@/modules/tournament/services/tournament.creation";
+import { TournamentCreationService } from "@/modules/tournament/services/create.service";
+import { TournamentGamePlayService } from "@/modules/tournament/services/gameplay.service";
 
 type UserWithTournamentData = User & {
     TournamentUser: TournamentUser;
@@ -50,18 +51,43 @@ type UserWithTournamentData = User & {
     },
 }))
 @Table
-export class Tournament extends Model {
+export class Tournament extends Model<
+    InferAttributes<Tournament>,
+    TournamentCreateType
+> {
     @PrimaryKey
     @AutoIncrement
     @Column(DataType.INTEGER)
     declare id: number;
 
-    @Column(DataType.STRING)
+    @Column({
+        type: DataType.STRING,
+        validate: { len: [2, 32] },
+    })
     declare name: string;
+
+    @AllowNull(false)
+    @Default(() => crypto.randomUUID())
+    @Column(DataType.STRING)
+    declare uuid: string;
+
+    @ForeignKey(() => User)
+    @AllowNull(true)
+    @Default(null) // game with no host
+    @Column(DataType.INTEGER)
+    declare hostId: number | null;
 
     @Default(GameStatus.WAITING)
     @Column(DataType.STRING)
     declare status: GameStatus;
+
+    @Default(3)
+    @Column(DataType.INTEGER)
+    declare maxScore: number;
+
+    @Default(false)
+    @Column(DataType.BOOLEAN)
+    declare randomEvents: boolean;
 
     @HasMany(() => Game)
     declare games: Game[];
@@ -101,9 +127,13 @@ export class Tournament extends Model {
         return allPlayers.filter((player) => !player.TournamentUser.eliminated);
     };
 
+    static findByUUID = async (uuid: string): Promise<Tournament | null> =>
+        Tournament.findOne({ where: { uuid } });
+
     start = async () => TournamentCreationService.start(this);
     end = async () => TournamentCreationService.end(this);
-    createRound = async () => TournamentCreationService.createRound(this);
+    createGames = async () => TournamentCreationService.createGames(this);
+    startRound = async () => TournamentCreationService.startRound(this);
     eliminatePlayer = async (playerId: number) =>
         TournamentGamePlayService.eliminatePlayer(this, playerId);
     exampleRoundFlow = async (winner?: number) =>
