@@ -27,6 +27,7 @@ clean:
 	rm -rf ./*/node_modules
 	rm -rf ./*/dist
 	rm -rf ./*/package-lock.json
+	rm -f ./backend/db.sqlite
 	$(DOCKER_COMPOSE) down -v --remove-orphans --rmi all
 
 install: frontend backend
