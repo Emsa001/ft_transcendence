@@ -23,7 +23,7 @@ export const useAuth = () => {
                 setUser(null);
             }, 0);
         } catch (error) {
-            console.error("Logout failed:", error);
+
         }
     };
 
@@ -36,10 +36,10 @@ export const useAuth = () => {
             if (response?.authUrl) {
                 window.location.href = response.authUrl;
             } else {
-                console.error("Failed to get Google auth URL");
+
             }
         } catch (error) {
-            console.error("Error redirecting to Google auth:", error);
+
         }
     };
 
@@ -54,7 +54,7 @@ export const useAuth = () => {
         const require2fa = urlParams.get("require2fa");
 
         if (error) {
-            console.error("OAuth error:", error);
+
             // Handle different error types
             switch (error) {
                 case "access_denied":
@@ -96,7 +96,7 @@ export const useAuth = () => {
             const data = await AuthApi.login(username, password);
             setUser(data);
         } catch (error: any) {
-            console.log(error.response);
+
             setError(
                 error.response.data.message || "Login failed. Try again later"
             );

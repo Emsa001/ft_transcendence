@@ -44,7 +44,7 @@ const TournamentView = () => {
 
     if (currentGame) {
         const onScore = (scorer: GameUserDTOType) => {
-            console.log("scored", scorer);
+
         };
 
         const onSpace = () => {

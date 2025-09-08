@@ -29,7 +29,7 @@ class GameApi extends APIService {
             const response = await this.api.get("/random");
             return response.data;
         } catch (err) {
-            console.log("Failed to join random game", err);
+
             return null;
         }
     }

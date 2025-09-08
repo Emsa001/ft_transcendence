@@ -14,7 +14,7 @@ class AuthApi extends APIService {
                 await this.api.get("/google");
             return response.data;
         } catch (error) {
-            console.error("Error getting Google auth URL:", error);
+
             return null;
         }
     }
@@ -62,7 +62,7 @@ class AuthApi extends APIService {
             });
             return response.data.success;
         } catch (error) {
-            console.error("Error verifying 2FA code:", error);
+
             return false;
         }
     }

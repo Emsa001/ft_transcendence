@@ -167,10 +167,10 @@ export const RemoteGameProvider = ({
             }
 
             case "error":
-                console.error("Game error:", payload.message);
+
                 break;
             default:
-                console.warn("Unknown message type:", payload.type);
+
         }
     };
 

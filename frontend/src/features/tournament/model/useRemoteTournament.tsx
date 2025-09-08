@@ -82,7 +82,7 @@ export const RemoteTournamentProvider = ({
 
     const handleSocketMessage = (msg: MessageEvent) => {
         const payload = JSON.parse(msg.data);
-        console.log("Received message:", payload);
+
 
         switch (payload.type) {
             case "STATE_UPDATE": {
@@ -177,13 +177,13 @@ export const RemoteTournamentProvider = ({
 
     const start = async () => {
         const tournament = await tournamentApi.start(uuid);
-        console.log(tournament);
+
         if (tournament.error) {
             setError("Failed to start tournament");
             return;
         }
 
-        console.log("Tournament started:", tournament);
+
     };
 
     const joinGame = (code: string) => {

@@ -60,7 +60,7 @@ export const useWebSocket = (url: string) => {
         reconnect();
 
         return () => {
-            console.log(`Cleaning up WebSocket connection for ${url}`);
+
             wsRef.current?.close();
             wsRef.current = null;
             hooksRef.current = [];

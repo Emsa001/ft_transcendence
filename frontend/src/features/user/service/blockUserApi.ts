@@ -10,7 +10,7 @@ class BlockUserApi extends APIService {
                 await this.api.get("/blocked/all");
             return response.data;
         } catch (error) {
-            console.error("Error fetching all blocked users:", error);
+
             return null;
         }
     }
@@ -29,7 +29,7 @@ class BlockUserApi extends APIService {
         try {
             await this.api.post(`/unblock/${userId}`);
         } catch (error) {
-            console.error("Error unblocking user:", error);
+
         }
     }
 
@@ -38,7 +38,7 @@ class BlockUserApi extends APIService {
             const response = await this.api.get(`/blocked/${userId}`);
             return response.data;
         } catch (error) {
-            console.error("Error checking if user is blocked:", error);
+
             return Promise.reject(error);
         }
     }

@@ -86,7 +86,7 @@ const updateUndefined = (
 ) => {
     if (oldNode === null || oldNode === undefined) {
         if (!parent) {
-            console.warn("Cannot Create new now: Parent is null");
+
             return true;
         }
 
@@ -138,7 +138,7 @@ const updateBoolean = async (
     }
 
     if (!parent) {
-        console.warn("Cannot Create new now: Parent is null");
+
         return true;
     }
 

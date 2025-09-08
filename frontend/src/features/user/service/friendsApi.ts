@@ -10,7 +10,7 @@ class FriendsApi extends APIService {
                 await this.api.get("/friends/all");
             return response.data;
         } catch (error) {
-            console.error("Error fetching all friends:", error);
+
             return null;
         }
     }
@@ -21,7 +21,7 @@ class FriendsApi extends APIService {
                 await this.api.get("/friends/requests");
             return response.data;
         } catch (error) {
-            console.error("Error fetching friend requests:", error);
+
             return null;
         }
     }
@@ -33,7 +33,7 @@ class FriendsApi extends APIService {
             );
             return response.data;
         } catch (error) {
-            console.error("Error fetching all sent friend requests:", error);
+
             return null;
         }
     }
@@ -74,7 +74,7 @@ class FriendsApi extends APIService {
             if (!response.data) return null;
             return response.data;
         } catch (error) {
-            console.error("Error fetching user by ID or username:", error);
+
             return null;
         }
     }
