@@ -70,7 +70,7 @@ export const MyPicture = () => {
                 );
             }
         } else {
-            console.warn("No file provided for picture update.");
+
         }
     };
 
@@ -119,10 +119,10 @@ export const OtherUserPicture = ({
             const fetchedUser = await FriendsApi.getUserByIdOrUsername(
                 userId.toString()
             );
-            console.log("FETCHED USER ", fetchedUser);
+
             if (fetchedUser) {
                 setUser(fetchedUser);
-                console.log("Fetched User:", fetchedUser);
+
             }
         };
 

@@ -30,7 +30,7 @@ export function useStaticHook<T>(name: string, initialState?: T): [T, SetState<T
     
     const setState = (newValue: T | ((prevState: T) => T)) => {
         if(!staticComponents) {
-            console.warn("Tried to set state on a static component that doesn't exist");
+
             return ;
         }
 
@@ -45,7 +45,7 @@ export function useStaticHook<T>(name: string, initialState?: T): [T, SetState<T
         staticComponents.forEach((comp) => {
             const compInstance = React.components.get(comp);
             if(!compInstance) {
-                console.warn("Tried to set state on a static component that doesn't exist, probably component was unmounted and not unsubscribed from the static state. After this message, the component will be removed from the staticStates");
+
                 React.staticComponents.delete(comp);
             }else{
                 if (!compInstance.isDirty) {

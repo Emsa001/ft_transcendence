@@ -14,7 +14,7 @@ export const useOnlineUsers = () => {
         ws = new WebSocket(
             process.env.FT_REACT_PUBLIC_API_HOST + "/user/status"
         );
-        console.log("Subscribing to online users WebSocket");
+
 
         ws.onmessage = (event) => {
             const msg = JSON.parse(event.data);

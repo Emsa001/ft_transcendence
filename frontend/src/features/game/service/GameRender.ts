@@ -17,7 +17,7 @@ export class GameRenderer {
         this.sx = 1;
         this.sy = 1;
 
-        console.log("GameRenderer initialized");
+
     }
 
     init(ctx: CanvasRenderingContext2D, dpr: number, sx: number, sy: number) {

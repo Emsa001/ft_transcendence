@@ -19,7 +19,7 @@ export const GameLobby = () => {
             const res = await GameApi.createGame(data);
             navigate(`/game/remote/casual/${res.data.code}`);
         } catch (err) {
-            console.error("Failed to create game", err);
+
         }
     };
 

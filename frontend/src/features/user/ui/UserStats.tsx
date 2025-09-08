@@ -14,7 +14,7 @@ export const UserStats = ({ userId }: { userId: string | number }) => {
                 if (data) {
                     setStats(data);
                 } else {
-                    console.error("Failed to fetch user stats");
+
                 }
             });
         }
