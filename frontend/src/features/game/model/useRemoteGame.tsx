@@ -130,7 +130,6 @@ export const RemoteGameProvider = ({
                     },
                     selectedEvent: payload.frame.selectedEvent ?? null,
                 };
-                console.log(frameRef.current.selectedEvent);
                 break;
             }
 

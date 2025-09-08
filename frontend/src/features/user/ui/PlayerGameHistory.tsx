@@ -6,7 +6,6 @@ import { FaCrown } from "react-icons/fa";
 import { Icon } from "@shared/components/Icon";
 import { useLanguage } from "@features/language/model/useLanguage";
 import { getTime, sliceText } from "@shared/lib/utils";
-import { slice } from "lodash";
 
 interface PlayerGameHistoryProps {
     games: GameDTOType[];
