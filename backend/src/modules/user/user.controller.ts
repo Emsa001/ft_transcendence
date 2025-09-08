@@ -154,7 +154,6 @@ export class UserController extends BaseController {
         const { id } = request.params as { id: number };
 
         const blocked = await request.user.isUserBlocked(id);
-        console.log("isUserBlocked:", blocked); // Debug log
         return reply.send(blocked);
     }
 

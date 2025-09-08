@@ -44,32 +44,31 @@ export const TournamentInfo = ({
             <div className="">
                 {status === GameStatus.WAITING ? (
                     <h2 className="text-2xl font-bold text-gray-200 mb-2 text-center">
-                        Waiting for players... ({players}/{maxPlayers})
+                        {text.waiting} ({players}/{maxPlayers})
                     </h2>
                 ) : status === GameStatus.IN_PROGRESS ? (
                     <h2 className="text-2xl font-bold text-gray-200 mb-2 text-center">
-                        Tournament in progress...
+                        {text.progress}
                     </h2>
                 ) : status === GameStatus.FINISHED ? (
                     <h2 className="text-2xl font-bold text-yellow-300 mb-2 text-center">
-                        {text.winner}:{" "} - {winner}
+                        {text.winner}: - {winner}
                     </h2>
                 ) : null}
             </div>
 
             <div>
-
-            <div className="flex flex-row justify-center items-center gap-4 mb-4">
-                <div className="">
-                    {onDelete && (
-                        <button
-                        onClick={onDelete}
-                        className="px-6 py-2 bg-gradient-to-r from-black to-black/60 text-white font-semibold rounded-xl shadow hover:opacity-90 transition w-full h-full"
-                        >
-                            {text.deleteTournament}
-                        </button>
-                    )}
-                    {/* {onStart && status === GameStatus.WAITING && (
+                <div className="flex flex-row justify-center items-center gap-4 mb-4">
+                    <div className="">
+                        {onDelete && (
+                            <button
+                                onClick={onDelete}
+                                className="px-6 py-2 bg-gradient-to-r from-black to-black/60 text-white font-semibold rounded-xl shadow hover:opacity-90 transition w-full h-full"
+                            >
+                                {text.deleteTournament}
+                            </button>
+                        )}
+                        {/* {onStart && status === GameStatus.WAITING && (
                         <button
                             onClick={onStart}
                             className="px-6 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold rounded-xl shadow hover:opacity-90 transition w-full"
@@ -77,55 +76,59 @@ export const TournamentInfo = ({
                             {text.startTournament}
                         </button>
                     )} */}
-                </div>
-                <button
-                    onClick={() =>
-                        navigate(`/game/${isLocal ? "remote/tournament" : ""}`)
-                    }
-                    className="px-6 py-2 bg-gradient-to-r from-red-800/80 to-red-600/80 text-white font-semibold rounded-xl shadow hover:opacity-90 transition"
-                    >
-                    {text.leaveTournament}
-                </button>
-                {onStart && status === GameStatus.WAITING && (
+                    </div>
                     <button
-                    onClick={onStart}
-                    className="px-6 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold rounded-xl shadow hover:opacity-90 transition"
+                        onClick={() =>
+                            navigate(
+                                `/game/${isLocal ? "remote/tournament" : ""}`
+                            )
+                        }
+                        className="px-6 py-2 bg-gradient-to-r from-red-800/80 to-red-600/80 text-white font-semibold rounded-xl shadow hover:opacity-90 transition"
                     >
-                        {text.startTournament}
+                        {text.leaveTournament}
                     </button>
-                )}
+                    {onStart && status === GameStatus.WAITING && (
+                        <button
+                            onClick={onStart}
+                            className="px-6 py-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white font-semibold rounded-xl shadow hover:opacity-90 transition"
+                        >
+                            {text.startTournament}
+                        </button>
+                    )}
+                </div>
 
+                <div className="p-4 border border-white/20 flex flex-col">
+                    <h3 className="text-xl font-bold text-gray-200 mb-2">
+                        {text.settings}
+                    </h3>
+                    <p className="text-white/80">
+                        {text.host}:{" "}
+                        <span className="font-medium text-white">
+                            {sliceText(host || "", 10) || "N/A"}
+                        </span>
+                    </p>
+                    <p className="text-white/80">
+                        {text.players}:{" "}
+                        <span className="font-medium text-white">
+                            {`${players}`} / {`${maxPlayers}`}
+                        </span>
+                    </p>
+                    <p className="text-white/80">
+                        {text.maxScore}:{" "}
+                        <span className="font-medium text-white">
+                            {maxScore}
+                        </span>
+                    </p>
+                    <p className="text-white/80">
+                        {text.randomEvents}:{" "}
+                        <span className="font-medium text-white">
+                            {randomEvents ? text.enabled : text.disabled}
+                        </span>
+                    </p>
+                </div>
             </div>
 
-            <div className="p-4 border border-white/20 flex flex-col">
-                <h3 className="text-xl font-bold text-gray-200 mb-2">
-                    Tournament Settings
-                </h3>
-                <p className="text-white/80">
-                    {text.host}:{" "}
-                    <span className="font-medium text-white">{host || "N/A"}</span>
-                </p>
-                <p className="text-white/80">
-                    {text.players}:{" "}
-                    <span className="font-medium text-white">
-                        {`${players}`} / {`${maxPlayers}`}
-                    </span>
-                </p>
-                <p className="text-white/80">
-                    {text.maxScore}:{" "}
-                    <span className="font-medium text-white">{maxScore}</span>
-                </p>
-                <p className="text-white/80">
-                    {text.randomEvents}:{" "}
-                    <span className="font-medium text-white">
-                        {randomEvents ? "Enabled" : "Disabled"}
-                    </span>
-                </p>
-
-            </div>
-            </div>
-
-        {/* <section className="w-full col-span-2 h-full bg-white/10 p-4 rounded-2xl flex flex-col">
+            {/* <section className="w-full col-span-2 h-full bg-white/10 p-4 rounded-2xl flex flex-col">
             
             <p className="text-white/80">
                 Status: <span className="font-medium text-white">{status}</span>

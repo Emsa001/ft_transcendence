@@ -198,6 +198,9 @@ export default {
     tournament: {
         tournamentRegistration: "Join the Madness",
         enterPlayerName: "Type Your Soon-to-Be-Loser Name",
+        waiting: "Waiting for players...",
+        progress: "Tournament in progress...",
+        settings: "Tournament Settings",
         add: "Add Victim",
         maxScore: "Pain Limit",
         randomEvents: "Random Nonsense",

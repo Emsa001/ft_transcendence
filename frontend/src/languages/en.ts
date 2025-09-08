@@ -199,6 +199,9 @@ export default {
     tournament: {
         tournamentRegistration: "Tournament Registration",
         enterPlayerName: "Enter player name",
+        waiting: "Waiting for players...",
+        progress: "Tournament in progress...",
+        settings: "Tournament Settings",
         add: "Add",
         maxScore: "Max Score",
         randomEvents: "Random Events",
