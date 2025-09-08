@@ -4,7 +4,6 @@ import React, { useState } from "react";
 import { SettingsModal } from "./Settings";
 import { useLanguage } from "@features/language/model/useLanguage";
 import { BlockedUsersModal } from "./BlockedUsers";
-import { slice } from "lodash";
 import { sliceText } from "@shared/lib/utils";
 
 export const ContactInfo = () => {

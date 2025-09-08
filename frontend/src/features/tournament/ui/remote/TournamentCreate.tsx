@@ -82,7 +82,7 @@ export const TournamentCreate = () => {
                             name="maxPlayers"
                             min={2}
                             max={32}
-                            value={2}
+                            defaultValue={2}
                             className="w-full rounded-xl bg-indigo-800/20 border border-white/10 px-4 py-3 text-purple-200 placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition"
                         />
                     </div>
@@ -97,7 +97,7 @@ export const TournamentCreate = () => {
                             name="maxScore"
                             min={1}
                             max={99}
-                            value={10}
+                            defaultValue={10}
                             className="w-full rounded-xl bg-indigo-800/20 border border-white/10 px-4 py-3 text-purple-200 placeholder-white/30 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-purple-500 transition"
                         />
                     </div>
